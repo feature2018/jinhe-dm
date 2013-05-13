@@ -1,0 +1,10 @@
+classes
+.class
+target
+build
+.settings
+.clover
+.classpath
+.project
+.svn
+*.db
