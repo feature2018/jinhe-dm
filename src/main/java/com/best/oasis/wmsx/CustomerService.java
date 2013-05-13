@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx.test1;
+package com.best.oasis.wmsx;
 
 import java.util.Collection;
 
@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/customer")   
 @Produces("application/xml")  
+//@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 public interface CustomerService {  
     
     @GET  

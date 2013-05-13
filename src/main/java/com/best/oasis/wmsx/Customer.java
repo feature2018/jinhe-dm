@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx.test1;
+package com.best.oasis.wmsx;
 
 import java.util.Date;
 

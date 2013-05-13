@@ -3,6 +3,8 @@ package com.best.oasis.wmsx.test1;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+
+import com.best.oasis.wmsx.CustomerServiceImpl;
   
 public class MyServer {  
     
