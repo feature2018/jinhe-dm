@@ -17,6 +17,23 @@
 	</properties> 
 	
 	<dependencies>
+		<!-- 
+			mvn install:install-file -DgroupId=com.jinhe.tss -DartifactId=cache -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:/cache.jar
+			mvn install:install-file -DgroupId=com.jinhe.tss -DartifactId=framework -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:/framework.jar -->
+			
+		<dependency>
+			<groupId>com.jinhe.tss</groupId>
+			<artifactId>cache</artifactId>
+			<version>1.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jinhe.tss</groupId>
+			<artifactId>framework</artifactId>
+			<version>1.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
