@@ -17,21 +17,21 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 public class MyClient {  
   
     public static void main(String[] args) throws Exception {  
-        doPut("http://localhost:9000/wmsx/customer/info/", 
+        doPut("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2013-05-13T12:36:07.814+08:00</birthday><id>1</id><name>Jon.King</name></Customer>");
-        doPut("http://localhost:9000/wmsx/customer/info/", 
+        doPut("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2012-05-13T12:36:07.814+08:00</birthday><id>2</id><name>Lao.Zi</name></Customer>");
-        doGet("http://localhost:9000/wmsx/customer/info/2");  
+        doGet("http://localhost:9000/wmsx/rs/customer/info/2");  
         
-        doPost("http://localhost:9000/wmsx/customer/info/", 
+        doPost("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2012-05-13T12:36:07.814+08:00</birthday><id>2</id><name>Dao.Dao</name></Customer>");
-        doGet("http://localhost:9000/wmsx/customer/info/2");  
+        doGet("http://localhost:9000/wmsx/rs/customer/info/2");  
         
-        doGet("http://localhost:9000/wmsx/customer/info/");
-        doDelete("http://localhost:9000/wmsx/customer/info/1");
-        doGet("http://localhost:9000/wmsx/customer/info/");
+        doGet("http://localhost:9000/wmsx/rs/customer/info/");
+        doDelete("http://localhost:9000/wmsx/rs/customer/info/1");
+        doGet("http://localhost:9000/wmsx/rs/customer/info/");
         
-        doGet("http://localhost:9000/wmsx/customer/search?name=2");  
+        doGet("http://localhost:9000/wmsx/rs/customer/search?name=2");  
         
     }  
       

@@ -5,16 +5,25 @@
 <web-app>  
   
     <display-name>wmsx</display-name>  
+	
+	<servlet>  
+        <servlet-name>Display</servlet-name>  
+        <servlet-class>com.best.oasis.wmsx.framework.DisplayServlet</servlet-class>  
+        <load-on-startup>1</load-on-startup>  
+    </servlet>  
+    <servlet-mapping>  
+        <servlet-name>Display</servlet-name>  
+        <url-pattern>display.do</url-pattern>  
+    </servlet-mapping>  
   
     <servlet>  
         <servlet-name>cxf</servlet-name>  
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>  
         <load-on-startup>1</load-on-startup>  
     </servlet>  
-  
     <servlet-mapping>  
         <servlet-name>cxf</servlet-name>  
-        <url-pattern>/wmsx/*</url-pattern>  
+        <url-pattern>rs/*</url-pattern>  
     </servlet-mapping>  
   
     <listener>  

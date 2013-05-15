@@ -4,7 +4,7 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 
-import com.best.oasis.wmsx.CustomerServiceImpl;
+import com.best.oasis.wmsx.restful.CustomerServiceImpl;
   
 public class MyServer {  
     
@@ -14,7 +14,7 @@ public class MyServer {
 
         factory.setResourceClasses(CustomerServiceImpl.class);
         
-        factory.setAddress("http://localhost:9000/wmsx/");  
+        factory.setAddress("http://localhost:9000/wmsx/rs/");  
         
         factory.getInInterceptors().add(new LoggingInInterceptor());  
         factory.getOutInterceptors().add(new LoggingOutInterceptor());  

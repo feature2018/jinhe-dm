@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx;
+package com.best.oasis.wmsx.restful;
 
 import java.util.Date;
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<strategies> 
+  <strategy code="connectionpool" name="数据库连接池"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>5</initNum>  
+    <disabled>0</disabled>
+	<visible>1</visible>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
+  </strategy>  
+  <strategy code="threadpool" name="线程池"> 
+    <poolClass>com.jinhe.tss.cache.extension.threadpool.ThreadPool</poolClass>  
+	<poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+	<poolSize>10</poolSize>  
+    <initNum>5</initNum>  
+    <disabled>0</disabled>  
+    <customizerClass>com.jinhe.tss.cache.extension.threadpool.ThreadPoolCustomizer</customizerClass>  
+  </strategy>  
+  <strategy code="SQLParser" name="SQL解析池"/>  
+</strategies>
