@@ -25,13 +25,11 @@
 			<groupId>com.jinhe.tss</groupId>
 			<artifactId>cache</artifactId>
 			<version>1.0.0</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jinhe.tss</groupId>
 			<artifactId>framework</artifactId>
 			<version>1.0.0</version>
-			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
@@ -62,6 +60,12 @@
 			<version>${cxf.version}</version>  
 		</dependency>  
 		
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.7.1</version>
+		</dependency>
 		
 		<dependency>  
 			<groupId>commons-httpclient</groupId>  
@@ -135,6 +139,12 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+        </dependency>
+		
 		
 	</dependencies>
 	
@@ -143,15 +153,22 @@
 		
 		<plugins>  
 			<plugin>  
-				<groupId>org.mortbay.jetty</groupId>  
-				<artifactId>maven-jetty-plugin</artifactId>  
+			    <groupId>org.mortbay.jetty</groupId>
+			    <artifactId>jetty-maven-plugin</artifactId>
 				<configuration>  
-					<contextPath>/wmsx</contextPath>  
+					<webAppConfig>  
+						<contextPath>/wmsx</contextPath>  
+					</webAppConfig>  
 					<connectors>  
-						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">  
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">  
 							<port>9000</port>  
 						</connector>  
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">  
+							<port>9001</port>  
+						</connector>  
 					</connectors>  
+					<stopPort>9966</stopPort>
+					<stopKey>wmsx</stopKey>
 				</configuration>  
 			</plugin>  
 			

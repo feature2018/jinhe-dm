@@ -2,37 +2,38 @@
  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
-<web-app>  
-  
-    <display-name>wmsx</display-name>  
+<web-app>
+	<display-name>wmsx</display-name>
+	<servlet>
+		<servlet-name>cxf</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cxf</servlet-name>
+		<url-pattern>rs/*</url-pattern>
+	</servlet-mapping>
 	
-	<servlet>  
-        <servlet-name>Display</servlet-name>  
-        <servlet-class>com.best.oasis.wmsx.framework.DisplayServlet</servlet-class>  
-        <load-on-startup>1</load-on-startup>  
-    </servlet>  
-    <servlet-mapping>  
-        <servlet-name>Display</servlet-name>  
-        <url-pattern>display.do</url-pattern>  
-    </servlet-mapping>  
-  
-    <servlet>  
-        <servlet-name>cxf</servlet-name>  
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>  
-        <load-on-startup>1</load-on-startup>  
-    </servlet>  
-    <servlet-mapping>  
-        <servlet-name>cxf</servlet-name>  
-        <url-pattern>rs/*</url-pattern>  
-    </servlet-mapping>  
-  
-    <listener>  
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
-    </listener>  
-      
-    <context-param>  
-        <param-name>contextConfigLocation</param-name>  
-        <param-value>classpath*:spring.xml</param-value>  
-    </context-param>  
-      
-</web-app>  
+	<servlet>
+		<servlet-name>spring-mvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring-mvc</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:spring.xml</param-value>
+	</context-param>
+</web-app>

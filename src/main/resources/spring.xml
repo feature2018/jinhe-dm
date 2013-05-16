@@ -5,9 +5,9 @@
     xmlns:jaxrs="http://cxf.apache.org/jaxrs"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
 		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
 		http://cxf.apache.org/jaxws 
 		http://cxf.apache.org/schemas/jaxws.xsd
 		http://cxf.apache.org/jaxrs
@@ -18,7 +18,7 @@
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
 
-	<context:component-scan base-package="com.best.oasis.wmsx"/> 
+	<context:component-scan base-package="com.best.oasis.wmsx.restful"/> 
 
     <jaxrs:server id="myServer" address="/"> 
         <jaxrs:serviceBeans> 
