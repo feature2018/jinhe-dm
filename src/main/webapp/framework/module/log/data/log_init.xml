@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Operation>p1,p2</Operation>
+	<AppTree>
+		<actionSet title="" openednodeid="r1.1">
+            <treeNode name="全部" id="_rootId">
+                <treeNode id="1" name="CMS" icon="images/app.gif" href=""/>
+                <treeNode id="2" name="PMS" icon="images/app.gif" href=""/>
+                <treeNode id="3" name="UMS" icon="images/app.gif" href=""/>
+            </treeNode>
+		</actionSet>
+	</AppTree>
+</Response>

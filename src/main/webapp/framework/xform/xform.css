@@ -1,0 +1,92 @@
+XForm\:Box {
+    width:100%;
+    font-size:12px;
+}
+XForm\:Box .contentBox{
+    overflow:auto;
+    SCROLLBAR-FACE-COLOR: #E5E9F2;
+    SCROLLBAR-HIGHLIGHT-COLOR: #E5E9F2;
+    SCROLLBAR-SHADOW-COLOR: #E5E9F2; 
+    SCROLLBAR-3DLIGHT-COLOR: #A4B9D7; 
+    SCROLLBAR-ARROW-COLOR:  #000000; 
+    SCROLLBAR-TRACK-COLOR: #eeeee6; 
+    SCROLLBAR-DARKSHADOW-COLOR: #A4B9D7;
+}
+XForm\:Box .contentBox td{
+    font-size:12px;
+    border-style:solid;
+    border-color:#A4B9D7;
+    border-width:0 0 0 0;
+    padding:1px 3px;
+}
+XForm\:Box .contentBox table{
+    border-style:solid;
+    border-color:#A4B9D7;
+    border-width:0 0 0 0;
+}
+XForm\:Box .titleBox{
+    border-style:solid;
+    border-color:#A4B9D7;
+    border-width:1 1 0 1;
+    font-weight:bold;
+    position:relative;
+}
+
+XForm\:Box input{
+    color:#535458;
+    height:18px;
+    border:1px solid #ABAAAF;
+    background-color:#ECEFF8;
+}
+XForm\:Box textarea{
+    color:#535458;
+    font-size:12px;
+    word-break:break-all;
+    border:1px solid #ABAAAF;
+    background-color:#ECEFF8;
+}
+XForm\:Box .title{
+    height:20px;
+    background-image:url(icon/titlebg.gif);
+}
+XForm\:Box .button{
+    background-color:#E4EBF3 !important;
+    border-style:outset !important;
+}
+
+XForm\:Box input.boolean{
+    border:0px;
+    background-color:transparent;
+    margin-left:-4px;
+}
+XForm\:Box input.function,XForm\:Box input.date{
+    padding-right:18px;
+}
+XForm\:Box select{
+    font-size:12px;
+    height:18px;
+}
+XForm\:Box .radio{
+    border:0px;
+    background-color:transparent;
+}
+
+XForm\:Box .string_disabled{
+    border:1px dotted #ABAAAF;
+    background-color:transparent;
+}
+
+XForm\:Box .function_disabled{
+    border:1px dotted #ABAAAF;
+    background-color:transparent;
+}
+XForm\:Box .bt_disabled{
+    display:none;
+}
+XForm\:Box .plus, XForm\:Box .subtract{
+    cursor:hand;
+    font-size:12px;
+    font-family:Courier New;
+    padding-left:3px;
+	color:#999999;
+}

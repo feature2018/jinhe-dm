@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<LogInfo>
+        <xform>
+            <declare prefix="ps">
+                <column name="id" caption="ID号" mode="string" editable="false"/>
+				<column caption="用户" name="userName" mode="number" align="center"/>
+				<column caption="操作对象" name="target" mode="string" align="center"/>
+				<column caption="类型" name="type" mode="string" align="center"/>
+				<column caption="操作日期" name="date" mode="date" pattern="yyyy-MM-dd"/>
+            </declare>
+            <layout>
+                <TR>
+                    <TD width="50">
+                        <label binding="id"/>
+                    </TD>
+                    <TD>
+                        <input binding="id" type="text"/>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD width="50">
+                        <label binding="userName"/>
+                    </TD>
+                    <TD>
+                        <input binding="userName" type="text"/>
+                    </TD>
+                </TR>
+                <TR showType="0">
+                    <TD width="50">
+                        <label binding="target"/>
+                    </TD>
+                    <TD>
+                        <input binding="target" type="text"/>
+                    </TD>
+                </TR>
+                <TR showType="0">
+                    <TD width="50">
+                        <label binding="type"/>
+                    </TD>
+                    <TD>
+                        <input binding="type" type="text"/>
+                    </TD>
+                </TR>
+                <TR showType="0">
+                    <TD width="50">
+                        <label binding="date"/>
+                    </TD>
+                    <TD>
+                        <input binding="date" type="text"/>
+                    </TD>
+                </TR>
+            </layout>
+            <data>
+                <row></row>
+            </data>
+        </xform>
+	</LogInfo>
+</Response>

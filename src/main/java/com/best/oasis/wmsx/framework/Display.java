@@ -51,20 +51,19 @@ public class Display {
         GridDataEncoder gEncoder = new GridDataEncoder(temp, XMLDocUtil.dataXml2Doc(excutor.parser.gridTempalte));
         
         XmlHttpEncoder xmlHttpEncoder = new XmlHttpEncoder();
-        xmlHttpEncoder.put("GridShow", gEncoder);
+        xmlHttpEncoder.put("GridData", gEncoder);
+        xmlHttpEncoder.put("PageData", "<pagelist totalpages=\"10\" totalrecords=\"999\" currentpage=\"3\" pagesize=\"100\"/>");
         xmlHttpEncoder.print(getWriter(response));
     }
     
-    private XmlPrintWriter writer;
+   
     protected XmlPrintWriter getWriter(HttpServletResponse response) {
-        if (writer == null) {
-            response.setContentType("text/html;charset=GBK");
-            try {
-                writer = new XmlPrintWriter(response.getWriter());
-            } catch (Exception e) {
-                throw new BusinessException("初始化数据输出流失败", e);
-            }
+        response.setContentType("text/html;charset=GBK");
+        try {
+            return new XmlPrintWriter(response.getWriter());
+        } catch (Exception e) {
+            throw new BusinessException("初始化数据输出流失败", e);
         }
-        return writer;
     }
+
 }

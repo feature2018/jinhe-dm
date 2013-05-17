@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>WMSX-首页</title>
+
+<link href="framework/css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/menu/menu.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/workspace/workspace.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/tree/tree.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/grid/grid.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/xform/xform.css" rel="stylesheet" type="text/css"></link>
+
+<script language="javascript" src="framework/core.js"></script>
+<script language="javascript" src="framework/ajax.js"></script>
+<script language="javascript" src="framework/framework.js"></script>
+<script language="javascript" src="framework/menu/menu.js"></script>
+<script language="javascript" src="framework/balloon/balloon.js"></script>
+<script language="javascript" src="framework/toolbar/toolbar.js"></script>
+<script language="javascript" src="framework/workspace/workspace.js"></script>
+<script language="javascript" src="framework/tree/tree.js"></script>
+<script language="javascript" src="framework/grid/grid.js"></script>
+<script language="javascript" src="framework/xform/xform.js"></script>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+URL_CORE = "framework/";
+
+
+/* XMLHTTP请求地址汇总  */
+URL_INIT = "data/menuTree.xml";
+
+ 
+ 
+/*页面初始化 */
+function init() {
+	initPaletteResize();
+	initMenus();
+
+	loadInitData();
+}
+
+/*
+ *	页面初始化加载数据(包括工具条、菜单树)：
+ */
+function loadInitData() {
+	var p = new HttpRequestParams();
+	p.method = "GET";
+	p.url = URL_INIT;
+
+	var request = new HttpRequest(p);
+	request.onresult = function() {
+		var mainTreeXML = this.getNodeValue("MenuTree");
+		Cache.XmlDatas.add("MenuTree", mainTreeXML);
+ 	
+		var treeObj = $("tree");
+		var tree = initTree(treeObj, mainTreeXML.toXml()); 
+		
+		// 添加自定义树事件
+		treeObj.onTreeNodeDoubleClick = function(eventObj) {
+			onTreeNodeDoubleClick(eventObj);
+		}
+		treeObj.onTreeNodeRightClick = function(eventObj) {
+			onTreeNodeRightClick(eventObj);
+		}
+	}
+	request.send();
+}
+
+/*
+ *	菜单初始化
+ */
+function initMenus() {
+	var item1 = {
+		label:"维护脚本",
+		callback:editReportSQL,
+		enable: function() {return true;},
+		visible:function() {return "_rootId" != getTreeNodeId();}
+	}
+	var item2 = {
+		label:"新增报表",
+		callback: null,
+		enable:function() {return true;},
+		visible:function() {return "_rootId"!=getTreeNodeId();}
+	}
+	var item3 = {
+		label:"删除报表",
+		callback: null,
+		enable:function() {return true;},
+		visible:function() {return "_rootId"!=getTreeNodeId();}
+	}
+
+	var menu1 = new Menu();
+	menu1.addItem(item1);
+	menu1.addItem(item2);
+	menu1.addItem(item3);
+
+	$("tree").contextmenu = menu1;
+}
+
+function editReportSQL(reportName) {
+	alert("select id, whCode 仓库Code, w.descr 仓库 from gv_bas_warehouse w where w.id = ?")
+}
+
+function getTreeNodeId() {
+	return getTreeAttribute("id");
+}
+
+/*
+ *	双击树节点
+ */
+function onTreeNodeDoubleClick(eventObj) {
+	if( "_rootId" != getTreeNodeId() ) {
+		showReport();
+	}
+}
+
+/*
+ *	右击树节点
+ */
+function onTreeNodeRightClick(eventObj) { 
+	var treeObj = $("tree");
+	if( treeObj.contextmenu ) {
+		treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                 
+	}
+}
+
+function showReport() {
+	var p = new HttpRequestParams();
+	p.method = "GET";
+	p.url = "display/showAsGrid/0";
+	//p.url = "data/reportData.xml";
+
+	var request = new HttpRequest(p);
+	request.onresult = function() {
+		var gridData = this.getNodeValue("GridData");
+		var grid = $G("reportGrid", gridData);       
+
+		var gridPage = this.getNodeValue("PageData");
+		var toolbarObj = $("gridToolBar");
+		initGridToolBar(toolbarObj, gridPage, function(page) {
+				alert("翻页")
+		});
+	}
+	request.send();
+}
+
+window.onload = init;
+
+//-->
+</SCRIPT>
+</head>
+
+<body>
+
+<table id="panelContainer" class="full" border="0" cellpadding="0" cellspacing="0">
+  <tr> 
+	<td id="palette">
+	  <!-- 左栏 开始 -->
+	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+		<tr id="treeTitle" class="bar"> 
+		  <td class="opened">
+			<span class="icon"></span>功能菜单
+		  </td>
+		</tr>
+		<tr>
+		  <td id="treeContainer">
+			<Tree:Box id="tree" treeType="menu" baseurl="framework/tree/"><div class="loading"></div></Tree:Box>
+		  </td>
+		</tr>
+	  </table>                        
+	  <!-- 左栏 结束 -->
+	</td>
+	<td>
+	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+		<tr class="tf" height="20">
+		  <td class="b label" id="gridTitle" align="right"><span id="gridToolBar"></span></td>
+		</tr>
+		<tr>
+		  <td>
+			<Grid:Box id="reportGrid" baseurl="framework/grid/" contextmenu="false" ><div class="loading"></div></Grid:Box>
+		  </td>
+		</tr>
+	  </table>
+	</td>
+  </tr>
+</table></td>
+
+</body>
+</html>

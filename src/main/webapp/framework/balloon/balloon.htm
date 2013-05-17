@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title> test 提示气球 </title>
+
+<link rel="stylesheet" type="text/css" media="all" href="balloon.css" />
+<style>
+	body {
+		background-color:#CCCCCC;
+	}
+</style>
+
+<script language="javascript" src="../core.js"></script>
+<script language="javascript" src="../framework.js"></script>
+<script language="javascript" src="balloon.js"></script>
+
+<script language="javascript">
+<!--
+
+URL_CORE = "../";
+
+    function test(obj){
+        var balloon = Balloons.create("["+new Date().toString()+"]<br/>测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试");
+				var x = 500*Math.random();
+				var y = 500*Math.random();
+						//balloon.dockTo(x,y);
+						balloon.dockTo(obj);
+
+				document.getElementById("cross").style.left = x;
+				document.getElementById("cross").style.top = y;
+    }
+
+    function test2(){
+        Debug.print(document.body.innerHTML);
+    }
+//-->
+</script>
+</head>
+
+<body>
+<div id=cross style="position:absolute;border:1px solid red;width:2px;height:2px;overflow:hidden">&nbsp;</div>
+气球效果演示<br/><br/><br/><br/>
+<input type="button" value="新气球" onclick="test(this)"/>
+<input type="button" value="单个实例" onclick="Balloons.singleInstance=true"/>
+<input type="button" value="多个实例" onclick="Balloons.singleInstance=false"/>
+<input type="button" value="所有气球" onclick="alert(Balloons)"/>
+<input type="button" value="innerHTML" onclick="test2()"/>
+</body>
+</html>

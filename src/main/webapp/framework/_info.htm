@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<!-- 公共脚本 开始 -->
+<link href="css/css.css" rel="stylesheet" type="text/css">
+<link href="css/dialog.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="core.js"></script>
+<script language="javascript" src="framework.js"></script>
+<!-- 公共脚本 结束 -->
+
+<style>
+  #infoBox{
+      color:#666666;
+      line-height:18px;
+      word-break:break-all;
+      width:100%;
+      overflow:hidden;
+  }
+  #detailBox{
+      color:#666666;
+      line-height:18px;
+      word-break:break-all;
+      width:100%;
+      height:98px;
+      margin-top:5px;
+      padding-top:5px;
+      overflow:auto;
+      display:none;
+      border-left:0px;
+      border-bottom:0px;
+      border-right:0px;
+  }
+  #bt_showDetail{
+      color:#666666;
+      text-decoration:none;
+      text-align:center;
+      padding:3px;
+      display:none;
+      position:absolute;
+      right:-5px;
+      bottom:0px;
+      background-color:#FFFFFF;
+  }
+ .webdings{
+      font-family:webdings;
+      font-size:10px;
+      line-height:6px;
+      height:9px;
+      padding-right:3px;
+  }
+
+</style>
+<script language="javascript">
+<!--
+    var params;
+    var defaultDialogWidth;
+    var defaultDialogHeight;
+
+    window.onresize = function() {
+        resizeDetailBox();
+    }
+
+    window.onload = function() {
+				params = window.dialogArguments;
+				if(params == null) {
+						return;
+				}
+
+				defaultDialogWidth  = window.dialogWidth;
+				defaultDialogHeight = window.dialogHeight;
+
+				var tempContentHeight = document.body.scrollHeight;
+
+				var infoBox       = $("infoBox");
+				var detailBox     = $("detailBox");
+				var bt_showDetail = $("bt_showDetail");
+				var bt_cancel     = $("bt_cancel");
+				var bt_ok         = $("bt_ok");
+				var bt_copy       = $("bt_copy");
+
+				var gif;
+						switch(params.type) {
+								case "alert":
+						gif = "icon_alert.gif";
+															
+										bt_cancel.style.display = "none";
+										bt_yes.style.display    = "none";
+										bt_no.style.display     = "none";
+										break;
+								case "confirm":
+						gif = "icon_confirm.gif";
+
+										bt_yes.style.display = "none";
+										bt_no.style.display = "none";
+										break;
+								case "confirm2":
+						gif = "icon_confirm.gif";
+
+						bt_ok.style.display = "none";
+										break;
+						}
+
+				if(params.detail != "") {
+					detailBox.value = params.detail;
+					bt_showDetail.style.display = "block";
+				}
+
+				bt_ok.focus(); 
+				bt_copy.style.display = "none";
+
+				infoBox.innerText = params.info.replace(/[\r\n]/g,"");
+				infoBox.insertAdjacentHTML("afterBegin", "<img src='images/" + gif + "' hspace='5' align='left'>");
+
+				var tempHeightDelta = document.body.scrollHeight - tempContentHeight;
+				window.dialogHeight = (parseInt(defaultDialogHeight) + tempHeightDelta + 10) + "px";
+				defaultDialogHeight = window.dialogHeight;
+		}
+
+    function showDetail() {
+        if(params == null) {
+            return;
+        }
+
+        var infoBox = $("infoBox");
+        var detailBox = $("detailBox");
+        var bt_showDetail = $("bt_showDetail");
+        var bt_cancel = $("bt_cancel");
+        var bt_ok = $("bt_ok");
+        var bt_copy = $("bt_copy");
+
+        bt_ok.focus();
+
+        if(bt_showDetail._state != "false") {
+            detailBox.style.display = "block";
+            bt_copy.style.display = "";
+            window.dialogWidth  = "480px";
+            window.dialogHeight = "360px";
+
+            resizeDetailBox();
+
+            bt_showDetail._state = "false";
+            bt_showDetail.innerHTML = "<span class=\"webdings\">6</span>隐藏详情...";
+            bt_showDetail.style.top = (infoBox.offsetHeight - 15) + "px";
+        } 
+				else {
+            detailBox.style.display = "none";
+            bt_copy.style.display = "none";
+            window.dialogWidth = defaultDialogWidth;
+            window.dialogHeight = defaultDialogHeight;
+
+            bt_showDetail._state = "true";
+            bt_showDetail.innerHTML = "<span class=\"webdings\">4</span>显示详情...";
+            bt_showDetail.style.top = "";
+        }
+				bt_showDetail.style.bottom = "";
+    }
+
+    function resizeDetailBox() {	
+        var infoBox   = $("infoBox");
+        var detailBox = $("detailBox");
+
+				// 当前网页高度 - 65 - infoBox的高度
+        detailBox.style.height = Math.max(1, document.body.offsetHeight - 65 - infoBox.offsetHeight);  
+    }
+
+    function ok() {
+        window.returnValue = true;
+        window.close();
+    }
+
+    function cancel() {
+        window.returnValue = false;
+        window.close();
+    }
+
+    function copy() {
+        var detailBox = $("detailBox");
+        window.clipboardData.setData("text", detailBox.value);
+    }
+
+		function yes() {
+			window.returnValue = 1;
+			window.close();
+		}
+
+		function no() {
+			window.returnValue = -1;
+			window.close();
+		}
+
+    Event.attachEvent(document, "keydown", function(eventObj) {
+        if(27 == eventObj.keyCode) { // ESC 退出
+            window.close();
+        }
+    });
+
+//-->
+</script>
+</head>
+<body>
+<div class="mainBox">
+  <table class="full" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed">
+    <tr>
+      <td valign=top style="position:relative">
+        <div id="infoBox"></div>
+        <textarea id="detailBox" class="t" readOnly></textarea>
+        <a id="bt_showDetail" onclick="showDetail()" hideFocus="true" href="#"><span class="webdings">4</span>显示详情...</a>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" height="30" class="t">
+        <input type="button" id="bt_copy"   value="复 制" class="btWeak"   onclick="copy()">
+		<input type="button" id="bt_cancel" value="取 消" class="btWeak"   onclick="cancel()">
+		<input type="button" id="bt_ok"     value="确 定" class="btStrong" onclick="ok()">
+		<input type="button" id="bt_yes"    value="是"    class="btStrong" onclick="yes()">
+		<input type="button" id="bt_no"     value="否"    class="btStrong" onclick="no()">
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

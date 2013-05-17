@@ -1,0 +1,212 @@
+XForm控件说明
+
+标签名：XFORM:FORM 页面必须在<HTML>上加命名空间，示例：<HTML XMLNS:XFORM>
+
+	1、形式：
+	<xml id=node>
+		xml定义规范中的操作节点。
+	</xml>
+	<XFORM:FORM data="node" datapath="/query" id="nodeForm" style="behavior:url(/public/htc/XForm/XForm.htc)"  
+               baseurl="/public/htc/XForm/" editable="false" ondatachange="onChange()" onreset="onReset()"/>
+
+.	2、属性说明：
+	说明：不特别说明的为必有属性，不能缺省。
+
+	属性名				说明	
+	------------------------------------------------------------------------
+	data				指定XML源
+						datatype为island时必须是数据岛ID名;
+						datatype为url时必须是可访问地址url;
+						datatype为node时必须是XML节点对象(此方式不可用HTML方式指定);
+	------------------------------------------------------------------------
+	datapath			指定XForm展示节点所处位置，declare的父节点（操作节点）在XML源中的位置
+	------------------------------------------------------------------------
+	datatype			指定XML来源的方式
+					可能的值
+					island	: 默认，表示从数据岛获取
+					url	: 表示从地址获取
+					node	: 表示从XML节点对象获取
+	------------------------------------------------------------------------
+	baseurl				指定XSLT、htc等控件文件的所在文件夹路径
+	------------------------------------------------------------------------
+	actionbaseurl	（可选）		制定contextPath，没有定义的话，模板中需要完整的路径，否则只要contextPath
+					路径的后面部分此控件自动会将此属性值和模板中设定的action路径相加，作为Form的
+					最终action路径。
+	------------------------------------------------------------------------
+	editable	（可选）		是否可以修改数据和递交表单
+						可能的值（默认为true）
+						true	: 可以修改数据（XML源中定义不可修改的出外），显示表单递交按钮等 
+						false	: 不可以修改数据，隐藏表单递交按钮等
+	------------------------------------------------------------------------
+	target		（可选）		控制页面递交返回的窗口（默认为_self）
+	------------------------------------------------------------------------
+	caption		（可选）		添加表格的标题行文字。如果定义了该属性值:添加标题行，显示标题文字；不定义该属性:不添加标题行。
+	------------------------------------------------------------------------
+	submitDataXMLString		（可选）		控制表单提交的XML内容是整个绑定的节点部分还是仅仅data子节点部分
+	------------------------------------------------------------------------
+	ondatachange	（可选）		数据更改后调用此属性定义的Script语句
+					event.result.srcElement		改变对象
+					event.result.name		对象名
+					event.result.oldValue		原值
+					event.result.newValue		新值
+	------------------------------------------------------------------------
+	onreset		（可选）		点击“重置”按钮后调用此属性定义的Script语句
+	------------------------------------------------------------------------
+	onload		（可选）		载入完成后调用此属性定义的Script语句
+	------------------------------------------------------------------------
+	onloadPriority	（可选）		当控件和模板中declare节点上都定义onload事件时，是否同时触发，还是优先执行其中一个。
+					值域：true/false	 默认：true
+					true：	先执行控件属性上定义的onload事件，然后执行declare上定义的onload事件。
+					false：	只执行declare上定义的onload事件。
+	------------------------------------------------------------------------
+	ondatachangePriority	（可选）		当控件和模板中declare节点上都定义ondatachange事件时，是否同时触发，还是优先执行其中一个。
+					值域：true/false	 默认：true
+					true：	先执行控件属性上定义的ondatachange事件，然后执行declare上定义的ondatachange事件。
+					false：	只执行declare上定义的ondatachange事件。
+	------------------------------------------------------------------------
+
+提供的方法：
+	1、setEditable(boolean)
+		＃页面动态改变 XForm 可否编辑的状态
+		＃参数：boolean：	"true"	XForm可编辑
+				"false"	XForm不可编辑
+		＃返回值：无。
+
+	2、numberToString(number,pattern)
+		＃格式化数据，返回格式化好的数据
+		＃参数：	number：	 	数据
+			pattern:	格式化规则
+		＃返回值：格式化后的字符串
+
+	3、stringToNumber(str)
+		＃将数据还原成格式化前的数据
+		＃参数：	str：		被格式化的数据
+		＃返回值：格式化前的number型数值
+
+	4、regInput(obj, reg, inputStr)
+		＃检测内容合法性
+		＃参数：	obj：		对象名称
+			inputStr： 	数据
+			reg：	格式化规则
+		＃返回值：true/false	true	数据合法
+					false	数据不合法
+	5、updateDataExternal(name,value)
+		＃修改数据，此函数同时修改页面显示值和xml中的值（isConst＝true时，此函数将提示出错。此时如需修改，请使用updateData(name,value)函数）
+		＃参数：	name：		数据名称（模板中data/tr节点下的属性名）
+			value： 		数据值，如果是money类型的column，必须传入一个money对象而不是数值或字符串
+		＃返回值：无
+	6、updateUnbindingDataExternal(id,value)
+		＃修改layout节点中未绑定数据的对象的数据
+		＃参数：	id：		对象id（模板中layout节点下的未绑定数据的对象的id）
+			value： 		数据值
+		＃返回值：无
+
+	7、getData(name)
+		＃获取数据
+		＃参数：	name：		数据名称（模板中data/tr节点下的属性名）
+		＃返回值：相应属性的属性值
+
+	8、reload()
+		＃修改XML源后，刷新界面显示更新后的数据
+		＃参数：	无
+		＃返回值：无
+
+	9、checkForm()
+		＃递交表单前初始化表单，但不递交表单
+		＃参数：	无
+		＃返回值：无
+
+	10、resetForm()
+		＃重置初始值，类似表单的reset按钮。
+		＃参数：	无
+		＃返回值：无
+
+	11、submit()
+		＃递交表单，等同与submit按钮。
+		＃参数：	无
+		＃返回值：无
+
+	12、getDataXMLString(string:mode)
+		＃获取data节点内容字符串
+		＃参数：	"data"或者"all"，不设置时默认是"all"，表示输出xform绑定的整个节点；"data"表示只输出data子节点的内容
+		＃返回值：xml字符串
+
+	13、setCaption(string:caption)
+		＃设置xform的标题栏文字
+		＃参数：	caption		标题栏文字内容
+		＃返回值：无
+
+	14、saveasDefaultValue()
+		＃将xform当前各个项的值设置为默认值，以便再次修改表单后resetForm方法能恢复到本次操作执行前的状态
+		＃参数：无
+		＃返回值：无
+
+	14、setFocus(string:name)
+		＃将指定字段对应控件聚焦
+		＃参数：name		字段名，必须是column定义的
+		＃返回值：无
+
+	15、moneyToString(money)
+		＃格式化数据，返回格式化好的字符串
+		＃参数：	money：	 	Money对象实例
+			pattern:	格式化规则
+		＃返回值：格式化后的字符串
+
+	16、stringToMoney(str)
+		＃将数据还原成格式化前的数据
+		＃参数：	str：		被格式化的数据
+		＃返回值：Money对象实例
+
+	17、dateToString(date,pattern)
+		＃格式化数据，返回格式化好的数据
+		＃参数：	date:	 	date对象
+			pattern:	格式化规则
+		＃返回值：格式化后的数据
+
+	18、stringToDate(str)
+		＃将数据还原成格式化前的数据
+		＃参数：	str:		被格式化的数据
+		＃返回值：date对象
+
+	19、setColumnEditable(string:name,string:editable)
+		＃设置单列的可编辑状态
+		＃参数：	name:		列名
+			editable:	"true"可编辑，"false"不可编辑
+		＃返回值：无
+
+	20、showCustomErrorInfo(string:name,string:str)
+		＃显示错误信息
+		＃参数：	name:		列名
+			str:		显示的错误信息内容
+		＃返回值：无
+
+	21、getColumnAttribute(string:name,string:attrName)
+		＃获取指定列的属性值
+		＃参数：	name:		列名
+				attrName:	要获取的属性名
+		＃返回值：属性值,string
+
+	22、setLabelContent(string:name,string:content)
+		＃设置指定column对应的名称文字的内容，可以是包含html标签的
+		＃参数：	name:		列名
+				content:	html内容
+		＃返回值：无
+
+	23、getXmlDocument()
+		＃获取控件所使用的数据岛节点
+		＃参数：无
+		＃返回值：xml节点
+
+	24、load()
+		＃从指定数据源加载数据
+		＃参数：	data:		数据源，datatype=island时为数据岛id，datatype=url时为数据源地址，datatype=node时为XML节点对象
+				datapath:	xpath，当datatype为island/url时有效
+				datatype:	数据源类型(island/url/node)，默认island
+		＃返回值：xml节点
+		
+
+
+
+
+XForm递交返回结果：
+	1、xml = "用于展示XForm的数据源格式，数据为修改后的内容";

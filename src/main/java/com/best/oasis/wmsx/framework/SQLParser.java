@@ -39,7 +39,7 @@ public class SQLParser {
         SQLParser parser = new SQLParser(sql);
         
         StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><grid><declare sequence=\"true\">");
+        sb.append("<grid><declare sequence=\"true\">");
         
         sql = sql.trim();
         int selectIndex = sql.indexOf("select ");

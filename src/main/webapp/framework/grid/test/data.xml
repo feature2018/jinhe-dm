@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<SourceList>
+        <grid>
+            <declare sequence="true" header="checkbox">
+                <column caption="头像" name="icon" mode="image" align="center"/>
+                <column caption="用户ID" name="id" mode="string" display="none"/>
+                <column caption="用户名" name="loginName" mode="string" align="center" sortable="true" highlightCol="true"/>
+                <column caption="用户状态" name="accountState" mode="string" align="center" editor="comboedit" editorvalue="0|1" editortext="停用|启用"/>
+                <column caption="姓名" name="userName" mode="string" align="center"/>
+                <column caption="性别" name="sex" mode="string" align="center" editor="comboedit" editorvalue="0|1" editortext="女|男"/>
+                <column caption="出生年月" name="birthday" mode="string" align="center" pattern="yyyy-MM-dd" classType="Date"/>
+                <column caption="电子邮件" name="mail" mode="string" align="center"/>
+                <column caption="电话" name="telephone" mode="string" align="center"/>
+                <column caption="所在组名称" name="groupName" mode="string" align="center"/>
+                <column caption="所在组ID" name="groupId" mode="string" align="center" display="none"/>
+                <column caption="是否在职" name="sfzh" mode="boolean" align="center"/>
+            </declare>
+            <data>
+		        <row icon="../../images/icon/user.gif" id="9296" loginName="qiugq" accountState="1" userName="裘国强" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="0">
+                </row>
+                <row icon="../../images/icon/user.gif" id="9494" loginName="zhangyichun" accountState="1" userName="章以纯" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="1">
+                </row>
+                <row icon="../../images/icon/user_2.gif" id="9720" loginName="xu_d" accountState="0" userName="许丹" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="2">
+                </row>
+                <row icon="../../images/icon/user.gif" id="9840" loginName="jie_zhang" accountState="1" userName="张捷" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="3">
+                </row>
+                <row icon="../../images/icon/user.gif" id="9918" loginName="dingl" accountState="1" userName="丁雷" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="false" _depth="1" _index="4">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10018" loginName="zhuhui" accountState="1" userName="朱慧" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="5">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10114" loginName="ying.wang" accountState="1" userName="王颖" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="6">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10186" loginName="shen.ling" accountState="1" userName="沈玲" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="7">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10266" loginName="xu_jg" accountState="1" userName="徐建国" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="false" _depth="1" _index="8">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10322" loginName="he_wy" accountState="1" userName="何文英" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="false" _depth="1" _index="9">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10370" loginName="我" accountState="1" userName="陆素萍" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="false" _depth="1" _index="10">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10430" loginName="dongyb" accountState="1" userName="董亚波" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="false" _depth="1" _index="11">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10492" loginName="douxp" accountState="1" userName="窦献平" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="12">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10552" loginName="wxl" accountState="1" userName="王雪莲" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="13">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10614" loginName="whdz" accountState="1" userName="王泓" sex="1" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="14">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10656" loginName="lxu" accountState="1" userName="徐丽" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="15">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10688" loginName="chen_xiaoyan" accountState="1" userName="陈筱燕" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="16">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10756" loginName="lxm" accountState="1" userName="刘晓梅" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="17">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10794" loginName="mh" accountState="1" userName="茅慧" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="18">
+                </row>
+                <row icon="../../images/icon/user.gif" id="10834" loginName="金贝贝" accountState="1" userName="金贝贝" sex="0" birthday="1983-05-12" mail="jinpujun@163.com" telephone="88819585" groupName="会计结算部" groupId="8988" sfzh="true" _depth="1" _index="19">
+                </row>
+            </data>
+		</grid>
+	</SourceList>
+	<PageList>
+        <pagelist totalpages="10" totalrecords="999" currentpage="3" pagesize="100"/>
+	</PageList>
+</Response>

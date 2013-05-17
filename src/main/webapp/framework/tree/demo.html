@@ -1,0 +1,48 @@
+<HTML xmlns:Tree>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>它山石--test Tree</title>
+
+<link href="tree.css" rel="stylesheet" type="text/css">
+<link href="../balloon/balloon.css" rel="stylesheet" type="text/css">
+
+<script language="javascript" src="../core.js"></script>
+<script language="javascript" src="../ajax.js"></script>
+<script language="javascript" src="../framework.js"></script>
+<script language="javascript" src="../balloon/balloon.js"></script>
+
+<script language="javascript" src="tree.js"></script>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+/* 核心包相对路径 */
+URL_CORE = "../";
+
+
+var tree;
+
+function init() {
+		var p = new HttpRequestParams();
+		p.url = "test/data.xml";
+
+		var request = new HttpRequest(p);
+		request.onresult = function() {
+				var treeNode = this.getNodeValue("ParamTree");
+				tree = initTree($("tree"), treeNode.toXml());	 
+		}
+		request.send();
+}
+
+window.onload = init;
+   
+//-->
+</SCRIPT>
+</head>
+
+<body>
+
+	<Tree:Box id="tree" treeType="menu" baseurl="" canMoveNode="true" height=600><div class="loading"></div></Tree:Box>
+ 
+</body>
+</html>

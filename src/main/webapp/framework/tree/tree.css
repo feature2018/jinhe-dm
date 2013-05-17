@@ -1,0 +1,121 @@
+Tree\:Box{
+	width: 100%;
+	height: 100%;
+	font-family: "宋体";
+}
+Tree\:Box a{
+	color: #111;
+	font-size: 12px;
+	text-decoration: none;
+	height: 16px;
+	width: 1px;
+	line-height:12px;
+	padding: 2 5 0 5;
+	position: relative;
+	left: -2px;
+	border: 1px solid #FFF;
+	cursor:default;
+}
+Tree\:Box a:active, Tree\:Box a:visited{
+	color: #111;
+}
+Tree\:Box a.hover{
+	background-color: #E4E6F5;
+	border: 1px solid #FFFFFF;
+	color: #000;
+}
+Tree\:Box a.finded, Tree\:Box a.finded:active, Tree\:Box a.finded:visited {
+	background-color:#FFFF99;
+	border:1px solid #FFFF99;
+	color:#000;
+}
+Tree\:Box a.moved, Tree\:Box a.moved:active, Tree\:Box a.moved:visited {
+	background-color: HighLight;
+	color: HighLightText;
+}
+Tree\:Box a.selected {
+	border: 1px solid #FEF7A9 !important;
+	background-color: #FEF7A9;
+	color: #000000;
+}
+Tree\:Box table {
+	width: 100%;
+	border: 0px solid #A4B9D7;
+	margin: 2 5 0 0;
+	border-collapse: collapse;
+}
+Tree\:Box td {
+	border-width: 0px;
+	line-height: 16px;
+	padding: 0 2 0 2;
+}
+Tree\:Box tr.selected td{
+	background-color: #FEF7A9;
+}
+Tree\:Box nobr{
+	color: #7F92C5;
+	margin: 0px;
+	padding: 0px;
+}
+Tree\:Box img.checkType{
+	position: relative;
+	left: 1px;
+	cursor: hand;
+}
+Tree\:Box img.folder{
+	position: relative;
+	left: -2px;
+}
+Tree\:Box span.vLine{
+	position: relative;
+	left: 12px;
+	width: 8px;
+	top: 0px;
+	margin-right: 14px;
+	height: 20px;
+	background-image: url(images/bg_vline.gif);
+	background-repeat: repeat-y;
+	background-position: right;
+}
+Tree\:Box span.vHalfLine{
+	position: relative;
+	left: 12px;
+	width: 8px;
+	top: -9px;
+	margin-right: 14px;
+	height: 20px;
+	background-image: url(images/bg_vline_half.gif);
+	background-repeat: repeat-y;
+	background-position: right;
+}
+Tree\:Box span.onlyVLine{
+	position: relative;
+	left: 17px;
+	top: 1px;
+	width: 16px;
+	height: 20px;
+	background-image: url(images/bg_vline.gif);
+	background-repeat: repeat-y;
+	background-position: -3 0;
+}
+Tree\:Box span.rootSpace{
+	z-index: 2;
+	position: relative;
+	width: 13px;
+	height: 20px;
+	margin-right: -11px;
+	background-color: transparent;
+}
+Tree\:Box span.space{
+	position: relative;
+	left: 17px;
+	top: -6px;
+	width: 20px;
+	height: 10px;
+    margin-left:-4px;
+    line-height:10px;
+}
+Tree\:Box .icon {
+	margin-left: 3px;
+	margin-right: 3px;
+}

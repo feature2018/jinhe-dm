@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<CacheManage>
+		<actionSet>
+            <cacheItem id="1" name="主题1"/>
+            <cacheItem id="2" name="主题2"/>
+            <cacheItem id="3" name="主题3"/>
+            <cacheItem id="4" name="主题4"/>
+            <cacheItem id="5" name="主题5"/>
+		</actionSet>
+	</CacheManage>
+</Response>

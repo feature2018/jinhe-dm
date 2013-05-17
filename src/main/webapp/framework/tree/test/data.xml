@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<Operation>p1,p2</Operation>
+    <ParamTree>
+        <actionSet title="">
+            <treeNode name="全部" id="_rootId" _open="true">
+                <treeNode type="0" parentId="0" isGroup="1" icon="test/param_group.gif" disabled="0" readOnly="0" name="系统参数" id="-1" _open="true">
+                    <treeNode type="1" decode="0000100001" parentId="-1" icon="test/param.gif" disabled="0" levelNo="2" name="PAGESIZE" id="3"/>
+                    <treeNode type="1" decode="0000100002" parentId="-1" icon="test/param.gif" disabled="0" levelNo="2" name="LOGLevel" id="1"/>
+                    <treeNode type="1" decode="0000100003" parentId="-1" icon="test/param.gif" disabled="0" levelNo="2" name="XXXXXX" id="2"/>
+                </treeNode>
+                <treeNode type="0" parentId="0" isGroup="1" icon="test/param_group.gif" disabled="0" readOnly="0" name="应用配置" id="-2" _open="true">
+                    <treeNode type="1" decode="0000200001" parentId="-2" icon="test/param.gif" disabled="0" levelNo="2" name="CMS" id="4"/>
+                    <treeNode type="1" decode="0000200002" parentId="-2" icon="test/param.gif" disabled="0" levelNo="2" name="PMS" id="5"/>
+                    <treeNode type="1" decode="0000200003" parentId="-2" icon="test/param.gif" disabled="0" levelNo="2" name="UMS" id="6"/>
+                </treeNode>
+				<treeNode type="0" parentId="0" isGroup="1" icon="test/param_group.gif" disabled="0" readOnly="0" name="用户组" id="-3" _open="true">
+                    <treeNode type="1" decode="0000300006" parentId="-3" icon="test/param.gif" disabled="0" levelNo="2" name="子组1" id="7"/>
+                    <treeNode type="1" decode="0000300012" parentId="-3" icon="test/param.gif" disabled="0" levelNo="2" name="子组2" id="8">
+						<treeNode type="1" decode="000030001200001" parentId="8" icon="test/param.gif" disabled="0" levelNo="2" name="子组2-1" id="10"/>
+					</treeNode>
+                    <treeNode type="1" decode="0000300018" parentId="-3" icon="test/param.gif" disabled="0" levelNo="2" name="子组3" id="9"/>
+                </treeNode>
+            </treeNode>
+        </actionSet>
+    </ParamTree>
+</Response>

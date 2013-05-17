@@ -1,0 +1,69 @@
+<HTML xmlns:Grid>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>它山石--test Tree</title>
+
+<link href="grid.css" rel="stylesheet" type="text/css">
+<link href="../balloon/balloon.css" rel="stylesheet" type="text/css">
+<link href="../css/css.css" rel="stylesheet" type="text/css">
+
+<script language="javascript" src="../core.js"></script>
+<script language="javascript" src="../ajax.js"></script>
+<script language="javascript" src="../framework.js"></script>
+<script language="javascript" src="../balloon/balloon.js"></script>
+
+<script language="javascript" src="grid.js"></script>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+ 
+ /* 核心包相对路径 */
+URL_CORE = "../";
+
+    function init() {
+        var p = new HttpRequestParams();
+        p.url = "test/data.xml";
+
+        var request = new HttpRequest(p);
+        request.onresult = function() {
+					var gridData = this.getNodeValue("SourceList");
+					var grid = $G("grid", gridData);       
+
+					var gridPage = this.getNodeValue("PageList");
+					createGridToolBar(gridPage);
+        }
+        request.send();
+    }
+
+    function createGridToolBar(gridPage) {
+        var toolbarObj = $("gridToolBar");
+				initGridToolBar(toolbarObj, gridPage, function(page) {
+						alert("翻页")
+				});
+    }
+	
+	window.onload = init;
+   
+//-->
+</SCRIPT>
+</head>
+
+<body>
+
+<table class="full border" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+	<td id="gridTitle">
+	  <span class="icon"></span>用户列表
+	  <span class="buttonBox" id="gridToolBar"></span>
+	</td>
+  </tr>
+  <tr>
+	<td>
+	  <Grid:Box id="grid" baseurl="" onRightClickRow="alert('show right menu!');"><div class="loading"/></Grid:Box>
+	</td>
+  </tr>
+</table>
+										
+ 
+</body>
+</html>

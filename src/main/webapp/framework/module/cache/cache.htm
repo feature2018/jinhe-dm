@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>它山石--缓存管理</title>
+
+<link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/menu/menu.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/workspace/workspace.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/tree/tree.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/grid/grid.css" rel="stylesheet" type="text/css"></link>
+<link href="../../common/xform/xform.css" rel="stylesheet" type="text/css"></link>
+
+<script language="javascript" src="../../js/core.js"></script>
+<script language="javascript" src="../../js/ajax.js"></script>
+<script language="javascript" src="../../js/framework.js"></script>
+<script language="javascript" src="../../common/menu/menu.js"></script>
+<script language="javascript" src="../../common/balloon/balloon.js"></script>
+<script language="javascript" src="../../common/toolbar/toolbar.js"></script>
+<script language="javascript" src="../../common/workspace/workspace.js"></script>
+<script language="javascript" src="../../common/tree/tree.js"></script>
+<script language="javascript" src="../../common/grid/grid.js"></script>
+<script language="javascript" src="../../common/xform/xform.js"></script>
+
+<script language="javascript" src="cache.js"></script>
+
+</head>
+
+<body>
+  <div id="panelContainer">
+    <!-- 版面 开始 -->
+    <table class="panel"  border="0" cellpadding="0" cellspacing="0">
+      <tr class="header"> 
+        <td class="left"></td>
+        <td class="center"></td>
+        <td class="right"></td>
+      </tr>
+      <tr class="body"> 
+        <td class="left"></td>
+        <td class="center">
+          <!-- 版面内容 开始 -->
+          <table class="full" border="0" cellpadding="0" cellspacing="0">
+            <tr class="hidden"> 
+              <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td> 
+                      <!-- 主菜单 开始 -->
+                      <div id="navibar"><div class="loading"></div></div>
+                      <!-- 主菜单 结束 -->
+                    </td>
+                    <td width="150" align="right">&nbsp;</td>
+                  </tr>
+                </table></td>
+            </tr>
+            <tr class="hidden"> 
+              <td class="separator"></td>
+            </tr>
+            <tr> 
+              <td height="20"><!-- 工具条 开始 --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- 工具条 结束 --></td>
+            </tr>
+            <tr> 
+              <td valign="top">
+                <table class="full" border="0" cellpadding="0" cellspacing="0">
+                  <tr> 
+                    <td id="palette">
+                      <!-- 左栏 开始 -->
+                      <table class="full border" border="0" cellpadding="0" cellspacing="0">
+                        <tr id="treeTitle" class="bar"> 
+                          <td class="opened">
+                            <span class="icon"></span>缓存策略<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
+							<span class="button collapse" id="treeTitleBt"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td id="treeContainer">
+                            <!-- tree 开始 -->
+                            <Tree:Box id="tree" treeType="menu" baseurl="../../common/tree/"><div class="loading"></div></Tree:Box>
+                            <!-- tree 结束 -->
+                          </td>
+                        </tr>
+                        <tr id="statusTitle" class="bar">
+                          <td class="opened">
+                            <span class="icon"></span>状态信息<span class="button collapse" id="statusTitleBt"></span>
+                          </td>
+                        </tr>
+                        <tr style="display:none">
+                          <td id="statusContainer"></td>
+                        </tr>
+                      </table>                        
+                      <!-- 左栏 结束 -->
+                    </td>
+                    <td>
+                      <table class="full" border="0" cellpadding="0" cellspacing="0">
+                        <tr> 
+                          <td class="location"><span class="icon" id="paletteBt"></span>您当前所在的位置:<span class="locationInfo"></span></td>
+                        </tr>
+                        <tr valign="top">
+                          <!-- 主内容区域 开始 -->
+                          <td class="groove">
+                            <div class="groove">
+                              <table class="full" border="0" cellspacing="2" cellpadding="0">
+                                <tr>
+                                  <td>
+                                    <!-- 标签区域 开始 -->
+                                    <WorkSpace:Box id="ws" baseurl="../../common/workspace/">
+                                      <!-- page1 开始 -->
+                                      <WorkSpace:Page id=page1 class="tight">
+                                        <table class="full" border="0" cellspacing="0" cellpadding="0">
+                                          <tr>
+                                            <td id="listContainer" class="r b" style="width:55%">
+                                              <table class="full" border="0" cellspacing="0" cellpadding="0">
+                                                <tr class="tf" height="20">
+                                                  <td class="b label" id="gridTitle" style="font-weight:normal">※缓存项
+                                                    <span id="page1HitRate" class="buttonBox" style="left:60px;top:4px;font-weight:bold;"></span>
+                                                    <span class="buttonBox" id="gridToolBar"></span></td>
+                                                </tr>
+                                                <tr>
+                                                  <td class="">
+                                                    <!-- grid 开始 -->
+                                                    <Grid:Box id="page1Grid" baseurl="../../common/grid/" contextmenu="false" ><div class="loading"></div></Grid:Box>
+                                                    <!-- grid 结束 -->
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                            <td class="" valign="top">
+                                              <div style="width:100%;height:100%;overflow:auto;padding:10px;">
+                                                <!-- xform 开始 -->
+                                                <XForm:Box id="page1Form" baseurl="../../common/xform/" editable="true"><div class="loading"></div></XForm:Box>
+                                                <!-- xform 结束 -->
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr height="20">
+                                            <td colspan="2">
+                                              <WorkSpace:PageStep>
+                                                <input type="button" class="btStrong" value="完成" id="page1BtSave"/>
+                                              </WorkSpace:PageStep>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </WorkSpace:Page>
+                                      <!-- page1 结束 -->
+                                    </WorkSpace:Box>
+                                    <!-- 标签区域 结束 -->
+                                  </td>
+                                </tr>
+                              </table>                                
+                            </div>
+                          </td>
+                          <!-- 主要内容区域 结束 -->
+                        </tr>
+                      </table></td>
+                  </tr>
+                </table></td>
+            </tr>
+          </table>            
+          <!-- 版面内容 结束 -->
+        </td>
+        <td class="right"></td>
+      </tr>
+      <tr class="footer"> 
+        <td class="left"></td>
+        <td class="center"></td>
+        <td class="right"></td>
+      </tr>
+    </table>
+    <!-- 版面 结束 -->
+  </div>
+
+</body>
+</html>

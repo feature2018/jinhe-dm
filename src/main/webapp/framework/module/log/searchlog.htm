@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:ToolBar xmlns:Grid2 xmlns:WorkSpace xmlns:Xform xmlns:Tree>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+
+<!-- 公共脚本 开始 -->
+<link href="../../../platform/css/css.css" rel="stylesheet" type="text/css">
+<link href="../../../platform/css/dialog.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="../../js/debug.js"></script>
+<script language="javascript" src="../../js/common.js"></script>
+<script language="javascript" src="../../js/event.js"></script>
+<script language="javascript" src="../../js/element.js"></script>
+<script language="javascript" src="../../js/xml.js"></script>
+<script language="javascript" src="../../js/xmlhttp.js"></script>
+<script language="javascript" src="../../js/public.js"></script>
+<!-- 公共脚本 结束 -->
+
+<!-- 气球 开始 -->
+<link href="../../js/balloon/balloon.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="../../js/balloon/balloon.js"></script>
+<!-- 气球 结束 -->
+
+<!-- 菜单 开始 -->
+<link href="../../js/menu/menu.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="../../js/menu/menu.js"></script>
+<!-- 菜单 结束 -->
+
+<!-- xform 开始 -->
+<link href="../../htc/xform1.2.3/xform.css" rel="stylesheet" type="text/css">
+<!-- xform 结束 -->
+
+<!-- 当前页相关脚本 开始 -->
+<style>
+  Xform\:Form{
+      behavior:url(../../htc/xform1.2.3/xform.htc);
+  }
+</style>
+<script language="javascript" src="js/searchlog.js"></script>
+<!-- 当前页相关脚本 结束 -->
+
+</head>
+
+<body>
+<div class="mainBox" id="mainBox">
+  <table class="full" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top">
+        <!-- xform 开始 -->
+        <Xform:Form id="searchForm" baseurl="../../htc/xform1.2.3/" editable="true" actionbaseurl=""><div class="loading"></div></Xform:Form>
+        <!-- xform 结束 -->
+      </td>
+    </tr>
+    <tr>
+      <td class="t" height="30" align="right">
+        <input type="button" value="关闭" class="btWeak" onclick="window.close()"/> <input type="button" value="确定" class="btStrong" onclick="getCondition()"/>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
