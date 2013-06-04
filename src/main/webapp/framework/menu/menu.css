@@ -5,7 +5,7 @@
 	padding:1px;
 	border:1px solid #666666;
 	background-color:#F9F8F7;
-	background-image:url(icons/menu_bg.gif);
+	background-image:url(../images/menu_bg.gif);
 	background-repeat:repeat-y;
 }
 .menu div {
@@ -14,7 +14,7 @@
 	font-size:12px;
 	line-height:12px;
 	width:104px;
-	height:18px;
+	height:22px;
 	overflow:hidden;
 	text-overflow:ellipsis;
 	position:relative;
@@ -45,13 +45,12 @@
 	left:auto;
 	right:0px;
 	top:1px;
-	background-image:url(icons/has_child.gif);
+	background-image:url(../images/has_child.gif);
 	background-position:left top;
 	background-repeat:no-repeat;
 }
 .menu div.active {
-	height:17px;
-	>height:22px;
+	height:22px;
 	padding:4px 0px 0px 29px;
 	border:1px solid #0A246A;
 	background-color:#B6BDD2;
@@ -64,7 +63,6 @@
 	left:auto;
 	top:0px;
 	right:0px;
-	>right:-1px;
 }
 .menu div.disable {
 	color:#A6A6A6;

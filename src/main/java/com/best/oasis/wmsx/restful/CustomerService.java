@@ -16,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 /**
  * application/xml
  * application/json
+ * 
+ * http://localhost:9000/wmsx/rs/customer/info
  */
 
 @Path("/customer")   

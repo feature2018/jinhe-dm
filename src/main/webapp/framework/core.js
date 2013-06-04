@@ -12,6 +12,12 @@ $ = function(id){
 	return document.getElementById(id);
 }
 
+var bind = function(object, fun) {
+	return function() {
+		return fun.apply(object, arguments);
+	}
+}
+
 /*
  * 判断值是否为null或空字符串
  */
@@ -27,13 +33,13 @@ function assertEquals(actual, expect, msg) {
 }
 
 function assertTrue(result, msg) {
-	if( !result && msg != null) {
+	if( !result && msg ) {
 		alert(msg);
 	}
 }
 
 function assertNotNull(result, msg) {
-	if( result == null && msg != null) {
+	if( result == null && msg ) {
 		alert(msg);
 	}
 }
@@ -132,14 +138,14 @@ Public.showWaitingLayer = function () {
 		document.body.appendChild(coverDiv);
 	}
 
-	if(waitingDiv != null) {
+	if(waitingDiv ) {
 		waitingDiv.style.display = "block";
 	}
 }
 
 Public.hideWaitingLayer = function() {
 	var waitingDiv = $("_waitingDiv");
-	if( waitingDiv != null ) {
+	if( waitingDiv  ) {
 		setTimeout( function() {
 			waitingDiv.style.display = "none";
 			$("coverDiv").style.display = "none";
@@ -150,7 +156,7 @@ Public.hideWaitingLayer = function() {
 Public.writeTitle = function() {
 	if(window.dialogArguments) {
 		var title = window.dialogArguments.title;
-		if( title != null ) {
+		if( title  ) {
 			document.write("<title>" + title + new Array(100).join("　") + "</title>");
 		}
 	}
@@ -442,7 +448,7 @@ function convertToString(value) {
 			str = value.toString();
 			break;
 		case _TYPE_OBJECT:
-			if(value.toString != null){
+			if(value.toString ){
 				str = value.toString();
 			} else {
 				str = "[object]";
@@ -481,6 +487,11 @@ function numberToString(number, pattern) {
 	return number.toString();
 }
 
+//去掉所有的html标记 
+function killHTML(str) {
+	return str.replace(/<[^>]+>/g, "");
+}
+
 /*********************************** 常用函数  end **********************************/
 
 /*********************************** html dom 操作 start **********************************/
@@ -492,7 +503,7 @@ Element.removeNode = function(node) {
 
 	if(window.DOMParser) {
 		var parentNode = node.parentNode;
-		if( parentNode != null ) {
+		if( parentNode  ) {
 			parentNode.removeChild(node);
 		}
 	}
@@ -509,7 +520,7 @@ Element.removeNode = function(node) {
 Element.absLeft = function(srcElement) {
 	var absLeft = 0;
 	var tempObj = srcElement;
-	while( tempObj != null && tempObj != document.body) {
+	while( tempObj  && tempObj != document.body) {
 		absLeft += tempObj.offsetLeft - tempObj.offsetParent.scrollLeft;
 		tempObj = tempObj.offsetParent;
 	}
@@ -518,7 +529,7 @@ Element.absLeft = function(srcElement) {
 Element.absTop = function(srcElement) {
 	var absTop = 0;
 	var tempObj = srcElement;
-	while( tempObj != null && tempObj != document.body) {
+	while( tempObj  && tempObj != document.body) {
 		absTop += tempObj.offsetTop - tempObj.offsetParent.scrollTop;
 		tempObj = tempObj.offsetParent;
 	}
@@ -597,7 +608,7 @@ Element.hideConflict = function(obj) {
 
 Element.showConflict = function(obj) {
 	// 气球有可能已经被其他途径释放掉了，obj被清空
-	if( typeof(obj) != "undefined" && obj.conflict != null ) {
+	if( typeof(obj) != "undefined" && obj.conflict  ) {
 		for( var i = 0; i < obj.conflict.length; i++ ) {
 			obj.conflict[i].style.visibility = "visible";
 		}
@@ -614,7 +625,7 @@ Element.write = function(obj, content) {
  */
 Element.createScript = function(script) {
 	var head = document.head || document.getElementsByTagName('head')[0];
-	if( head != null) {
+	if( head ) {
 		var scriptNode = Element.createElement("script");
 		scriptNode.text = script;
 		head.appendChild(scriptNode);
@@ -666,7 +677,7 @@ Element.contains = function(parentNode, node) {
 	}
 
 	if(window.DOMParser) {
-		while(node != null && node != document.body) {
+		while(node  && node != document.body) {
 			node = node.parentNode;
 			if(node == parentNode) {
 				return true;
@@ -703,33 +714,76 @@ Element.getCurrentStyle = function(obj, rule) {
 	}
 }
 
-
-Element.attachRowResize = function(obj, offsetX) {
-
+ 
+Element.hasClass = function(element, className) {
+	var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+	return element.className.match(reg);
 }
+
+/*
+ * 动态给js添加class属性。
+ * 如果已经包含该样式，则不再重复添加；如不存在，则添加该样式。
+ * 一个元素多个样式，样式之间用空格隔开。
+ */
+Element.addClass = function(element, className) {
+	if ( !Element.hasClass(element, className) ) {
+		element.className += " " + className;
+	}
+}
+
+Element.removeClass = function(element, className) {
+	if ( Element.hasClass(element, className) ) {
+		var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+		element.className = element.className.replace(reg, ' ');
+	}
+}
+
+
+
+
+
+/* 缓存页面所有的resize拖动条；元素拖动后可能引起了其他元素位置改变，需要刷新其他元素所对应的resize条位置 */
+Element.ruleObjList = [];
 
 /*
  * 控制对象拖动改变宽度
  * 参数：	Object:obj			要拖动改变宽度的HTML对象
  */
-Element.attachColResize = function(obj, offsetX) {
-	offsetX = 3 - (offsetX || 0);
-
-	// 计算对象实际的坐标值
-	obj._absTop  = this.absTop(obj);
-	obj._absLeft = this.absLeft(obj);
+Element.attachColResize = function(obj) {
+	var offsetX = 3;
 
 	// 添加resize条
 	var ruleObj = document.createElement("DIV");
-	ruleObj.id = "colRule";
-	ruleObj.style.cssText = "cursor:col-resize;width:" + offsetX + "px;height:" +　obj.offsetHeight 
-		+ ";top:" + obj._absTop + ";left:" + (obj._absLeft + obj.offsetWidth - offsetX) 
-		+ ";position:absolute;background-color:white;overflow:hidden;filter:alpha(opacity=0)";
+	ruleObj.style.cssText = "cursor:col-resize;position:absolute;overflow:hidden;";
 	document.body.appendChild(ruleObj);
+	setDivPosition(ruleObj, obj);
+
+	ruleObj.target = obj;
+	Element.ruleObjList.push(ruleObj);
+
+    // 计算resize条的坐标值
+	function setDivPosition(ruleElement, element) {
+		ruleElement.style.width = offsetX;
+		ruleElement.style.height = element.offsetHeight;
+		ruleElement.style.top  = Element.absTop(element);
+		ruleElement.style.left = Element.absLeft(element) + element.offsetWidth - offsetX;
+		ruleElement.style.backgroundColor = "white";
+		ruleElement.style.filter = "alpha(opacity=0)";		
+	}
+
+	// 刷新所有resize条的位置
+	function refreshResizeDivPosition() {
+		for(var i = 0; i < Element.ruleObjList.length; i++) {
+			var ruleElement = Element.ruleObjList[i];
+			setDivPosition(ruleElement, ruleElement.target);
+		}
+	}
+
+	obj.onresize = refreshResizeDivPosition;
 
 	var moveHandler = function() {
 		if(ruleObj._isMouseDown == true) {
-			ruleObj.style.left = Math.max(obj._absLeft, event.clientX - offsetX);
+			ruleObj.style.left = Math.max( Element.absLeft(obj), event.clientX - offsetX);
 
 			if (document.addEventListener) {             
 				document.addEventListener("mouseup", stopHandler, true);  
@@ -741,16 +795,13 @@ Element.attachColResize = function(obj, offsetX) {
 		ruleObj._isMouseDown = false;
 		obj.style.width = Math.max(1, obj.offsetWidth + event.clientX - ruleObj._fromX); 
 
-		ruleObj.style.backgroundColor = "white";
-		ruleObj.style.filter = "alpha(opacity=0)";
-
 		if (ruleObj.releaseCapture) {             
 			ruleObj.releaseCapture();         
 		} 
 		else {
 			document.removeEventListener("mousemove", moveHandler, true);
 			document.removeEventListener("mouseup", stopHandler, true);  
-		}	
+		}			
 	}
  
 	ruleObj.onmousedown = function() {
@@ -775,14 +826,12 @@ Element.attachColResize = function(obj, offsetX) {
 	};
 }
 
+Element.attachRowResize = function(obj) {
+
+}
+
 Element.attachResize = function(obj) {
-	// 添加水平方向拖拽的线，3px粗细
-	var rightLine = document.createElement("DIV");
-	ruleObj.id = "rightLine";
-	ruleObj.style.cssText = "cursor:col-resize;width:" + offsetX + "px;height:" +　obj.offsetHeight 
-		+ ";top:" + obj._absTop + ";left:" + (obj._absLeft + obj.offsetWidth - offsetX) 
-		+ ";position:absolute;background-color:white;overflow:hidden;filter:alpha(opacity=0)";
-	document.body.appendChild(ruleObj);
+
 }
 
 
@@ -849,7 +898,7 @@ Event.cancel = function(eventObj) {
 
 /* 阻止事件向上冒泡 */
 Event.cancelBubble = function(eventObj) {
-	if(window.DOMParser) {
+	if( eventObj.stopPropagation ) {
 		eventObj.stopPropagation();
 	}
 	else {
@@ -866,24 +915,26 @@ Event.cancelBubble = function(eventObj) {
  */
 Event.attachEvent = function(srcElement, eventName, listener) {
 	if(null == srcElement || null == eventName || null == listener) {
-		alert("需要的参数为空，请检查");
-		return;
+		return alert("需要的参数为空，请检查");
 	}
 
-	if(window.DOMParser) {
+	if(srcElement.addEventListener) {
 		srcElement.addEventListener(eventName, listener, false);
 	}
-	else {
+	else if(srcElement.attachEvent) {
 		srcElement.attachEvent("on" + eventName, listener);
 	}
+	else {
+		srcElement['on' + type] = listener;
+	}
 }
+
 Event.detachEvent = function(srcElement, eventName, listener) {
 	if(null == srcElement || null == eventName || null == listener) {
-		alert("需要的参数为空，请检查");
-		return;
+		return alert("需要的参数为空，请检查");
 	}
 
-	if(window.DOMParser) {
+	if( srcElement.removeEventListener ) {
 		srcElement.removeEventListener(eventName, listener, false);
 	}
 	else {
@@ -1140,7 +1191,7 @@ XmlNode.prototype.removeAttribute = function(name) {
 
 XmlNode.prototype.getCDATA = function(name) {
 	var node = this.selectSingleNode(name + "/node()");
-	if(node != null) {
+	if(node ) {
 		return node.nodeValue.revertCDATA();
 	}
 }
@@ -1164,7 +1215,7 @@ XmlNode.prototype.setCDATA = function(name, value) {
 
 XmlNode.prototype.removeCDATA = function(name) {
 	var node = this.selectSingleNode(name);
-	if(node != null) {
+	if(node ) {
 		node.removeNode(true);
 	}
 }
@@ -1181,7 +1232,7 @@ XmlNode.prototype.cloneNode = function(deep) {
 
 XmlNode.prototype.getParent = function() {
 	var xmlNode = null;
-	if( this.node.parentNode != null ) {
+	if( this.node.parentNode  ) {
 		xmlNode = new XmlNode(this.node.parentNode);
 	}
 	return xmlNode;
@@ -1189,7 +1240,7 @@ XmlNode.prototype.getParent = function() {
 
 XmlNode.prototype.removeNode = function() {
 	var parentNode = this.node.parentNode;
-	if(parentNode != null) {
+	if(parentNode ) {
 		parentNode.removeChild(this.node);
 	}
 }
@@ -1210,7 +1261,7 @@ XmlNode.prototype.selectSingleNode = function(xpath) {
 	} 
 	else {
 		var node = this.node.selectSingleNode(xpath);
-		if(node != null) {
+		if(node ) {
 			xmlNode = new XmlNode(node);
 		}
 	}
@@ -1278,14 +1329,12 @@ XmlNode.prototype.getLastChild = function() {
 // 交换子节点
 XmlNode.prototype.replaceChild = function(newNode, oldNode) {
 	var oldParent = oldNode.getParent();
-	if(oldParent != null && oldParent.equals(this)) {
-		try
-		{
+	if(oldParent && oldParent.equals(this)) {
+		try { 
 			this.node.replaceChild(newNode.node, oldNode.node);
 		}
 		catch (e)
-		{
-		}
+		{ }
 	}
 }
 		
@@ -1293,7 +1342,7 @@ XmlNode.prototype.replaceChild = function(newNode, oldNode) {
 // 交换节点
 XmlNode.prototype.swapNode = function(xmlNode) {
 	var parentNode = this.getParent();
-	if(parentNode != null) {
+	if( parentNode ) {
 		parentNode.replaceChild(xmlNode, this);
 	}
 }
@@ -1303,7 +1352,7 @@ XmlNode.prototype.swapNode = function(xmlNode) {
  */
 XmlNode.prototype.getPrevSibling = function() {
 	var xmlNode = null;
-	if(null!=this.node.previousSibling) {
+	if( this.node.previousSibling ) {
 		xmlNode = new XmlNode(this.node.previousSibling);
 	}
 	return xmlNode;
@@ -1313,7 +1362,7 @@ XmlNode.prototype.getPrevSibling = function() {
  * 获取后一个兄弟节点
  */
 XmlNode.prototype.getNextSibling = function() {
-	if(this.node.nextSibling != null) {
+	if( this.node.nextSibling ) {
 		var node = new XmlNode(this.node.nextSibling);
 		return node;
 	}
@@ -1321,7 +1370,7 @@ XmlNode.prototype.getNextSibling = function() {
 }
 
 XmlNode.prototype.equals = function(xmlNode) {
-	return xmlNode != null && this.node == xmlNode.node;
+	return xmlNode && this.node == xmlNode.node;
 }
 
 XmlNode.prototype.toString = function() {
@@ -1414,6 +1463,10 @@ function attachReminder(id, xform) {
 	else {
 		Reminder.add(id);
 	}
+}
+
+function detachReminder(id) {
+	Reminder.del(id);
 }
 
 

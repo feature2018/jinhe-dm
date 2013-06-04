@@ -82,12 +82,7 @@
     background-color: #ACB5F2;
     border: 1px solid #6868B0;
   }
-  /* 整个圆角面板 */
-  #panelContainer{
-    padding-left: 4px;
-    padding-right: 4px;
-    background-color: #4858C7;
-  }
+
   .panel {
     width: 100%;
     height: 100%;
@@ -283,73 +278,7 @@
     border-top: 1px solid #D1D1D1;
     padding: 3px;
   }
-  /* grid列表容器 */
-  .gridContainer {
-    height: 250px;
-  }
-  /* grid列表标题栏 */
-  #gridTitle {
-    color: #0a1755;
-    font-size: 12px;
-    font-weight: bold;
-    height: 21px;
-    padding-left: 8px;
-    background-color: #BEC6EE;
-    border-bottom: 1px solid #96969E;
-    position: relative;
-    cursor:default;
-  }
-  #gridTitle .icon {
-    width: 8px;
-    height: 8px;
-    font-size: 1px;
-    background-image: url(../images/icon_opened.gif);
-    background-repeat: no-repeat;
-    background-position: center;
-    margin-right: 5px;
-  }
-  #gridTitle .buttonBox {
-    position: absolute;
-    top: 0px;
-    right:0px;
-  }
-  #gridTitle .button {
-    width: 16px;
-    height: 15px;
-    background-repeat: no-repeat;
-    background-position: center;
-    cursor: hand;
-    margin:0 2px;
-  }
-  #gridTitle .refresh {
-    background-image: url(../images/icon_refresh.gif);
-  }
-  #gridTitle .first {
-    background-image: url(../images/first.gif);
-  }
-  #gridTitle .prev {
-    background-image: url(../images/prev.gif);
-  }
-  #gridTitle .next {
-    background-image: url(../images/next.gif);
-  }
-  #gridTitle .last {
-    background-image: url(../images/last.gif);
-  }
-  #gridTitle select {
-    font-size:10px;
-    font-family:Verdana;
-    position:relative;
-    top:1px;
-  }
-  /* grid列表搜索栏 */
-  #gridSearch {
-    color: #0A1755;
-    font-size: 12px;
-    height: 24px;
-    background-color: #D1D7EF;
-    border-bottom: 1px solid #96969E;
-  }
+
   table.border {
     border: 1px solid #96969E;
   }
@@ -484,12 +413,7 @@
   .comboContainer Xform\:Form td {
     padding:5px;
   }
-  /* 日历容器 */
-  .calendar {
-    height:140px;
-    background-color: #FFFFFF;
-    border-bottom:1px solid #98989C;
-  }
+ 
   /* 登录界面 */
   .loginContainer {
     text-align:center;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<NaviInfo>
+		<Menus>
+            <MenuItem id="wmsx.1" name="业务报表" href="report.html"/>
+            <MenuItem id="wmsx.2" name="临时报表" href="temp_report.html"/>
+            <MenuItem id="wmsx.3" name="对外接口" href="webservice.html"/>
+            <MenuItem id="wmsx.4" name="性能监控" href="monitor.html"/>
+            <MenuItem id="wmsx.5" name="数据挖掘" href="data_mining.html"/>
+			
+			<MenuItem id="none" name="|"/>
+
+			<MenuItem id="wmsx.6" name="用户管理" href="user.html"/>
+			<MenuItem id="wmsx.7" name="角色管理" href="role.html"/>
+			<MenuItem id="wmsx.8" name="资源授权" href="resouces.html"/>
+
+		</Menus>
+	</NaviInfo>
+</Response>

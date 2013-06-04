@@ -121,7 +121,7 @@ ToolBar\:Separator {
 	width:0px;
 	height:18px;
 	border:0px;
-	background-image:url(separator.gif);
+	background-image:url(../images/separator.gif);
 	overflow:hidden;
 	margin-right:3px;
 	margin-bottom:3px;

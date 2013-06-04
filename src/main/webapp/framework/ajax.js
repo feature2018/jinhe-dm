@@ -23,7 +23,7 @@ _HTTP_RESPONSE_DATA_TYPE_SUCCESS = "success";
 _HTTP_RESPONSE_DATA_TYPE_DATA = "data";
 
 /* HTTP超时(1分钟) */
-_HTTP_TIMEOUT = 1*1000;
+_HTTP_TIMEOUT = 60*1000;
 
 /*
  *  XMLHTTP请求参数对象，负责配置XMLHTTP请求参数
@@ -36,31 +36,33 @@ function HttpRequestParams() {
 	this.header = {};
 }
 
+HttpRequestParams.prototype.setMethod = function(value) {
+	this.method = value;
+}
+
 /*
- *	函数说明：设置发送数据
- *	参数：  string:name 		数据字段名
-			string:value        数据内容
+ *	设置发送数据
  */
 HttpRequestParams.prototype.setContent = function(name, value) {
 	this.content[name] = value;
 }
 
 /*
- *	函数说明：设置xform专用格式发送数据
+ *	设置xform专用格式发送数据
  *	参数：	XmlNode:dataNode 	XmlNode实例，xform的data数据节点
 			string:prefix 	    提交字段前缀
  */
 HttpRequestParams.prototype.setXFormContent = function(dataNode, prefix) {
 	if(dataNode.nodeName != "data") return;
 
-	var rename = dataNode.getAttribute(name);
+	var rename = dataNode.getAttribute("name");
 	var nodes = dataNode.selectNodes("./row/*");
 	for(var i = 0; i < nodes.length; i++) {
 		var name = rename || nodes[i].nodeName; // 从data节点上获取保存名，如果没有则用原名
 		var value = nodes[i].text;
 		
 		// 前缀，xform declare节点上设置，以便于把值设置到action的bean对象里
-		if(null != prefix){
+		if( prefix ) {
 			name = prefix + "." + name;
 		}
 
@@ -69,24 +71,21 @@ HttpRequestParams.prototype.setXFormContent = function(dataNode, prefix) {
 }
 
 /*
- *	函数说明：清除制定名称的发送数据
- *	参数：	string:name 		数据字段名
+ *	清除制定名称的发送数据
  */
 HttpRequestParams.prototype.clearContent = function(name) {
 	delete this.content[name];
 }
 
 /*
- *	函数说明：清除所有发送数据
+ *	清除所有发送数据
  */
 HttpRequestParams.prototype.clearAllContent = function() {
 	this.content = {};
 }
 
 /*
- *	函数说明：设置请求头信息
- *	参数：	string:name 		头信息字段名
-			string:value        头信息内容
+ *	设置请求头信息
  */
 HttpRequestParams.prototype.setHeader = function(name, value) {
 	this.header[name] = value;
@@ -111,13 +110,21 @@ function HttpRequest(paramsInstance) {
 	this.value = "";
 
 	this.xmlhttp = new XmlHttp();
-	this.xmlReader  = new XmlReader();
+	this.xmlReader = new XmlReader();
 
 	this.params = paramsInstance;
 }
 
+HttpRequest.prototype.getParamValue = function(name) {
+	return this.params.content[name];
+}
+
+HttpRequest.prototype.setParamValue = function(name, value) {
+	this.params.content[name] = value;
+}
+
 /*
- *	函数说明：获取响应数据源代码
+ *	获取响应数据源代码
  *	参数：	
  *	返回值：string:result       响应数据源代码
  */
@@ -126,7 +133,7 @@ HttpRequest.prototype.getResponseText = function() {
 }
 
 /*
- *	函数说明：获取响应数据XML文档对象
+ *	获取响应数据XML文档对象
  *	参数：	
  *	返回值：XmlReader:xmlReader       XML文档对象
  */
@@ -135,7 +142,7 @@ HttpRequest.prototype.getResponseXml = function() {
 }
 
 /*
- *	函数说明：获取响应数据XML文档指定节点对象值
+ *	获取响应数据XML文档指定节点对象值
  *	参数：	string:name             指定节点名
  *	返回值：any:value               根据节点内容类型不同而定
  */
@@ -163,10 +170,10 @@ HttpRequest.prototype.getNodeValue = function(name) {
 				break;
 		}
 		
-		if(data != null) break;
+		if( data ) break;
 	}
 
-	if(data != null) {
+	if( data ) {
 		data = data.cloneNode(true); // 返回复制节点，以便清除整个原始文档
 		switch(data.nodeType) {
 			case _XML_NODE_TYPE_ELEMENT:
@@ -180,11 +187,9 @@ HttpRequest.prototype.getNodeValue = function(name) {
 }
 
 /*
- * 函数说明：发起XMLHTTP请求
+ * 发起XMLHTTP请求
  * 参数：boolean  是否等待其余请求完成再发送
- * 返回值：
  */
-
  HttpRequest.prototype.send = function(wait) {
 	 var oThis = this;
 
@@ -261,7 +266,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
  }
 
 /*
- *	函数说明：超时中断请求
+ *	超时中断请求
  */
 HttpRequest.prototype.setTimeout = function(noConfirm) {
 	var oThis = this;
@@ -280,14 +285,14 @@ HttpRequest.prototype.setTimeout = function(noConfirm) {
 }
 
 /*
- *	函数说明：清除超时
+ *	清除超时
  */
 HttpRequest.prototype.clearTimeout = function() {
 	clearTimeout(this.timeout);
 }
 
 /*
- *	函数说明：对发送数据进行封装，以XML格式发送
+ *	对发送数据进行封装，以XML格式发送
  */
 HttpRequest.prototype.packageContent = function() {
 	var contentXml = new XmlReader("<" + _XML_NODE_REQUEST_ROOT+"/>");
@@ -324,7 +329,7 @@ HttpRequest.prototype.packageContent = function() {
 }
 
 /*
- *	函数说明：设置自定义请求头信息
+ *	设置自定义请求头信息
  */
 HttpRequest.prototype.setCustomRequestHeader = function() {
 	this.xmlhttp.setRequestHeader("REQUEST-TYPE", "xmlhttp");
@@ -349,7 +354,7 @@ HttpRequest.prototype.setCustomRequestHeader = function() {
 }
 
 /*
- *	函数说明：加载数据完成，对结果进行处理
+ *	加载数据完成，对结果进行处理
  *	参数：	Object:response     该对象各属性值继承自xmlhttp对象
  */
 HttpRequest.prototype.onload = function(response) {
@@ -404,7 +409,7 @@ HttpRequest.prototype.ondata = HttpRequest.prototype.onresult = HttpRequest.prot
 }
 
 /*
- *	函数说明：终止XMLHTTP请求
+ *	终止XMLHTTP请求
  */
 HttpRequest.prototype.abort = function() {
 	if(null != this.xmlhttp) {
@@ -413,7 +418,7 @@ HttpRequest.prototype.abort = function() {
 }
 
 /*
- *	函数说明：执行回调函数
+ *	执行回调函数
  */
 HttpRequest.prototype.executeCallback = function() {
 	if( HttpRequests.getCount() == 0 && HttpRequests.callback != null ) {
@@ -592,7 +597,7 @@ var HttpRequests = {};
 HttpRequests.items = [];
 
 /*
- *	函数说明：终止所有请求连接
+ *	终止所有请求连接
  */
 HttpRequests.closeAll = function() {
 	for(var i = 0; i < this.items.length; i++) {
@@ -603,14 +608,14 @@ HttpRequests.closeAll = function() {
 }
 
 /*
- *	函数说明：加入一个请求连接
+ *	加入一个请求连接
  */
 HttpRequests.add = function(request) {
 	this.items[this.items.length] = request;
 }
 
 /*
- *	函数说明：去除一个请求连接
+ *	去除一个请求连接
  */
 HttpRequests.del = function(request) {
 	for(var i = 0; i < this.items.length; i++) {
@@ -622,14 +627,14 @@ HttpRequests.del = function(request) {
 }
 
 /*
- *	函数说明：统计当前连接数
+ *	统计当前连接数
  */
 HttpRequests.getCount = function() {
 	return this.items.length;
 }
 
 /*
- *	函数说明：等待当前请求全部结束
+ *	等待当前请求全部结束
  */
 HttpRequests.onFinishAll = function(callback) {
 	this.callback = callback;
@@ -639,12 +644,26 @@ HttpRequests.onFinishAll = function(callback) {
 /*
  *  对象名称：Ajax请求对象
  *  职责：再次封装，简化xmlhttp使用
+ * 
+	 Ajax({
+		url : url,
+		method : "GET",
+		headers : {},
+		contents : {}, 
+		onresult : function() { },
+		onexception : function() { },
+		onsuccess : function() { }
+	});
  */
 function Ajax() {
 	var arg = arguments[0];
 
 	var p = new HttpRequestParams();
 	p.url = arg.url;
+
+	if(arg.method) {
+		p.method = arg.method;
+	}
 
 	for(var item in arg.headers) {
 		p.setHeader(item, arg.headers[item]);
@@ -654,13 +673,13 @@ function Ajax() {
 	}
 
 	var request = new HttpRequest(p);
-	if(arg.onresult != null) {
+	if( arg.onresult ) {
 		request.onresult = arg.onresult;
 	}
-	if(arg.onexception != null) {
+	if( arg.onexception ) {
 		request.onexception = arg.onexception;
 	}
-	if(arg.onsuccess != null) {
+	if( arg.onsuccess ) {
 		request.onsuccess = arg.onsuccess;
 	}
 	request.send();

@@ -1,61 +1,91 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html xmlns:ToolBar xmlns:Grid2 xmlns:WorkSpace xmlns:Xform xmlns:Tree>
+<HTML xmlns:XForm>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>鏃ュ織鎼滅储</title>
 
-<!-- 公共脚本 开始 -->
-<link href="../../../platform/css/css.css" rel="stylesheet" type="text/css">
-<link href="../../../platform/css/dialog.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/debug.js"></script>
-<script language="javascript" src="../../js/common.js"></script>
-<script language="javascript" src="../../js/event.js"></script>
-<script language="javascript" src="../../js/element.js"></script>
-<script language="javascript" src="../../js/xml.js"></script>
-<script language="javascript" src="../../js/xmlhttp.js"></script>
-<script language="javascript" src="../../js/public.js"></script>
-<!-- 公共脚本 结束 -->
+<link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+<link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
 
-<!-- 气球 开始 -->
-<link href="../../js/balloon/balloon.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/balloon/balloon.js"></script>
-<!-- 气球 结束 -->
+<script language="javascript" src="../../core.js"></script>
+<script language="javascript" src="../../ajax.js"></script>
+<script language="javascript" src="../../framework.js"></script>
+<script language="javascript" src="../../balloon/balloon.js"></script>
+<script language="javascript" src="../../xform/xform.js"></script>
 
-<!-- 菜单 开始 -->
-<link href="../../js/menu/menu.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/menu/menu.js"></script>
-<!-- 菜单 结束 -->
+<SCRIPT type="text/javascript">
+<!--
+ 
+    URL_CORE = "../../";
 
-<!-- xform 开始 -->
-<link href="../../htc/xform1.2.3/xform.css" rel="stylesheet" type="text/css">
-<!-- xform 结束 -->
+    /* 鍚庡彴鍝嶅簲鏁版嵁鑺傜偣鍚嶇О  */
+    XML_MAIN_FORM = "SearchLog";
 
-<!-- 当前页相关脚本 开始 -->
-<style>
-  Xform\:Form{
-      behavior:url(../../htc/xform1.2.3/xform.htc);
-  }
-</style>
-<script language="javascript" src="js/searchlog.js"></script>
-<!-- 当前页相关脚本 结束 -->
+    /* 榛樿鍞竴缂栧彿鍚嶅墠缂�  */
+    CACHE_MAIN_FORM = "xform__id";
+ 
+    function init(){
+        loadInitData();
+    }
+ 
+    function loadInitData(){
+		Ajax({
+		url : "SearchXForm.xml",
+		method : "GET",
+		onresult : function() {
+			var searchLogFormXML = this.getNodeValue(XML_MAIN_FORM);
+
+			var row = searchLogFormXML.selectSingleNode("./data/row");
+			var args = window.dialogArguments;
+			for(var item in args){
+				if("title" != item) {
+					row.setCDATA(item, args[item]);
+				}
+			}
+
+			Cache.XmlDatas.add(XML_MAIN_FORM, searchLogFormXML);
+				$X("searchForm", searchLogFormXML);
+			}
+		});
+    }
+ 
+	// 鎼滅储淇℃伅
+    function getCondition(){
+        var condition = {};       
+        var searchLogFormXML = Cache.XmlDatas.get(XML_MAIN_FORM);
+        if( searchLogFormXML ) {
+            var dataNode = searchLogFormXML.selectSingleNode(".//data");
+            if(dataNode){
+                condition.prefix = searchLogFormXML.selectSingleNode("./declare").getAttribute("prefix");
+                condition.dataXml = dataNode.toXml();
+            }
+        }
+        window.returnValue = condition;
+        window.close();
+    }
+
+    window.onload = init;
+
+
+//-->
+</SCRIPT>
 
 </head>
 
 <body>
-<div class="mainBox" id="mainBox">
-  <table class="full" border="0" cellspacing="0" cellpadding="0">
+  <table class="full" border="1" cellspacing="3" cellpadding="6">
     <tr>
       <td valign="top">
-        <!-- xform 开始 -->
-        <Xform:Form id="searchForm" baseurl="../../htc/xform1.2.3/" editable="true" actionbaseurl=""><div class="loading"></div></Xform:Form>
-        <!-- xform 结束 -->
+		<XForm:Box id="searchForm" baseurl="../../xform/"><div class="loading"></div></XForm:Box>
       </td>
     </tr>
     <tr>
-      <td class="t" height="30" align="right">
-        <input type="button" value="关闭" class="btWeak" onclick="window.close()"/> <input type="button" value="确定" class="btStrong" onclick="getCondition()"/>
+      <td class="t" height="30" align="right">       
+		<input type="button" value="纭畾" class="btStrong" onclick="getCondition()"/>
+		<input type="button" value="鍏抽棴" class="btWeak" onclick="window.close()"/> 
       </td>
     </tr>
   </table>
-</div>
 </body>
 </html>

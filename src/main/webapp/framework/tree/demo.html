@@ -6,19 +6,24 @@
 <link href="tree.css" rel="stylesheet" type="text/css">
 <link href="../balloon/balloon.css" rel="stylesheet" type="text/css">
 
+
+
 <script language="javascript" src="../core.js"></script>
 <script language="javascript" src="../ajax.js"></script>
 <script language="javascript" src="../framework.js"></script>
 <script language="javascript" src="../balloon/balloon.js"></script>
 
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+URL_CORE = "../";
+   
+//-->
+</SCRIPT>
 <script language="javascript" src="tree.js"></script>
 
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-
-/* 核心包相对路径 */
-URL_CORE = "../";
-
 
 var tree;
 
@@ -28,8 +33,8 @@ function init() {
 
 		var request = new HttpRequest(p);
 		request.onresult = function() {
-				var treeNode = this.getNodeValue("ParamTree");
-				tree = initTree($("tree"), treeNode.toXml());	 
+				var treeData = this.getNodeValue("ParamTree");
+				var tree = $T("tree", treeData);	 
 		}
 		request.send();
 }

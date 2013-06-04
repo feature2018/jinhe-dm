@@ -1,234 +1,434 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html xmlns:ToolBar xmlns:Grid2 xmlns:WorkSpace xmlns:Xform xmlns:Tree>
+<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<title>”¶”√÷ß≥≈∆ΩÃ®</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Êó•ÂøóÊü•ËØ¢</title>
 
-<!-- π´π≤Ω≈±æ ø™ º -->
-<link href="../../../platform/css/css.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/debug.js"></script>
-<script language="javascript" src="../../js/common.js"></script>
-<script language="javascript" src="../../js/event.js"></script>
-<script language="javascript" src="../../js/element.js"></script>
-<script language="javascript" src="../../js/xml.js"></script>
-<script language="javascript" src="../../js/xmlhttp.js"></script>
-<script language="javascript" src="../../js/public.js"></script>
-<!-- π´π≤Ω≈±æ Ω· ¯ -->
+<link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
+<link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+<link href="../../toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
+<link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
+<link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
+<link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
+<link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
 
-<!-- ∆¯«Ú ø™ º -->
-<link href="../../js/balloon/balloon.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/balloon/balloon.js"></script>
-<!-- ∆¯«Ú Ω· ¯ -->
+<script language="javascript" src="../../core.js"></script>
+<script language="javascript" src="../../ajax.js"></script>
+<script language="javascript" src="../../framework.js"></script>
+<script language="javascript" src="../../menu/menu.js"></script>
+<script language="javascript" src="../../balloon/balloon.js"></script>
+<script language="javascript" src="../../toolbar/toolbar.js"></script>
+<script language="javascript" src="../../workspace/workspace.js"></script>
+<script language="javascript" src="../../tree/tree.js"></script>
+<script language="javascript" src="../../grid/grid.js"></script>
+<script language="javascript" src="../../xform/xform.js"></script>
 
-<!-- ≤Àµ• ø™ º -->
-<link href="../../js/menu/menu.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/menu/menu.js"></script>
-<!-- ≤Àµ• Ω· ¯ -->
+<SCRIPT type="text/javascript">
+<!--
+ 
+/* Ê°ÜÊû∂ÂåÖÁõ∏ÂØπË∑ØÂæÑ */
+URL_CORE = "../../"; 
+    
+    /*
+     *	ÂêéÂè∞ÂìçÂ∫îÊï∞ÊçÆËäÇÁÇπÂêçÁß∞
+     */
+    XML_MAIN_TREE = "AppTree";
+    XML_LOG_LIST = "LogList";
+    XML_LOG_INFO = "LogInfo";
+ 
+    /*
+     *	XMLHTTPËØ∑Ê±ÇÂú∞ÂùÄÊ±áÊÄª
+     */
+	URL_INIT       = "/" + CONTEXTPATH + "log/apps";
+    URL_LOG_LIST   = "/" + CONTEXTPATH + "log/";
+    URL_LOG_DETAIL = "/" + CONTEXTPATH + "log/item/";
 
-<!-- π§æﬂÃı ø™ º -->
-<link href="../../js/toolbar/toolbar.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/toolbar/toolbar.js"></script>
-<!-- π§æﬂÃı Ω· ¯ -->
+	if(IS_TEST) {
+		URL_INIT = "data/log_init.xml";
+		URL_LOG_LIST = "data/loglist.xml";
+		URL_LOG_DETAIL = "data/log1.xml";
+	}
+	URL_INIT = "data/log_init.xml";
+	
+    /* È°µÈù¢ÂàùÂßãÂåñ */
+    function init() {
+		initPaletteResize();
+		initListContainerResize();
+		initUserInfo();
 
-<!-- «¯øÈ ø™ º -->
-<script language="javascript" src="../../js/block.js"></script>
-<!-- «¯øÈ Ω· ¯ -->
+		initNaviBar();
+		initMenus();
+		initBlocks();
+		initWorkSpace();
+		initEvents();
+		initFocus();
 
-<!-- grid ø™ º -->
-<link href="../../htc/grid2.1.3/grid.css" rel="stylesheet" type="text/css">
-<!-- grid Ω· ¯ -->
+		loadInitData();
+    }
+ 
+    /* ËèúÂçïÂàùÂßãÂåñ */
+    function initMenus() {
+		/* Ê†ëËèúÂçïÂàùÂßãÂåñ  */
+		var item1 = {
+			label:"ÊµèËßàÊó•Âøó",
+			callback:showLogList,
+			icon:"images/view_list.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot();}
+		}
+		var item2 = {
+			label:"ÊêúÁ¥¢Êó•Âøó",
+			callback:searchLog,
+			icon:"images/search.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot();}
+		}
 
-<!-- workspace ø™ º -->
-<link href="../../htc/workspace/workspace.css" rel="stylesheet" type="text/css">
-<!-- workspace Ω· ¯ -->
+		var treeObj = $("tree");
 
-<!-- xform ø™ º -->
-<link href="../../htc/xform1.2.3/xform.css" rel="stylesheet" type="text/css">
-<!-- xform Ω· ¯ -->
+		var menu = new Menu();
+		menu.addItem(item1);
+		menu.addItem(item2);
+		treeObj.contextmenu = menu;
 
-<!-- tree ø™ º -->
-<link href="../../htc/tree/tree.css" rel="stylesheet" type="text/css">
-<!-- tree Ω· ¯ -->
+		/* GridËèúÂçïÂàùÂßãÂåñ  */
+		var gridObj = $("grid");
+		var item1 = {
+			label:"Êü•Áúã",
+			callback:function() {
+					showLogInfo(false);
+			},
+			icon:"images/view.gif",
+			enable:function() {return true;},
+			visible:function() {return true;}
+		}
 
-<!-- µ±«∞“≥œ‡πÿΩ≈±æ ø™ º -->
-<style>
-  Grid2\:Grid{
-    behavior:url(../../htc/grid2.1.3/grid_213.htc) url(../../htc/grid2.1.3/search.htc);
-  }
-  WorkSpace\:Box {
-    behavior:url(../../htc/workspace/workspace.htc);
-  }
-  Xform\:Form{
-    behavior:url(../../htc/xform1.2.3/xform.htc);
-  }
-  Tree\:TreeBox{
-    behavior:url(../../htc/tree/tree.htc);
-  }
-</style>
-<script language="javascript" src="../../../config.js"></script>
-<script language="javascript" src="js/log.js"></script>
-<!-- µ±«∞“≥œ‡πÿΩ≈±æ Ω· ¯ -->
+		var menu = new Menu();
+		menu.addItem(item1);
+		gridObj.contextmenu = menu;
+    }
+
+    function initBlocks() {
+        var paletteObj = $("palette");
+        Blocks.create(paletteObj);
+
+        var treeContainerObj = $("treeContainer");
+        Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
+    }
+
+	function loadInitData() {
+        var onresult = function() {
+            var tree = $T("tree", this.getNodeValue(XML_MAIN_TREE));
+
+			var treeElement = $("tree");
+            treeElement.onTreeNodeActived = function(eventObj) {
+                Focus.focus($("treeTitle").firstChild.id);
+            }
+            treeElement.onTreeNodeDoubleClick = function(eventObj) {
+               if( !isTreeRoot() ) {
+					showLogList();
+				}
+            }
+            treeElement.onTreeNodeRightClick = function(eventObj) {
+				var treeObj = $("tree");
+				if(treeObj.contextmenu) {
+					treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
+				}
+            }
+        }
+
+        Ajax({url : URL_INIT, method : "GET", onresult : onresult});
+    }
+	
+    function getTreeId() {
+        var treeNode = $T("tree").getActiveTreeNode();
+        if( treeNode ) {
+            return treeNode.getId();
+        }
+    }
+	
+    function initFocus() {
+        Focus.register($("treeTitle").firstChild);
+        Focus.register($("gridTitle"));
+    }
+
+    function initEvents() {
+        Event.attachEvent($("treeBtRefresh"), "click", onClickTreeBtRefresh);
+        Event.attachEvent($("treeTitleBt"), "click", onClickTreeTitleBt);
+        Event.attachEvent($("paletteBt"), "click", onClickPaletteBt);
+        Event.attachEvent($("treeTitle"), "click", onClickTreeTitle);
+        Event.attachEvent($("gridTitle"), "click", onClickGridTitle);
+    }
+
+    /*
+     *	gridÂä†ËΩΩÊï∞ÊçÆ
+     */
+    function loadGridData(p, treeID, page) {
+		p.url = URL_LOG_LIST + page || "1";
+		var request = new HttpRequest(p);
+		request.onresult = function() {
+			$G("grid", this.getNodeValue(XML_LOG_LIST)); 
+
+			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
+			initGridToolBar($("gridToolBar"), pageListNode, function(page) {
+				request.params.url = URL_LOG_LIST + page;
+				request.onresult = function() {
+					$G("grid", this.getNodeValue(XML_LOG_LIST)); 
+				}				
+				request.send();
+			} );
+			
+			var gridElement = $("grid"); 
+			gridElement.onDblClickRow = function(eventObj) {
+				showLogInfo();
+			}
+			gridElement.onRightClickRow = function() {
+				$("grid").contextmenu.show(event.clientX, event.clientY);
+			}   
+			gridElement.onScrollToBottom = function () {			
+				var currentPage = request.getParamValue("page");
+				var nextPage = parseInt(currentPage) + 1; 
+				request.params.url = URL_LOG_LIST + nextPage;
+				request.onresult = function() {
+					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
+				}				
+				request.send();
+			}
+		}
+		request.send();
+    }
+	
+	function showLogList() {		
+	    var appCode = getTreeId();
+		var p = new HttpRequestParams();
+		p.setContent("appCode", appCode);
+		loadGridData(p, appCode, "1"); 
+    }
+
+    function searchLog() {
+        var treeNode = $T("tree").getActiveTreeNode();
+        if( treeNode ) {
+            var treeID = treeNode.getId();
+            var treeName = treeNode.getName();
+            var condition = window.showModalDialog("searchlog.htm", {applicationId:treeID, title:"ÊêúÁ¥¢\"" + treeName + "\"‰∏ãÁöÑÊó•Âøó"}, "dialogWidth:250px;dialogHeight:250px;");
+            if( condition ) { 
+                Cache.Variables.add("condition", condition);
+				
+                var p = new HttpRequestParams();
+				var xmlReader = new XmlReader(condition.dataXml);
+				var dataNode  = new XmlNode(xmlReader.documentElement);
+				p.setXFormContent(dataNode, condition.prefix);
+				loadGridData(p, treeID, "1"); 
+            }
+        }
+    }
+
+    /*
+     *	ÊòæÁ§∫Êó•ÂøóËØ¶ÁªÜ‰ø°ÊÅØ
+     *	ÂèÇÊï∞Ôºö	boolean:editable            ÊòØÂê¶ÂèØÁºñËæë(ÈªòËÆ§true)
+     */
+    function showLogInfo() {		
+		var rowIndex = $("grid").selectRowIndex; 
+		var row = $G("grid").getRowByIndex(rowIndex);
+		var rowID = row.getAttribute("id");  
+		var rowName = "Êó•Âøó";
+		
+		var wsContainer = $("ws").parentElement.parentElement;
+        var callback = {};
+		callback.onTabClose = function(eventObj){
+			if( ws.noTabOpend() ) {
+				wsContainer.style.display = "none";
+			}            
+        };
+        callback.onTabChange = function() {
+            setTimeout(function() {
+                loadLogDetailData(rowID);
+            }, TIMEOUT_TAB_CHANGE);
+        };
+
+        var inf = {};
+		inf.label = OPERATION_VIEW.replace(/\$label/i, rowName);
+        inf.SID = "viewRow_" + rowID;
+        inf.defaultPage = "page1";
+        inf.phases = null;
+        inf.callback = callback;
+        var tab = ws.open(inf);       
+		
+		wsContainer.style.display = "inline";
+    }
+	
+    /*
+     *	Êó•ÂøóËØ¶ÁªÜ‰ø°ÊÅØÂä†ËΩΩÊï∞ÊçÆ
+     */
+    function loadLogDetailData(logId) {
+		Ajax({
+			url : URL_LOG_DETAIL + logId,
+			method : "GET",
+			onresult : function() { 
+				var logInfoNode = this.getNodeValue(XML_LOG_INFO);
+				var page1FormObj = $X("page1Form", logInfoNode);
+
+				$("page1BtPrev").style.display = "none";
+				$("page1BtNext").style.display = "none";
+				$("page1BtSave").style.display = "none";
+				// $("page1BtSave").disabled = true;
+			}
+		});
+    }
+	
+	
+    window.onload = init;
+
+	//ÂÖ≥Èó≠È°µÈù¢Ëá™Âä®Ê≥®ÈîÄ
+    window.attachEvent("onunload", function() {
+        if(10000<window.screenTop || 10000<window.screenLeft) {
+            logout();
+        }
+	});
+
+//-->
+</SCRIPT>
 
 </head>
 
 <body>
-<table class="full" border="0" cellpadding="0" cellspacing="0">
-<tr> 
-  <td class="panelContainer">
-    <!-- ∞Ê√Ê ø™ º -->
-    <table class="panel"  border="0" cellpadding="0" cellspacing="0">
-      <tr class="header"> 
-        <td class="left"></td>
-        <td class="center"></td>
-        <td class="right"></td>
-      </tr>
-      <tr class="body"> 
-        <td class="left"></td>
-        <td class="center">
-          <!-- ∞Ê√Êƒ⁄»› ø™ º -->
-          <table class="full" border="0" cellpadding="0" cellspacing="0">
-            <tr class="hidden"> 
-              <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td> 
-                      <!-- ÷˜≤Àµ• ø™ º -->
-                      <div id="navibar"><div class="loading"></div></div>
-                      <!-- ÷˜≤Àµ• Ω· ¯ -->
-                    </td>
-                    <td width="150" align="right">∆‰À˚√≈ªß: 
-                      <select name="select">
-                        <option>√≈ªß“ª </option>
-                      </select></td>
-                  </tr>
-                </table></td>
-            </tr>
-            <tr class="hidden"> 
-              <td class="separator"></td>
-            </tr>
-            <tr> 
-              <td height="20"><!-- π§æﬂÃı ø™ º --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- π§æﬂÃı Ω· ¯ --></td>
-            </tr>
-            <tr> 
-              <td valign="top">
-                <table class="full" border="0" cellpadding="0" cellspacing="0">
-                  <tr> 
-                    <td id="palette">
-                      <!-- ◊Û¿∏ ø™ º -->
-                      <table class="full border" border="0" cellpadding="0" cellspacing="0">
-                        <tr id="treeTitle" class="bar"> 
-                          <td class="opened">
-                            <span class="icon"></span>◊ ‘¥<span class="button refresh" id="treeBtRefresh" title="À¢–¬"></span><span class="button collapse" id="treeTitleBt"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="treeContainer">
-                            <!-- tree ø™ º -->
-                            <Tree:TreeBox id="tree" treeType="menu" baseurl="../../htc/tree/" canMoveNode="true"><div class="loading"></div></Tree:TreeBox>
-                            <!-- tree Ω· ¯ -->
-                          </td>
-                        </tr>
-                        <tr id="statusTitle" class="bar">
-                          <td class="opened">
-                            <span class="icon"></span>◊¥Ã¨–≈œ¢<span class="button collapse" id="statusTitleBt"></span>
-                          </td>
-                        </tr>
-                        <tr style="display:none">
-                          <td id="statusContainer"></td>
-                        </tr>
-                      </table>                        
-                      <!-- ◊Û¿∏ Ω· ¯ -->
-                    </td>
-                    <td>
-                      <table class="full" border="0" cellpadding="0" cellspacing="0">
-                        <!-- <tr> 
-                          <td class="separator"></td>
-                        </tr> -->
-                        <tr> 
-                          <td class="location"><span class="icon" id="paletteBt"></span>ƒ˙µ±«∞À˘‘⁄µƒŒª÷√:<span class="locationInfo"></span></td>
-                        </tr>
-                        <tr valign="top">
-                          <!-- ÷˜ƒ⁄»›«¯”Ú ø™ º -->
-                          <td class="groove">
-                            <div class="groove">
-                              <table class="full" border="0" cellspacing="2" cellpadding="0">
-                                <tr>
-                                  <td id="listContainer" class="gridContainer">
-                                    <!-- ¡–±Ì«¯”Ú ø™ º -->
-                                    <table class="full border" border="0" cellspacing="0" cellpadding="0">
-                                      <tr>
-                                        <td id="gridTitle">
-                                          <span class="icon"></span>
-                                          »’÷æ¡–±Ì
-                                          <span class="buttonBox" id="gridToolBar"></span>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <!-- grid ø™ º -->
-                                          <Grid2:Grid id="grid" cols="100,100,100,100,300,100,50" editable="false" baseurl="../../htc/grid2.1.3/" contextmenu="false" autoextend="true" useCookie="false" showHorizontalBarAsNeed="true" rowresizable="false" colresizable="true"  fireDataChangeWhenSetCheckAll="false"><div class="loading"></div></Grid2:Grid>
-                                          <!-- grid Ω· ¯ -->
-                                        </td>
-                                      </tr>
-                                    </table>
-                                    <!-- ¡–±Ì«¯”Ú Ω· ¯ -->
-                                  </td>
-                                </tr>
-                                <tr style="display:none">
-                                  <td class="separator"></td>
-                                </tr>
-                                <tr style="display:none">
-                                  <td>
-                                    <!-- ±Í«©«¯”Ú ø™ º -->
-                                    <WorkSpace:Box id="ws" baseurl="../../htc/workspace/">
-                                      <!-- page1 ø™ º -->
-                                      <WorkSpace:Page id=page1>
-                                        <table class="full" border="0" cellspacing="0" cellpadding="0">
-                                          <tr valign="top">
-                                            <td>
-                                              <!-- xform ø™ º -->
-                                              <Xform:Form id="page1Form" baseurl="../../htc/xform1.2.3/" editable="true" actionbaseurl=""><div class="loading"></div></Xform:Form>
-                                              <!-- xform Ω· ¯ -->
-                                            </td>
-                                          </tr>
-                                          <tr height="20">
-                                            <td>
-                                              <WorkSpace:PageStep>
-                                                <input type="button" class="btWeak" value="…œ“ª≤Ω" id="page1BtPrev" onclick="ws.prevPhase(false)"/>
-                                                <input type="button" class="btWeak" value="œ¬“ª≤Ω" id="page1BtNext" onclick="ws.nextPhase(false)"/>
-                                                <input type="button" class="btStrong" value="ÕÍ≥…" id="page1BtSave"/>
-                                              </WorkSpace:PageStep>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </WorkSpace:Page>
-                                      <!-- page1 Ω· ¯ -->
-                                    </WorkSpace:Box>
-                                    <!-- ±Í«©«¯”Ú Ω· ¯ -->
-                                  </td>
-                                </tr>
-                              </table>                                
-                            </div>
-                          </td>
-                          <!-- ÷˜“™ƒ⁄»›«¯”Ú Ω· ¯ -->
-                        </tr>
-                      </table></td>
-                  </tr>
-                </table></td>
-            </tr>
-          </table>            
-          <!-- ∞Ê√Êƒ⁄»› Ω· ¯ -->
-        </td>
-        <td class="right"></td>
-      </tr>
-      <tr class="footer"> 
-        <td class="left"></td>
-        <td class="center"></td>
-        <td class="right"></td>
-      </tr>
-    </table>
-    <!-- ∞Ê√Ê Ω· ¯ -->
-  </td>
-</tr>
+
+<!-- ÁâàÈù¢ ÂºÄÂßã -->
+<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+  <tr class="header"> 
+	<td class="left"></td>
+	<td class="center"></td>
+	<td class="right"></td>
+  </tr>
+  <tr class="body"> 
+	<td class="left"></td>
+	<td class="center">
+	  <!-- ÁâàÈù¢ÂÜÖÂÆπ ÂºÄÂßã -->
+	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+		<tr class="hidden"> 
+		  <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+			  <tr> 
+				<td> 
+				  <!-- ‰∏ªËèúÂçï ÂºÄÂßã -->
+				  <div id="navibar"><div class="loading"></div></div>
+				  <!-- ‰∏ªËèúÂçï ÁªìÊùü -->
+				</td>
+			  </tr>
+			</table></td>
+		</tr>
+		<tr class="hidden"> 
+		  <td class="separator"></td>
+		</tr>
+
+		<tr> 
+		  <td valign="top">
+			<table class="full" border="0" cellpadding="0" cellspacing="0">
+			  <tr> 
+				<td id="palette">
+				  <!-- Â∑¶Ê†è ÂºÄÂßã -->
+				  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+					<tr id="treeTitle" class="bar"> 
+					  <td class="opened">
+						<span class="icon"></span>ËµÑÊ∫ê<span class="button refresh" id="treeBtRefresh" title="Âà∑Êñ∞"></span><span class="button collapse" id="treeTitleBt"></span>
+					  </td>
+					</tr>
+					<tr>
+					  <td id="treeContainer">
+						<!-- tree ÂºÄÂßã -->
+						<Tree:Box id="tree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
+						<!-- tree ÁªìÊùü -->
+					  </td>
+					</tr>
+				  </table>                        
+				  <!-- Â∑¶Ê†è ÁªìÊùü -->
+				</td>
+				<td>
+				  <table class="full" border="0" cellpadding="0" cellspacing="0">
+					<tr> 
+					  <td class="location"><span class="icon" id="paletteBt"></span>ÊÇ®ÂΩìÂâçÊâÄÂú®ÁöÑ‰ΩçÁΩÆ:<span class="locationInfo"></span></td>
+					</tr>
+					<tr valign="top">
+					  <!-- ‰∏ªÂÜÖÂÆπÂå∫Âüü ÂºÄÂßã -->
+					  <td class="groove">
+						<div class="groove">
+						  <table class="full" border="0" cellspacing="2" cellpadding="0">
+							<tr>
+							  <td id="listContainer" class="gridContainer">
+								<!-- ÂàóË°®Âå∫Âüü ÂºÄÂßã -->
+								<table class="full border" border="0" cellspacing="0" cellpadding="0">
+								  <tr>
+									<td id="gridTitle">
+									  <span class="icon"></span>
+									  Êó•ÂøóÂàóË°®
+									  <span class="buttonBox" id="gridToolBar"></span>
+									</td>
+								  </tr>
+								  <tr>
+									<td>
+									  <!-- grid ÂºÄÂßã -->
+									   <Grid:Box id="grid" baseurl="../../grid/"><div class="loading"></div></Grid:Box>
+									  <!-- grid ÁªìÊùü -->
+									</td>
+								  </tr>
+								</table>
+								<!-- ÂàóË°®Âå∫Âüü ÁªìÊùü -->
+							  </td>
+							</tr>
+							<tr>
+							  <td class="separator"></td>
+							</tr>
+							<tr style="display:none">
+							  <td>
+								<!-- Ê†áÁ≠æÂå∫Âüü ÂºÄÂßã -->
+								<WorkSpace:Box id="ws" baseurl="../../workspace/">
+								  <!-- page1 ÂºÄÂßã -->
+								  <WorkSpace:Page id=page1>
+									<table class="full" border="0" cellspacing="0" cellpadding="0">
+									  <tr valign="top">
+										<td>
+										  <!-- xform ÂºÄÂßã -->
+										  <XForm:Box id="page1Form" baseurl="../../xform/" editable="false"><div class="loading"></div></XForm:Box>
+										  <!-- xform ÁªìÊùü -->
+										</td>
+									  </tr>
+									  <tr height="20">
+										<td>
+										  <WorkSpace:PageStep>
+											<input type="button" class="btWeak" value="‰∏ä‰∏ÄÊ≠•" id="page1BtPrev" onclick="ws.prevPhase(false)"/>
+											<input type="button" class="btWeak" value="‰∏ã‰∏ÄÊ≠•" id="page1BtNext" onclick="ws.nextPhase(false)"/>
+											<input type="button" class="btStrong" value="ÂÆåÊàê" id="page1BtSave"/>
+										  </WorkSpace:PageStep>
+										</td>
+									  </tr>
+									</table>
+								  </WorkSpace:Page>
+								  <!-- page1 ÁªìÊùü -->
+								</WorkSpace:Box>
+								<!-- Ê†áÁ≠æÂå∫Âüü ÁªìÊùü -->
+							  </td>
+							</tr>
+						  </table>                                
+						</div>
+					  </td>
+					  <!-- ‰∏ªË¶ÅÂÜÖÂÆπÂå∫Âüü ÁªìÊùü -->
+					</tr>
+				  </table></td>
+			  </tr>
+			</table></td>
+		</tr>
+	  </table>            
+	  <!-- ÁâàÈù¢ÂÜÖÂÆπ ÁªìÊùü -->
+	</td>
+	<td class="right"></td>
+  </tr>
+  <tr class="footer"> 
+	<td class="left"></td>
+	<td class="center"></td>
+	<td class="right"></td>
+  </tr>
 </table>
+<!-- ÁâàÈù¢ ÁªìÊùü -->
+
 </body>
 </html>

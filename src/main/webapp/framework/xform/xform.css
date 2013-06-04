@@ -47,7 +47,7 @@ XForm\:Box textarea{
 }
 XForm\:Box .title{
     height:20px;
-    background-image:url(icon/titlebg.gif);
+    background-image:url(images/titlebg.gif);
 }
 XForm\:Box .button{
     background-color:#E4EBF3 !important;

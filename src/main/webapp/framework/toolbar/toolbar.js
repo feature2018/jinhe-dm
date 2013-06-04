@@ -51,8 +51,8 @@ _STYLE_NAME_TOOLBAR_TXTBUTTON_DISABLE = "disable";
 /*
  *	文件地址
  */
-_FILE_IMG_BUTTON_MORE = "icons/more.gif";
-_FILE_IMG_LISTBUTTON_ARROW = "icons/arrow.gif";
+_FILE_IMG_BUTTON_MORE = URL_CORE + "images/more.gif";
+_FILE_IMG_LISTBUTTON_ARROW = URL_CORE + "images/arrow.gif";
 
 
 /*

@@ -1,204 +1,768 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html xmlns:ToolBar xmlns:Grid2 xmlns:WorkSpace xmlns:Xform xmlns:Tree>
+<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<title>Ó¦ÓÃÖ§³ÅÆ½Ì¨</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>å‚æ•°ç®¡ç†</title>
 
-<!-- ¹«¹²½Å±¾ ¿ªÊ¼ -->
-<link href="../../../platform/css/css.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/debug.js"></script>
-<script language="javascript" src="../../js/common.js"></script>
-<script language="javascript" src="../../js/event.js"></script>
-<script language="javascript" src="../../js/element.js"></script>
-<script language="javascript" src="../../js/xml.js"></script>
-<script language="javascript" src="../../js/xmlhttp.js"></script>
-<script language="javascript" src="../../js/public.js"></script>
-<!-- ¹«¹²½Å±¾ ½áÊø -->
+<link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
+<link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+<link href="../../toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
+<link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
+<link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
+<link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
+<link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
 
-<!-- ÆøÇò ¿ªÊ¼ -->
-<link href="../../js/balloon/balloon.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/balloon/balloon.js"></script>
-<!-- ÆøÇò ½áÊø -->
+<script language="javascript" src="../../core.js"></script>
+<script language="javascript" src="../../ajax.js"></script>
+<script language="javascript" src="../../framework.js"></script>
+<script language="javascript" src="../../menu/menu.js"></script>
+<script language="javascript" src="../../balloon/balloon.js"></script>
+<script language="javascript" src="../../toolbar/toolbar.js"></script>
+<script language="javascript" src="../../workspace/workspace.js"></script>
+<script language="javascript" src="../../tree/tree.js"></script>
+<script language="javascript" src="../../grid/grid.js"></script>
+<script language="javascript" src="../../xform/xform.js"></script>
 
-<!-- ²Ëµ¥ ¿ªÊ¼ -->
-<link href="../../js/menu/menu.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/menu/menu.js"></script>
-<!-- ²Ëµ¥ ½áÊø -->
+<SCRIPT type="text/javascript">
+<!--
+	
+	URL_CORE = "../../";
 
-<!-- ¹¤¾ßÌõ ¿ªÊ¼ -->
-<link href="../../js/toolbar/toolbar.css" rel="stylesheet" type="text/css">
-<script language="javascript" src="../../js/toolbar/toolbar.js"></script>
-<!-- ¹¤¾ßÌõ ½áÊø -->
+	ICON = "images/";
+    
+    /* åå°å“åº”æ•°æ®èŠ‚ç‚¹åç§°  */
+    XML_MAIN_TREE  = "ParamTree";
+    XML_PARAM_LIST = "ParamList";
+    XML_PARAM_INFO = "ParamInfo";
+   
+    /* 
+	 * XMLHTTPè¯·æ±‚åœ°å€æ±‡æ€» 
+	 */
+	URL_INIT          = "/" + CONTEXTPATH + "param/list";
+    URL_PARAM_DETAIL  = "/" + CONTEXTPATH + "param/detail";
+	URL_SAVE_PARAM    = "/" + CONTEXTPATH + "param";
+    URL_PARAM_DELETE  = "/" + CONTEXTPATH + "param/";
+	URL_FLUSH_CACHE   = "/" + CONTEXTPATH + "param/cache/";
 
-<!-- Çø¿é ¿ªÊ¼ -->
-<script language="javascript" src="../../js/block.js"></script>
-<!-- Çø¿é ½áÊø -->
+    URL_PARAM_DISABLE = "/" + CONTEXTPATH + "param/disable/";
+    URL_SORT_PARAM    = "/" + CONTEXTPATH + "param/sort/";
+    URL_COPY_PARAM    = "/" + CONTEXTPATH + "param/copy/";
+    URL_MOVE_PARAM_TO = "/" + CONTEXTPATH + "param/move/";
+	
+	if(IS_TEST) {
+		URL_INIT = "data/param_init.xml";
+		URL_PARAM_DETAIL = "data/param1.xml";
+		URL_PARAM_DELETE = "data/_success.xml";
+		URL_PARAM_DISABLE = "data/_success.xml";
+		URL_SAVE_PARAM = "data/_success.xml";
+		URL_SORT_PARAM = "data/_success.xml";
+		URL_FLUSH_CACHE  = "data/_success.xml";
+		URL_COPY_PARAM = "data/_success.xml";
+		URL_MOVE_PARAM_TO = "data/_success.xml";
+	}
+ 
 
-<!-- grid ¿ªÊ¼ -->
-<link href="../../htc/grid2.1.3/grid.css" rel="stylesheet" type="text/css">
-<!-- grid ½áÊø -->
+    function init() {
+        initPaletteResize();
+        initUserInfo();
+        initToolBar();
+        initNaviBar();
+        initMenus();
+        initBlocks();
+        initWorkSpace();
+        initEvents();
+        initFocus();
 
-<!-- workspace ¿ªÊ¼ -->
-<link href="../../htc/workspace/workspace.css" rel="stylesheet" type="text/css">
-<!-- workspace ½áÊø -->
+        loadInitData();
+    }
+ 
+    function loadToolBar(_operation) {
+		var str = [];
+		str[str.length] = "<toolbar>";
 
-<!-- xform ¿ªÊ¼ -->
-<link href="../../htc/xform1.2.3/xform.css" rel="stylesheet" type="text/css">
-<!-- xform ½áÊø -->
+		//å…¬å…±
+		str[str.length] = "    <button id=\"a1\" code=\"p1\" icon=\"" + ICON + "icon_pre.gif\" label=\"ä¸Šé¡µ\" cmd=\"ws.prevTab()\" enable=\"true\"/>";
+		str[str.length] = "    <button id=\"a2\" code=\"p2\" icon=\"" + ICON + "icon_next.gif\" label=\"ä¸‹é¡µ\" cmd=\"ws.nextTab()\" enable=\"true\"/>";
+		str[str.length] = "    <separator/>";
 
-<!-- tree ¿ªÊ¼ -->
-<link href="../../htc/tree/tree.css" rel="stylesheet" type="text/css">
-<!-- tree ½áÊø -->
+		//å‚æ•°ç®¡ç†
+		str[str.length] = "    <button id=\"b1\" code=\"2\" icon=\"" + ICON + "start.gif\" label=\"å¯ç”¨\" cmd=\"enableParam()\" enable=\"!isTreeRoot() &amp;&amp; '0'!=getTreeNodeDisabled()\"/>";
+		str[str.length] = "    <button id=\"b2\" code=\"2\" icon=\"" + ICON + "stop.gif\" label=\"åœç”¨\" cmd=\"disableParam()\" enable=\"!isTreeRoot() &amp;&amp; '0'==getTreeNodeDisabled()\"/>";
+		str[str.length] = "    <button id=\"b4\" code=\"1\" icon=\"" + ICON + "view.gif\" label=\"æŸ¥çœ‹\" cmd=\"editParamInfo(false)\" enable=\"!isTreeRoot()\"/>";
+		str[str.length] = "    <button id=\"b5\" code=\"2\" icon=\"" + ICON + "edit.gif\" label=\"ç¼–è¾‘\" cmd=\"editParamInfo()\" enable=\"!isTreeRoot()\"/>";
+		str[str.length] = "    <button id=\"b6\" code=\"2\" icon=\"" + ICON + "del.gif\" label=\"åˆ é™¤\" cmd=\"delParam()\" enable=\"!isTreeRoot()\"/>";
+		str[str.length] = "    <button id=\"b7\" code=\"2\" icon=\"" + ICON + "copy.gif\" label=\"å¤åˆ¶\" cmd=\"copyParam()\" enable=\"'1' == getTreeNodeType()\"/>";
+		str[str.length] = "    <button id=\"b8\" code=\"2\" icon=\"" + ICON + "copy_to.gif\" label=\"å¤åˆ¶åˆ°...\" cmd=\"copyParamTo()\" enable=\"'1' == getTreeNodeType()\"/>";
+		str[str.length] = "    <button id=\"b9\" code=\"2\" icon=\"" + ICON + "move.gif\" label=\"ç§»åŠ¨åˆ°...\" cmd=\"moveParamTo()\" enable=\"'1' == getTreeNodeType()\"/>";
+		str[str.length] = "    <button id=\"b10\" code=\"2\" icon=\"" + ICON + "new_param_group.gif\" label=\"æ–°å»ºå‚æ•°ç»„\" cmd=\"addNewParam('0')\" enable=\"'0'==getTreeNodeType() || '_rootId'==getTreeNodeId()\"/>";
+		str[str.length] = "</toolbar>";
 
-<!-- µ±Ç°Ò³Ïà¹Ø½Å±¾ ¿ªÊ¼ -->
-<style>
-  Grid2\:Grid{
-    behavior:url(../../htc/grid2.1.3/grid_213.htc) url(../../htc/grid2.1.3/search.htc);
-  }
-  WorkSpace\:Box {
-      behavior:url(../../htc/workspace/workspace.htc);
-  }
-  Xform\:Form{
-      behavior:url(../../htc/xform1.2.3/xform.htc);
-  }
-  Tree\:TreeBox{
-      behavior:url(../../htc/tree/tree.htc);
-  }
-</style>
-<script language="javascript" src="../../../config.js"></script>
-<script language="javascript" src="js/param.js"></script>
-<!-- µ±Ç°Ò³Ïà¹Ø½Å±¾ ½áÊø -->
+		_loadToolBar(_operation, str.join("\r\n"));
+    }
+ 
+    function initMenus() {
+        var item1 = {
+            label:"æ–°å»ºå‚æ•°",
+            callback:null,
+            visible:function() {return "0" == getTreeNodeType();}
+        }
+        var item2 = {
+            label:"åˆ é™¤",
+            callback:delParam,
+            icon:ICON + "del.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item3 = {
+            label:"ç¼–è¾‘",
+            callback:editParamInfo,
+            icon:ICON + "edit.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item4 = {
+            label:"å¯ç”¨",
+            callback:enableParam,
+            icon:ICON + "start.gif",
+            visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
+        }
+        var item5 = {
+            label:"åœç”¨",
+            callback:disableParam,
+            icon:ICON + "stop.gif",
+            visible:function() {return !isTreeRoot() && !isTreeNodeDisabled();}
+        }
+        var item7 = {
+            label:"æ–°å»ºå‚æ•°ç»„",
+            callback:function() {
+                addNewParam("0");
+            },
+            visible:function() {return ("0" == getTreeNodeType() || isTreeRoot());}
+        }
+        var item9 = {
+            label:"å¤åˆ¶",
+            callback:copyParam,
+            icon:ICON + "copy.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item11 = {
+            label:"å¤åˆ¶åˆ°...",
+            callback:copyParamTo,
+            icon:ICON + "copy_to.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item12 = {
+            label:"ç§»åŠ¨åˆ°...",
+            callback:moveParamTo,
+            icon:ICON + "move.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item13 = {
+            label:"æŸ¥çœ‹",
+            callback:function() {
+                editParamInfo(false);
+            },
+            icon:ICON + "view.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item14 = {
+            label:"æ–°å»ºå‚æ•°é¡¹",
+            callback:function() {
+                addNewParam("2");
+            },
+            visible:function() {return (("1"==getTreeNodeMode() && "1"==getTreeNodeType()) || "2"==getTreeNodeMode());}
+        }
+		var item15 = {
+            label:"åˆ·æ–°å‚æ•°ç¼“å­˜",
+            callback:function() {
+                flushParamCache();
+            },
+            visible:function() {return "1"==getTreeNodeType();}
+        }
+
+
+        //æ–°å»ºå‚æ•°å­èœå•
+        var subitem1_1 = {
+            label:"ç®€å•å‹",
+            callback:function() {
+                addNewParam("1", "0");
+            }
+        }
+        var subitem1_2 = {
+            label:"ä¸‹æ‹‰å‹",
+            callback:function() {
+                addNewParam("1", "1");
+            }
+        }
+        var subitem1_3 = {
+            label:"æ ‘å‹",
+            callback:function() {
+                addNewParam("1", "2");
+            }
+        }
+        var submenu1 = new Menu();
+        submenu1.addItem(subitem1_1);
+        submenu1.addItem(subitem1_2);
+        submenu1.addItem(subitem1_3);
+        item1.submenu = submenu1;        
+
+        var menu1 = new Menu();
+        menu1.addItem(item4);
+        menu1.addItem(item5);
+        menu1.addSeparator();
+        menu1.addItem(item13);
+        menu1.addItem(item3);
+        menu1.addItem(item2);
+        menu1.addItem(item9);
+        menu1.addItem(item11);
+        menu1.addItem(item12);
+        menu1.addSeparator();
+        menu1.addItem(item7);
+        menu1.addItem(item1);
+        menu1.addItem(item14);
+
+		menu1.addSeparator();
+		menu1.addItem(item15);
+
+        $("tree").contextmenu = menu1;
+    }
+
+	function loadInitData() {
+		Ajax({
+			url : URL_INIT,
+			onresult : function() { 
+				$T("tree", this.getNodeValue(XML_MAIN_TREE)); 
+
+				var treeObj = $("tree");
+				treeObj.onTreeNodeActived = function(eventObj) {
+					Focus.focus($("treeTitle").firstChild.id);
+					showTreeNodeInfo();
+					loadToolBar();
+				}
+				treeObj.onTreeNodeDoubleClick = function(eventObj) {
+					if( !isTreeRoot() ) {
+						editParamInfo();
+					}
+				}
+				treeObj.onTreeNodeMoved = function(eventObj) {
+					sortParamTo(eventObj);
+				}
+				treeObj.onTreeNodeRightClick = function(eventObj) {
+					$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
+					loadToolBar();
+					showTreeNodeInfo();
+				}	 
+
+				loadToolBar();
+			}
+		});
+    }
+ 
+
+    /* ç¼–è¾‘å‚æ•°ä¿¡æ¯ */
+    function editParamInfo(editable) {
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+        if( treeNode ) {
+            var treeID   = treeNode.getId();
+            var treeName = treeNode.getName();
+            var type = getTreeNodeType();
+			var mode = getTreeNodeMode();
+
+            var callback = {};
+            callback.onTabClose = function(eventObj) {
+                delCacheData(eventObj.tab.SID);
+            };
+            callback.onTabChange = function() {
+                setTimeout(function() {
+                    loadTreeDetailData(treeID, editable, treeID, type, mode);
+                }, TIMEOUT_TAB_CHANGE);
+            };
+
+            var inf = {};
+            if(editable) {
+				inf.label = OPERATION_EDIT.replace(/\$label/i, treeName);
+            } else {
+                inf.label = OPERATION_VIEW.replace(/\$label/i, treeName);
+                
+            }
+			inf.SID = treeID;
+            inf.defaultPage = "page1";
+            inf.phases = null;
+            inf.callback = callback;
+            var tab = ws.open(inf);
+        }
+    }
+
+	/*
+     *	æ–°å»ºå‚æ•°
+     *	å‚æ•°ï¼š  string:type         èŠ‚ç‚¹ç±»å‹(0å‚æ•°ç»„/1å‚æ•°/2å‚æ•°é¡¹)
+                string:mode         å‚æ•°é¡¹ç±»å‹(0ç®€å•å‹/1ä¸‹æ‹‰å‹/2æ ‘å‹)
+     */
+    function addNewParam(type, mode) {
+        switch(type) {
+            case "0":
+                var treeName = "å‚æ•°ç»„";
+                break;
+            case "1":
+                var treeName = "å‚æ•°";
+                break;
+            case "2":
+                var treeName = "å‚æ•°é¡¹";
+                break;
+        }
+
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+        if(treeNode) {
+            var parentID = treeNode.getId();
+
+            var callback = {};
+            callback.onTabClose = function(eventObj) {
+                delCacheData(eventObj.tab.SID);
+            };
+            callback.onTabChange = function() {
+                setTimeout(function() {
+                    loadTreeDetailData(null, true, parentID, type, mode);
+                }, TIMEOUT_TAB_CHANGE);
+            };
+
+            var inf = {};
+            inf.defaultPage = "page1";
+            inf.label = OPERATION_ADD.replace(/\$label/i,treeName);
+            inf.phases = null;
+            inf.callback = callback;
+            inf.SID = new Date().valueOf();
+            var tab = ws.open(inf);
+        }
+    }
+
+    /*
+     *	æ ‘èŠ‚ç‚¹æ•°æ®è¯¦ç»†ä¿¡æ¯åŠ è½½æ•°æ®
+     *	å‚æ•°ï¼š	string:treeID               æ ‘èŠ‚ç‚¹id
+                boolean:editable            æ˜¯å¦å¯ç¼–è¾‘(é»˜è®¤true)
+                string:parentID             çˆ¶èŠ‚ç‚¹id
+                boolean:type                èŠ‚ç‚¹ç±»å‹(0å‚æ•°ç»„/1å‚æ•°/2å‚æ•°é¡¹)
+     */
+    function loadTreeDetailData(treeID, editable, parentID, type, mode) {
+		var params = {};
+		params["type"] = type;
+		params["mode"] = mode || 0;
+		if(treeID) {
+		    params["paramId"] = treeID;			
+		} else {
+			params["parentId"] = parentID;
+		}
+
+		Ajax({
+			url : URL_PARAM_DETAIL,
+			method : "POST",
+			contents : params,
+			onresult : function() { 
+				var paramInfoNode = this.getNodeValue(XML_PARAM_INFO);
+				Cache.XmlDatas.add(treeID, paramInfoNode);
+				
+				$("page1Form").editable = editable ? "true" : "false";
+				var xform = $X("page1Form", paramInfoNode);
+
+				attachReminder(treeID, xform); // ç¦»å¼€æé†’
+	 
+				// è®¾ç½®ä¿å­˜æŒ‰é’®æ“ä½œ
+				var page1BtSaveObj = $("page1BtSave");
+				page1BtSaveObj.onclick = function() {
+					saveParam(treeID, parentID, type);
+				}
+			}
+		});
+    }
+
+    /*
+     *	ä¿å­˜å‚æ•°
+     *	å‚æ•°ï¼š	string:cacheID          ç¼“å­˜æ•°æ®id
+                string:parentID         çˆ¶èŠ‚ç‚¹id
+                boolean:type            èŠ‚ç‚¹ç±»å‹(0å‚æ•°ç»„/1å‚æ•°/2å‚æ•°é¡¹)
+     */
+    function saveParam(cacheID, parentID, type) {
+        var xform = $X("page1Form");	
+        if( !xform.checkForm() ) {
+            return;
+        }
+
+        var p = new HttpRequestParams();
+        p.url = URL_SAVE_PARAM;
+        p.setContent("type", type);
+
+        //æ˜¯å¦æäº¤
+        var flag = false;
+        
+		//å‚æ•°åŸºæœ¬ä¿¡æ¯
+		var paramInfoNode = Cache.XmlDatas.get(cacheID);
+		if( paramInfoNode ) {
+			var paramInfoDataNode = paramInfoNode.selectSingleNode(".//data");
+			if( paramInfoDataNode ) {
+				flag = true;
+
+				var prefix = paramInfoNode.selectSingleNode("./declare").getAttribute("prefix");
+				p.setXFormContent(paramInfoDataNode, prefix);
+			}
+		}
+ 
+
+        if( flag ) {
+            var request = new HttpRequest(p);
+           
+            syncButton([$("page1BtSave")], request); // åŒæ­¥æŒ‰é’®çŠ¶æ€
+			detachReminder(cacheID); // è§£é™¤æé†’
+
+            request.onresult = function() {                  
+				var treeNode = this.getNodeValue(XML_MAIN_TREE).selectSingleNode("treeNode");
+				appendTreeNode(parentID, treeNode);
+
+				ws.closeActiveTab();
+            }
+
+            request.onsuccess = function() { // æ›´æ–°æ ‘èŠ‚ç‚¹åç§°
+				if("1" == type) {
+					var name = xform.getData("name");
+					if( isNullOrEmpty(name) ) {
+						name = xform.getData("code");
+					}
+					modifyTreeNode(cacheID, "name", name, true);
+				} 
+				if("2" == type ) {
+					var text = xform.getData("text");
+					if( isNullOrEmpty(text) ) {
+						text = xform.getData("value");
+					}
+					modifyTreeNode(cacheID, "name", text, true);
+				}
+            }
+            request.send();
+        }
+    }
+ 
+    function delParam() {
+        if(true != confirm("æ‚¨ç¡®å®šè¦åˆ é™¤å—ï¼Ÿ"))  return;
+        
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		Ajax({
+			url : URL_PARAM_DELETE + treeNode.getId(),
+			method : "DELETE",
+			onsuccess : function() { 
+				var parentNode = treeNode.getParent();
+				if( parentNode ) {
+					tree.setActiveTreeNode(parentNode.getId());
+				}
+				tree.removeTreeNode(treeNode);
+			}
+		});	
+    }
+ 
+    function enableOrDisable(status) {
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		Ajax({
+			url : URL_PARAM_DISABLE + treeNode.getId() + "/" + status,
+			onsuccess : function() { 
+				var xmlNode = new XmlNode(treeNode.node);
+				refreshTreeNodeStates(xmlNode, status);
+
+				loadToolBar(); // åˆ·æ–°å·¥å…·æ¡
+			}
+		});
+    }
+
+	function enableParam() {
+		enableOrDisable("0");
+	}
+    function disableParam() {
+        enableOrDisable("1");
+    }
+
+	function flushParamCache() {
+       Ajax({
+			url : URL_FLUSH_CACHE + getTreeNodeId(),
+			onsuccess : function() { 
+			}
+		});
+    }
+ 
+    function getTreeNodeType() {
+        return getTreeAttribute("type");
+    }
+ 
+    function getTreeNodeMode() {
+        return getTreeAttribute("mode");
+    }
+
+    /*
+     *	åˆ·æ–°æ ‘èŠ‚ç‚¹åœç”¨å¯ç”¨çŠ¶æ€
+     *	å‚æ•°ï¼š	treeNode:treeNode       treeNodeå®ä¾‹
+                string:state            åœ/å¯ç”¨çŠ¶æ€
+     */
+    function refreshTreeNodeState(treeNode, state) {
+        state = state || treeNode.getAttribute("disabled");
+        var type = treeNode.getAttribute("type");
+        var mode = treeNode.getAttribute("mode");
+        switch(type) {
+            case "0":
+                var img = "param_group";
+                break;
+            case "1":
+                if("0"==mode) {
+                    var img = "param_simple";
+                }
+				if("1"==mode) {
+                    var img = "param_combo";
+                }
+				if("2"==mode) {
+                    var img = "param_tree";
+                }
+                break;
+            case "2":
+                var img = "param_item";
+                break;
+        }
+        treeNode.setAttribute("disabled", state);
+        treeNode.setAttribute("icon", ICON + img + (state == "1" ? "_2" : "") + ".gif");       
+    }
+
+    /*
+     *	åˆ·æ–°çº§è”æ ‘èŠ‚ç‚¹åœç”¨å¯ç”¨çŠ¶æ€
+     *	å‚æ•°ï¼š	XmlNode:curNode         XmlNodeå®ä¾‹
+                string:state            åœ/å¯ç”¨çŠ¶æ€
+     */
+    function refreshTreeNodeStates(curNode, state) {
+        refreshTreeNodeState(curNode,state);
+
+        if("0" == state) { // å¯ç”¨ï¼Œä¸Šæº¯
+            while( curNode && "_rootId" != curNode.getAttribute("id") ) {
+                refreshTreeNodeState(curNode, state);
+                curNode = curNode.getParent();
+            }        
+        }
+		else if("1" == state) { // åœç”¨ï¼Œä¸‹æº¯
+            var childNodes = curNode.selectNodes(".//treeNode");
+            for(var i=0; i < childNodes.length; i++) {                
+                refreshTreeNodeState(childNodes[i], state);
+            }
+        }
+
+        $T("tree").reload(); 
+    }
+ 
+    function copyParam() {
+        var treeNode = $T("tree").getActiveTreeNode();
+		var parentId = treeNode.getParent().getId();
+
+		Ajax({
+			url : URL_COPY_PARAM + treeNode.getId() + "/" + parentId,
+			onresult : function() { 
+				var treeNode = this.getNodeValue(XML_MAIN_TREE).selectSingleNode("treeNode");
+                appendTreeNode(parentId, treeNode);
+			}
+		});
+    }
+ 
+    function copyParamTo() {
+        var treeNode = $T("tree").getActiveTreeNode();
+		var id = treeNode.getId();
+		var name = treeNode.getName();
+		var parentID = treeNode.getParent().getId();
+
+		var params = { id:id, parentID:parentID };
+		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"å°†ã€\"" + name + "\"ã€‘å¤åˆ¶åˆ°"}, "dialogWidth:300px;dialogHeight:400px;");
+		
+		if( targetParent ) {
+			var targetParentId = targetParent.id;
+			Ajax({
+				url : URL_COPY_PARAM + id + "/" + targetParentId,
+				onresult : function() { 
+					var newNode = this.getNodeValue(XML_MAIN_TREE).selectSingleNode("treeNode");
+					appendTreeNode(targetParentId, newNode);
+				}
+			});
+		}
+    }
+ 
+    function moveParamTo() {
+		var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		var id = treeNode.getId();
+		var name = treeNode.getName();
+		var parentID = treeNode.getParent().getId();
+
+		var params = { id:id, parentID:parentID };
+		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"å°†\"" + name + "\"ç§»åŠ¨åˆ°"},"dialogWidth:300px;dialogHeight:400px;");
+	   
+		if(targetParent) {
+			var targetParentId = targetParent.id;
+			Ajax({
+				url : URL_MOVE_PARAM_TO + id + "/" + targetParentId,
+				onsuccess : function() { 
+					// ç§»åŠ¨æ ‘èŠ‚ç‚¹
+					var parentNode = tree.getTreeNodeById(targetParentId);
+					parentNode.node.appendChild(treeNode.node);
+
+					var xmlNode = new XmlNode(treeNode.node);
+					refreshTreeNodeStates(xmlNode, parentNode.getAttribute("disabled"));
+					clearOperation(xmlNode);
+
+					tree.reload();
+				}
+			});
+		}
+    }
+
+	function sortParamTo(eventObj) {
+        var movedTreeNode = eventObj.movedTreeNode;
+        var toTreeNode = eventObj.toTreeNode;
+        var moveState  = eventObj.moveState; // -1: ç›®æ ‡ä¸Šæ–¹, 1: ç›®æ ‡ä¸‹æ–¹
+
+		Ajax({
+			url : URL_SORT_PARAM + movedTreeNode.getId() + "/" + toTreeNode.getId() + "/" + moveState,
+			onsuccess : function() { 
+				 $T("tree").moveTreeNode(movedTreeNode, toTreeNode, moveState);
+			}
+		});
+    }
+	
+
+    window.onload = init;
+
+	//å…³é—­é¡µé¢è‡ªåŠ¨æ³¨é”€
+    window.attachEvent("onunload", function() {
+        if(10000<window.screenTop || 10000<window.screenLeft) {
+            logout();
+        }
+	});
+
+//-->
+</SCRIPT>
 
 </head>
 
 <body>
-<table class="full" border="0" cellpadding="0" cellspacing="0">
-<tr> 
-  <td class="panelContainer">
-    <!-- °æÃæ ¿ªÊ¼ -->
-    <table class="panel"  border="0" cellpadding="0" cellspacing="0">
-      <tr class="header"> 
-        <td class="left"></td>
-        <td class="center"></td>
-        <td class="right"></td>
-      </tr>
-      <tr class="body"> 
-        <td class="left"></td>
-        <td class="center">
-          <!-- °æÃæÄÚÈİ ¿ªÊ¼ -->
-          <table class="full" border="0" cellpadding="0" cellspacing="0">
-            <tr class="hidden"> 
-              <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td> 
-                      <!-- Ö÷²Ëµ¥ ¿ªÊ¼ -->
-                      <div id="navibar"><div class="loading"></div></div>
-                      <!-- Ö÷²Ëµ¥ ½áÊø -->
-                    </td>
-                    <td width="150" align="right">&nbsp;</td>
-                  </tr>
-                </table></td>
-            </tr>
-            <tr class="hidden"> 
-              <td class="separator"></td>
-            </tr>
-            <tr> 
-              <td height="20"><!-- ¹¤¾ßÌõ ¿ªÊ¼ --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- ¹¤¾ßÌõ ½áÊø --></td>
-            </tr>
-            <tr> 
-              <td valign="top">
-                <table class="full" border="0" cellpadding="0" cellspacing="0">
-                  <tr> 
-                    <td id="palette">
-                      <!-- ×óÀ¸ ¿ªÊ¼ -->
-                      <table class="full border" border="0" cellpadding="0" cellspacing="0">
-                        <tr id="treeTitle" class="bar"> 
-                          <td class="opened">
-                            <span class="icon"></span>×ÊÔ´<span class="button refresh" id="treeBtRefresh" title="Ë¢ĞÂ"></span><span class="button collapse" id="treeTitleBt"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="treeContainer">
-                            <!-- tree ¿ªÊ¼ -->
-                            <Tree:TreeBox id="tree" treeType="menu" baseurl="../../htc/tree/" canMoveNode="true"><div class="loading"></div></Tree:TreeBox>
-                            <!-- tree ½áÊø -->
-                          </td>
-                        </tr>
-                        <tr id="statusTitle" class="bar">
-                          <td class="opened">
-                            <span class="icon"></span>×´Ì¬ĞÅÏ¢<span class="button collapse" id="statusTitleBt"></span>
-                          </td>
-                        </tr>
-                        <tr style="display:none">
-                          <td id="statusContainer"></td>
-                        </tr>
-                      </table>                        
-                      <!-- ×óÀ¸ ½áÊø -->
-                    </td>
-                    <td>
-                      <table class="full" border="0" cellpadding="0" cellspacing="0">
-                        <!-- <tr> 
-                          <td class="separator"></td>
-                        </tr> -->
-                        <tr> 
-                          <td class="location"><span class="icon" id="paletteBt"></span>Äúµ±Ç°ËùÔÚµÄÎ»ÖÃ:<span class="locationInfo"></span></td>
-                        </tr>
-                        <tr valign="top">
-                          <!-- Ö÷ÄÚÈİÇøÓò ¿ªÊ¼ -->
-                          <td class="groove">
-                            <div class="groove">
-                              <table class="full" border="0" cellspacing="2" cellpadding="0">
-                                <tr>
-                                  <td>
-                                    <!-- ±êÇ©ÇøÓò ¿ªÊ¼ -->
-                                    <WorkSpace:Box id="ws" baseurl="../../htc/workspace/">
-                                      <!-- page1 ¿ªÊ¼ -->
-                                      <WorkSpace:Page id=page1>
-                                        <table class="full" border="0" cellspacing="0" cellpadding="0">
-                                          <tr valign="top">
-                                            <td>
-                                              <!-- xform ¿ªÊ¼ -->
-                                              <Xform:Form id="page1Form" baseurl="../../htc/xform1.2.3/" editable="true" actionbaseurl=""><div class="loading"></div></Xform:Form>
-                                              <!-- xform ½áÊø -->
-                                            </td>
-                                          </tr>
-                                          <tr height="20">
-                                            <td>
-                                              <WorkSpace:PageStep>
-                                                <input type="button" class="btStrong" value="Íê³É" id="page1BtSave"/>
-                                              </WorkSpace:PageStep>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </WorkSpace:Page>
-                                      <!-- page1 ½áÊø -->
-                                    </WorkSpace:Box>
-                                    <!-- ±êÇ©ÇøÓò ½áÊø -->
-                                  </td>
-                                </tr>
-                              </table>                                
-                            </div>
-                          </td>
-                          <!-- Ö÷ÒªÄÚÈİÇøÓò ½áÊø -->
-                        </tr>
-                      </table></td>
-                  </tr>
-                </table></td>
-            </tr>
-          </table>            
-          <!-- °æÃæÄÚÈİ ½áÊø -->
-        </td>
-        <td class="right"></td>
-      </tr>
-      <tr class="footer"> 
-        <td class="left"></td>
-        <td class="center"></td>
-        <td class="right"></td>
-      </tr>
-    </table>
-    <!-- °æÃæ ½áÊø -->
-  </td>
-</tr>
+
+<!-- ç‰ˆé¢ å¼€å§‹ -->
+<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+  <tr class="header"> 
+	<td class="left"></td>
+	<td class="center"></td>
+	<td class="right"></td>
+  </tr>
+  <tr class="body"> 
+	<td class="left"></td>
+	<td class="center">
+	  <!-- ç‰ˆé¢å†…å®¹ å¼€å§‹ -->
+	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+		<tr class="hidden"> 
+		  <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+			  <tr> 
+				<td> 
+				  <!-- ä¸»èœå• å¼€å§‹ -->
+				  <div id="navibar"><div class="loading"></div></div>
+				  <!-- ä¸»èœå• ç»“æŸ -->
+				</td>
+				<td width="150" align="right">&nbsp;</td>
+			  </tr>
+			</table></td>
+		</tr>
+		<tr class="hidden"> 
+		  <td class="separator"></td>
+		</tr>
+		<tr> 
+		  <td height="20"><!-- å·¥å…·æ¡ å¼€å§‹ --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- å·¥å…·æ¡ ç»“æŸ --></td>
+		</tr>
+		<tr> 
+		  <td valign="top">
+			<table class="full" border="0" cellpadding="0" cellspacing="0">
+			  <tr> 
+				<td id="palette">
+				  <!-- å·¦æ  å¼€å§‹ -->
+				  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+					<tr id="treeTitle" class="bar"> 
+					  <td class="opened">
+						<span class="icon"></span>èµ„æº<span class="button refresh" id="treeBtRefresh" title="åˆ·æ–°"></span><span class="button collapse" id="treeTitleBt"></span>
+					  </td>
+					</tr>
+					<tr>
+					  <td id="treeContainer">
+						<!-- tree å¼€å§‹ -->
+						 <Tree:Box id="tree" treeType="menu" baseurl="../../tree/" canMoveNode="true"><div class="loading"></div></Tree:Box>
+						<!-- tree ç»“æŸ -->
+					  </td>
+					</tr>
+					<tr id="statusTitle" class="bar">
+					  <td class="opened">
+						<span class="icon"></span>çŠ¶æ€ä¿¡æ¯<span class="button collapse" id="statusTitleBt"></span>
+					  </td>
+					</tr>
+					<tr style="display:none">
+					  <td id="statusContainer"></td>
+					</tr>
+				  </table>                        
+				  <!-- å·¦æ  ç»“æŸ -->
+				</td>
+				<td>
+				  <table class="full" border="0" cellpadding="0" cellspacing="0">
+					<tr> 
+					  <td class="location"><span class="icon" id="paletteBt"></span>æ‚¨å½“å‰æ‰€åœ¨çš„ä½ç½®:<span class="locationInfo"></span></td>
+					</tr>
+					<tr valign="top">
+					  <!-- ä¸»å†…å®¹åŒºåŸŸ å¼€å§‹ -->
+					  <td class="groove">
+						<div class="groove">
+						  <table class="full" border="0" cellspacing="2" cellpadding="0">
+							<tr>
+							  <td>
+								<!-- æ ‡ç­¾åŒºåŸŸ å¼€å§‹ -->
+								<WorkSpace:Box id="ws" baseurl="../../workspace/">
+								  <!-- page1 å¼€å§‹ -->
+								  <WorkSpace:Page id=page1>
+									<table class="full" border="0" cellspacing="0" cellpadding="0">
+									  <tr valign="top">
+										<td>
+										  <!-- xform å¼€å§‹ -->
+										  <XForm:Box id="page1Form" baseurl="../../xform/"><div class="loading"></div></XForm:Box>
+										  <!-- xform ç»“æŸ -->
+										</td>
+									  </tr>
+									  <tr height="20">
+										<td>
+										  <WorkSpace:PageStep>
+											<input type="button" class="btStrong" value="å®Œæˆ" id="page1BtSave"/>
+										  </WorkSpace:PageStep>
+										</td>
+									  </tr>
+									</table>
+								  </WorkSpace:Page>
+								  <!-- page1 ç»“æŸ -->
+								</WorkSpace:Box>
+								<!-- æ ‡ç­¾åŒºåŸŸ ç»“æŸ -->
+							  </td>
+							</tr>
+						  </table>                                
+						</div>
+					  </td>
+					  <!-- ä¸»è¦å†…å®¹åŒºåŸŸ ç»“æŸ -->
+					</tr>
+				  </table></td>
+			  </tr>
+			</table></td>
+		</tr>
+	  </table>            
+	  <!-- ç‰ˆé¢å†…å®¹ ç»“æŸ -->
+	</td>
+	<td class="right"></td>
+  </tr>
+  <tr class="footer"> 
+	<td class="left"></td>
+	<td class="center"></td>
+	<td class="right"></td>
+  </tr>
 </table>
+<!-- ç‰ˆé¢ ç»“æŸ -->
+
 </body>
 </html>

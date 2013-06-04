@@ -1,12 +1,19 @@
-		
-function $X(xformId) {
-	var element = $(xformId);
-	var xformObj = new XForm(element);
+var XFormCache = new Collection();
+
+function $X(xformId, data) {
+	var xform = XFormCache.get(xformId);
+	if( xform == null || data ) {
+		xform = new XForm($(xformId));
+		xform.load(data);
+
+		XFormCache.add(xform.element.id, xform);	
+	}
 	
-	return xformObj;
+	return xform;
 }
 
 var XForm = function(element) {
+	this.id = element.id;
 	this.element = element;
 	this.form = element.firstChild;
 
@@ -22,29 +29,6 @@ var XForm = function(element) {
 	this._columnList = {};
 }
 
-
-XForm.prototype.attachEvents = function() {
-	// 回车自动聚焦下一个（input、button等）
-	this.element.onkeydown = function() {
-		var srcElement = event.srcElement;
-		if(window.event.keyCode == 13 && srcElement.tagName.toLowerCase() != "textarea") {
-			window.event.keyCode = 9;  // 相当于按了下Tab键，光标移动到下一个元素上
-		}
-	}
-	
-	this.element.onselectstart = function() {
-		event.cancelBubble = true; // 拖动选择事件取消冒泡
-	}
-
-	var func = this.element.getAttribute("ondatachange");            
-	this.element.ondatachange = function() {
-		if( func ) { func(); } 
-		else { 
-			Reminder.add(this.element.id); // 数据有变化时才添加离开提醒 
-		}
-	}
-}
-
 XForm.prototype.load = function(data) {
 	// 隐藏上次的错误信息层
 	hideErrorInfo();
@@ -53,8 +37,7 @@ XForm.prototype.load = function(data) {
 		alert("传入的XForm数据有问题。")	
 	}
 	
-	var curXmlDom = data;
-	this.xmlDoc = new Class_XMLDocument(curXmlDom);
+	this.xmlDoc = new Class_XMLDocument(data.node);
 	
 	if(this.xmlDoc && this.xmlDoc.xmlDom) {
 		// 修正comboedit类型默认第一项的值
@@ -98,7 +81,32 @@ XForm.prototype.load = function(data) {
 		}
 
 		// 自动聚焦
-		this.setFocus();
+		if(this.element.editable != "false") {
+			this.setFocus();
+		}		
+	}
+}
+
+
+XForm.prototype.attachEvents = function() {
+	// 回车自动聚焦下一个（input、button等）
+	this.element.onkeydown = function() {
+		var srcElement = event.srcElement;
+		if(window.event.keyCode == 13 && srcElement.tagName.toLowerCase() != "textarea") {
+			window.event.keyCode = 9;  // 相当于按了下Tab键，光标移动到下一个元素上
+		}
+	}
+	
+	this.element.onselectstart = function() {
+		event.cancelBubble = true; // 拖动选择事件取消冒泡
+	}
+
+	var func = this.element.getAttribute("ondatachange");            
+	this.element.ondatachange = function() {
+		if( func ) { func(); } 
+		else { 
+			Reminder.add(this.element.id); // 数据有变化时才添加离开提醒 
+		}
 	}
 }
 

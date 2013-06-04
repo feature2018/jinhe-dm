@@ -1,7 +1,7 @@
 <HTML xmlns:Grid>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>它山石--test Tree</title>
+<title>它山石--test Grid</title>
 
 <link href="grid.css" rel="stylesheet" type="text/css">
 <link href="../balloon/balloon.css" rel="stylesheet" type="text/css">
@@ -17,28 +17,45 @@
 <SCRIPT LANGUAGE="JavaScript">
 <!--
  
- /* 核心包相对路径 */
 URL_CORE = "../";
 
     function init() {
-        var p = new HttpRequestParams();
-        p.url = "test/data.xml";
+				Ajax({
+					url : "test/data.xml",
+					headers : null,
+					contents : null, 
+					onresult : function() {
+						var gridData = this.getNodeValue("SourceList");
+						var grid = $G("grid", gridData);       
 
-        var request = new HttpRequest(p);
-        request.onresult = function() {
-					var gridData = this.getNodeValue("SourceList");
-					var grid = $G("grid", gridData);       
+						var gridPage = this.getNodeValue("PageList");
+						createGridToolBar(gridPage);
 
-					var gridPage = this.getNodeValue("PageList");
-					createGridToolBar(gridPage);
-        }
-        request.send();
+						$("grid").onScrollToBottom = function () {
+							grid.load(gridData, true);
+						}
+						$("grid").onRightClickRow = function () {
+							alert("show right menu!");
+						}
+					}
+				});
     }
 
     function createGridToolBar(gridPage) {
         var toolbarObj = $("gridToolBar");
 				initGridToolBar(toolbarObj, gridPage, function(page) {
-						alert("翻页")
+						Ajax({
+							url : "test/data.xml",
+							headers : null,
+							contents : null, 
+							onresult : function() {
+								var gridData = this.getNodeValue("SourceList");
+								var grid = $G("grid", gridData);       
+
+								var gridPage = this.getNodeValue("PageList");
+								createGridToolBar(gridPage);
+							}
+						});
 				});
     }
 	
@@ -50,16 +67,17 @@ URL_CORE = "../";
 
 <body>
 
-<table class="full border" border="0" cellspacing="0" cellpadding="0">
+<table class="full border" border="0" cellspacing="0" cellpadding="0" >
   <tr>
 	<td id="gridTitle">
-	  <span class="icon"></span>用户列表
-	  <span class="buttonBox" id="gridToolBar"></span>
+	  <span class="icon"></span>用户列表<span class="buttonBox" id="gridToolBar"></span>
 	</td>
   </tr>
   <tr>
 	<td>
-	  <Grid:Box id="grid" baseurl="" onRightClickRow="alert('show right menu!');"><div class="loading"/></Grid:Box>
+	  <Grid:Box id="grid" baseurl="" height="330" width="1000">
+			<div class="loading"/>
+		</Grid:Box>
 	</td>
   </tr>
 </table>

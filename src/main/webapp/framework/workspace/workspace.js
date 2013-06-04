@@ -418,7 +418,7 @@ Tab.prototype.nextPhase = function() {
 	}
 	
 	var phase;
-	if(tempPhases.length-1 == activePhaseIndex) {//当前激活的是最后一个Phase
+	if(tempPhases.length - 1 == activePhaseIndex) {//当前激活的是最后一个Phase
 		phase = tempPhases[activePhaseIndex];
 	} else {
 		phase = tempPhases[activePhaseIndex+1];
@@ -1271,4 +1271,12 @@ WorkSpace.prototype.switchToPhase = function(page) {
 			tab.switchToPhase(page);
 		}
 	}
+}
+
+WorkSpace.prototype.noTabOpend = function() {
+	var length = 0; 
+	for(var item in _display.tabs) {
+		length ++;
+	}
+	return length == 0;
 }

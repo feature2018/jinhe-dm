@@ -28,6 +28,10 @@ public class Display {
     static List<String> sqls = new ArrayList<String>();
     
     static {
+        sqls.add("select sku.skucode SKU, sku.descrcn 产品名称, sku.skueancode EAN, l.locationcode as 库位, " +
+                " t.qtyuom as 库存数量, t.qtyuseuom as 可用数量, t.qtyallocateduom as 分配量 " +
+                " from gv_inv_lotlocationuom t, gv_bas_sku sku, gv_bas_location l " +
+                " where t.qtyuom > 800 and t.sku_id = sku.id and l.id = t.location_id and t.warehouse_id = ?");
         sqls.add("select id, orgCode, orgName from gv_bas_orginfo where id >= ?");
         sqls.add("select id, whCode 仓库Code, w.descr 仓库 from gv_bas_warehouse w where w.id >= ?");
     }

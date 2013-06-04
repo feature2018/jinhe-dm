@@ -1,14 +1,4 @@
-/*
-	控件名称: 单选or多选树
-	功能说明:	1、单选or多选树的显示，重载
-				2、枝节点的打开关闭（响应鼠标事件、接口对象提供方法）
-				3、兄弟节点间的移动位置（响应鼠标事件、接口对象提供方法）
-				4、节点的增、删、改
-				5、节点选择状态的更改（响应鼠标事件、接口对象提供方法），参数控制是否和激活节点相关联
-				6、返回选中节点（参数控制是否包括半选节点），返回对象或数组，提供方法转换成xml
-				7、TreeNode接口对象。
- */
- 
+
 /* 树类型 */
 var _TREE_TYPE_SINGLE = "single";
 var _TREE_TYPE_MULTI  = "multi";
@@ -16,7 +6,6 @@ var _TREE_TYPE_MENU   = "menu";
 
 /* 树控件属性名称 */
 var _TREE_BASE_URL = "baseurl";
-// var _TREE_BASE_URL_DEFAULT_VALUE = "common/Tree/";	// 默认控件所在目录
 
 var _TREE_TREE_TYPE = "treeType";         // 树的类型 : multi / single
 var _TREE_SELECTED_IDS = "selectedIds";   // 选中节点id字符串
@@ -93,27 +82,28 @@ var _TREE_NODE_ICON_ATTRIBUTE = "icon"; // 节点自定义图标属性名
 
 var TreeCache = new Collection();
 
-function $T(treeId) {
-	return TreeCache.get(treeId);
-}
+function $T(treeId, dataXML) {
+	var tree = TreeCache.get(treeId);
+	if( tree == null || dataXML ) {
+		var element = $(treeId);
 
-/*
- * 初始化树对象
- */
-function initTree(element, dataXML) {	
-	element._dataXML = dataXML;
+		dataXML = (typeof(dataXML) == 'string') ? dataXML : dataXML.toXml();
+		element._dataXML = dataXML;
 
-	var treeObj;
-	var _treeType = eval("element." + _TREE_TREE_TYPE) ||  _TREE_TYPE_SINGLE;
-	if(_treeType == _TREE_TYPE_MULTI) {
-		treeObj = new MultiCheckTree(element)
-	} 
-	else {
-		treeObj = new SingleCheckTree(element)
+		var _treeType = eval("element." + _TREE_TREE_TYPE) ||  _TREE_TYPE_SINGLE;
+		if(_treeType == _TREE_TYPE_MULTI) {
+			tree = new MultiCheckTree(element)
+		} 
+		else {
+			tree = new SingleCheckTree(element)
+		}
+		
+		TreeCache.add(element.id, tree);
 	}
-	
-	TreeCache.add(element.id, treeObj);
+
+	return tree;
 }
+
 
 /*
  * 对象名称：Tree	
@@ -369,6 +359,7 @@ var Tree = function(element) {
 				alert("Tree对象：没有属性[" + name + "]!");
 	    }
 	}
+	
 	/*
 	 * 判断节点是否高亮（激活）
 	 */
@@ -1477,13 +1468,13 @@ TreeNode.prototype = new function() {
 	}
 	
 	this._appendChild = function(xml, parent) {	
-		var newNodeXML = loadXmlToNode(xml);
-		if(newNodeXML == null || newNodeXML.documentElement == null || newNodeXML.documentElement.nodeName != _TREE_NODE){
+		var newNode = loadXmlToNode(xml);
+		if( newNode == null || newNode.nodeName != _TREE_NODE ) {
 			alert("TreeNode对象：新增节点xml数据不能正常解析！");
 			return null;
 		}
 		
-		var newNode = parent.appendChild(newNodeXML.documentElement); // 添加子节点
+		parent.appendChild(newNode); // 添加子节点
 		var treeNode = instanceTreeNode(newNode, this.treeObj);
 		if(treeNode instanceof TreeNode) {
 			refreshStatesByNode(treeNode);		// 根据新节点的选择状态刷新相关节点
@@ -1943,7 +1934,7 @@ function TreeDisplay(treeObj) {
 	treeObj.element.onkeydown = function() {
 		switch (event.keyCode) {
 		    case 33:	//PageUp
-				_vScrollBox.scrollTop -= _pageSize * _rowHeight;
+				_vScrollBox.scrollTop -= _pageSize * _rowHeight; 
 				return false;
 		    case 34:	//PageDown
 				_vScrollBox.scrollTop += _pageSize * _rowHeight;
@@ -2225,7 +2216,7 @@ function isLastChild(node) {
 function openNode(openedNode) {
 	while( openedNode ) {
 		openedNode.setAttribute("_open", "true");
-		if(openedNode.getAttribute(_TREE_NODE_ID) == _TREE_ROOT_NODE_ID) {
+		if(openedNode.getAttribute(_TREE_NODE_ID) == _TREE_ROOT_NODE_ID || openedNode.tagName != _TREE_NODE) {
 			return;
 		}
 		openedNode = openedNode.parentNode;
@@ -2274,7 +2265,7 @@ function refreshParentNodeState(node) {
 	var parent = node.parentNode;
 	while (parent != treeObj.getXmlRoot()) {		
 		var nodeChildNum   = parent.childNodes.length;	// 总子节点数
-		var checkedNum     = parent.selectNodes("./treeNode[@checktype='1']").length;	// 全选子节点数
+		var checkedNum     = parent.selectNodes("./treeNode[@checktype='1']").length; // 全选子节点数
 		var halfCheckedNum = parent.selectNodes("./treeNode[@checktype='2']").length; //半选子节点数
 		
 		var state;

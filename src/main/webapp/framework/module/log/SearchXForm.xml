@@ -9,7 +9,6 @@
                 <column name="operateTable" caption="操作的表" mode="string" />
 				<column name="startTime" caption="起始时间" mode="date" pattern="yyyy/MM/dd"/>
 				<column name="endTime" caption="截止时间" mode="date" pattern="yyyy/MM/dd"/>
-                <column name="level" caption="日志级别" mode="string" />
 			</declare>
 			<layout>
 				<TR>
@@ -35,10 +34,6 @@
 				<TR>
 					<TD width="50"><label binding="endTime"/></TD>
 					<TD><input binding="endTime" type="text"/></TD>
-				</TR>
-				<TR>
-					<TD width="50"><label binding="level"/></TD>
-					<TD><input binding="level" type="text"/></TD>
 				</TR>
 			</layout>
 			<data>

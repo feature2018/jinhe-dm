@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
 	<LogList>
-        <grid version="2" applicationId="CMS">
+        <grid applicationId="CMS">
             <declare>
                 <column name="id" caption="ID号" mode="string" editable="false"/>
                 <column name="operatorName" caption="操作人" mode="string" editable="false"/>
@@ -12,11 +12,11 @@
                 <column name="level" caption="日志级别" mode="string" editable="false"/>
             </declare>
             <data>
-                <row id="7298" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Delete" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="0" _oldClass="" class="" _operation="p1,p2,1,pl1,pl2,pl3,pl4,pl5,pl6,pl7,pd1,pd2,pd3,pd4,pd5,pd6,pd7,pd8,pm1,pm2,pm3,pm4,pm5,pm6,pp1,pp2,pp3,pp4,pp5,pp6,pp7,pp8,ppublish1,ppublish2,ppublish3,pc1,pc2,pc3,pdp1,pdp2,pdp3,pdp4,pdp5,plog1,plog2,pld1">
+                <row id="7298" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Delete" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="0" _oldClass="" class="">
                 </row>
-                <row id="7297" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="1" _oldClass="" class="" _operation="p1,p2,1,pl1,pl2,pl3,pl4,pl5,pl6,pl7,pd1,pd2,pd3,pd4,pd5,pd6,pd7,pd8,pm1,pm2,pm3,pm4,pm5,pm6,pp1,pp2,pp3,pp4,pp5,pp6,pp7,pp8,ppublish1,ppublish2,ppublish3,pc1,pc2,pc3,pdp1,pdp2,pdp3,pdp4,pdp5,plog1,plog2,pld1">
+                <row id="7297" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="1" _oldClass="" class="">
                 </row>
-                <row id="7296" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="2" _oldClass="" class="highlightRow" _operation="p1,p2,1,pl1,pl2,pl3,pl4,pl5,pl6,pl7,pd1,pd2,pd3,pd4,pd5,pd6,pd7,pd8,pm1,pm2,pm3,pm4,pm5,pm6,pp1,pp2,pp3,pp4,pp5,pp6,pp7,pp8,ppublish1,ppublish2,ppublish3,pc1,pc2,pc3,pdp1,pdp2,pdp3,pdp4,pdp5,plog1,plog2,pld1">
+                <row id="7296" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="2" _oldClass="" class="highlightRow" >
                 </row>
                 <row id="7295" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Delete" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="3">
                 </row>
@@ -115,7 +115,7 @@
             </data>
         </grid>
 	</LogList>
-	<PageList>
+	<PageInfo>
         <pagelist totalpages="10" totalrecords="999" currentpage="3" pagesize="100"/>
-	</PageList>
+	</PageInfo>
 </Response>

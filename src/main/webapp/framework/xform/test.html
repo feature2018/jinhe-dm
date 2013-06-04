@@ -32,14 +32,10 @@ URL_CORE = "../";
      */
     URL_GET_USER_NAME = "test/mockdata/username.xml";
     URL_LOGIN = "test/mockdata/_success.xml";
-
-//    URL_GET_USER_NAME = "getOperatorInfoByLoginName.in";
-//    URL_LOGIN = "login.do";
-
  
- var loginXForm;
+		var loginXForm;
 
- function loadInitData() {
+		function loadInitData() {
         var str = [];
         str[str.length] = "<xform>";
         str[str.length] = "    <declare>";
@@ -76,8 +72,7 @@ URL_CORE = "../";
         Cache.XmlDatas.add(CACHE_LOGIN_FORM, loginFormXML);
 
 				// 初始化登录xform
-				loginXForm = $X("loginForm")
-				loginXForm.load(loginFormXML.node); 
+				loginXForm = $X("loginForm", loginFormXML)
 				
 				$("userName").onblur = function() { 
 					var value = this.value;
@@ -98,24 +93,21 @@ URL_CORE = "../";
                 function:callback     回调方法
      */
     function getUserName(loginName, callback) {
-		callback("Jon", "11111"); return;
-	
-        var p = new HttpRequestParams();
-        p.url = URL_GET_USER_NAME;
-		p.setContent("loginName", loginName);
-		p.setHeader("appCode", APP_CODE);
+				callback("Jon", "11111"); return;
 
-        var request = new HttpRequest(p);
-        request.onexception = function() {
-            loginXForm.setFocus();
-        }
-        request.onresult = function(){
-            var userName   = this.getNodeValue(XML_USER_NAME);
+				Ajax({
+					url : URL_GET_USER_NAME,
+					headers : {"appCode": APP_CODE},
+					contents : {"loginName": loginName}, 
+					onresult : function() { 
+						var userName   = this.getNodeValue(XML_USER_NAME);
             var identifier = this.getNodeValue(XML_CLASS_NAME);
-
             callback(userName, identifier);
-        }
-        request.send();
+					},
+					onexception : function() {
+						loginXForm.setFocus();
+					}
+				});	
     }
 
     function login() {

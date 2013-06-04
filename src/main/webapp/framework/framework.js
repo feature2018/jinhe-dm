@@ -2,11 +2,34 @@
  * 当前应用名 
  */
 APP_CODE    = "TSS";
-CONTEXTPATH = "tss/";
-APPLICATION = "tss";
+APPLICATION = APP_CODE.toLowerCase();
+CONTEXTPATH = APPLICATION + "/";
 
-// URL_CORE = "/" + APPLICATION + "/common/";  // 界面核心包相对路径
-URL_CORE = "";  // 界面核心包相对路径
+URL_CORE = "/" + APPLICATION + "/framework/";  // 界面核心包相对路径
+
+IS_TEST = false;
+
+
+/* 
+ * 常量定义
+ */
+XML_OPERATION = "Operation";
+XML_PAGE_INFO = "PageInfo";
+
+OPERATION_ADD  = "新建$label";
+OPERATION_VIEW = "查看\"$label\"";
+OPERATION_DEL  = "删除\"$label\"";
+OPERATION_EDIT = "编辑\"$label\"";
+OPERATION_SEARCH = "查询\"$label\"";
+
+/* 延时 */
+TIMEOUT_TAB_CHANGE = 200;
+TIMEOUT_GRID_SEARCH = 200;
+
+/* 默认唯一编号名前缀 */
+CACHE_TREE_NODE = "_treeNode_";
+CACHE_MAIN_TREE = "_tree_";
+CACHE_TOOLBAR   = "_toolbar_";
 
 
 /*
@@ -25,32 +48,29 @@ document.oncontextmenu = function(eventObj) {
  *	用户信息初始化
  */
 function initUserInfo() {
-	var p = new HttpRequestParams();
-	p.url = "um/user!getOperatorInfo.action";
-	p.setHeader("appCode", APP_CODE);
-	p.setHeader("anonymous", "true");
+	if( true ) return;
 
-	var request = new HttpRequest(p);
-	request.onresult = function() {
-		var userName = this.getNodeValue("name");
-		$("userInfo").innerText = userName;
-	}
-	request.send();
+	Ajax({
+		url : "um/user!getOperatorInfo.action",
+		method : "POST",
+		headers : {"appCode": APP_CODE},
+		contents : {"anonymous": "true"}, 
+		onresult : function() {
+			var userName = this.getNodeValue("name");
+			$("userInfo").innerText = userName;
+		}
+	});
 }
 
-
-URL_LOGOUT = "../logout.in";
-
 function logout() {
-	var p = new HttpRequestParams();
-	p.url = URL_CORE + URL_LOGOUT;
-
-	var request = new HttpRequests(p);
-	request.onsuccess = function() {
-		Cookie.del("token", "/" + CONTEXTPATH);
-		location.href = URL_CORE + "../login.htm";
-	}
-	request.send();
+	Ajax({
+		url : URL_CORE + "../logout.in",
+		method : "GET",
+		onsuccess : function() { 
+			Cookie.del("token", "/" + CONTEXTPATH);
+			location.href = URL_CORE + "../login.htm";
+		}
+	});
 }
 
 // 关闭页面时候自动注销
@@ -70,23 +90,20 @@ function logoutOnClose() {
 			string:loginName                登录名
  */
 function checkPasswordSecurityLevel(formObj, url, password, loginName) {
-	var p = new HttpRequestParams();
-	p.url = url;
-	p.setHeader("appCode", APP_CODE);
-	p.setContent("password", password);
-	p.setContent("loginName", loginName);
-
-	var request = new HttpRequest(p);
-	request.onresult = function(error) {
-		var securityLevel = this.getNodeValue(XML_SECURITY_LEVEL);
-		formObj.securityLevel = securityLevel;
-
-		showPasswordSecurityLevel(formObj);
-	}
-	request.onsuccess = function() {
-		formObj.securityLevel = null;
-	}
-	request.send();
+	Ajax({
+		url : url,
+		method : "POST",
+		headers : {"appCode": APP_CODE},
+		contents : {"password": password, "loginName": loginName}, 
+		onresult : function() {
+			var securityLevel = this.getNodeValue(XML_SECURITY_LEVEL);
+			formObj.securityLevel = securityLevel;
+			showPasswordSecurityLevel(formObj);
+		},
+		onsuccess : function() { 
+			formObj.securityLevel = null;
+		}
+	});
 }
 
 /*
@@ -115,14 +132,14 @@ function delCacheData(cacheID, flag) {
 
 	if( flag ) {
 		for(var i=0; cacheData && i < cacheData.length; i++) {
-			Cache.XmlIslands.del(cacheData[i]);
+			Cache.XmlDatas.del(cacheData[i]);
 		}
 	}
 }
 
 
 var ws;
-function initWorkSpace(hide) {
+function initWorkSpace() {
 	ws = new WorkSpace($("ws"));
 	 
 	$("ws").onTabCloseAll = function(event) {
@@ -172,12 +189,9 @@ function initListContainerResize() {
 
 
 var toolbar;
-/*
- *	工具条初始化
- */
+ 
 function initToolBar() {
-	var tbObj = $("toolbar");
-	toolbar = ToolBars.create(tbObj);
+	toolbar = ToolBars.create($("toolbar"));
 }
 
 /*
@@ -326,6 +340,18 @@ function getTreeAttribute(name) {
 		return treeNode.getAttribute(name);
 	}
 	return null;   
+}
+
+function getTreeNodeId() {
+	return getTreeAttribute("id");
+}
+
+function isTreeNodeDisabled() {
+	return getTreeAttribute("disabled") == "1";
+}
+
+function isTreeRoot() {
+	return "_rootId" == getTreeNodeId();
 }
 
 /*
@@ -538,8 +564,8 @@ function addTreeNode(fromTreeObj, toTreeObj, checkFunction) {
  */
 function hasSameAttributeTreeNode(treeObj, attrName, attrValue) {
 	var flag = new Boolean(false);
-	var xmlIsland = treeObj.getTreeNodeById("_rootId").node;
-	var treeNode = xmlIsland.selectSingleNode(".//treeNode[@" + attrName + "='" + attrValue + "']");
+	var root = treeObj.getTreeNodeById("_rootId").node;
+	var treeNode = root.selectSingleNode(".//treeNode[@" + attrName + "='" + attrValue + "']");
 	if( treeNode ) {
 		flag = new Boolean(true);
 		flag.treeNode = treeNode;
@@ -573,133 +599,11 @@ function showTreeNodeStatus(params) {
 	}
 }
 
-
-/*
- *	初始化翻页工具条
- *	参数：	object:toolbarObj       工具条对象
-			XmlNode:xmlIsland       XmlNode实例
-			function:callback       回调函数
- *	返回值：
- */
-function initGridToolBar(toolbarObj, xmlIsland, callback) {
-	//初始化
-	toolbarObj.init = function() {
-		this.clear();
-		this.create();
-		this.attachEvents();
-	}
-	
-	//清空内容
-	toolbarObj.clear = function() {
-		this.innerHTML = "";
-	}
-	
-	//创建按钮
-	toolbarObj.create = function() {
-		var totalpages = toolbarObj.getTotalPages();
-		var curPage = toolbarObj.getCurrentPage();
-
-		var str = [];
-		str[str.length] = "<span class=\"button refresh\" id=\"GridBtRefresh\" title=\"刷新\"></span>";
-		str[str.length] = "<span class=\"button first\"   id=\"GridBtFirst\"   title=\"第一页\"></span>";
-		str[str.length] = "<span class=\"button prev\"    id=\"GridBtPrev\"    title=\"上一页\"></span>";
-		str[str.length] = "<span class=\"button next\"    id=\"GridBtNext\"    title=\"下一页\"></span>";
-		str[str.length] = "<span class=\"button last\"    id=\"GridBtLast\"    title=\"最后一页\"></span>";
-		
-		str[str.length] = "<select id=\"GridPageList\">";
-		for(var i=0; i <= totalpages; i++) {
-			str[str.length] = "  <option value=\"" + i + "\"" + (curPage == i ? " selected" : "") + ">" + i + "</option>";
-		}
-		str[str.length] = "</select>";
-
-		this.innerHTML = str.join("");
-	}
-	
-	//绑定事件
-	toolbarObj.attachEvents = function() {
-		var gridBtRefreshObj = $("GridBtRefresh");
-		var gridBtFirstObj   = $("GridBtFirst");
-		var gridBtPrevObj    = $("GridBtPrev");
-		var gridBtNextObj    = $("GridBtNext");
-		var gridBtLastObj    = $("GridBtLast");
-		var gridPageListObj  = $("GridPageList");
-
-		Event.attachEvent(gridBtRefreshObj, "click", function() {
-			var curPage = toolbarObj.getCurrentPage();
-			toolbarObj.gotoPage(curPage);
-		});
-		Event.attachEvent(gridBtFirstObj, "click", function() {
-			toolbarObj.gotoPage("1");
-		});
-		Event.attachEvent(gridBtLastObj, "click", function() {
-			var lastpage = toolbarObj.getLastPage();
-			toolbarObj.gotoPage(lastpage);
-		});
-		Event.attachEvent(gridBtNextObj, "click", function() {
-			var curPage = toolbarObj.getCurrentPage();
-			var lastpage = toolbarObj.getLastPage();
-			var page = lastpage;
-			if(curPage < lastpage) {
-				page = curPage + 1;
-			}
-			toolbarObj.gotoPage(page);
-		});
-		Event.attachEvent(gridBtPrevObj, "click", function() {
-			var curPage = toolbarObj.getCurrentPage();
-			var page = 1;
-			if(curPage > 1) {
-				page = curPage - 1;
-			}
-			toolbarObj.gotoPage(page);
-		});
-		Event.attachEvent(gridPageListObj, "change", function() {
-			toolbarObj.gotoPage(gridPageListObj.value);
-		});
-	}
-	
-	//获取当前页码
-	toolbarObj.getCurrentPage = function() {
-		var currentpage = xmlIsland.getAttribute("currentpage");
-		if(null == currentpage) {
-			currentpage = 1;
-		} else {
-			currentpage = parseInt(currentpage);
-		}
-		return currentpage;
-	}
-	
-	//获取最后一页页码
-	toolbarObj.getLastPage = function() {
-		var lastpage = this.getTotalPages();
-		if(null == lastpage) {
-			lastpage = 1;
-		} else {
-			lastpage = parseInt(lastpage);
-		}
-		return lastpage;
-	}
-	
-	//获取总页码
-	toolbarObj.getTotalPages = function() {
-		var totalpages = xmlIsland.getAttribute("totalpages");
-		if(null == totalpages) {
-			totalpages = 1;
-		} else {
-			totalpages = parseInt(totalpages);
-		}
-		return totalpages;
-	}
-	
-	//转到指定页
-	toolbarObj.gotoPage = function(page) {
-		callback(page);
-	}
-	
-	toolbarObj.init();
+function showTreeNodeInfo() {
+	showTreeNodeStatus(
+		{id:"ID", name:"名称", creator:"创建者", createdTime:"创建时间", updator:"修改者", updatedTime:"修改时间"}
+	);
 }
-
-
-
 
 
 /*
@@ -715,7 +619,7 @@ function enableButton(btObj) {
 	btObj.disabled = false;
 }
 /*
- *	同步按钮禁止/允许状态
+ *	request请求期间，同步按钮禁止/允许状态
  */
 function syncButton(btObjs, request) {
 	for(var i=0; i < btObjs.length; i++) {
@@ -730,40 +634,75 @@ function syncButton(btObjs, request) {
 }
 
 
-
 /*
  *	初始化导航条
  *	参数：	string:curId       当前菜单项id
  */
-function initNaviBar(curId) {	
+function initNaviBar(curId, relativePath) {	
 	var isModule = (window.location.href.indexOf("module") > 0);
-	var relativePath = isModule ? "../../" : "../";
+	relativePath = relativePath || (isModule ? "../../../" : "../");
 
-	var p = new HttpRequestParams();
-	p.url = relativePath + "navi.xml";
+	Ajax({
+		url : relativePath + "navi.xml",
+		method : "GET",
+		onresult : function() {
+			var data = this.getNodeValue("NaviInfo");
 
-	var request = new HttpRequest(p);
-	request.onresult = function() {
-		var data = this.getNodeValue("NaviInfo");
+			var str = [];
+			var menuItems = data.selectNodes("MenuItem");
+			for(var i=0; i < menuItems.length; i++) {
+				var menuItem = menuItems[i];
+				var id   = menuItem.getAttribute("id");
+				var href = menuItem.getAttribute("href");
+				var name = menuItem.getAttribute("name");
 
-		var str = [];
-		var menuItems = data.selectNodes("MenuItem");
-		for(var i=0; i < menuItems.length; i++) {
-			var menuItem = menuItems[i];
-			var id   = menuItem.getAttribute("id");
-			var href = menuItem.getAttribute("href");
-			var name = menuItem.getAttribute("name");
-
-			if( false == /^javascript\:/.test(href) ) {
-				href = relativePath + href;
+				if( false == /^javascript\:/.test(href) ) {
+					href = relativePath + href;
+				}
+				
+				var cssStyle = (curId == id) ? "naviActive" : "navi";
+				str[str.length] = "<a href=\"" + href + "\" class=\"" + cssStyle + "\">" + name + "</a>";
 			}
-			
-			var cssStyle = (curId == id) ? "naviActive" : "navi";
-			str[str.length] = "<a href=\"" + href + "\" class=\"" + cssStyle + "\">" + name + "</a>";
+			$("navibar").innerHTML = str.join(" ");
 		}
-		$("navibar").innerHTML = str.join(" ");
-	}
-	request.send();
+	});
+}
+
+function initBlocks(){
+	var paletteObj = $("palette");
+	Blocks.create(paletteObj);
+
+	var treeContainerObj = $("treeContainer");
+	Blocks.create(treeContainerObj,treeContainerObj.parentNode);
+
+	var statusContainerObj = $("statusContainer");
+	Blocks.create(statusContainerObj, statusContainerObj.parentNode, false);
+
+	//状态信息区实例继承WritingBlock可写功能
+	var block = Blocks.getBlock("statusContainer");
+	if( block ){
+		block.inherit(WritingBlock);
+	}     
+}
+
+function initFocus(){
+	var treeTitleObj = $("treeTitle");
+	var statusTitleObj = $("statusTitle");
+
+	Focus.register(treeTitleObj.firstChild);
+	Focus.register(statusTitleObj.firstChild);
+}
+
+/*
+ *	事件绑定初始化
+ */
+function initEvents() {
+	Event.attachEvent($("treeBtRefresh"), "click", onClickTreeBtRefresh);
+	Event.attachEvent($("treeTitleBt"),   "click", onClickTreeTitleBt);
+	Event.attachEvent($("statusTitleBt"), "click", onClickStatusTitleBt);
+	Event.attachEvent($("paletteBt"),     "click", onClickPaletteBt);
+	Event.attachEvent($("treeTitle"),     "click", onClickTreeTitle);
+	Event.attachEvent($("statusTitle"),   "click", onClickStatusTitle);
 }
 
 /*
@@ -774,11 +713,46 @@ function initNaviBar(curId) {
 function clearOperation(treeNode, clearChildren) {
 	treeNode.removeAttribute("_operation");
 
-	if(false != clearChildren) {
+	if( clearChildren != false ) {
 		var childs = treeNode.selectNodes(".//treeNode");
-		for(var i=0,iLen=childs.length;i<iLen;i++) {
+		for(var i=0; i < childs.length; i++) {
 			childs[i].removeAttribute("_operation");
 		}
 	}
 }
 
+/*
+ *	工具条加载数据
+ *	参数：	string:_operation      操作权限
+			string:contentXML      工具条具体内容
+ */
+function _loadToolBar(_operation, contentXML) {
+	var toolbarXML = Cache.XmlDatas.get(CACHE_TOOLBAR);
+	if( toolbarXML == null ) { // 还没有就创建
+		var xmlReader = new XmlReader(contentXML);
+		toolbarXML = new XmlNode(xmlReader.documentElement);
+		Cache.XmlDatas.add(CACHE_TOOLBAR, toolbarXML);
+		toolbar.loadXML(toolbarXML); // 载入工具条
+	}
+
+	// 控制显示
+	var buttons = toolbarXML.selectNodes("./button");
+	for(var i=0; i < buttons.length; i++) {
+		var curButton = buttons[i];
+		var id = curButton.getAttribute("id");
+		var code = curButton.getAttribute("code");
+		var enableStr = curButton.getAttribute("enable");
+		
+		var visible = true;
+		if("string" == typeof(_operation)) {
+			var reg = new RegExp("(^" + code + ",)|(^" + code + "$)|(," + code + ",)|(," + code + "$)", "gi");
+			visible = reg.test(_operation);
+		}
+		toolbar.setVisible(id, visible); // 按钮是否显示
+
+		if( visible ) {
+			var enable = Public.executeCommand(enableStr);
+			toolbar.enable(id, enable); // 按钮是否禁用
+		}
+	}
+}

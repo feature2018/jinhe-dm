@@ -47,7 +47,7 @@ public class SQLParser {
         String fieldsStr = sql.substring(selectIndex + 7, fromIndex);
         String[] fileds = fieldsStr.split(",");
         for(String filed : fileds) {
-            StringTokenizer st = new StringTokenizer(filed); 
+            StringTokenizer st = new StringTokenizer(filed.trim()); 
             
             String displayName = "";
             while (st.hasMoreElements()) {

@@ -572,9 +572,9 @@ MenuItem.prototype.refresh = function() {
 /*
  *	函数说明：执行菜单项回调方法
  */
-MenuItem.prototype.execCallBack = function() {
+MenuItem.prototype.execCallBack = function(event) {
 	if(this.isEnable) {
-		Public.executeCommand(this.callback);
+		Public.executeCommand(this.callback, event);
 	}
 }
 
@@ -733,7 +733,7 @@ function _Menu_Item_onCallBack(srcElement, eventObj) {
 			if(menuItem.callback) {
 				_Menu_onCloseAll();
 			}
-			menuItem.execCallBack();
+			menuItem.execCallBack(eventObj);
 
 			if(null == menuItem.submenu) {
 				Menus.inactiveAllMenus();
