@@ -14,6 +14,7 @@
     scrollbar-face-color: #BEC6EE;
   }
 
+
   td {
     color: #000000;
     font-size: 12px; 
@@ -159,7 +160,7 @@
   }
   /* 左栏 */
   #palette {
-    width: 170px;
+    width: 15%;
     height: 100%;
     padding-right: 5px;
   }
