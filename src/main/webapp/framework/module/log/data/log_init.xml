@@ -4,9 +4,9 @@
 	<AppTree>
 		<actionSet title="" openednodeid="r1.1">
             <treeNode name="全部" id="_rootId" _open="true">
-                <treeNode id="1" name="CMS" icon="images/app.gif" href=""/>
-                <treeNode id="2" name="PMS" icon="images/app.gif" href=""/>
-                <treeNode id="3" name="UMS" icon="images/app.gif" href=""/>
+                <treeNode id="1" name="应用1" icon="images/app.gif" href=""/>
+                <treeNode id="2" name="应用2" icon="images/app.gif" href=""/>
+                <treeNode id="3" name="应用3" icon="images/app.gif" href=""/>
             </treeNode>
 		</actionSet>
 	</AppTree>

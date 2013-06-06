@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
+<HTML xmlns:Tree xmlns:Grid xmlns:XForm>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>WMSX--业务报表</title>
@@ -33,126 +33,46 @@ URL_CORE = "framework/";
     /*
      *	后台响应数据节点名称
      */
-    XML_MAIN_TREE = "AppTree";
-    XML_LOG_LIST = "LogList";
-    XML_LOG_INFO = "LogInfo";
-
-    /*
-     *	默认唯一编号名前缀
-     */
-    CACHE_VIEW_GRID_ROW_DETAIL = "viewRow__id";
+    XML_SOURCE_TREE = "SourceTree";
+    XML_REPORT_DATA = "ReportData";
+    XML_SOURCE_INFO = "SourceInfo";
  
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_INIT       = "report/list";
-    URL_LOG_LIST   = "report/";
-    URL_LOG_DETAIL = "report/item/";
+	URL_SOURCE_TREE = "report/list";
+    URL_REPORT_DATA = "report/";
+    URL_SOURCE_INFO = "report/item/";
 
 	if(IS_TEST || true) {
-		URL_INIT = "data/report_init.xml";
-		URL_LOG_LIST = "data/reportData.xml";
-		URL_LOG_DETAIL = "data/report1.xml";
+		URL_SOURCE_TREE = "data/report_init.xml?";
+		URL_REPORT_DATA = "data/reportData2.xml?";
+		URL_SOURCE_INFO = "data/report1.xml?";
 	}
 	
     /* 页面初始化 */
     function init() {
 		initPaletteResize();
 		initListContainerResize();
-		initUserInfo();
 
 		initNaviBar("wmsx.1", " ");
 		initMenus();
 		initBlocks();
-		initWorkSpace();
 		initEvents();
 		initFocus();
 
 		loadInitData();
     }
- 
-    /* 菜单初始化 */
-    function initMenus() {
-		/* 树菜单初始化  */
-		var item1 = {
-			label:"浏览日志",
-			callback:showLogList,
-			icon:"images/view_list.gif",
-			enable:function() {return true;},
-			visible:function() {return !isTreeRoot();}
-		}
-		var item2 = {
-			label:"搜索日志",
-			callback:searchLog,
-			icon:"images/search.gif",
-			enable:function() {return true;},
-			visible:function() {return !isTreeRoot();}
-		}
-
-		var treeObj = $("tree");
-
-		var menu = new Menu();
-		menu.addItem(item1);
-		menu.addItem(item2);
-		treeObj.contextmenu = menu;
-
-		/* Grid菜单初始化  */
-		var gridObj = $("grid");
-		var item1 = {
-			label:"查看",
-			callback:function() {
-					showLogInfo(false);
-			},
-			icon:"images/view.gif",
-			enable:function() {return true;},
-			visible:function() {return true;}
-		}
-
-		var menu = new Menu();
-		menu.addItem(item1);
-		gridObj.contextmenu = menu;
-    }
-
-    function initBlocks() {
+	    
+	function initBlocks() {
         var paletteObj = $("palette");
         Blocks.create(paletteObj);
 
         var treeContainerObj = $("treeContainer");
         Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
     }
-
-	function loadInitData() {
-        var onresult = function() {
-            var tree = $T("tree", this.getNodeValue(XML_MAIN_TREE));
-
-			var treeElement = $("tree");
-            treeElement.onTreeNodeActived = function(eventObj) {
-                Focus.focus($("treeTitle").firstChild.id);
-            }
-            treeElement.onTreeNodeDoubleClick = function(eventObj) {
-               if( !isTreeRoot() ) {
-					showLogList();
-				}
-            }
-            treeElement.onTreeNodeRightClick = function(eventObj) {
-				var treeObj = $("tree");
-				if(treeObj.contextmenu) {
-					treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
-				}
-            }
-        }
-
-        Ajax({url : URL_INIT, method : "GET", onresult : onresult});
-    }
 	
-    function getTreeId() {
-        var treeNode = $T("tree").getActiveTreeNode();
-        if( treeNode ) {
-            return treeNode.getId();
-        }
-    }
-	
-    function initFocus() {
+	function initFocus() {
         Focus.register($("treeTitle").firstChild);
         Focus.register($("gridTitle"));
     }
@@ -162,21 +82,160 @@ URL_CORE = "framework/";
         Event.attachEvent($("treeTitle"), "click", onClickTreeTitle);
         Event.attachEvent($("gridTitle"), "click", onClickGridTitle);
     }
+ 
+    /* 菜单初始化 */
+    function initMenus() {
+		/* 树菜单初始化  */
+		var item1 = {
+			label:"报表查询",
+			callback:searchReport,
+			icon:"framework/images/search.gif",
+			enable:function() {return true;},
+			visible:function() {return isReport();}
+		}
+		var item2 = {
+			label:"修改",
+			callback:modifyReport,
+			icon:"framework/images/icon_edit.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot()}
+		}
+		var item3 = {
+			label:"新增报表",
+			callback:addReport,
+			icon:"framework/images/new_article.gif",
+			enable:function() {return true;},
+			visible:function() {return isReportGroup() || isTreeRoot();}
+		}
+		var item4 = {
+			label:"新增分组",
+			callback:addReport,
+			icon:"framework/images/new_folder.gif",
+			enable:function() {return true;},
+			visible:function() {return isReportGroup() || isTreeRoot();}
+		}
+		var item5 = {
+			label:"删除",
+			callback:deleteReport,
+			icon:"framework/images/icon_del.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot()}
+		}
+		var item6 = {
+			label:"复制到",
+			callback:deleteReport,
+			icon:"framework/images/icon_copy.gif",
+			enable:function() {return true;},
+			visible:function() {return isReport()}
+		}
+		var item7 = {
+			label:"移动到",
+			callback:deleteReport,
+			icon:"framework/images/icon_move.gif",
+			enable:function() {return true;},
+			visible:function() {return isReport()}
+		}
 
-    /*
-     *	grid加载数据
-     */
+		var treeObj = $("tree");
+
+		var menu = new Menu();
+		menu.addItem(item1);
+		menu.addItem(item2);
+		menu.addItem(item3);
+		menu.addItem(item4);
+		menu.addItem(item5);
+		menu.addSeparator();
+		menu.addItem(item6);
+		menu.addItem(item7);
+		
+		treeObj.contextmenu = menu;
+    }
+	
+	function getTreeId() {
+        var treeNode = $T("tree").getActiveTreeNode();
+        return treeNode.getId();
+    }
+	
+	function isReportGroup() {
+		var treeNode = $T("tree").getActiveTreeNode(); 
+		return "true" == treeNode.getAttribute("isGroup");
+	}
+	
+	function isReport() {
+		return !isTreeRoot() && !isReportGroup();
+	}
+
+	function loadInitData() {
+        var onresult = function() {
+            var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));
+
+			var treeElement = $("tree");
+            treeElement.onTreeNodeActived = function(eventObj) {
+                Focus.focus($("treeTitle").firstChild.id);
+            }
+            treeElement.onTreeNodeDoubleClick = function(eventObj) {
+               if( isReport() ) {
+					searchReport();
+				}
+            }
+            treeElement.onTreeNodeRightClick = function(eventObj) {
+				if($("tree").contextmenu) {
+					$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY);                
+				}
+            }
+        }
+
+        Ajax({url : URL_SOURCE_TREE, method : "GET", onresult : onresult});
+    }
+	
+	function addReport() {
+	}
+	
+	function modifyReport() {
+	}
+	
+	function deleteReport() {
+	}
+	
+	function copyReportTo() {
+	}
+	
+	function moveReport() {
+	}
+		
+	
+    function searchReport() {
+        var treeNode = $T("tree").getActiveTreeNode();
+		var treeID = treeNode.getId();
+		var treeName = treeNode.getName();
+		
+		var p = new HttpRequestParams();
+		
+		var condition = window.showModalDialog("searchlog.htm", {applicationId:treeID, title:"搜索\"" + treeName + "\"下的日志"}, "dialogWidth:250px;dialogHeight:250px;");
+		if( condition ) { 
+			Cache.Variables.add("condition", condition);
+			
+			
+			var xmlReader = new XmlReader(condition.dataXml);
+			var dataNode  = new XmlNode(xmlReader.documentElement);
+			p.setXFormContent(dataNode, condition.prefix);
+			
+		} 
+		
+		loadGridData(p, treeID, "1"); 
+    }
+	
     function loadGridData(p, treeID, page) {
-		p.url = URL_LOG_LIST + page || "1";
+		p.url = URL_REPORT_DATA + page || "1";
 		var request = new HttpRequest(p);
 		request.onresult = function() {
-			$G("grid", this.getNodeValue(XML_LOG_LIST)); 
+			$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 
 			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 			initGridToolBar($("gridToolBar"), pageListNode, function(page) {
-				request.params.url = URL_LOG_LIST + page;
+				request.params.url = URL_REPORT_DATA + page;
 				request.onresult = function() {
-					$G("grid", this.getNodeValue(XML_LOG_LIST)); 
+					$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 				}				
 				request.send();
 			} );
@@ -191,101 +250,23 @@ URL_CORE = "framework/";
 			gridElement.onScrollToBottom = function () {			
 				var currentPage = request.getParamValue("page");
 				var nextPage = parseInt(currentPage) + 1; 
-				request.params.url = URL_LOG_LIST + nextPage;
+				request.params.url = URL_REPORT_DATA + nextPage;
 				request.onresult = function() {
-					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
+					$G("grid").load(this.getNodeValue(XML_REPORT_DATA), true);
 				}				
 				request.send();
 			}
 		}
 		request.send();
-    }
-	
-	function showLogList() {		
-	    var appCode = getTreeId();
-		var p = new HttpRequestParams();
-		p.setContent("appCode", appCode);
-		loadGridData(p, appCode, "1"); 
-    }
-
-    function searchLog() {
-        var treeNode = $T("tree").getActiveTreeNode();
-        if( treeNode ) {
-            var treeID = treeNode.getId();
-            var treeName = treeNode.getName();
-            var condition = window.showModalDialog("searchlog.htm", {applicationId:treeID, title:"搜索\"" + treeName + "\"下的日志"}, "dialogWidth:250px;dialogHeight:250px;");
-            if( condition ) { 
-                Cache.Variables.add("condition", condition);
-				
-                var p = new HttpRequestParams();
-				var xmlReader = new XmlReader(condition.dataXml);
-				var dataNode  = new XmlNode(xmlReader.documentElement);
-				p.setXFormContent(dataNode, condition.prefix);
-				loadGridData(p, treeID, "1"); 
-            }
-        }
-    }
-
-    /*
-     *	显示日志详细信息
-     *	参数：	boolean:editable            是否可编辑(默认true)
-     */
-    function showLogInfo() {		
-		var rowIndex = $("grid").selectRowIndex; 
-		var row = $G("grid").getRowByIndex(rowIndex);
-		var rowID = row.getAttribute("id");  
-		var rowName = "日志";
-		
-		var wsContainer = $("ws").parentElement.parentElement;
-        var callback = {};
-		callback.onTabClose = function(eventObj){
-			if( ws.noTabOpend() ) {
-				wsContainer.style.display = "none";
-			}            
-        };
-        callback.onTabChange = function() {
-            setTimeout(function() {
-                loadLogDetailData(rowID);
-            }, TIMEOUT_TAB_CHANGE);
-        };
-
-        var inf = {};
-		inf.label = OPERATION_VIEW.replace(/\$label/i, rowName);
-        inf.SID = CACHE_VIEW_GRID_ROW_DETAIL + rowID;
-        inf.defaultPage = "page1";
-        inf.phases = null;
-        inf.callback = callback;
-        var tab = ws.open(inf);       
-		
-		wsContainer.style.display = "inline";
-    }
-	
-    /*
-     *	日志详细信息加载数据
-     */
-    function loadLogDetailData(logId) {
-		Ajax({
-			url : URL_LOG_DETAIL + logId,
-			method : "GET",
-			onresult : function() { 
-				var logInfoNode = this.getNodeValue(XML_LOG_INFO);
-				var page1FormObj = $X("page1Form", logInfoNode);
-
-				$("page1BtPrev").style.display = "none";
-				$("page1BtNext").style.display = "none";
-				$("page1BtSave").style.display = "none";
-				// $("page1BtSave").disabled = true;
-			}
-		});
-    }
+    } 
+ 
 	
 	
     window.onload = init;
 
-	//关闭页面自动注销
     window.attachEvent("onunload", function() {
-        if(10000<window.screenTop || 10000<window.screenLeft) {
-            logout();
+        if(10000 < window.screenTop || 10000 < window.screenLeft) {
+            logout(); // 关闭页面自动注销
         }
 	});
 
@@ -296,8 +277,7 @@ URL_CORE = "framework/";
 
 <body>
 
-<!-- 版面 开始 -->
-<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+<table class="panel" cellpadding="0" cellspacing="0">
   <tr class="header"> 
 	<td class="left"></td>
 	<td class="center"></td>
@@ -306,23 +286,21 @@ URL_CORE = "framework/";
   <tr class="body"> 
 	<td class="left"></td>
 	<td class="center">
-	  <!-- 版面内容 开始 -->
-	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+	  <!-- 版面内容-->
+	  <table class="full"  border="0" cellpadding="0" cellspacing="0">
 		<tr> 
-		  <td height="20" colspan="2">
-			  <!-- 主菜单 开始 -->
+		  <td height="20"> <!-- 主菜单 -->
 			  <div id="navibar"><div class="loading"></div></div>
-			  <!-- 主菜单 结束 -->
 			</td>			
 		</tr>
 		<tr> 
-		  <td class="separator" colspan="2"></td>
+		  <td class="separator"></td>
 		</tr>
 
-		<tr> 
+		<tr> <td><table  class="full" cellpadding="0" cellspacing="0"><tr>
 			<td id="palette">
-			  <!-- 左栏 开始 -->
-			  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+			  <!-- 左栏 -->
+			  <table class=" border full">
 				<tr id="treeTitle" class="bar"> 
 				  <td class="opened">
 					<span class="icon"></span>资源<span class="button refresh" id="treeBtRefresh" title="刷新"></span></span>
@@ -330,70 +308,27 @@ URL_CORE = "framework/";
 				</tr>
 				<tr>
 				  <td id="treeContainer">
-					<!-- tree 开始 -->
 					<Tree:Box id="tree" treeType="menu" baseurl="framework/tree/"><div class="loading"></div></Tree:Box>
-					<!-- tree 结束 -->
 				  </td>
 				</tr>
 			  </table>                        
-			  <!-- 左栏 结束 -->
 			</td>
-			<td>
-			  <table class="full" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-				  <td id="listContainer" class="gridContainer">
-					<!-- 列表区域 开始 -->
-					<table class="full border" border="0" cellspacing="0" cellpadding="0">
-					  <tr>
-						<td id="gridTitle">
-						  <span class="icon"></span>报表查询结果<span class="buttonBox" id="gridToolBar"></span>
-						</td>
-					  </tr>
-					  <tr>
-						<td>
-						  <!-- grid 开始 -->
-						   <Grid:Box id="grid" baseurl="framework/grid/"><div class="loading"></div></Grid:Box>
-						  <!-- grid 结束 -->
-						</td>
-					  </tr>
-					</table>
-					<!-- 列表区域 结束 -->
-				  </td>
-				</tr>
-
-				<tr style="display:none">
-				  <td>
-					<!-- 标签区域 开始 -->
-					<WorkSpace:Box id="ws" baseurl="framework/workspace/">
-					  <!-- page1 开始 -->
-					  <WorkSpace:Page id=page1>
-						<table class="full" border="0" cellspacing="0" cellpadding="0">
-						  <tr valign="top">
-							<td>
-							  <!-- xform 开始 -->
-							  <XForm:Box id="page1Form" baseurl="framework/xform/" editable="false"><div class="loading"></div></XForm:Box>
-							  <!-- xform 结束 -->
-							</td>
-						  </tr>
-						  <tr height="20">
-							<td>
-							  <WorkSpace:PageStep>
-								<input type="button" class="btStrong" value="完成" id="page1BtSave"/>
-							  </WorkSpace:PageStep>
-							</td>
-						  </tr>
-						</table>
-					  </WorkSpace:Page>
-					  <!-- page1 结束 -->
-					</WorkSpace:Box>
-					<!-- 标签区域 结束 -->
-				  </td>
-				</tr>
-			  </table>
+			<td id="listContainer" class="gridContainer">
+				<table class="full border" cellpadding="0" cellspacing="0">
+				  <tr>
+					<td id="gridTitle">
+					  <span class="icon"></span>报表查询结果<span class="buttonBox" id="gridToolBar"></span>
+					</td>
+				  </tr>
+				  <tr>
+					<td>
+					   <Grid:Box id="grid" baseurl="framework/grid/"></Grid:Box>
+					</td>
+				  </tr>
+				</table>
 			</td>
-		  </tr>
+		  </tr></table></td></tr>
 	  </table>            
-	  <!-- 版面内容 结束 -->
 	</td>
 	<td class="right"></td>
   </tr>
@@ -403,7 +338,14 @@ URL_CORE = "framework/";
 	<td class="right"></td>
   </tr>
 </table>
-<!-- 版面 结束 -->
+
+<div style="display:none">
+	<XForm:Box id="reportForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+</div>
+
+<div style="display:none">
+	<XForm:Box id="searchForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+</div>
 
 </body>
 </html>

@@ -56,14 +56,13 @@ function loadInitData() {
 		var mainTreeXML = this.getNodeValue("MenuTree");
 		Cache.XmlDatas.add("MenuTree", mainTreeXML);
  	
-		var treeObj = $("tree");
-		var tree = initTree(treeObj, mainTreeXML.toXml()); 
+		var tree = $T("tree", mainTreeXML); 
 		
 		// 添加自定义树事件
-		treeObj.onTreeNodeDoubleClick = function(eventObj) {
+		$("tree").onTreeNodeDoubleClick = function(eventObj) {
 			onTreeNodeDoubleClick(eventObj);
 		}
-		treeObj.onTreeNodeRightClick = function(eventObj) {
+		$("tree").onTreeNodeRightClick = function(eventObj) {
 			onTreeNodeRightClick(eventObj);
 		}
 	}
@@ -131,8 +130,8 @@ function onTreeNodeRightClick(eventObj) {
 function showReport() {
 	var p = new HttpRequestParams();
 	p.method = "GET";
-	p.url = "display/showAsGrid/0";
-	//p.url = "data/reportData.xml";
+	//p.url = "display/showAsGrid/0";
+	p.url = "data/reportData.xml";
 
 	var request = new HttpRequest(p);
 	request.onresult = function() {

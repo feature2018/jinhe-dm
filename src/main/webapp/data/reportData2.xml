@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-	<GridData>
+	<ReportData>
         <grid>
             <declare sequence="true" header="checkbox">
                 <column caption="头像" name="icon" mode="image" align="center"/>
@@ -59,8 +59,8 @@
                 </row>
             </data>
 		</grid>
-	</GridData>
-	<PageList>
+	</ReportData>
+	<PageInfo>
         <pagelist totalpages="10" totalrecords="999" currentpage="3" pagesize="100"/>
-	</PageList>
+	</PageInfo>
 </Response>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <strategies> 
-  <strategy code="connectionpool" name="数据库连接池"> 
+  <strategy code="connectionpool1" name="数据库连接池2"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
@@ -10,7 +10,19 @@
     <disabled>0</disabled>
 	<visible>1</visible>  
     <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
-  </strategy>  
+	<paramFile>oracle1.properties</paramFile>
+  </strategy>
+  <strategy code="connectionpool2" name="数据库连接池2"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>5</initNum>  
+    <disabled>0</disabled>
+	<visible>1</visible>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
+	<paramFile>oracle2.properties</paramFile>
+  </strategy>    
   <strategy code="threadpool" name="线程池"> 
     <poolClass>com.jinhe.tss.cache.extension.threadpool.ThreadPool</poolClass>  
 	<poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>  
