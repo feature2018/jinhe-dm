@@ -33,5 +33,16 @@
     <disabled>0</disabled>  
     <customizerClass>com.jinhe.tss.cache.extension.threadpool.ThreadPoolCustomizer</customizerClass>  
   </strategy>  
+  <strategy code="taskpool" name="日志输出任务池"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>    
+    <poolSize>100</poolSize>  
+    <cyclelife>18000000</cyclelife>  
+    <interruptTime>100</interruptTime>  
+    <initNum>10</initNum>  
+    <disabled>0</disabled>  
+    <customizerClass>com.jinhe.tss.framework.component.log.LogOutputTaskPoolCustomizer</customizerClass>  
+    <accessMethod>3</accessMethod>  
+  </strategy> 
   <strategy code="SQLParser" name="SQL解析池"/>  
 </strategies>

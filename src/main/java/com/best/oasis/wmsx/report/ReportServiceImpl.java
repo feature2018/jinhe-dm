@@ -13,11 +13,11 @@ public class ReportServiceImpl implements ReportService {
     
     @Autowired ReportDao reportDao;
     
-    public List<?> getAllReport() {
+    public List<Report> getAllReport() {
         return reportDao.getAllReport();
     }
     
-    public List<?> getAllReportGroups() {
+    public List<Report> getAllReportGroups() {
         return reportDao.getAllReportGroups();
     }
 
@@ -60,7 +60,7 @@ public class ReportServiceImpl implements ReportService {
         reportDao.sort(startId, targetId, direction);
     }
 
-    public List<?> copy(Long reportId, Long groupId) {
+    public List<Report> copy(Long reportId, Long groupId) {
         Report report = getReport(reportId);
         Report group  = getReport(groupId);
         

@@ -4,21 +4,21 @@ import java.util.List;
 
 public interface ReportService {
 
-    List<?> getAllReport();
+    Report getReport(Long id);
+    
+    List<Report> getAllReport();
 
-    List<?> getAllReportGroups();
+    List<Report> getAllReportGroups();
 
     Report saveReport(Report report);
+    
+    void delete(Long id);
 
     void startOrStop(Long reportId, Integer disabled);
 
-    void delete(Long id);
-
-    Report getReport(Long id);
-
     void sort(Long startId, Long targetId, int direction);
 
-    List<?> copy(Long reportId, Long groupId);
+    List<Report> copy(Long reportId, Long groupId);
 
     void move(Long sourceId, Long targetId);
 

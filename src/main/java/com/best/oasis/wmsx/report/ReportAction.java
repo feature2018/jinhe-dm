@@ -19,7 +19,7 @@ public class ReportAction extends BaseActionSupport {
     @Autowired private ReportService reportService;
     
     @RequestMapping("/list")
-    public void get2Tree(HttpServletResponse response) {
+    public void getAllReport(HttpServletResponse response) {
         List<?> list = reportService.getAllReport();
         TreeEncoder treeEncoder = new TreeEncoder(list, new LevelTreeParser());
         print("SourceTree", treeEncoder);

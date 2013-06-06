@@ -32,13 +32,6 @@
 			<version>1.0.0</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		
 		<dependency>  
 			<groupId>org.apache.cxf</groupId>  
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>  
@@ -77,6 +70,7 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
+		
 		<dependency>  
 			<groupId>org.slf4j</groupId>  
 			<artifactId>slf4j-api</artifactId>  
@@ -87,15 +81,21 @@
 			<artifactId>slf4j-jdk14</artifactId>  
 			<version>1.7.5</version>  
 		</dependency>  
+		
 		<dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
         </dependency>
 		<dependency>
-			<groupId>Oracle</groupId>
-			<artifactId>ojdbc</artifactId>
-			<version>1.4G</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 		
 		<!--  SPRING DEPENDENCIES -->
@@ -145,6 +145,33 @@
 			<version>${spring.version}</version>
         </dependency>
 		
+		<!--  Test DEPENDENCIES -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Oracle DB driver 4 release -->
+		<dependency>
+			<groupId>Oracle</groupId>
+			<artifactId>ojdbc</artifactId>
+			<version>1.4G</version>
+		</dependency>
+		 
+		<!-- Mysql DB driver 4 release -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.6</version>
+		</dependency>
 		
 	</dependencies>
 	
