@@ -40,14 +40,26 @@ URL_CORE = "framework/";
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_SOURCE_TREE = "report/list";
-    URL_REPORT_DATA = "report/";
-    URL_SOURCE_INFO = "report/item/";
+	URL_SOURCE_TREE    = "report/list";
+    URL_REPORT_DATA    = "report/";
+    URL_SOURCE_INFO	   = "report/detail";
+	URL_SAVE_SOURCE    = "report";
+    URL_DELETE_SOURCE  = "report/";
+    URL_DISABLE_SOURCE = "report/disable/";
+    URL_SORT_SOURCE    = "report/sort/";
+    URL_COPY_SOURCE    = "report/copy/";
+    URL_MOVE_SOURCE_TO = "report/move/";
 
 	if(IS_TEST || true) {
-		URL_SOURCE_TREE = "data/report_init.xml?";
-		URL_REPORT_DATA = "data/reportData2.xml?";
-		URL_SOURCE_INFO = "data/report1.xml?";
+		URL_SOURCE_TREE    = "data/report_init.xml?";
+		URL_REPORT_DATA    = "data/reportData2.xml?";
+		URL_SOURCE_INFO    = "data/report1.xml?";
+		URL_SAVE_SOURCE    = "data/_success.xml?";
+		URL_DELETE_SOURCE  = "data/_success.xml?";
+		URL_DISABLE_SOURCE = "data/_success.xml?";
+		URL_SORT_SOURCE    = "data/_success.xml?";
+		URL_COPY_SOURCE    = "data/_success.xml?";
+		URL_MOVE_SOURCE_TO = "data/_success.xml?";
 	}
 	
     /* 页面初始化 */
@@ -90,64 +102,55 @@ URL_CORE = "framework/";
 			label:"报表查询",
 			callback:searchReport,
 			icon:"framework/images/search.gif",
-			enable:function() {return true;},
 			visible:function() {return isReport();}
 		}
 		var item2 = {
 			label:"修改",
 			callback:modifyReport,
 			icon:"framework/images/icon_edit.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot()}
 		}
 		var item3 = {
 			label:"新增报表",
 			callback:addReport,
 			icon:"framework/images/new_article.gif",
-			enable:function() {return true;},
 			visible:function() {return isReportGroup() || isTreeRoot();}
 		}
 		var item4 = {
 			label:"新增分组",
 			callback:addReport,
 			icon:"framework/images/new_folder.gif",
-			enable:function() {return true;},
 			visible:function() {return isReportGroup() || isTreeRoot();}
 		}
 		var item5 = {
 			label:"删除",
 			callback:deleteReport,
 			icon:"framework/images/icon_del.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot();}
 		}
 		var item6 = {
 			label:"复制到",
 			callback:deleteReport,
 			icon:"framework/images/icon_copy.gif",
-			enable:function() {return true;},
 			visible:function() {return isReport();}
 		}
 		var item7 = {
 			label:"移动到",
 			callback:deleteReport,
 			icon:"framework/images/icon_move.gif",
-			enable:function() {return true;},
 			visible:function() {return isReport();}
 		}
 		var item8 = {
 			label:"停用",
 			callback:disableReport,
-			icon:"framework/images/start.gif.gif",
-			enable:function() {return true;},
-			visible:function() {return !isTreeRoot();}
+			icon:"framework/images/stop.gif",
+			visible:function() {return !isTreeRoot() && !isTreeNodeDisabled();}
 		}
 		var item9 = {
-			label:"停用",
-			callback:disableReport,
-			icon:"framework/images/start.gif.gif",
-			enable:function() {return true;},
-			visible:function() {return !isTreeRoot();}
+			label:"启用",
+			callback:enableReport,
+			icon:"framework/images/start.gif",
+			visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
 		}
 
 		var treeObj = $("tree");
@@ -171,10 +174,14 @@ URL_CORE = "framework/";
         var treeNode = $T("tree").getActiveTreeNode();
         return treeNode.getId();
     }
+
+	function getTreeNodeType() {
+        return getTreeAttribute("type");
+    }
 	
 	function isReportGroup() {
 		var treeNode = $T("tree").getActiveTreeNode(); 
-		return "true" == treeNode.getAttribute("isGroup");
+		return "0" == getTreeNodeType();
 	}
 	
 	function isReport() {
@@ -213,10 +220,88 @@ URL_CORE = "framework/";
 	function deleteReport() {
 	}
 	
+	function disableReport() {
+	}
+
+	function enableReport() {
+
+	}
+
+	function enableOrDisable(status) {
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		Ajax({
+			url : URL_PARAM_DISABLE + treeNode.getId() + "/" + status,
+			onsuccess : function() { 
+				var xmlNode = new XmlNode(treeNode.node);
+				refreshTreeNodeStates(xmlNode, status);
+
+				loadToolBar(); // 刷新工具条
+			}
+		});
+    }
+
+	function sort(eventObj) {
+		var movedTreeNode = eventObj.movedTreeNode;
+        var toTreeNode = eventObj.toTreeNode;
+        var moveState  = eventObj.moveState; // -1: 目标上方, 1: 目标下方
+
+		Ajax({
+			url : URL_SORT_SOURCE + movedTreeNode.getId() + "/" + toTreeNode.getId() + "/" + moveState,
+			onsuccess : function() { 
+				 $T("tree").moveTreeNode(movedTreeNode, toTreeNode, moveState);
+			}
+		});
+	}
+
 	function copyReportTo() {
+		var treeNode = $T("tree").getActiveTreeNode();
+		var id = treeNode.getId();
+		var name = treeNode.getName();
+		var parentID = treeNode.getParent().getId();
+
+		var params = { id:id, parentID:parentID };
+		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"将【\"" + name + "\"】复制到"}, "dialogWidth:300px;dialogHeight:400px;");
+		
+		if( targetParent ) {
+			var targetParentId = targetParent.id;
+			Ajax({
+				url : URL_COPY_PARAM + id + "/" + targetParentId,
+				onresult : function() { 
+					var newNode = this.getNodeValue(XML_MAIN_TREE).selectSingleNode("treeNode");
+					appendTreeNode(targetParentId, newNode);
+				}
+			});
+		}
 	}
 	
 	function moveReport() {
+		var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		var id = treeNode.getId();
+		var name = treeNode.getName();
+		var parentID = treeNode.getParent().getId();
+
+		var params = { id:id, parentID:parentID };
+		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"将\"" + name + "\"移动到"},"dialogWidth:300px;dialogHeight:400px;");
+	   
+		if(targetParent) {
+			var targetParentId = targetParent.id;
+			Ajax({
+				url : URL_MOVE_PARAM_TO + id + "/" + targetParentId,
+				onsuccess : function() { 
+					// 移动树节点
+					var parentNode = tree.getTreeNodeById(targetParentId);
+					parentNode.node.appendChild(treeNode.node);
+
+					var xmlNode = new XmlNode(treeNode.node);
+					refreshTreeNodeStates(xmlNode, parentNode.getAttribute("disabled"));
+					clearOperation(xmlNode);
+
+					tree.reload();
+				}
+			});
+		}
 	}
 		
 	

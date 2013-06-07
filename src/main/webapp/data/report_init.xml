@@ -6,7 +6,7 @@
             <treeNode name="全部" id="_rootId" _open="true">
                 <treeNode id="0" name="进出存报表" icon="framework/images/article.gif" href=""/>
 				<treeNode id="1" name="进出存明细" icon="framework/images/article.gif" href=""/>
-				<treeNode id="4" name="库存相关" icon="framework/images/folder.gif" isGroup="true">
+				<treeNode id="4" name="库存相关" icon="framework/images/folder.gif" type="1">
 					<treeNode id="2" name="库存报表" icon="framework/images/article.gif"  href=""/>
 					<treeNode id="3" name="库存日志" icon="framework/images/article.gif" href=""/>
 				</treeNode>
