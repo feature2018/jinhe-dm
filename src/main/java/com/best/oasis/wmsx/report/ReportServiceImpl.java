@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jinhe.tss.framework.component.param.ParamConstants;
 
-@Service
+@Service("ReportService")
 public class ReportServiceImpl implements ReportService {
     
     @Autowired ReportDao reportDao;
@@ -19,12 +19,14 @@ public class ReportServiceImpl implements ReportService {
         return report;
     }
     
+    @SuppressWarnings("unchecked")
     public List<Report> getAllReport() {
-        return reportDao.getAllReport();
+        return (List<Report>) reportDao.getEntities("from Report o where o.deleted <> 1 order by o.decode");
     }
     
+    @SuppressWarnings("unchecked")
     public List<Report> getAllReportGroups() {
-        return reportDao.getAllReportGroups();
+        return (List<Report>) reportDao.getEntities("from Report o where o.type = ? and o.deleted <> 1 order by o.decode", Report.TYPE0);
     }
 
     public Report saveReport(Report report) {
@@ -38,11 +40,14 @@ public class ReportServiceImpl implements ReportService {
         return report;
     }
     
-    public void delete(Long id) {
+    public Report delete(Long id) {
+        Report report = getReport(id);
         List<Report> list = reportDao.getChildrenById(id); // 一并删除子节点
         for(Report entity : list) {
-            reportDao.delete(entity);
+            entity.setDeleted(ParamConstants.TRUE); // 打上删除标记，放入回收站。
         }
+        reportDao.flush();
+        return report;
     }
 
     public void startOrStop(Long reportId, Integer disabled) {
@@ -80,13 +85,13 @@ public class ReportServiceImpl implements ReportService {
         return list;
     }
 
-    public void move(Long sourceId, Long targetId) {
-        List<Report> list  = reportDao.getChildrenById(sourceId);
-        Report targetGroup = reportDao.getEntity(targetId);
+    public void move(Long reportId, Long groupId) {
+        List<Report> list  = reportDao.getChildrenById(reportId);
+        Report targetGroup = reportDao.getEntity(groupId);
         for (Report temp : list) {
-            if (temp.getId().equals(sourceId)) { // 判断是否是移动节点（即被移动枝的根节点）
-                temp.setSeqNo(reportDao.getNextSeqNo(targetId));
-                temp.setParentId(targetId);
+            if (temp.getId().equals(reportId)) { // 判断是否是移动节点（即被移动枝的根节点）
+                temp.setSeqNo(reportDao.getNextSeqNo(groupId));
+                temp.setParentId(groupId);
             }
             
             if (ParamConstants.TRUE.equals(targetGroup.getDisabled())) {

@@ -27,6 +27,8 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     static final int TYPE0 = 0;  // 报表分组
     static final int TYPE1 = 1;  // 业务报表
     static final int TYPE2 = 2;  // 临时报表
+    
+    static final Long DEFAULT_PARENT_ID = 0L;
  
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "report_sequence")
@@ -39,7 +41,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private String  param;      // 参数值
     
     private Integer type;       // 种类  0：报表分组 1: 业务报表  2: 临时报表
-    private String  description; 
+    private String  remark; 
     
     private Long    parentId;  // 父节点
     private Integer seqNo;    // 排序号
@@ -49,6 +51,9 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private Integer disabled = ParamConstants.FALSE; // 停用/启用标记
     private Integer deleted  = ParamConstants.FALSE; // 删除标记
     
+    public String toString() {
+        return "报表【id = " + this.id + ", name = " + this.name + "】";
+    }
     
     public Long getId() {
         return id;
@@ -79,12 +84,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     }
     public void setType(Integer type) {
         this.type = type;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
     public Long getParentId() {
         return parentId;
@@ -122,9 +121,16 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     public void setDeleted(Integer deleted) {
         this.deleted = deleted;
     }
+    public String getRemark() {
+        return remark;
+    }
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public TreeAttributesMap getAttributes() {
         TreeAttributesMap map = new TreeAttributesMap(id, name);;
+       
         String icon_path;
         if (TYPE0 == type) {
             icon_path = "framework/images/folder.gif";
@@ -132,12 +138,9 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
         else {
             icon_path = "framework/images/article" + (disabled == ParamConstants.TRUE ? "_2" : "") + ".gif";
         } 
-        
         map.put("icon", icon_path);
         map.put("parentId", parentId);
         map.put("disabled", disabled);
-        map.put("decode",  decode);
-        map.put("levelNo", levelNo);
         map.put("type", type);
  
         super.putOperateInfo2Map(map);

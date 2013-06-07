@@ -119,21 +119,35 @@ URL_CORE = "framework/";
 			callback:deleteReport,
 			icon:"framework/images/icon_del.gif",
 			enable:function() {return true;},
-			visible:function() {return !isTreeRoot()}
+			visible:function() {return !isTreeRoot();}
 		}
 		var item6 = {
 			label:"复制到",
 			callback:deleteReport,
 			icon:"framework/images/icon_copy.gif",
 			enable:function() {return true;},
-			visible:function() {return isReport()}
+			visible:function() {return isReport();}
 		}
 		var item7 = {
 			label:"移动到",
 			callback:deleteReport,
 			icon:"framework/images/icon_move.gif",
 			enable:function() {return true;},
-			visible:function() {return isReport()}
+			visible:function() {return isReport();}
+		}
+		var item8 = {
+			label:"停用",
+			callback:disableReport,
+			icon:"framework/images/start.gif.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot();}
+		}
+		var item9 = {
+			label:"停用",
+			callback:disableReport,
+			icon:"framework/images/start.gif.gif",
+			enable:function() {return true;},
+			visible:function() {return !isTreeRoot();}
 		}
 
 		var treeObj = $("tree");
@@ -147,6 +161,8 @@ URL_CORE = "framework/";
 		menu.addSeparator();
 		menu.addItem(item6);
 		menu.addItem(item7);
+		menu.addItem(item8);
+		menu.addItem(item9);
 		
 		treeObj.contextmenu = menu;
     }

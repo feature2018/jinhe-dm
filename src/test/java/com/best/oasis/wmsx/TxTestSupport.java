@@ -1,5 +1,8 @@
 package com.best.oasis.wmsx;
 
+import java.util.Map;
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +13,9 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.jinhe.tss.framework.Global;
+import com.jinhe.tss.framework.sso.IOperator;
+import com.jinhe.tss.framework.sso.IdentityCard;
+import com.jinhe.tss.framework.sso.TokenUtil;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.framework.test.IH2DBServer;
 
@@ -30,8 +36,35 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
     @Before
     public void setUp() throws Exception {
         Global.setContext(super.applicationContext);
-        
         Context.setResponse(new MockHttpServletResponse());
+        
+        String token = TokenUtil.createToken(new Random().toString(), new Long(12)); 
+        IdentityCard card = new IdentityCard(token, new IOperator() {
+            private static final long serialVersionUID = 1L;
+           
+            public Long getId() {
+                return 12L;
+            }
+            public String getLoginName() {
+                return "Jon.King";
+            }
+            public String getUserName() {
+                return "Jon.King";
+            }
+            public boolean isAnonymous() {
+                return true;
+            }
+            public Object getAttribute(String name) {
+                return null;
+            }
+            public Map<String, Object> getAttributesMap() {
+                return null;
+            }
+            public String getAuthenticateMethod() {
+                return null;
+            }
+        });
+        Context.initIdentityInfo(card);
     }
  
     @After

@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx.test1;
+package com.best.oasis.wmsx.restful;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,10 +13,26 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
-  
-public class MyClient {  
-  
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+
+public class RestfulTest {
+
+    public static void startServer() throws Exception {
+        JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
+        factory.setResourceClasses(CustomerServiceImpl.class);
+        factory.setAddress("http://localhost:9000/wmsx/rs/");
+        factory.getInInterceptors().add(new LoggingInInterceptor());
+        factory.getOutInterceptors().add(new LoggingOutInterceptor());
+
+        factory.create();
+    }
+    
     public static void main(String[] args) throws Exception {  
+        
+        startServer();
+        
         doPut("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2013-05-13T12:36:07.814+08:00</birthday><id>1</id><name>Jon.King</name></Customer>");
         doPut("http://localhost:9000/wmsx/rs/customer/info/", 
@@ -88,5 +104,4 @@ public class MyClient {
         
         excuteMethod(method);
     }  
-    
-}  
+}

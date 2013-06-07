@@ -20,7 +20,7 @@
 
 	<context:component-scan base-package="com.best.oasis.wmsx.restful"/> 
 
-    <jaxrs:server id="myServer" address="/"> 
+    <jaxrs:server id="wmsxServer" address="/"> 
         <jaxrs:serviceBeans> 
             <ref bean="CustomerService"/> 
         </jaxrs:serviceBeans> 
