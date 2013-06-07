@@ -13,6 +13,12 @@ public class ReportServiceImpl implements ReportService {
     
     @Autowired ReportDao reportDao;
     
+    public Report getReport(Long id) {
+        Report report = reportDao.getEntity(id);
+        reportDao.evict(report);
+        return report;
+    }
+    
     public List<Report> getAllReport() {
         return reportDao.getAllReport();
     }
@@ -31,6 +37,13 @@ public class ReportServiceImpl implements ReportService {
         }
         return report;
     }
+    
+    public void delete(Long id) {
+        List<Report> list = reportDao.getChildrenById(id); // 一并删除子节点
+        for(Report entity : list) {
+            reportDao.delete(entity);
+        }
+    }
 
     public void startOrStop(Long reportId, Integer disabled) {
         List<Report> list = ParamConstants.TRUE.equals(disabled) ? 
@@ -41,19 +54,6 @@ public class ReportServiceImpl implements ReportService {
             reportDao.updateWithoutFlush(report);
         }
         reportDao.flush();
-    }
-
-    public void delete(Long id) {
-        List<Report> list = reportDao.getChildrenById(id); // 一并删除子节点
-        for(Report entity : list) {
-            reportDao.delete(entity);
-        }
-    }
-
-    public Report getReport(Long id) {
-        Report report = reportDao.getEntity(id);
-        reportDao.evict(report);
-        return report;
     }
 
     public void sort(Long startId, Long targetId, int direction) {

@@ -1,17 +1,18 @@
 package com.best.oasis.wmsx;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractTransactionalJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.jinhe.tss.framework.Global;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.framework.test.IH2DBServer;
 
-@SuppressWarnings("deprecation")
 @ContextConfiguration(
 	  locations={
 		    "classpath:META-INF/framework-spring.xml",
@@ -20,21 +21,21 @@ import com.jinhe.tss.framework.test.IH2DBServer;
 	  }   
 ) 
 @TransactionConfiguration(defaultRollback = true) // 自动回滚设置为false，否则数据将不插进去
-public abstract class TxTestSupport extends AbstractTransactionalJUnit38SpringContextTests { 
+public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringContextTests { 
  
     protected static Logger log = Logger.getLogger(TxTestSupport.class);    
     
     @Autowired protected IH2DBServer dbserver;
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         Global.setContext(super.applicationContext);
         
         Context.setResponse(new MockHttpServletResponse());
     }
  
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         dbserver.stopServer();
     }
 

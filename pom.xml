@@ -17,21 +17,13 @@
 	</properties> 
 	
 	<dependencies>
-		<!-- 
-			mvn install:install-file -DgroupId=com.jinhe.tss -DartifactId=cache -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:/cache.jar
-			mvn install:install-file -DgroupId=com.jinhe.tss -DartifactId=framework -Dversion=1.0.0 -Dpackaging=jar -Dfile=D:/framework.jar -->
-			
-		<dependency>
-			<groupId>com.jinhe.tss</groupId>
-			<artifactId>cache</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 		<dependency>
 			<groupId>com.jinhe.tss</groupId>
 			<artifactId>framework</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		
+		<!--  CXF DEPENDENCIES -->
 		<dependency>  
 			<groupId>org.apache.cxf</groupId>  
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>  
@@ -59,97 +51,17 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.7.1</version>
 		</dependency>
-		
-		<dependency>  
-			<groupId>commons-httpclient</groupId>  
-			<artifactId>commons-httpclient</artifactId>  
-			<version>3.0</version>  
-		</dependency>  
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
 		
-		<dependency>  
-			<groupId>org.slf4j</groupId>  
-			<artifactId>slf4j-api</artifactId>  
-			<version>1.7.5</version>  
-		</dependency>  
-		<dependency>  
-			<groupId>org.slf4j</groupId>  
-			<artifactId>slf4j-jdk14</artifactId>  
-			<version>1.7.5</version>  
-		</dependency>  
-		
-		<dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
-        </dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.2.2</version>
-		</dependency>
-		
-		<!--  SPRING DEPENDENCIES -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-        </dependency>
-		
 		<!--  Test DEPENDENCIES -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

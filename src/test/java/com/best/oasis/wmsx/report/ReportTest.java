@@ -1,12 +1,16 @@
 package com.best.oasis.wmsx.report;
 
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.best.oasis.wmsx.TxTestSupport;
 
 public class ReportTest extends TxTestSupport {
     
-    ReportAction action = new ReportAction();
+    @Autowired private ReportAction action;
     
-    public void testGetAllReport() {
+    @Test
+    public void getAllReport() {
         action.getAllReport(null);
     }
 
