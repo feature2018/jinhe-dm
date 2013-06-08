@@ -23,7 +23,7 @@ import com.jinhe.tss.framework.test.IH2DBServer;
 	  locations={
 		    "classpath:META-INF/framework-spring.xml",
 		    "classpath:META-INF/spring.xml",
-		    "classpath:spring-mvc.xml"
+		    "classpath:META-INF/spring-mvc.xml"
 	  }   
 ) 
 @TransactionConfiguration(defaultRollback = true) // 自动回滚设置为false，否则数据将不插进去
@@ -38,32 +38,8 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
         Global.setContext(super.applicationContext);
         Context.setResponse(new MockHttpServletResponse());
         
-        String token = TokenUtil.createToken(new Random().toString(), new Long(12)); 
-        IdentityCard card = new IdentityCard(token, new IOperator() {
-            private static final long serialVersionUID = 1L;
-           
-            public Long getId() {
-                return 12L;
-            }
-            public String getLoginName() {
-                return "Jon.King";
-            }
-            public String getUserName() {
-                return "Jon.King";
-            }
-            public boolean isAnonymous() {
-                return true;
-            }
-            public Object getAttribute(String name) {
-                return null;
-            }
-            public Map<String, Object> getAttributesMap() {
-                return null;
-            }
-            public String getAuthenticateMethod() {
-                return null;
-            }
-        });
+        String token = TokenUtil.createToken(new Random().toString(), 12L); 
+        IdentityCard card = new IdentityCard(token, new TempOperator());
         Context.initIdentityInfo(card);
     }
  
@@ -71,5 +47,30 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
     public void tearDown() throws Exception {
         dbserver.stopServer();
     }
-
+    
+    static class TempOperator implements IOperator {
+        private static final long serialVersionUID = 1L;
+        
+        public Long getId() {
+            return 12L;
+        }
+        public String getLoginName() {
+            return "Jon.King";
+        }
+        public String getUserName() {
+            return "Jon.King";
+        }
+        public boolean isAnonymous() {
+            return true;
+        }
+        public Object getAttribute(String name) {
+            return null;
+        }
+        public Map<String, Object> getAttributesMap() {
+            return null;
+        }
+        public String getAuthenticateMethod() {
+            return null;
+        }
+    } 
 }

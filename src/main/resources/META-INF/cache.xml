@@ -9,7 +9,7 @@
     <initNum>5</initNum>  
     <disabled>0</disabled>
 	<visible>1</visible>  
-    <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
   </strategy>
   <strategy code="connectionpool-1" name="数据库连接池-1"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
@@ -19,7 +19,7 @@
     <initNum>5</initNum>  
     <disabled>0</disabled>
 	<visible>1</visible>  
-    <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>oracle1.properties</paramFile>
   </strategy>
   <strategy code="connectionpool-2" name="数据库连接池-2"> 
@@ -30,7 +30,7 @@
     <initNum>5</initNum>  
     <disabled>0</disabled>
 	<visible>1</visible>  
-    <customizerClass>com.jinhe.tss.framework.persistence.connectionpool.ConnectionPoolCustomizer</customizerClass>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>oracle2.properties</paramFile>
   </strategy>    
   <strategy code="threadpool" name="线程池"> 
