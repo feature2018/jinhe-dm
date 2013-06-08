@@ -20,7 +20,7 @@ import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
 import com.jinhe.tss.util.EasyUtils;
 
 @Controller
-@RequestMapping("report")
+@RequestMapping("rp")
 public class ReportAction extends BaseActionSupport {
     
     @Autowired private ReportService reportService;
@@ -40,7 +40,7 @@ public class ReportAction extends BaseActionSupport {
         print("SourceTree", treeEncoder);
     }
     
-    @RequestMapping(value = "/detail/{type}", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail/{type}")
     public void getReport(HttpServletRequest request, HttpServletResponse response, @PathVariable("type") int type) {
         String uri = null;
         if(Report.TYPE0 == type) {

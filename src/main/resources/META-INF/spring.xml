@@ -45,7 +45,9 @@
     </bean> 
 
 	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
-		<property name="beanNames"> <value>*Service</value> </property>
+		<property name="beanNames"> 
+			<value>*Service</value> 
+		</property>
 		<property name="interceptorNames">
 			<list>
 				<!-- 测试时先注释掉，会和spring test的自动回滚矛盾，导致回滚不了。发布时再采用此方法声明事务 -->
@@ -53,5 +55,10 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- 在主容器中，将Controller的注解排除掉  -->
+	<context:component-scan base-package="com"> 
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" /> 
+	</context:component-scan> 
 	
 </beans>

@@ -26,7 +26,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     
     static final int TYPE0 = 0;  // 报表分组
     static final int TYPE1 = 1;  // 业务报表
-    static final int TYPE2 = 2;  // 临时报表
     
     static final Long DEFAULT_PARENT_ID = 0L;
  
@@ -37,10 +36,10 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private String  name;       // 展示名称
     
     @Column(length = 2000)  
-    private String  sql;        // SQL
+    private String  script;     // SQL
     private String  param;      // 参数值
     
-    private Integer type;       // 种类  0：报表分组 1: 业务报表  2: 临时报表
+    private Integer type;       // 种类  0：报表分组 1: 业务报表
     private String  remark; 
     
     private Long    parentId;  // 父节点
@@ -66,12 +65,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public String getSql() {
-        return sql;
-    }
-    public void setSql(String sql) {
-        this.sql = sql;
     }
     public String getParam() {
         return param;
@@ -127,6 +120,12 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     public void setRemark(String remark) {
         this.remark = remark;
     }
+    public String getScript() {
+        return script;
+    }
+    public void setScript(String script) {
+        this.script = script;
+    }
 
     public TreeAttributesMap getAttributes() {
         TreeAttributesMap map = new TreeAttributesMap(id, name);;
@@ -136,7 +135,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
             icon_path = "framework/images/folder.gif";
         } 
         else {
-            icon_path = "framework/images/article" + (disabled == ParamConstants.TRUE ? "_2" : "") + ".gif";
+            icon_path = "framework/images/article" + (ParamConstants.TRUE.equals(disabled) ? "_2" : "") + ".gif";
         } 
         map.put("icon", icon_path);
         map.put("parentId", parentId);

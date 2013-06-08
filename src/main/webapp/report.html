@@ -27,9 +27,6 @@
 <SCRIPT type="text/javascript">
 <!--
  
-/* 框架包相对路径 */
-URL_CORE = "framework/"; 
-    
     /*
      *	后台响应数据节点名称
      */
@@ -40,26 +37,28 @@ URL_CORE = "framework/";
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_SOURCE_TREE    = "report/list";
-    URL_REPORT_DATA    = "report/";
-    URL_SOURCE_INFO	   = "report/detail";
-	URL_SAVE_SOURCE    = "report";
-    URL_DELETE_SOURCE  = "report/";
-    URL_DISABLE_SOURCE = "report/disable/";
-    URL_SORT_SOURCE    = "report/sort/";
-    URL_COPY_SOURCE    = "report/copy/";
-    URL_MOVE_SOURCE_TO = "report/move/";
+	URL_SOURCE_TREE    = "rp/all";
+	URL_GROUPS_TREE    = "rp/groups";
+    URL_REPORT_DATA    = "rp/";
+    URL_SOURCE_DETAIL  = "rp/detail";
+	URL_SAVE_SOURCE    = "rp";
+    URL_DELETE_SOURCE  = "rp/";
+    URL_DISABLE_SOURCE = "rp/disable/";
+    URL_SORT_SOURCE    = "rp/sort/";
+    URL_COPY_SOURCE    = "rp/copy/";
+    URL_MOVE_SOURCE    = "rp/move/";
 
-	if(IS_TEST || true) {
+	if(IS_TEST) {
 		URL_SOURCE_TREE    = "data/report_init.xml?";
+		URL_GROUPS_TREE    = "data/report_init.xml?";
 		URL_REPORT_DATA    = "data/reportData2.xml?";
-		URL_SOURCE_INFO    = "data/report1.xml?";
+		URL_SOURCE_DETAIL  = "data/report1.xml?";
 		URL_SAVE_SOURCE    = "data/_success.xml?";
 		URL_DELETE_SOURCE  = "data/_success.xml?";
 		URL_DISABLE_SOURCE = "data/_success.xml?";
 		URL_SORT_SOURCE    = "data/_success.xml?";
 		URL_COPY_SOURCE    = "data/_success.xml?";
-		URL_MOVE_SOURCE_TO = "data/_success.xml?";
+		URL_MOVE_SOURCE    = "data/_success.xml?";
 	}
 	
     /* 页面初始化 */
@@ -104,21 +103,35 @@ URL_CORE = "framework/";
 			icon:"framework/images/search.gif",
 			visible:function() {return isReport();}
 		}
+		var item10 = {
+			label:"查看",
+			callback: function() {
+                loadReportDetail(false, true);
+            },
+			icon:"framework/images/view.gif",
+			visible:function() {return !isTreeRoot()}
+		}
 		var item2 = {
 			label:"修改",
-			callback:modifyReport,
+			callback: function() {
+                loadReportDetail(false, false);
+            },
 			icon:"framework/images/icon_edit.gif",
 			visible:function() {return !isTreeRoot()}
 		}
 		var item3 = {
 			label:"新增报表",
-			callback:addReport,
+			callback: function() {
+                loadReportDetail(true, false, "1");
+            },
 			icon:"framework/images/new_article.gif",
 			visible:function() {return isReportGroup() || isTreeRoot();}
 		}
 		var item4 = {
 			label:"新增分组",
-			callback:addReport,
+			callback: function() {
+                loadReportDetail(true, false, "0");
+            },
 			icon:"framework/images/new_folder.gif",
 			visible:function() {return isReportGroup() || isTreeRoot();}
 		}
@@ -130,7 +143,7 @@ URL_CORE = "framework/";
 		}
 		var item6 = {
 			label:"复制到",
-			callback:deleteReport,
+			callback:copyReportTo,
 			icon:"framework/images/icon_copy.gif",
 			visible:function() {return isReport();}
 		}
@@ -157,6 +170,8 @@ URL_CORE = "framework/";
 
 		var menu = new Menu();
 		menu.addItem(item1);
+		menu.addSeparator();
+		menu.addItem(item10);
 		menu.addItem(item2);
 		menu.addItem(item3);
 		menu.addItem(item4);
@@ -200,56 +215,207 @@ URL_CORE = "framework/";
                if( isReport() ) {
 					searchReport();
 				}
+				if( isReportGroup() ) {
+					loadReportDetail(false, false);
+				}
             }
             treeElement.onTreeNodeRightClick = function(eventObj) {
 				if($("tree").contextmenu) {
 					$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY);                
 				}
             }
+			treeElement.onTreeNodeMoved = function(eventObj) {
+				sort(eventObj);
+			}
         }
 
-        Ajax({url : URL_SOURCE_TREE, method : "GET", onresult : onresult});
+        Ajax({url : URL_SOURCE_TREE, onresult : onresult});
     }
 	
-	function addReport() {
+	function showFloatingDiv(div) {
+		div.style.display = "block";
+		div.style.width  = "80%";    
+		div.style.height = "80%";    
+		div.style.position = "absolute";    
+		div.style.left = "200px";   
+		div.style.top  = "70px"; 		
+		div.style.zIndex = "10000"; 
+		div.style.background = "#BEC6EE";   
+		Element.setOpacity(div, 80);
 	}
 	
-	function modifyReport() {
+	function loadReportDetail(isCreate, readonly, type) { 
+		var treeNode = $T("tree").getActiveTreeNode();
+		var treeID = treeNode.getId();
+		type = type || treeNode.getAttribute("type") ;
+		
+		showFloatingDiv($("reportFormDiv"));
+		
+		var params = {};
+		if( isCreate ) {
+		    params["parentId"] = treeID; // 新增
+			readonly = false;
+		} else {
+			params["reportId"] = treeID; // 修改					
+		}
+
+		Ajax({
+			url : URL_SOURCE_DETAIL + "/" + type,
+			contents : params,
+			onresult : function() { 
+				var sourceInfoNode = this.getNodeValue(XML_SOURCE_INFO);
+				Cache.XmlDatas.add(treeID, sourceInfoNode);
+				
+				$("reportForm").editable = readonly ? "false" : "true";
+				var xform = $X("reportForm", sourceInfoNode);
+
+				attachReminder(treeID, xform); // 离开提醒
+			
+				// 设置保存/关闭按钮操作
+				$("closeReportForm").onclick = function() {
+					$("reportFormDiv").style.display = "none";
+				}
+				$("sourceSave").onclick = function() {
+					saveReport(treeID);
+				}
+			},
+			onexception : function() { 
+				$("reportFormDiv").style.display = "none";
+			}
+		});
 	}
+	
+	function saveReport(treeID) {
+        var xform = $X("reportForm");	
+        if( !xform.checkForm() ) return;
+
+        var p = new HttpRequestParams();
+        p.url = URL_SAVE_SOURCE;
+
+        //是否提交
+        var flag = false;
+        
+		//参数基本信息
+		var sourceInfoNode = Cache.XmlDatas.get(treeID);
+		if( sourceInfoNode ) {
+			var paramInfoDataNode = sourceInfoNode.selectSingleNode(".//data");
+			if( paramInfoDataNode ) {
+				flag = true;
+				p.setXFormContent(paramInfoDataNode);
+			}
+		}
+
+        if( flag ) {
+            var request = new HttpRequest(p);
+           
+            syncButton([$("sourceSave")], request); // 同步按钮状态
+			detachReminder(treeID); // 解除提醒
+
+            request.onresult = function() { // 新增结果返回              
+				var treeNode = this.getNodeValue(XML_SOURCE_TREE).selectSingleNode("treeNode");
+				appendTreeNode(treeID, treeNode); // treeID即为父节点
+
+				$("reportFormDiv").style.display = "none";
+            }
+
+            request.onsuccess = function() { // 更新
+				var name = xform.getData("name");
+				if( isNullOrEmpty(name) ) {
+					modifyTreeNode(treeID, "name", name, true);
+				}
+				
+				$("reportFormDiv").style.display = "none";
+            }
+            request.send();
+        }
+    }
 	
 	function deleteReport() {
-	}
-	
-	function disableReport() {
-	}
-
-	function enableReport() {
-
-	}
-
-	function enableOrDisable(status) {
+		if( !confirm("您确定要删除吗？") )  return;
+        
         var tree = $T("tree");
         var treeNode = tree.getActiveTreeNode();
 		Ajax({
-			url : URL_PARAM_DISABLE + treeNode.getId() + "/" + status,
+			url : URL_SOURCE_DELETE + treeNode.getId(),
+			method : "DELETE",
+			onsuccess : function() { 
+				var parentNode = treeNode.getParent();
+				if( parentNode ) {
+					tree.setActiveTreeNode(parentNode.getId());
+				}
+				tree.removeTreeNode(treeNode);
+			}
+		});	
+	}
+	
+	function disableReport() {
+		disable(1);
+	}
+
+	function enableReport() {
+		disable(0);
+	}
+
+	function disable(status) {
+        var tree = $T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		Ajax({
+			url : URL_DISABLE_SOURCE + treeNode.getId() + "/" + status,
 			onsuccess : function() { 
 				var xmlNode = new XmlNode(treeNode.node);
 				refreshTreeNodeStates(xmlNode, status);
-
-				loadToolBar(); // 刷新工具条
 			}
 		});
     }
+	
+	/*
+     *	刷新级联树节点停用启用状态
+     *	参数：	XmlNode:curNode         XmlNode实例
+                string:state            停/启用状态
+     */
+    function refreshTreeNodeStates(curNode, state) {
+        refreshTreeNodeState(curNode, state);
+
+        if("0" == state) { // 启用，上溯
+            while( curNode && "_rootId" != curNode.getAttribute("id") ) {
+                refreshTreeNodeState(curNode, state);
+                curNode = curNode.getParent();
+            }        
+        }
+		else if("1" == state) { // 停用，下溯
+            var childNodes = curNode.selectNodes(".//treeNode");
+            for(var i=0; i < childNodes.length; i++) {                
+                refreshTreeNodeState(childNodes[i], state);
+            }
+        }
+
+        $T("tree").reload(); 
+    }
+	
+	function refreshTreeNodeState(treeNode, state) {
+        state = state || treeNode.getAttribute("disabled");
+        var type = treeNode.getAttribute("type");
+        switch(type) {
+            case "0":
+                var img = "framework/images/folder";
+                break;
+            case "1":
+                var img = "framework/images/article";
+                break;
+        }
+        treeNode.setAttribute("disabled", state);
+        treeNode.setAttribute("icon", img + (state == "1" ? "_2" : "") + ".gif");       
+    }
 
 	function sort(eventObj) {
-		var movedTreeNode = eventObj.movedTreeNode;
-        var toTreeNode = eventObj.toTreeNode;
-        var moveState  = eventObj.moveState; // -1: 目标上方, 1: 目标下方
+		var movedNode  = eventObj.movedTreeNode;
+        var targetNode = eventObj.toTreeNode;
+        var direction  = eventObj.moveState; // -1: 往上, 1: 往下
 
 		Ajax({
-			url : URL_SORT_SOURCE + movedTreeNode.getId() + "/" + toTreeNode.getId() + "/" + moveState,
+			url : URL_SORT_SOURCE + movedNode.getId() + "/" + targetNode.getId() + "/" + direction,
 			onsuccess : function() { 
-				 $T("tree").moveTreeNode(movedTreeNode, toTreeNode, moveState);
+				 $T("tree").moveTreeNode(movedNode, targetNode, direction);
 			}
 		});
 	}
@@ -266,9 +432,9 @@ URL_CORE = "framework/";
 		if( targetParent ) {
 			var targetParentId = targetParent.id;
 			Ajax({
-				url : URL_COPY_PARAM + id + "/" + targetParentId,
+				url : URL_COPY_SOURCE + id + "/" + targetParentId,
 				onresult : function() { 
-					var newNode = this.getNodeValue(XML_MAIN_TREE).selectSingleNode("treeNode");
+					var newNode = this.getNodeValue(XML_SOURCE_TREE).selectSingleNode("treeNode");
 					appendTreeNode(targetParentId, newNode);
 				}
 			});
@@ -288,7 +454,7 @@ URL_CORE = "framework/";
 		if(targetParent) {
 			var targetParentId = targetParent.id;
 			Ajax({
-				url : URL_MOVE_PARAM_TO + id + "/" + targetParentId,
+				url : URL_MOVE_SOURCE + id + "/" + targetParentId,
 				onsuccess : function() { 
 					// 移动树节点
 					var parentNode = tree.getTreeNodeById(targetParentId);
@@ -361,6 +527,24 @@ URL_CORE = "framework/";
 		request.send();
     } 
  
+ 	function loadGroupsTree(operatedNodeID) {		
+		Ajax({
+			url : URL_GROUPS_TREE,
+			onresult : function() { 
+				var tree = $T("groupTree", this.getNodeValue(XML_SOURCE_TREE));		
+				$("groupTree").onTreeNodeDoubleClick = function(eventObj) {
+					getTargetParent();
+				}
+			}
+		});
+	}
+	
+	function getTargetParent() {
+		var treeNode = $T("groupTree").getActiveTreeNode();
+		if( treeNode ) {
+			return treeNode.getId();
+		}
+	}
 	
 	
     window.onload = init;
@@ -409,7 +593,7 @@ URL_CORE = "framework/";
 				</tr>
 				<tr>
 				  <td id="treeContainer">
-					<Tree:Box id="tree" treeType="menu" baseurl="framework/tree/"><div class="loading"></div></Tree:Box>
+					<Tree:Box id="tree" treeType="menu" baseurl="framework/tree/" canMoveNode="true"><div class="loading"></div></Tree:Box>
 				  </td>
 				</tr>
 			  </table>                        
@@ -440,12 +624,20 @@ URL_CORE = "framework/";
   </tr>
 </table>
 
-<div style="display:none">
+<div id="reportFormDiv" style="display:none">
 	<XForm:Box id="reportForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+	<input type="button" class="btStrong" value="保存" id="sourceSave"/>
+	<input type="button" class="btStrong" value="关闭" id="closeReportForm"/>
 </div>
 
-<div style="display:none">
+<div id="searchFormDiv" style="display:none">
 	<XForm:Box id="searchForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+</div>
+
+<div id="groupTreeDiv" style="display:none">
+	<Tree:Box id="groupTree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
+	<input type="button" value="确定" class="btStrong" onclick="getTargetParent()"/>
+    <input type="button" value="关闭" class="btWeak" onclick="$('groupTreeDiv').style.display = 'none'"/> 
 </div>
 
 </body>

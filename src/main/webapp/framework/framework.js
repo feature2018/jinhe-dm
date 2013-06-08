@@ -1,7 +1,7 @@
 /* 
  * 当前应用名 
  */
-APP_CODE    = "TSS";
+APP_CODE    = "WMSX";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
 
@@ -601,7 +601,7 @@ function showTreeNodeStatus(params) {
 
 function showTreeNodeInfo() {
 	showTreeNodeStatus(
-		{id:"ID", name:"名称", creator:"创建者", createdTime:"创建时间", updator:"修改者", updatedTime:"修改时间"}
+		{id:"ID", name:"名称", creatorName:"创建者", createTime:"创建时间", updatorName:"修改者", updateTime:"修改时间"}
 	);
 }
 

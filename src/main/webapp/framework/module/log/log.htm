@@ -49,7 +49,7 @@ URL_CORE = "../../";
 		URL_LOG_LIST = "data/loglist.xml?";
 		URL_LOG_DETAIL = "data/log1.xml?";
 	}
-	URL_INIT = "data/log_init.xml";
+	// URL_INIT = "data/log_init.xml";
 	
     /* 页面初始化 */
     function init() {
@@ -138,7 +138,7 @@ URL_CORE = "../../";
             }
         }
 
-        Ajax({url : URL_INIT, method : "GET", onresult : onresult});
+        Ajax({url : URL_INIT, onresult : onresult});
     }
 	
     function getTreeId() {
@@ -264,7 +264,6 @@ URL_CORE = "../../";
     function loadLogDetailData(logId) {
 		Ajax({
 			url : URL_LOG_DETAIL + logId,
-			method : "GET",
 			onresult : function() { 
 				var logInfoNode = this.getNodeValue(XML_LOG_INFO);
 				var page1FormObj = $X("page1Form", logInfoNode);
@@ -367,7 +366,7 @@ URL_CORE = "../../";
 								  <tr>
 									<td>
 									  <!-- grid 开始 -->
-									   <Grid:Box id="grid" baseurl="../../grid/"><div class="loading"></div></Grid:Box>
+									   <Grid:Box id="grid" baseurl="../../grid/"></Grid:Box>
 									  <!-- grid 结束 -->
 									</td>
 								  </tr>
