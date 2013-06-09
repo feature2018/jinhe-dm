@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,7 @@ public class SQLExcutor {
     SQLParser parser;
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     
-    public void excuteQuery(String sql, Object...params) {
+    public void excuteQuery(String sql, Map<Integer, Object> paramsMap) {
         Cacheable connItem = connectionPool.checkOut(0);
         Connection conn = (Connection) connItem.getValue();
 
@@ -34,10 +35,8 @@ public class SQLExcutor {
         ResultSet rs = null;
         try {
             pstmt = conn.prepareStatement(sql);
-            if (params != null && params.length > 0) {
-                for(int i = 0; i < params.length; i++){
-                    pstmt.setObject(i + 1, params[i]); // 从1开始，非0
-                }
+            for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {
+                pstmt.setObject(entry.getKey(), entry.getValue()); // 从1开始，非0
             }
             rs = pstmt.executeQuery();
             

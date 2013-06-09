@@ -1,9 +1,11 @@
 package com.best.oasis.wmsx.report.result;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import com.jinhe.tss.framework.web.dispaly.grid.DefaultGridNode;
 import com.jinhe.tss.framework.web.dispaly.grid.GridDataEncoder;
 import com.jinhe.tss.framework.web.dispaly.grid.IGridNode;
 import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
+import com.jinhe.tss.util.DateUtil;
+import com.jinhe.tss.util.EasyUtils;
 import com.jinhe.tss.util.XMLDocUtil;
 
 /**
@@ -29,17 +33,43 @@ public class Display extends BaseActionSupport {
     @Autowired private ReportService reportService;
  
     @RequestMapping("/{reportId}/{page}/{pagesize}")
-    public void showAsGrid(HttpServletResponse response, 
+    public void showAsGrid(HttpServletRequest request, HttpServletResponse response, 
             @PathVariable("reportId") Long reportId, 
             @PathVariable("page") int page,
-            @PathVariable("pagesize") int pagesize,
-            Map<String, String> paramsMap) {
+            @PathVariable("pagesize") int pagesize) {
+    	
+    	Map<String, String[]> requestMap = request.getParameterMap();
+    	
+    	Report report = reportService.getReport(reportId);
+        String script = report.getScript();
+        String params = report.getParam();
         
-        Report report = reportService.getReport(reportId);
-        String sql = report.getScript();
+    	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
+    	
+    	String[] paramArray = params.split(",");
+    	for(int i = 0; i < paramArray.length; i++) {
+    		int index = i + 1;
+    		String paramType = paramArray[i].split(":")[1].toLowerCase();
+    		String paramValue = requestMap.get("param" + index)[0];
+    		
+    		Object value;
+    		if("number".equals(paramType)) {
+    			value = EasyUtils.convertObject2Integer(paramValue);
+    		}
+    		else if("date".equals(paramType)) {
+    			value = DateUtil.parse(paramValue);
+    		}
+    		else {
+    			value = paramValue;
+    		}
+    		
+    		paramsMap.put(index, value);
+    	}
+        
+        // TODO 结合 paramsMap 进行 freemarker解析 sql
         
         SQLExcutor excutor = new SQLExcutor();
-        excutor.excuteQuery(sql, 100200L);
+        excutor.excuteQuery(script, paramsMap);
         
         List<IGridNode> temp = new ArrayList<IGridNode>();
         for(Map<String, Object> item : excutor.result) {
@@ -54,5 +84,13 @@ public class Display extends BaseActionSupport {
         print("PageData", "<pagelist totalpages=\"10\" totalrecords=\"999\" currentpage=\"3\" pagesize=\"100\"/>");
     }
  
-
+    @RequestMapping("/jason/{reportId}/{page}/{pagesize}")
+    public void showAsJson(HttpServletRequest request, HttpServletResponse response, 
+            @PathVariable("reportId") Long reportId, 
+            @PathVariable("page") int page,
+            @PathVariable("pagesize") int pagesize) {
+    	
+    	// TODO
+    }
+    
 }

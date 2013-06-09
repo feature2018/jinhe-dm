@@ -38,7 +38,7 @@
     display:none;
 	background-color: #BEC6EE;
 	width: 80%;    
-	height: 60%;  
+	height: 500;  
 	padding: 10px 10px 10px 10px;
   }
 
@@ -489,16 +489,31 @@
 		for( var i = 0; i < paramArray.length; i++ ) {
 			var param = paramArray[i];
 			var tempArray = param.split(":");
-			if(tempArray.length == 3) {
-				columns[columns.length] = "<column name=\"" + tempArray[0] + "\" caption=\"" + tempArray[1] + "\" mode=\"string\"/>";				
+			if(tempArray.length == 2) {
+				var columnName = "param" + (i + 1);
+				var paramCaption = tempArray[0];
+				var paramType = tempArray[1];
+
+				var mode = "string";
+				switch(paramType.toLowerCase()) {
+					case "number":
+						mode = "number";
+						break;
+					case "string":
+					case "date":
+						mode = "string";
+						break;
+				}
+
+				columns[columns.length] = "<column name='" + columnName + "' caption='" + paramCaption + "' mode='" + mode + "'/>";				
 				layouts[layouts.length] = " <TR>";
-				layouts[layouts.length] = "    <TD width=\"50\"><label binding=\"" + tempArray[0] + "\"/></TD>";
-				layouts[layouts.length] = "    <TD><input binding=\"" + tempArray[0] + "\" type=\"text\" style=\"width:250px\"/></TD>";
+				layouts[layouts.length] = "    <TD width='50'><label binding='" + columnName + "'/></TD>";
+				layouts[layouts.length] = "    <TD><input binding='" + columnName + "' type='text' style='width:250px'/></TD>";
 				layouts[layouts.length] = " </TR>";
 			}
 		}		
 		layouts[layouts.length] = "        <TR>";
-        layouts[layouts.length] = "          <TD colspan='2' align=\"center\" height=\"36\"><input type=\"button\" class=\"btStrong\" id=\"btSearch\" value=\"查询\"/></TD>";
+        layouts[layouts.length] = "          <TD colspan='2' align='center' height='36'><input type='button' class='btStrong' id='btSearch' value='查询'/></TD>";
         layouts[layouts.length] = "        </TR>";
 		
 		Element.show($("searchFormDiv"));
