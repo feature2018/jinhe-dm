@@ -195,4 +195,7 @@
 			<url>file://</url>  <!-- \target\staging\localhost -->
 		</site>
 	</distributionManagement>
+	
+	<!-- mvn clean site dashboard:dashboard site:stage -->
+	
 </project>

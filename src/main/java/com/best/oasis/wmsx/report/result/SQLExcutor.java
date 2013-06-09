@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx.framework;
+package com.best.oasis.wmsx.report.result;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,12 +14,14 @@ import org.apache.log4j.Logger;
 import com.jinhe.tss.cache.Cacheable;
 import com.jinhe.tss.cache.JCache;
 import com.jinhe.tss.cache.Pool;
+import com.jinhe.tss.framework.component.param.ParamManager;
 
 public class SQLExcutor {
     
     static Logger log = Logger.getLogger(SQLExcutor.class);
     
-    static Pool connectionPool = JCache.getInstance().getConnectionPool();
+    static String POOL_CODE = ParamManager.getValue("CONNECTION_POOL");
+    static Pool connectionPool = JCache.getInstance().getCachePool(POOL_CODE);
     
     SQLParser parser;
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();

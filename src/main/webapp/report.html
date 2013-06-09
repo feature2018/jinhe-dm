@@ -53,13 +53,15 @@
     XML_SOURCE_TREE = "SourceTree";
     XML_REPORT_DATA = "ReportData";
     XML_SOURCE_INFO = "SourceInfo";
+	
+	PAGESIZE = 100;
  
     /*
      *	XMLHTTP请求地址汇总
      */
 	URL_SOURCE_TREE    = "rp/all";
 	URL_GROUPS_TREE    = "rp/groups";
-    URL_REPORT_DATA    = "display/showAsGrid/";
+    URL_REPORT_DATA    = "display/";
     URL_SOURCE_DETAIL  = "rp/detail";
 	URL_SAVE_SOURCE    = "rp";
     URL_DELETE_SOURCE  = "rp/";
@@ -475,7 +477,7 @@
         var treeNode = $T("tree").getActiveTreeNode();
 		var treeID = treeNode.getId();
 		var treeName = treeNode.getName();
-		var params = "whId:仓库ID:Long,customerId:客户ID:Long"; // treeNode.getAttribute("param");	
+		var params = treeNode.getAttribute("param");  // "whId:仓库ID:Long,customerId:客户ID:Long"; 	
 		if(params == null || params.length == 0) {
 			searchReport(treeID);
 			return;
@@ -494,7 +496,10 @@
 				layouts[layouts.length] = "    <TD><input binding=\"" + tempArray[0] + "\" type=\"text\" style=\"width:250px\"/></TD>";
 				layouts[layouts.length] = " </TR>";
 			}
-		}
+		}		
+		layouts[layouts.length] = "        <TR>";
+        layouts[layouts.length] = "          <TD colspan='2' align=\"center\" height=\"36\"><input type=\"button\" class=\"btStrong\" id=\"btSearch\" value=\"查询\"/></TD>";
+        layouts[layouts.length] = "        </TR>";
 		
 		Element.show($("searchFormDiv"));
 		$("reportName").innerText = "查询报表【" + treeName + "】";
@@ -506,9 +511,6 @@
         str[str.length] = "    </declare>";
         str[str.length] = "    <layout>";
         str[str.length] = layouts.join("");
-        str[str.length] = "        <TR>";
-        str[str.length] = "          <TD colspan='2' align=\"center\" height=\"36\"><input type=\"button\" class=\"btStrong\" id=\"btSearch\" value=\"查询\"/></TD>";
-        str[str.length] = "        </TR>";
         str[str.length] = "    </layout>";
         str[str.length] = "    <data><row/></data>";
         str[str.length] = "</xform>";
@@ -536,7 +538,7 @@
             }
         }
  
-		p.url = URL_REPORT_DATA + treeID + "/1";
+		p.url = URL_REPORT_DATA + treeID + "/1/" + PAGESIZE;
 		var request = new HttpRequest(p);
 		request.onresult = function() {
 			$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
@@ -544,7 +546,7 @@
 
 			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 			initGridToolBar(gridToolBar, pageListNode, function(page) {
-				request.params.url = URL_REPORT_DATA + treeID + "/" + page;
+				request.params.url = URL_REPORT_DATA + treeID + "/" + page + "/" + PAGESIZE;
 				request.onresult = function() {
 					$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 				}				
@@ -563,7 +565,7 @@
 				if(gridToolBar.getTotalPages() <= currentPage) return;
 
 				var nextPage = parseInt(currentPage) + 1; 
-				request.params.url = URL_REPORT_DATA + treeID + "/" + nextPage;
+				request.params.url = URL_REPORT_DATA + treeID + "/" + nextPage + "/" + PAGESIZE;
 				request.onresult = function() {
 					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
 				}				

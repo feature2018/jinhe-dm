@@ -23,7 +23,8 @@ import com.jinhe.tss.framework.test.IH2DBServer;
 	  locations={
 		    "classpath:META-INF/framework-spring.xml",
 		    "classpath:META-INF/spring.xml",
-		    "classpath:META-INF/spring-mvc.xml"
+		    "classpath:META-INF/spring-mvc.xml",
+		    "classpath:META-INF/spring-test.xml"
 	  }   
 ) 
 @TransactionConfiguration(defaultRollback = true) // 自动回滚设置为false，否则数据将不插进去

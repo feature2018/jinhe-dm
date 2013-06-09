@@ -1,4 +1,4 @@
-package com.best.oasis.wmsx.framework;
+package com.best.oasis.wmsx.report.result;
 
 import java.util.ArrayList;
 import java.util.List;

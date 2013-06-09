@@ -141,6 +141,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
         map.put("parentId", parentId);
         map.put("disabled", disabled);
         map.put("type", type);
+        map.put("param", param);
  
         super.putOperateInfo2Map(map);
         return map;
