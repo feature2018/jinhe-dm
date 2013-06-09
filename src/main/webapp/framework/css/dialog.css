@@ -1,3 +1,11 @@
+  .dialog{
+    background-color:white;
+    border:1px solid #98989C;
+    width:100%;
+    height:100%;
+	overflow:hidden;
+  }
+
   .mainBox{
     background-color:white;
     border:1px solid #98989C;
@@ -5,100 +13,11 @@
     height:100%;
     padding:5px;
   }
+
   body {
     margin: 10px;
     font-size: 12px;
     background-color:#E7E7E7;
     overflow:hidden;
     border:0px;
-  }
-
-
-   /* Other */
-  .th {
-    height:12px;
-  }
-  .th td{
-    color:#98989C;
-    font-weight:bold;
-    border-bottom:1px solid #98989C;
-  }
-  .tf {
-    height:21px;
-  }
-  .tf td{
-    background-color:#BEC5E7;
-  }
-  .tf .label{
-    padding-top:4px;
-    padding-left:10px;
-    color:#333333;
-  }
-  .tf .btBox{
-    padding-right:2px;
-    text-align:right;
-  }
-  .l{
-    border-left:1px solid #98989C;
-  }
-  .t{
-    border-top:1px solid #98989C;
-  }
-  .b{
-    border-bottom:1px solid #98989C;
-  }
-  .r{
-    border-right:1px solid #98989C;
-  }
-  /* 文本框样式 */
-  .txtfield{
-    color:#535458;
-    font-size:12px;
-    height:18px;
-    border:1px solid #ABAAAF;
-    background-color:#ECEFF8;
-  }
-  /* 联合容器 */
-  .comboContainer {
-    height: 200px;
-    background-color:#F7F8FD;
-  }
-  .comboContainer .Tree a,.comboContainer .Tree a.hover {
-    border: 1px solid #F7F8FD;
-  }
-  .comboContainer Xform\:Form td {
-    padding:5px;
-  }
- 
-  /* 登录界面 */
-  .loginContainer {
-    text-align:center;
-    padding-top:430px;
-    background-color:#4959C7;
-    background-image:url(../images/login.jpg);
-    background-repeat:no-repeat;
-    background-position:center top;
-  }
-  .loginBox {
-    width:220px;
-    height:300px;
-    vertical-align:top;
-    text-align:center;
-  }
-  .loginBox td{
-    color:#ECEFF8;
-    height:30px;
-  }
-  .loginBox a,.loginBox a:visited{
-    color:#ECEFF8;
-    text-decoration:underline;
-  }
-  .loginBox .btLogin {
-    color:#ECEFF8;
-    width:68px;
-    height:30px;
-    padding-bottom:4px;
-    padding-right:4px;
-    border:0px none;
-    background-image:url(../images/bt_login.gif);
   }

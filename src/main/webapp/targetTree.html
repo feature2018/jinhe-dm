@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML xmlns:ToolBar xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:XForm>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>目标树</title>
+
+<link href="framework/css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/css/dialog.css" rel="stylesheet" type="text/css"></link>
+<link href="framework/tree/tree.css" rel="stylesheet" type="text/css"></link>
+
+<script language="javascript" src="framework/core.js"></script>
+<script language="javascript" src="framework/ajax.js"></script>
+<script language="javascript" src="framework/framework.js"></script>
+<script language="javascript" src="framework/tree/tree.js"></script>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+	XML_SOURCE_TREE = "SourceTree";
+
+	var params = window.dialogArguments.params;
+
+ 	function loadGroupsTree(operatedNodeID) {		
+		Ajax({
+			url : params.url,
+			onresult : function() { 
+				var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));		
+				$("tree").onTreeNodeDoubleClick = function(eventObj) {
+					getTargetParent();
+				}
+			}
+		});
+	}
+	
+	function getTargetParent() {
+		var treeNode = $T("tree").getActiveTreeNode();
+		if( treeNode ) {
+			window.returnValue = treeNode.getId();
+			window.close();
+		}
+	}
+
+    window.onload = loadGroupsTree;
+//-->
+</SCRIPT>
+</head>
+
+<body>
+  <table class="full dialog">
+    <tr valign="top">
+      <td>
+		<Tree:Box id="tree" treeType="menu" baseurl="framework/tree/"><div class="loading"></div></Tree:Box>
+      </td>
+    </tr>
+    <tr>
+      <td class="t" height="30" align="right">
+		<input type="button" value="确定" class="btStrong" onclick="getTargetParent()"/>
+        <input type="button" value="关闭" class="btWeak" onclick="window.close()"/> 
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

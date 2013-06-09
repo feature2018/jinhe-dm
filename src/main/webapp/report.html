@@ -24,6 +24,26 @@
 <script language="javascript" src="framework/grid/grid.js"></script>
 <script language="javascript" src="framework/xform/xform.js"></script>
 
+<style>
+  #searchFormDiv {
+	display:none;
+    background-color:#BEC6EE;
+    width:500;
+    height:500;
+	font-size: 12px;
+	padding: 10px 10px 10px 10px;
+  }
+  
+  #reportFormDiv {
+    display:none;
+	background-color: #BEC6EE;
+	width: 80%;    
+	height: 60%;  
+	padding: 10px 10px 10px 10px;
+  }
+
+</style>
+
 <SCRIPT type="text/javascript">
 <!--
  
@@ -39,7 +59,7 @@
      */
 	URL_SOURCE_TREE    = "rp/all";
 	URL_GROUPS_TREE    = "rp/groups";
-    URL_REPORT_DATA    = "rp/";
+    URL_REPORT_DATA    = "display/showAsGrid/";
     URL_SOURCE_DETAIL  = "rp/detail";
 	URL_SAVE_SOURCE    = "rp";
     URL_DELETE_SOURCE  = "rp/";
@@ -99,7 +119,7 @@
 		/* 树菜单初始化  */
 		var item1 = {
 			label:"报表查询",
-			callback:searchReport,
+			callback:showSearchForm,
 			icon:"framework/images/search.gif",
 			visible:function() {return isReport();}
 		}
@@ -149,7 +169,7 @@
 		}
 		var item7 = {
 			label:"移动到",
-			callback:deleteReport,
+			callback:moveReport,
 			icon:"framework/images/icon_move.gif",
 			visible:function() {return isReport();}
 		}
@@ -213,7 +233,7 @@
             }
             treeElement.onTreeNodeDoubleClick = function(eventObj) {
                if( isReport() ) {
-					searchReport();
+					showSearchForm();
 				}
 				if( isReportGroup() ) {
 					loadReportDetail(false, false);
@@ -231,25 +251,13 @@
 
         Ajax({url : URL_SOURCE_TREE, onresult : onresult});
     }
-	
-	function showFloatingDiv(div) {
-		div.style.display = "block";
-		div.style.width  = "80%";    
-		div.style.height = "80%";    
-		div.style.position = "absolute";    
-		div.style.left = "200px";   
-		div.style.top  = "70px"; 		
-		div.style.zIndex = "10000"; 
-		div.style.background = "#BEC6EE";   
-		Element.setOpacity(div, 80);
-	}
-	
+ 
 	function loadReportDetail(isCreate, readonly, type) { 
 		var treeNode = $T("tree").getActiveTreeNode();
 		var treeID = treeNode.getId();
 		type = type || treeNode.getAttribute("type") ;
 		
-		showFloatingDiv($("reportFormDiv"));
+		Element.show($("reportFormDiv"));
 		
 		var params = {};
 		if( isCreate ) {
@@ -273,14 +281,14 @@
 			
 				// 设置保存/关闭按钮操作
 				$("closeReportForm").onclick = function() {
-					$("reportFormDiv").style.display = "none";
+					Element.hidden($("reportFormDiv"));
 				}
 				$("sourceSave").onclick = function() {
 					saveReport(treeID);
 				}
 			},
 			onexception : function() { 
-				$("reportFormDiv").style.display = "none";
+				Element.hidden($("reportFormDiv"));
 			}
 		});
 	}
@@ -298,10 +306,10 @@
 		//参数基本信息
 		var sourceInfoNode = Cache.XmlDatas.get(treeID);
 		if( sourceInfoNode ) {
-			var paramInfoDataNode = sourceInfoNode.selectSingleNode(".//data");
-			if( paramInfoDataNode ) {
+			var reportInfoDataNode = sourceInfoNode.selectSingleNode(".//data");
+			if( reportInfoDataNode ) {
 				flag = true;
-				p.setXFormContent(paramInfoDataNode);
+				p.setXFormContent(reportInfoDataNode);
 			}
 		}
 
@@ -314,17 +322,17 @@
             request.onresult = function() { // 新增结果返回              
 				var treeNode = this.getNodeValue(XML_SOURCE_TREE).selectSingleNode("treeNode");
 				appendTreeNode(treeID, treeNode); // treeID即为父节点
-
-				$("reportFormDiv").style.display = "none";
+				
+				Element.hidden($("reportFormDiv"));
             }
 
             request.onsuccess = function() { // 更新
 				var name = xform.getData("name");
-				if( isNullOrEmpty(name) ) {
+				if( !isNullOrEmpty(name) ) {
 					modifyTreeNode(treeID, "name", name, true);
 				}
 				
-				$("reportFormDiv").style.display = "none";
+				Element.hidden($("reportFormDiv"));
             }
             request.send();
         }
@@ -336,7 +344,7 @@
         var tree = $T("tree");
         var treeNode = tree.getActiveTreeNode();
 		Ajax({
-			url : URL_SOURCE_DELETE + treeNode.getId(),
+			url : URL_DELETE_SOURCE + treeNode.getId(),
 			method : "DELETE",
 			onsuccess : function() { 
 				var parentNode = treeNode.getParent();
@@ -349,11 +357,11 @@
 	}
 	
 	function disableReport() {
-		disable(1);
+		disable("1");
 	}
 
 	function enableReport() {
-		disable(0);
+		disable("0");
 	}
 
 	function disable(status) {
@@ -424,13 +432,10 @@
 		var treeNode = $T("tree").getActiveTreeNode();
 		var id = treeNode.getId();
 		var name = treeNode.getName();
-		var parentID = treeNode.getParent().getId();
 
-		var params = { id:id, parentID:parentID };
-		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"将【\"" + name + "\"】复制到"}, "dialogWidth:300px;dialogHeight:400px;");
-		
-		if( targetParent ) {
-			var targetParentId = targetParent.id;
+		var params = { id:id, url:URL_GROUPS_TREE };
+		var targetParentId = window.showModalDialog("targetTree.html", {params:params, title:"将【\"" + name + "\"】复制到"}, "dialogWidth:300px;dialogHeight:400px;");	
+		if( targetParentId ) {
 			Ajax({
 				url : URL_COPY_SOURCE + id + "/" + targetParentId,
 				onresult : function() { 
@@ -446,17 +451,13 @@
         var treeNode = tree.getActiveTreeNode();
 		var id = treeNode.getId();
 		var name = treeNode.getName();
-		var parentID = treeNode.getParent().getId();
 
-		var params = { id:id, parentID:parentID };
-		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"将\"" + name + "\"移动到"},"dialogWidth:300px;dialogHeight:400px;");
-	   
-		if(targetParent) {
-			var targetParentId = targetParent.id;
+		var params = { id:id, url:URL_GROUPS_TREE };
+		var targetParentId = window.showModalDialog("targetTree.html", {params:params, title:"将\"" + name + "\"移动到"}, "dialogWidth:300px;dialogHeight:400px;");	   
+		if(targetParentId) {
 			Ajax({
 				url : URL_MOVE_SOURCE + id + "/" + targetParentId,
-				onsuccess : function() { 
-					// 移动树节点
+				onsuccess : function() {  // 移动树节点					
 					var parentNode = tree.getTreeNodeById(targetParentId);
 					parentNode.node.appendChild(treeNode.node);
 
@@ -468,39 +469,82 @@
 				}
 			});
 		}
-	}
-		
+	}		
 	
-    function searchReport() {
+	function showSearchForm() {
         var treeNode = $T("tree").getActiveTreeNode();
 		var treeID = treeNode.getId();
 		var treeName = treeNode.getName();
+		var params = "whId:仓库ID:Long,customerId:客户ID:Long"; // treeNode.getAttribute("param");	
+		if(params == null || params.length == 0) {
+			searchReport(treeID);
+			return;
+		}
 		
-		var p = new HttpRequestParams();
+		var columns = [];
+		var layouts = [];
+		var paramArray = params.split(",");
+		for( var i = 0; i < paramArray.length; i++ ) {
+			var param = paramArray[i];
+			var tempArray = param.split(":");
+			if(tempArray.length == 3) {
+				columns[columns.length] = "<column name=\"" + tempArray[0] + "\" caption=\"" + tempArray[1] + "\" mode=\"string\"/>";				
+				layouts[layouts.length] = " <TR>";
+				layouts[layouts.length] = "    <TD width=\"50\"><label binding=\"" + tempArray[0] + "\"/></TD>";
+				layouts[layouts.length] = "    <TD><input binding=\"" + tempArray[0] + "\" type=\"text\" style=\"width:250px\"/></TD>";
+				layouts[layouts.length] = " </TR>";
+			}
+		}
 		
-		var condition = window.showModalDialog("searchlog.htm", {applicationId:treeID, title:"搜索\"" + treeName + "\"下的日志"}, "dialogWidth:250px;dialogHeight:250px;");
-		if( condition ) { 
-			Cache.Variables.add("condition", condition);
-			
-			
-			var xmlReader = new XmlReader(condition.dataXml);
-			var dataNode  = new XmlNode(xmlReader.documentElement);
-			p.setXFormContent(dataNode, condition.prefix);
-			
-		} 
+		Element.show($("searchFormDiv"));
+		$("reportName").innerText = "查询报表【" + treeName + "】";
 		
-		loadGridData(p, treeID, "1"); 
-    }
+		var str = [];
+        str[str.length] = "<xform>";
+        str[str.length] = "    <declare>";
+        str[str.length] = columns.join("");
+        str[str.length] = "    </declare>";
+        str[str.length] = "    <layout>";
+        str[str.length] = layouts.join("");
+        str[str.length] = "        <TR>";
+        str[str.length] = "          <TD colspan='2' align=\"center\" height=\"36\"><input type=\"button\" class=\"btStrong\" id=\"btSearch\" value=\"查询\"/></TD>";
+        str[str.length] = "        </TR>";
+        str[str.length] = "    </layout>";
+        str[str.length] = "    <data><row/></data>";
+        str[str.length] = "</xform>";
+		
+		var formContent = str.join("");
+        var xmlReader = new XmlReader(formContent);
+        var searchFormXML = new XmlNode(xmlReader.documentElement);
+		var searchForm = $X("searchForm", searchFormXML);
+		Cache.XmlDatas.add("searchForm", searchFormXML);
+		
+		$("btSearch").onclick = function () {
+			searchReport(treeID);
+		}
+	}
 	
-    function loadGridData(p, treeID, page) {
-		p.url = URL_REPORT_DATA + page || "1";
+    function searchReport(treeID) {		
+		Element.hidden($("searchFormDiv"));
+	
+		var p = new HttpRequestParams();		      
+        var searchLogFormXML = Cache.XmlDatas.get("searchForm");
+        if( searchLogFormXML ) {
+            var dataNode = searchLogFormXML.selectSingleNode(".//data");
+            if (dataNode) {
+				p.setXFormContent(dataNode);
+            }
+        }
+ 
+		p.url = URL_REPORT_DATA + treeID + "/1";
 		var request = new HttpRequest(p);
 		request.onresult = function() {
 			$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
+			var gridToolBar = $("gridToolBar");
 
 			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
-			initGridToolBar($("gridToolBar"), pageListNode, function(page) {
-				request.params.url = URL_REPORT_DATA + page;
+			initGridToolBar(gridToolBar, pageListNode, function(page) {
+				request.params.url = URL_REPORT_DATA + treeID + "/" + page;
 				request.onresult = function() {
 					$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 				}				
@@ -515,11 +559,13 @@
 				$("grid").contextmenu.show(event.clientX, event.clientY);
 			}   
 			gridElement.onScrollToBottom = function () {			
-				var currentPage = request.getParamValue("page");
+				var currentPage = gridToolBar.getCurrentPage();
+				if(gridToolBar.getTotalPages() <= currentPage) return;
+
 				var nextPage = parseInt(currentPage) + 1; 
-				request.params.url = URL_REPORT_DATA + nextPage;
+				request.params.url = URL_REPORT_DATA + treeID + "/" + nextPage;
 				request.onresult = function() {
-					$G("grid").load(this.getNodeValue(XML_REPORT_DATA), true);
+					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
 				}				
 				request.send();
 			}
@@ -527,28 +573,8 @@
 		request.send();
     } 
  
- 	function loadGroupsTree(operatedNodeID) {		
-		Ajax({
-			url : URL_GROUPS_TREE,
-			onresult : function() { 
-				var tree = $T("groupTree", this.getNodeValue(XML_SOURCE_TREE));		
-				$("groupTree").onTreeNodeDoubleClick = function(eventObj) {
-					getTargetParent();
-				}
-			}
-		});
-	}
-	
-	function getTargetParent() {
-		var treeNode = $T("groupTree").getActiveTreeNode();
-		if( treeNode ) {
-			return treeNode.getId();
-		}
-	}
-	
-	
+ 
     window.onload = init;
-
     window.attachEvent("onunload", function() {
         if(10000 < window.screenTop || 10000 < window.screenLeft) {
             logout(); // 关闭页面自动注销
@@ -624,20 +650,15 @@
   </tr>
 </table>
 
-<div id="reportFormDiv" style="display:none">
+<div id="reportFormDiv">
 	<XForm:Box id="reportForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
 	<input type="button" class="btStrong" value="保存" id="sourceSave"/>
 	<input type="button" class="btStrong" value="关闭" id="closeReportForm"/>
 </div>
 
-<div id="searchFormDiv" style="display:none">
+<div id="searchFormDiv">
+	<h3 id="reportName"></h3>
 	<XForm:Box id="searchForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
-</div>
-
-<div id="groupTreeDiv" style="display:none">
-	<Tree:Box id="groupTree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
-	<input type="button" value="确定" class="btStrong" onclick="getTargetParent()"/>
-    <input type="button" value="关闭" class="btWeak" onclick="$('groupTreeDiv').style.display = 'none'"/> 
 </div>
 
 </body>

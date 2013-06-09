@@ -556,6 +556,22 @@ Element.createElement = function(tagName, ns) {
 	return obj;
 }
 
+Element.show = function(element) {
+	element.style.display = "block"; 
+	element.style.position = "absolute";  
+	element.style.left = "18%";   
+	element.style.top  = "70px"; 		
+	element.style.zIndex = "10000"; 
+	element.style.overflow = "hidden";
+
+	Element.setOpacity(element, 80);
+}
+
+Element.hidden = function(element) {
+	element.style.display = "none"; 
+}
+
+
 /*
  *	隐藏对象覆盖范围内的高优先级的控件(select等)
  *	参数：	Object:obj			html对象

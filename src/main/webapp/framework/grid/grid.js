@@ -365,7 +365,7 @@ function initGridToolBar(gridPageBar, pageInfo, callback) {
 		str[str.length] = "<span class=\"button last\"    id=\"GridBtLast\"    title=\"最后一页\"></span>";
 		
 		str[str.length] = "<select id=\"GridPageList\">";
-		for(var i=0; i <= totalpages; i++) {
+		for(var i=1; i <= totalpages; i++) {
 			str[str.length] = "  <option value=\"" + i + "\"" + (curPage == i ? " selected" : "") + ">" + i + "</option>";
 		}
 		str[str.length] = "</select>";

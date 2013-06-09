@@ -25,7 +25,7 @@ URL_CORE = "../";
     XML_USER_NAME = "UserName";
     XML_CLASS_NAME = "ClassName";
 	
-		CACHE_LOGIN_FORM = "login__id";
+	CACHE_LOGIN_FORM = "login__id";
 
     /*
      *	XMLHTTP请求地址汇总
@@ -33,9 +33,9 @@ URL_CORE = "../";
     URL_GET_USER_NAME = "test/mockdata/username.xml";
     URL_LOGIN = "test/mockdata/_success.xml";
  
-		var loginXForm;
+	var loginXForm;
 
-		function loadInitData() {
+	function loadInitData() {
         var str = [];
         str[str.length] = "<xform>";
         str[str.length] = "    <declare>";
@@ -71,21 +71,21 @@ URL_CORE = "../";
         var loginFormXML = new XmlNode(xmlReader.documentElement);
         Cache.XmlDatas.add(CACHE_LOGIN_FORM, loginFormXML);
 
-				// 初始化登录xform
-				loginXForm = $X("loginForm", loginFormXML)
-				
-				$("userName").onblur = function() { 
-					var value = this.value;
-					if(value == null || value == "") return;
-					
-					getUserName(value, function(userName, identifier) {
-						loginXForm.updateDataExternal("userName", userName, false);
-						loginXForm.updateDataExternal("identifier", identifier, false);
-						loginXForm.updateDataExternal("loginName", value, false);
-						loginXForm.setFocus("password");
-					});
-				}
+		// 初始化登录xform
+		loginXForm = $X("loginForm", loginFormXML)
+		
+		$("userName").onblur = function() { 
+			var value = this.value;
+			if(value == null || value == "") return;
+			
+			getUserName(value, function(userName, identifier) {
+				loginXForm.updateDataExternal("userName", userName, false);
+				loginXForm.updateDataExternal("identifier", identifier, false);
+				loginXForm.updateDataExternal("loginName", value, false);
+				loginXForm.setFocus("password");
+			});
 		}
+	}
 
 	  /*
      *	根据用户输入登录帐号返回用户姓名
@@ -93,21 +93,21 @@ URL_CORE = "../";
                 function:callback     回调方法
      */
     function getUserName(loginName, callback) {
-				callback("Jon", "11111"); return;
+		callback("Jon", "11111"); return;
 
-				Ajax({
-					url : URL_GET_USER_NAME,
-					headers : {"appCode": APP_CODE},
-					contents : {"loginName": loginName}, 
-					onresult : function() { 
-						var userName   = this.getNodeValue(XML_USER_NAME);
-            var identifier = this.getNodeValue(XML_CLASS_NAME);
-            callback(userName, identifier);
-					},
-					onexception : function() {
-						loginXForm.setFocus();
-					}
-				});	
+		Ajax({
+			url : URL_GET_USER_NAME,
+			headers : {"appCode": APP_CODE},
+			contents : {"loginName": loginName}, 
+			onresult : function() { 
+				var userName   = this.getNodeValue(XML_USER_NAME);
+				var identifier = this.getNodeValue(XML_CLASS_NAME);
+				callback(userName, identifier);
+			},
+			onexception : function() {
+				loginXForm.setFocus();
+			}
+		});	
     }
 
     function login() {
