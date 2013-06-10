@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +26,34 @@ public class SQLExcutor {
     static Pool connectionPool = JCache.getInstance().getCachePool(POOL_CODE);
     
     SQLParser parser;
+    
+    int count;
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     
-    public void excuteQuery(String sql, Map<Integer, Object> paramsMap) {
+    public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize) {
         Cacheable connItem = connectionPool.checkOut(0);
         Connection conn = (Connection) connItem.getValue();
 
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+        	if(page > 0 && pagesize > 0) {
+        		int fromRow = 0;
+        		int toRow = 0;
+        		sql = "SELECT * FROM " + 
+    	    		"( " + 
+    	    		"	SELECT t.*, ROWNUM RN FROM ( " + sql + " ) t WHERE ROWNUM <= " + toRow +
+    	    		") " + 
+    	    		"WHERE RN > " + fromRow;
+        		
+        		String queryCountSql = " select count(*) " + sql.substring(sql.indexOf("from"));
+        		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);  
+        	    rs = stmt.executeQuery(queryCountSql);  
+        	    if (rs.next()) {  
+        	        count = rs.getInt(1);  
+        	    }  
+        	}
+        	
             pstmt = conn.prepareStatement(sql);
             for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {
                 pstmt.setObject(entry.getKey(), entry.getValue()); // 从1开始，非0

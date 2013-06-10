@@ -495,17 +495,22 @@
 				var paramType = tempArray[1];
 
 				var mode = "string";
+				var inputReg = null; 
 				switch(paramType.toLowerCase()) {
 					case "number":
 						mode = "number";
+						inputReg = "/^[0-9]*[1-9][0-9]*$/";
 						break;
 					case "string":
+						mode = "string";
+						break;
 					case "date":
 						mode = "string";
+						inputReg = "/^((?:19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/";
 						break;
 				}
 
-				columns[columns.length] = "<column name='" + columnName + "' caption='" + paramCaption + "' mode='" + mode + "'/>";				
+				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "'/>";				
 				layouts[layouts.length] = " <TR>";
 				layouts[layouts.length] = "    <TD width='50'><label binding='" + columnName + "'/></TD>";
 				layouts[layouts.length] = "    <TD><input binding='" + columnName + "' type='text' style='width:250px'/></TD>";
