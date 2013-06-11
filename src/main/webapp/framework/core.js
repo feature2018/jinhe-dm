@@ -567,8 +567,9 @@ Element.show = function(element) {
 	Element.setOpacity(element, 80);
 }
 
-Element.hidden = function(element) {
+Element.hide = function(element) {
 	element.style.display = "none"; 
+	Balloons.dispose();
 }
 
 

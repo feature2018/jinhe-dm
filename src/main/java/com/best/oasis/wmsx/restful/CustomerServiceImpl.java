@@ -1,6 +1,7 @@
 package com.best.oasis.wmsx.restful;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,14 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {  
     
     static Map<String, Customer> map = new HashMap<String, Customer>();
+    
+    static {
+    	Customer c = new Customer();
+    	c.setId("-1");
+    	c.setName("Admin");
+    	c.setBirthday(new Date());
+    	map.put(c.getId(), c);
+    }
     
     public void createCustomer(Customer customer) {
         String id = customer.getId();

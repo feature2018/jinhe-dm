@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xform>
 	<declare prefix="report">	
-		<column caption="id" name="id" mode="string" display="none"/>
+		<column name="id"     caption="报表ID"  mode="number" editable="false"/>
 		<column name="name"   caption="报表名称" mode="string" maxLength="30" empty="true"/>
 		<column name="script" caption="报表脚本" mode="string" maxLength="4000"/>
 		<column name="param"  caption="报表参数" mode="string" maxLength="400"/>
 		<column name="remark" caption="报表简介" mode="string" maxLength="400"/>
 	</declare>
 	<layout>
+		<TR>
+			<TD width="80"><label binding="id"/></TD>
+			<TD><input binding="id" type="text" style="width:50px;"/></TD>
+		</TR>
 		<TR>
 			<TD width="80"><label binding="name"/></TD>
 			<TD><input binding="name" type="text" style="width:50%;"/></TD>

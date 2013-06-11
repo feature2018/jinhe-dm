@@ -34,7 +34,7 @@ public class RestfulTest {
     
     public static void main(String[] args) throws Exception {  
         
-//        startServer();
+        startServer();
         
         doPut("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2013-05-13T12:36:07.814+08:00</birthday><id>1</id><name>Jon.King</name></Customer>");

@@ -283,14 +283,14 @@
 			
 				// 设置保存/关闭按钮操作
 				$("closeReportForm").onclick = function() {
-					Element.hidden($("reportFormDiv"));
+					Element.hide($("reportFormDiv"));
 				}
 				$("sourceSave").onclick = function() {
 					saveReport(treeID);
 				}
 			},
 			onexception : function() { 
-				Element.hidden($("reportFormDiv"));
+				Element.hide($("reportFormDiv"));
 			}
 		});
 	}
@@ -325,7 +325,7 @@
 				var treeNode = this.getNodeValue(XML_SOURCE_TREE).selectSingleNode("treeNode");
 				appendTreeNode(treeID, treeNode); // treeID即为父节点
 				
-				Element.hidden($("reportFormDiv"));
+				Element.hide($("reportFormDiv"));
             }
 
             request.onsuccess = function() { // 更新
@@ -334,7 +334,7 @@
 					modifyTreeNode(treeID, "name", name, true);
 				}
 				
-				Element.hidden($("reportFormDiv"));
+				Element.hide($("reportFormDiv"));
             }
             request.send();
         }
@@ -477,6 +477,19 @@
         var treeNode = $T("tree").getActiveTreeNode();
 		var treeID = treeNode.getId();
 		var treeName = treeNode.getName();
+		var url = treeNode.getAttribute("url");
+		if(url != null) {
+			Ajax({
+				url : url,  // "http://localhost:9000/wmsx/rs/customer/info",
+				method : "GET",
+				type : "json",
+				ondata : function() { 
+					alert("调试接口：" + url + "，返回结果：", this.getResponseText());
+				}
+			});
+			return;
+		}
+
 		var params = treeNode.getAttribute("param");  // "whId:仓库ID:Long,customerId:客户ID:Long"; 	
 		if(params == null || params.length == 0) {
 			searchReport(treeID);
@@ -518,7 +531,10 @@
 			}
 		}		
 		layouts[layouts.length] = "        <TR>";
-        layouts[layouts.length] = "          <TD colspan='2' align='center' height='36'><input type='button' class='btStrong' id='btSearch' value='查询'/></TD>";
+        layouts[layouts.length] = "          <TD colspan='2' align='center' height='36'>";
+		layouts[layouts.length] = "				<input type='button' class='btStrong' id='btSearch' value='查询'/>";
+		layouts[layouts.length] = "				<input type='button' class='btWeak' id='btCloseSearchForm' value='关闭'/>";
+		layouts[layouts.length] = "          </TD>";
         layouts[layouts.length] = "        </TR>";
 		
 		Element.show($("searchFormDiv"));
@@ -544,10 +560,13 @@
 		$("btSearch").onclick = function () {
 			searchReport(treeID);
 		}
+		$("btCloseSearchForm").onclick = function () {
+			Element.hide($("searchFormDiv"));
+		}
 	}
 	
     function searchReport(treeID) {		
-		Element.hidden($("searchFormDiv"));
+		Element.hide($("searchFormDiv"));
 	
 		var p = new HttpRequestParams();		      
         var searchLogFormXML = Cache.XmlDatas.get("searchForm");
@@ -595,18 +614,6 @@
 		request.send();
     } 
  
- 
-    function testJason() {
-		Ajax({
-			url : "http://localhost:9000/wmsx/rs/customer/info",
-			method : "GET",
-			type : "json",
-			ondata : function() { 
-				alert(this.getResponseText());
-			}
-		});
-	}
-
     window.onload = init;
     window.attachEvent("onunload", function() {
         if(10000 < window.screenTop || 10000 < window.screenLeft) {
