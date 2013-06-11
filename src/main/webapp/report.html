@@ -42,6 +42,15 @@
 	padding: 10px 10px 10px 10px;
   }
 
+  #loginFormDiv {
+	display:none;
+    background-color:#BEC6EE;
+    width:300;
+    height:250;
+	font-size: 12px;
+	padding: 10px 10px 10px 10px;
+  }
+
 </style>
 
 <SCRIPT type="text/javascript">
@@ -121,7 +130,7 @@
 		/* 树菜单初始化  */
 		var item1 = {
 			label:"报表查询",
-			callback:showSearchForm,
+			callback:showReport,
 			icon:"framework/images/search.gif",
 			visible:function() {return isReport();}
 		}
@@ -235,7 +244,7 @@
             }
             treeElement.onTreeNodeDoubleClick = function(eventObj) {
                if( isReport() ) {
-					showSearchForm();
+					showReport();
 				}
 				if( isReportGroup() ) {
 					loadReportDetail(false, false);
@@ -473,14 +482,14 @@
 		}
 	}		
 	
-	function showSearchForm() {
+	function showReport() {
         var treeNode = $T("tree").getActiveTreeNode();
 		var treeID = treeNode.getId();
 		var treeName = treeNode.getName();
 		var url = treeNode.getAttribute("url");
 		if(url != null) {
 			Ajax({
-				url : url,  // "http://localhost:9000/wmsx/rs/customer/info",
+				url : url,  // 如: "http://localhost:9000/wmsx/rs/customer/info",
 				method : "GET",
 				type : "json",
 				ondata : function() { 
@@ -490,12 +499,21 @@
 			return;
 		}
 
-		var params = treeNode.getAttribute("param");  // "whId:仓库ID:Long,customerId:客户ID:Long"; 	
+		var params = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
 		if(params == null || params.length == 0) {
 			searchReport(treeID);
 			return;
 		}
-		
+
+		if( params.indexOf("仓库") >= 0 && Cookie.getValue("token") == null ) {
+			showLoginForm();
+			return;
+		}
+
+		showSearchForm(params);
+	}
+
+	function showSearchForm(params) {	
 		var columns = [];
 		var layouts = [];
 		var paramArray = params.split(",");
@@ -613,6 +631,91 @@
 		}
 		request.send();
     } 
+
+	function showLoginForm() {
+	    var str = [];
+        str[str.length] = "<xform>";
+        str[str.length] = "    <declare>";
+        str[str.length] = "        <column name=\"loginName\"  caption=\"帐    号\" mode=\"string\"/>";
+        str[str.length] = "        <column name=\"password\"   caption=\"密　　码\" mode=\"string\"/>";
+        str[str.length] = "    </declare>";
+        str[str.length] = "    <layout>";
+        str[str.length] = "        <TR>";
+        str[str.length] = "            <TD width=\"50\"><label binding=\"loginName\"/></TD>";
+        str[str.length] = "            <TD><input binding=\"loginName\" type=\"text\" style=\"width:150px\"/></TD>";
+        str[str.length] = "        </TR>";
+        str[str.length] = "        <TR>";
+        str[str.length] = "            <TD width=\"50\"><label binding=\"password\"/></TD>";
+        str[str.length] = "            <TD><input binding=\"password\" type=\"password\" style=\"width:150px\"/></TD>";
+        str[str.length] = "        </TR>";
+        str[str.length] = "        <TR>";
+        str[str.length] = "            <TD width=\"50\">&amp;nbsp;</TD>";
+        str[str.length] = "            <TD><input type=\"button\" class=\"btLogin\" id=\"btCloseLoginForm\" value=\"关闭\"/><input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/></TD>";
+        str[str.length] = "        </TR>";
+        str[str.length] = "    </layout>";
+        str[str.length] = "    <data><row/></data>";
+        str[str.length] = "</xform>";
+
+        var xmlReader = new XmlReader(str.join(""));
+        var loginFormXML = new XmlNode(xmlReader.documentElement);
+        Cache.XmlDatas.add("loginForm", loginFormXML);
+
+		// 初始化登录xform
+		Element.show($("loginFormDiv"));
+		$X("loginForm", loginFormXML);
+
+		$("btCloseLoginForm\").onclick = function () {
+			Element.hide($("loginFormDiv"));
+		}
+	}
+
+	function login() {
+		var loginXForm = $X("loginForm");
+        var loginName = loginXForm.getData("loginName") || "";
+        var password = loginXForm.getData("password") || "";
+        if( "" == loginName ) {
+            loginXForm.showCustomErrorInfo("loginName", "请输入姓名");
+            return;
+        } 
+		else if( "" == password ) {
+            loginXForm.showCustomErrorInfo("password", "请输入密码");
+            return;
+        }
+
+		Ajax({
+			url : "http://localhost:9000/wmsx/rs/wms/login",
+			method : "POST",
+			type : "json",
+			content : {"loginName" : loginName, "password" : password},
+			ondata : function() { 
+				var result = eval(this.getResponseText());
+				if(result == null) {
+					return alert("登陆失败，您输入的账号或密码有误！");
+				}
+
+				Cookie.setValue("token", result[0], null, "/" + CONTEXTPATH);
+				// $("userInfo").innerText = result[1];
+
+				Element.hide($("loginFormDiv"));
+				showReport();
+			}
+		});
+	}
+
+	function getWarehouseList() {
+
+	}
+
+	function testJason() {
+		Ajax({
+			url : "http://localhost:9000/wmsx/rs/wms/kanban",
+			method : "GET",
+			type : "json",
+			ondata : function() { 
+				alert(this.getResponseText());
+			}
+		});
+	}
  
     window.onload = init;
     window.attachEvent("onunload", function() {
@@ -699,6 +802,10 @@
 <div id="searchFormDiv">
 	<h3 id="reportName"></h3>
 	<XForm:Box id="searchForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+</div>
+
+<div id="loginFormDiv">
+	<XForm:Box id="loginForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
 </div>
 
 </body>

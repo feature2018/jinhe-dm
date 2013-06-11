@@ -17,11 +17,12 @@
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-	<context:component-scan base-package="com.best.oasis.wmsx.restful"/> 
+	<context:component-scan base-package="com.best.oasis.wmsx"/> 
 
     <jaxrs:server id="wmsxServer" address="/"> 
         <jaxrs:serviceBeans> 
             <ref bean="CustomerService"/> 
+			<ref bean="WmsService"/> 
         </jaxrs:serviceBeans> 
 		<!-- 更换默认的JSON providers为Jackson -->
 		<jaxrs:providers>    
