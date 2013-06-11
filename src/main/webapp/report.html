@@ -596,6 +596,17 @@
     } 
  
  
+    function testJason() {
+		Ajax({
+			url : "http://localhost:9000/wmsx/rs/customer/info",
+			method : "GET",
+			type : "json",
+			ondata : function() { 
+				alert(this.getResponseText());
+			}
+		});
+	}
+
     window.onload = init;
     window.attachEvent("onunload", function() {
         if(10000 < window.screenTop || 10000 < window.screenLeft) {

@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 public class RestfulTest {
 
@@ -25,13 +26,15 @@ public class RestfulTest {
         factory.setAddress("http://localhost:9000/wmsx/rs/");
         factory.getInInterceptors().add(new LoggingInInterceptor());
         factory.getOutInterceptors().add(new LoggingOutInterceptor());
+        
+        factory.setProvider(new JacksonJsonProvider()); // 更换默认的JSON providers为Jackson
 
         factory.create();
     }
     
     public static void main(String[] args) throws Exception {  
         
-        startServer();
+//        startServer();
         
         doPut("http://localhost:9000/wmsx/rs/customer/info/", 
                 "<Customer><birthday>2013-05-13T12:36:07.814+08:00</birthday><id>1</id><name>Jon.King</name></Customer>");

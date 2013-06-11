@@ -14,15 +14,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
   
 /**
- * application/xml
- * application/json
- * 
  * http://localhost:9000/wmsx/rs/customer/info
  */
 
 @Path("/customer")   
-@Produces("application/xml")  
-//@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON })
 public interface CustomerService {  
     
     @GET  

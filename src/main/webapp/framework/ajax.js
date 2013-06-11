@@ -31,6 +31,7 @@ _HTTP_TIMEOUT = 60*1000;
 function HttpRequestParams() {
 	this.url = "";
 	this.method = "POST";
+	this.type = "xml"; // "xml or json"
 	this.async = true;
 	this.content = {};
 	this.header = {};
@@ -361,17 +362,21 @@ HttpRequest.prototype.onload = function(response) {
 	this.value = response.responseText;
 
 	//远程(200) 或 本地(0)才允许
-	var httpStatus = response.status;
-	var httpStatusText = response.statusText;
+	var httpStatus = response.status; 
 	if(httpStatus != _HTTP_RESPONSE_STATUS_LOCAL_OK && httpStatus != _HTTP_RESPONSE_STATUS_REMOTE_OK) {
 		var param = {};
 		param.dataType = _HTTP_RESPONSE_DATA_TYPE_EXCEPTION;
 		param.type = 1;
 		param.source = this.value;
-		param.msg = "HTTP " + httpStatus + " 错误\r\n" + httpStatusText;
+		param.msg = "HTTP " + httpStatus + " 错误\r\n" + response.statusText;
 		param.description = "请求远程地址\"" + this.params.url + "\"出错";
 		new Message_Exception(param, this);
 		this.returnValue = false;
+		return;
+	}
+
+	if(this.params.type == "json") {
+		this.ondata();
 		return;
 	}
 
@@ -650,6 +655,7 @@ HttpRequests.onFinishAll = function(callback) {
 		method : "GET",
 		headers : {},
 		contents : {}, 
+		ondata : function() { },
 		onresult : function() { },
 		onexception : function() { },
 		onsuccess : function() { }
@@ -665,6 +671,10 @@ function Ajax() {
 		p.method = arg.method;
 	}
 
+	if(arg.type) {
+		p.type = arg.type;
+	}
+
 	for(var item in arg.headers) {
 		p.setHeader(item, arg.headers[item]);
 	}
@@ -673,6 +683,9 @@ function Ajax() {
 	}
 
 	var request = new HttpRequest(p);
+	if( arg.ondata ) {
+		request.ondata = arg.ondata;
+	}
 	if( arg.onresult ) {
 		request.onresult = arg.onresult;
 	}
