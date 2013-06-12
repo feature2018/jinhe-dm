@@ -26,6 +26,8 @@
 	<mvc:resources mapping="/*.html" location="/"/>  
 	<mvc:resources mapping="/*.htm" location="/"/>  
 	<mvc:resources mapping="/*.xml" location="/"/>  
+	<mvc:resources mapping="/*.css" location="/"/>  
+	<mvc:resources mapping="/*.js" location="/"/>  
 	
 	<mvc:resources mapping="/data/**" location="/data/"/> 
  

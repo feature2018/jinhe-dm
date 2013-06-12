@@ -97,7 +97,7 @@ public class Display extends BaseActionSupport {
 		return excutor;
 	}
  
-    @RequestMapping("/jason/{reportId}")
+    @RequestMapping("/json/{reportId}")
     @ResponseBody
     public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("reportId") Long reportId) {
     	SQLExcutor excutor = queryReport(request, reportId, 0, 0);

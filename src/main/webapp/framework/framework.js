@@ -346,6 +346,10 @@ function getTreeNodeId() {
 	return getTreeAttribute("id");
 }
 
+function getTreeNodeName() {
+	return getTreeAttribute("name");
+}
+
 function isTreeNodeDisabled() {
 	return getTreeAttribute("disabled") == "1";
 }
@@ -664,6 +668,7 @@ function initNaviBar(curId, relativePath) {
 				str[str.length] = "<a href=\"" + href + "\" class=\"" + cssStyle + "\">" + name + "</a>";
 			}
 			$("navibar").innerHTML = str.join(" ");
+			$("navibar").style.display = "inline";
 		}
 	});
 }
