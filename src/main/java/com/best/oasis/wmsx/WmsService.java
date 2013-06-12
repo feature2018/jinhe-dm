@@ -8,7 +8,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 @Path("/wms")
@@ -16,8 +15,9 @@ import javax.ws.rs.core.MediaType;
 public interface WmsService {
 
 	@POST
-	@Path("/login")
-	Object[] login(@QueryParam("loginName") String loginName, @QueryParam("password") String password);
+	@Path("/login/{loginName}/{password}")
+	Object[] login(@PathParam("loginName") String loginName, 
+			@PathParam("password") String password);
 
 	@GET
 	@Path("/warehouseList")
@@ -28,7 +28,7 @@ public interface WmsService {
 	List<Object[]> getCustomerList();
 
 	@GET
-	@Path("/kanban")
+	@Path("/kanban/{whId}")
 	Map<String, Object> kanban(@PathParam("whId") Long whId);
 
 }

@@ -46,17 +46,21 @@ function init() {
 	initFocus();
 
 	if( Cookie.getValue("token") ) {
-		$("userInfo").innerText = "  |  注销【" + Cookie.getValue("userName") + "】";
-		$("userInfo").onclick = logoutWMS;
+		preLogoutWMS();
 	}	
 
 	loadInitData();
 }
 
-function logoutWMS() {
-	Cookie.del("userName");
-	Cookie.del("token");
-	$("userInfo").innerText = "";
+function preLogoutWMS() {
+	var userName = Cookie.getValue("userName");
+	$("userInfo").innerText = "  |  注销【" + userName + "】";
+	$("userInfo").style.cursor = "hand";
+	$("userInfo").onclick = function() {
+		Cookie.del("userName");
+		Cookie.del("token");
+		$("userInfo").innerText = "";
+	}	
 }
 	
 function initBlocks() {
@@ -654,10 +658,10 @@ function login() {
 	}
 
 	Ajax({
-		url : "http://localhost:9000/wmsx/rs/wms/login",
+		url : "http://localhost:9000/wmsx/rs/wms/login/" + loginName + "/" + password,
 		method : "POST",
 		type : "json",
-		content : {"loginName" : loginName, "password" : password},
+		// contents : {"loginName" : loginName, "password" : password},
 		ondata : function() { 
 			var result = eval(this.getResponseText());
 			if(result == null) {
@@ -666,8 +670,7 @@ function login() {
 
 			Cookie.setValue("token", result[0]);
 			Cookie.setValue("userName", result[1]);
-			$("userInfo").innerText = "注销【" + result[1] + "】";
-			$("userInfo").onclick = logoutWMS;
+			preLogoutWMS();
 
 			Element.hide($("loginFormDiv"));
 
