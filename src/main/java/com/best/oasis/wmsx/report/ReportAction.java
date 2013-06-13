@@ -73,11 +73,11 @@ public class ReportAction extends BaseActionSupport {
         if( Report.TYPE1 == type ) {
             List<Param> datasources;
             try {
-                datasources = ParamManager.getComboParam(Constants.DASOURCE_LIST);
+                datasources = ParamManager.getComboParam(Constants.DATASOURCE_LIST);
             } catch (Exception e) {
                 datasources = new ArrayList<Param>();
             }
-            Object[] objs = EasyUtils.generateComboedit(datasources, "code", "name", "|");;
+            Object[] objs = EasyUtils.generateComboedit(datasources, "value", "text", "|");;
             xformEncoder.setColumnAttribute("datasource", "editorvalue", (String) objs[0]);
             xformEncoder.setColumnAttribute("datasource", "editortext",  (String) objs[1]);
         }

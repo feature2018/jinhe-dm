@@ -43,7 +43,7 @@ public class SQLParser {
         
         sql = sql.trim();
         int selectIndex = sql.indexOf("select ");
-        int fromIndex   = sql.indexOf(" from ");
+        int fromIndex   = sql.indexOf("from ");
         String fieldsStr = sql.substring(selectIndex + 7, fromIndex);
         String[] fileds = fieldsStr.split(",");
         for(String filed : fileds) {

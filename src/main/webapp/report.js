@@ -489,7 +489,7 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	for( var i = 0; i < paramArray.length; i++ ) {
 		var param = paramArray[i];
 		var tempArray = param.split(":");
-		if(tempArray.length == 2) {
+		if(tempArray.length >= 2) {
 			var columnName = "param" + (i + 1);
 			var paramCaption = tempArray[0];
 			var paramType = tempArray[1];
@@ -510,11 +510,15 @@ function showSearchForm(paramConfig, whIds, whNames) {
 					break;
 			}
 			
+			var empty = "true";
+			if(tempArray.length == 3) {
+				var empty = tempArray[2];
+			}
 			if( paramCaption.indexOf("仓库") >= 0) {
-				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='string' editor='comboedit' editorvalue='" + whIds + "' editortext='" + whNames + "'/>";	
+				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='string' editor='comboedit' editorvalue='" + whIds + "' editortext='" + whNames + "' empty='false'/>";	
 			}
 			else {
-				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "'/>";
+				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "' empty='" +empty+ "'/>";
 			}
 			layouts[layouts.length] = " <TR>";
 			layouts[layouts.length] = "    <TD width='50'><label binding='" + columnName + "'/></TD>";
@@ -551,6 +555,7 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	Cache.XmlDatas.add("searchForm", searchFormXML);
 	
 	$("btSearch").onclick = function () {
+		var treeID = getTreeNodeId();
 		searchReport(treeID);
 	}
 	$("btCloseSearchForm").onclick = function () {
@@ -559,6 +564,9 @@ function showSearchForm(paramConfig, whIds, whNames) {
 }
 
 function searchReport(treeID) {		
+	var xform = $X("searchForm");	
+	if( xform && !xform.checkForm() ) return;
+
 	Element.hide($("searchFormDiv"));
 
 	var p = new HttpRequestParams();		      
@@ -599,7 +607,8 @@ function searchReport(treeID) {
 			var nextPage = parseInt(currentPage) + 1; 
 			request.params.url = URL_REPORT_DATA + treeID + "/" + nextPage + "/" + PAGESIZE;
 			request.onresult = function() {
-				$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
+				$G("grid").load(this.getNodeValue(XML_REPORT_DATA), true);
+				initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));
 			}				
 			request.send();
 		}

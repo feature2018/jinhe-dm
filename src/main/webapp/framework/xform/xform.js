@@ -2,6 +2,11 @@ var XFormCache = new Collection();
 
 function $X(xformId, data) {
 	var xform = XFormCache.get(xformId);
+
+	if( xform == null && data == null ) {
+		return null;
+	}
+
 	if( xform == null || data ) {
 		xform = new XForm($(xformId));
 		xform.load(data);
@@ -155,6 +160,10 @@ XForm.prototype.attachEditor = function() {
 XForm.prototype.checkForm = function() {
 	// 隐藏上次的错误信息层
 	hideErrorInfo();
+
+	if(this.xmlDoc == null) {
+		return true;
+	}
 
 	var cols = this.xmlDoc.Columns;
 	for(var i = 0; i < cols.length; i++) {

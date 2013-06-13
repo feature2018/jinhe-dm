@@ -24,24 +24,25 @@ public class DisplayTest extends TxTestSupport {
         HttpServletResponse response = Context.getResponse();
         MockHttpServletRequest  request = new MockHttpServletRequest();
         
-        Report group1 = new Report();
-        group1.setType(Report.TYPE0);
-        group1.setParentId(Report.DEFAULT_PARENT_ID);
-        group1.setName("report-group-1");
-        action.saveReport(response, group1);
-        
         Report report1 = new Report();
         report1.setType(Report.TYPE1);
-        report1.setParentId(group1.getId());
+        report1.setParentId(Report.DEFAULT_PARENT_ID);
         report1.setName("report-1");
-        report1.setScript("select id, orgName from gv_bas_orgInfo");
+        report1.setScript(" select id, orgName from gv_bas_orgInfo where id > ? <#if param2??> and orgcode <> ? </#if> ");
+        report1.setParam("组织ID:Number,组织CODE:String");
         report1.setRemark("test report");
         action.saveReport(response, report1);
         
         
         log.debug("开始测试报表展示：");
-        addParam(ParamConstants.DEFAULT_PARENT_ID, 
-                Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+        request.addParameter("param1", "0");
+        request.addParameter("param2", "best");
+        
+        if(paramService.getParam(Constants.DEFAULT_CONN_POOL) == null) {
+            addParam(ParamConstants.DEFAULT_PARENT_ID, 
+                    Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+        }
+        
         display.showAsGrid(request, response, report1.getId(), 1, 10);
         display.showAsJson(request, report1.getId());
     }

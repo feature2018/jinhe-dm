@@ -197,6 +197,7 @@ URL_CORE = "../../";
 				request.params.url = URL_LOG_LIST + nextPage;
 				request.onresult = function() {
 					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
+					initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));
 				}				
 				request.send();
 			}

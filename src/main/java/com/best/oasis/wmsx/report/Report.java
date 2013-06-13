@@ -135,7 +135,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     public String getDatasource() {
         if( datasource == null ) {
             try {
-                return ParamManager.getValue(Constants.DEFAULT_CONN_POOL); // 默认数据源
+                return ParamManager.getValue(Constants.DEFAULT_CONN_POOL).trim(); // 默认数据源
             } catch (Exception e) {
             }
         }

@@ -564,7 +564,7 @@ Element.show = function(element) {
 	element.style.zIndex = "10000"; 
 	element.style.overflow = "hidden";
 
-	Element.setOpacity(element, 80);
+	Element.setOpacity(element, 92);
 }
 
 Element.hide = function(element) {

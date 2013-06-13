@@ -75,15 +75,21 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
      */
     public void importSystemProperties(){
         String name = "系统参数";
-        Param param = addParam(ParamConstants.DEFAULT_PARENT_ID, name);
+        Param group = addParam(ParamConstants.DEFAULT_PARENT_ID, name);
         ResourceBundle resources = ResourceBundle.getBundle("application", Locale.getDefault());
         if (resources == null) return;
         
         for (Enumeration<String> enumer = resources.getKeys(); enumer.hasMoreElements();) {
             String key = enumer.nextElement();
             String value = resources.getString(key);
-            addParam(param.getId(), key, key, value);
+            addParam(group.getId(), key, key, value);
         }
+        
+        addParam(group.getId(), Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+        
+        Param dlParam = addParam(group.getId(), Constants.DATASOURCE_LIST, "数据源列表");
+        addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);
+        addParamItem(dlParam.getId(), "connectionpool-2", "数据源2", ParamConstants.COMBO_PARAM_MODE);
     }
 
     /** 建参数组 */

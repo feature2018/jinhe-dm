@@ -54,16 +54,21 @@ public class Display extends BaseActionSupport {
             gridNode.getAttrs().putAll(item);
             temp.add(gridNode);
         }
-        
         GridDataEncoder gEncoder = new GridDataEncoder(temp, XMLDocUtil.dataXml2Doc(excutor.parser.gridTempalte));
-        
-        print("SourceTree", gEncoder);
         
         PageInfo pageInfo = new PageInfo();
         pageInfo.setPageSize(pagesize);
         pageInfo.setTotalRows(excutor.count);
         pageInfo.setPageNum(page);
-        print("PageInfo", pageInfo);
+        
+        print(new String[] {"ReportData", "PageInfo"}, new Object[] {gEncoder, pageInfo});
+    }
+    
+    @RequestMapping("/json/{reportId}")
+    @ResponseBody
+    public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("reportId") Long reportId) {
+        SQLExcutor excutor = queryReport(request, reportId, 0, 0);
+        return excutor.result;
     }
     
 	private SQLExcutor queryReport(HttpServletRequest request, Long reportId,
@@ -79,10 +84,13 @@ public class Display extends BaseActionSupport {
     	    String[] paramArray = params.split(",");
             for(int i = 0; i < paramArray.length; i++) {
                 int index = i + 1;
-                String paramType = paramArray[i].split(":")[1].toLowerCase();
-                String paramValue = requestMap.get("param" + index)[0];
+                String paramKy = "param" + index;
+                if( !requestMap.containsKey(paramKy) ) continue;
                 
+                String paramValue = requestMap.get(paramKy)[0];
                 Object value;
+                
+                String paramType = paramArray[i].split(":")[1].toLowerCase();
                 if("number".equals(paramType)) {
                     value = EasyUtils.convertObject2Integer(paramValue);
                 }
@@ -97,10 +105,9 @@ public class Display extends BaseActionSupport {
             }
     	}
     	
-        
-        // 结合 paramsMap 进行 freemarker解析 sql
+        // 结合 requestMap 进行 freemarker解析 sql
     	String script = report.getScript();
-    	script = freemarkerParser(script, paramsMap);
+    	script = freemarkerParser(script, requestMap);
         
         SQLExcutor excutor = new SQLExcutor();
         String datasource = report.getDatasource();
@@ -109,14 +116,12 @@ public class Display extends BaseActionSupport {
         return excutor;
 	}
 	
-    /**
-     * 用Freemarker引擎解析脚本
-     */
-    private String freemarkerParser(String script, Map<Integer, Object> paramsMap) {
+    /** 用Freemarker引擎解析脚本 */
+    private String freemarkerParser(String script, Map<String, String[]> requestMap) {
         try {
             Template temp = new Template("t.ftl", new StringReader(script), new Configuration());
             Writer out = new StringWriter();
-            temp.process(paramsMap, out);
+            temp.process(requestMap, out);
             script = out.toString();
             out.flush();
         } catch (Exception e) {
@@ -124,13 +129,6 @@ public class Display extends BaseActionSupport {
             return script;
         }  
         return script;
-    }
- 
-    @RequestMapping("/json/{reportId}")
-    @ResponseBody
-    public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("reportId") Long reportId) {
-    	SQLExcutor excutor = queryReport(request, reportId, 0, 0);
-    	return excutor.result;
     }
     
 }

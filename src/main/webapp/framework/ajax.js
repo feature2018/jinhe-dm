@@ -208,7 +208,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 	 }
 	
 	 try {
-		 if(this.params.ani != null) {
+		 if(this.params.waiting) {
 			 Public.showWaitingLayer();
 		 }
 
@@ -673,6 +673,10 @@ function Ajax() {
 
 	if(arg.type) {
 		p.type = arg.type;
+	}
+
+	if(arg.waiting) {
+		p.waiting = arg.waiting;
 	}
 
 	for(var item in arg.headers) {

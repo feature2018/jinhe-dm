@@ -4,6 +4,14 @@
 
 <web-app>
 	<display-name>wmsx</display-name>
+	
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			com.jinhe.tss.framework.web.GlobalSuportXmlWebApplicationContext
+		</param-value>
+	</context-param>
+	
 	<servlet>
 		<servlet-name>cxf</servlet-name>
 		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
