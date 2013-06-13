@@ -1,5 +1,6 @@
 package com.best.oasis.wmsx.report;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.best.oasis.wmsx.Constants;
+import com.jinhe.tss.framework.component.param.Param;
+import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.web.dispaly.tree.LevelTreeParser;
 import com.jinhe.tss.framework.web.dispaly.tree.TreeEncoder;
 import com.jinhe.tss.framework.web.dispaly.xform.XFormEncoder;
@@ -65,6 +69,19 @@ public class ReportAction extends BaseActionSupport {
             Report report = reportService.getReport(reportId);
             xformEncoder = new XFormEncoder(uri, report);
         }
+        
+        if( Report.TYPE1 == type ) {
+            List<Param> datasources;
+            try {
+                datasources = ParamManager.getComboParam(Constants.DASOURCE_LIST);
+            } catch (Exception e) {
+                datasources = new ArrayList<Param>();
+            }
+            Object[] objs = EasyUtils.generateComboedit(datasources, "code", "name", "|");;
+            xformEncoder.setColumnAttribute("datasource", "editorvalue", (String) objs[0]);
+            xformEncoder.setColumnAttribute("datasource", "editortext",  (String) objs[1]);
+        }
+ 
         print("SourceInfo", xformEncoder);
     }
 

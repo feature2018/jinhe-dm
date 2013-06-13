@@ -16,45 +16,45 @@ import org.apache.log4j.Logger;
 import com.jinhe.tss.cache.Cacheable;
 import com.jinhe.tss.cache.JCache;
 import com.jinhe.tss.cache.Pool;
-import com.jinhe.tss.framework.component.param.ParamManager;
 
 public class SQLExcutor {
     
     static Logger log = Logger.getLogger(SQLExcutor.class);
-    
-    static String POOL_CODE = ParamManager.getValue("CONNECTION_POOL");
-    static Pool connectionPool = JCache.getInstance().getCachePool(POOL_CODE);
     
     SQLParser parser;
     
     int count;
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     
-    public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize) {
-        Cacheable connItem = connectionPool.checkOut(0);
-        Connection conn = (Connection) connItem.getValue();
+    public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize, String datasource) {
+        Pool connpool = JCache.getInstance().getCachePool(datasource);
+        Cacheable connItem = connpool.checkOut(0);
+        Connection conn = (Connection) connpool.checkOut(0).getValue();
 
+        String queryDataSql = sql;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
         	if(page > 0 && pagesize > 0) {
+        	    String queryCountSql = " select count(*) " + sql.substring(sql.indexOf("from"));
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);  
+                rs = stmt.executeQuery(queryCountSql);  
+                if (rs.next()) {  
+                    count = rs.getInt(1);  
+                }  
+                log.debug("    queryCountSql: "  + queryCountSql);
+                
         		int fromRow = 0;
         		int toRow = 0;
-        		sql = "SELECT * FROM " + 
+        		queryDataSql = "SELECT * FROM " + 
     	    		"( " + 
     	    		"	SELECT t.*, ROWNUM RN FROM ( " + sql + " ) t WHERE ROWNUM <= " + toRow +
     	    		") " + 
     	    		"WHERE RN > " + fromRow;
-        		
-        		String queryCountSql = " select count(*) " + sql.substring(sql.indexOf("from"));
-        		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);  
-        	    rs = stmt.executeQuery(queryCountSql);  
-        	    if (rs.next()) {  
-        	        count = rs.getInt(1);  
-        	    }  
         	}
         	
-            pstmt = conn.prepareStatement(sql);
+        	log.debug("    queryDataSql: "  + queryDataSql);
+            pstmt = conn.prepareStatement(queryDataSql);
             for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {
                 pstmt.setObject(entry.getKey(), entry.getValue()); // 从1开始，非0
             }
@@ -87,7 +87,7 @@ public class SQLExcutor {
             } catch (Exception e) {
             }
             
-            connectionPool.checkIn(connItem);
+            connpool.checkIn(connItem);
         }
     }
  

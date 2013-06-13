@@ -24,10 +24,6 @@ public interface WmsService {
 	List<Object[]> getWarehouseList();
 
 	@GET
-	@Path("/customerList")
-	List<Object[]> getCustomerList();
-
-	@GET
 	@Path("/kanban/{whId}")
 	Map<String, Object> kanban(@PathParam("whId") Long whId);
 

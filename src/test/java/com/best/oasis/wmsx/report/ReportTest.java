@@ -1,5 +1,8 @@
 package com.best.oasis.wmsx.report;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +22,7 @@ public class ReportTest extends TxTestSupport {
     @Autowired private LogService logService;
     
     @Test
-    public void testReportModule() {
+    public void testReportCRUD() {
         
         HttpServletResponse response = Context.getResponse();
         MockHttpServletRequest  request = new MockHttpServletRequest();
@@ -67,13 +70,14 @@ public class ReportTest extends TxTestSupport {
         action.getAllReport(response);
         
         try {
-            Thread.sleep(100); // 等待日志异步输出完毕
+            Thread.sleep(300); // 等待日志异步输出完毕
         } catch (InterruptedException e) {
         }
         
         LogQueryCondition condition = new LogQueryCondition();
+        condition.setOperateTimeFrom(new Date(System.currentTimeMillis() - 1000*3600*3));
         Object[] logsInfo = logService.getLogsByCondition(condition);
-//        assertTrue( (Integer)logsInfo[1] >= 5 );
+        assertTrue( (Integer)logsInfo[1] >= 5 );
         List<?> logs = (List<?>)logsInfo[0];
         for(Object temp : logs) {
             log.debug(temp);

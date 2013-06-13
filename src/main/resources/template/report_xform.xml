@@ -5,6 +5,7 @@
 		<column name="name"   caption="报表名称" mode="string" maxLength="30" empty="true"/>
 		<column name="script" caption="报表脚本" mode="string" maxLength="4000"/>
 		<column name="param"  caption="报表参数" mode="string" maxLength="400"/>
+		<column name="datasource"  caption="数据源" mode="string" editor="comboedit"/>
 		<column name="remark" caption="报表简介" mode="string" maxLength="400"/>
 	</declare>
 	<layout>
@@ -23,6 +24,10 @@
 		<TR>
 			<TD width="80" valign="top"><label binding="param"/></TD>
 			<TD><textarea binding="param" style="width:95%;height:30"/></TD>
+		</TR>
+		<TR>
+			<TD width="80"><label binding="datasource"/></TD>
+			<TD><input binding="datasource" type="text" style="width:50%;"/></TD>
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="remark"/></TD>

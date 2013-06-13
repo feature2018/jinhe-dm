@@ -1,5 +1,8 @@
 package com.best.oasis.wmsx.report.result;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,9 @@ import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
 import com.jinhe.tss.util.DateUtil;
 import com.jinhe.tss.util.EasyUtils;
 import com.jinhe.tss.util.XMLDocUtil;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 /**
  * http://localhost:9000/wmsx/display/12/1/100
@@ -59,43 +65,66 @@ public class Display extends BaseActionSupport {
         pageInfo.setPageNum(page);
         print("PageInfo", pageInfo);
     }
-
+    
 	private SQLExcutor queryReport(HttpServletRequest request, Long reportId,
 			int page, int pagesize) {
+	    
 		Map<String, String[]> requestMap = request.getParameterMap();
     	
     	Report report = reportService.getReport(reportId);
-        String script = report.getScript();
+        
         String params = report.getParam();
-        
     	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
-    	
-    	String[] paramArray = params.split(",");
-    	for(int i = 0; i < paramArray.length; i++) {
-    		int index = i + 1;
-    		String paramType = paramArray[i].split(":")[1].toLowerCase();
-    		String paramValue = requestMap.get("param" + index)[0];
-    		
-    		Object value;
-    		if("number".equals(paramType)) {
-    			value = EasyUtils.convertObject2Integer(paramValue);
-    		}
-    		else if("date".equals(paramType)) {
-    			value = DateUtil.parse(paramValue);
-    		}
-    		else {
-    			value = paramValue;
-    		}
-    		
-    		paramsMap.put(index, value);
+    	if( !EasyUtils.isNullOrEmpty(params) ) {
+    	    String[] paramArray = params.split(",");
+            for(int i = 0; i < paramArray.length; i++) {
+                int index = i + 1;
+                String paramType = paramArray[i].split(":")[1].toLowerCase();
+                String paramValue = requestMap.get("param" + index)[0];
+                
+                Object value;
+                if("number".equals(paramType)) {
+                    value = EasyUtils.convertObject2Integer(paramValue);
+                }
+                else if("date".equals(paramType)) {
+                    value = DateUtil.parse(paramValue);
+                }
+                else {
+                    value = paramValue;
+                }
+                
+                paramsMap.put(index, value);
+            }
     	}
+    	
         
-        // TODO 结合 paramsMap 进行 freemarker解析 sql
+        // 结合 paramsMap 进行 freemarker解析 sql
+    	String script = report.getScript();
+    	script = freemarkerParser(script, paramsMap);
         
         SQLExcutor excutor = new SQLExcutor();
-        excutor.excuteQuery(script, paramsMap, page, pagesize);
-		return excutor;
+        String datasource = report.getDatasource();
+        excutor.excuteQuery(script, paramsMap, page, pagesize, datasource);
+		
+        return excutor;
 	}
+	
+    /**
+     * 用Freemarker引擎解析脚本
+     */
+    private String freemarkerParser(String script, Map<Integer, Object> paramsMap) {
+        try {
+            Template temp = new Template("t.ftl", new StringReader(script), new Configuration());
+            Writer out = new StringWriter();
+            temp.process(paramsMap, out);
+            script = out.toString();
+            out.flush();
+        } catch (Exception e) {
+            log.error("用Freemarker引擎解析脚本出错了", e);
+            return script;
+        }  
+        return script;
+    }
  
     @RequestMapping("/json/{reportId}")
     @ResponseBody

@@ -14,23 +14,17 @@ import com.jinhe.tss.framework.sso.context.Context;
 
 @Service("WmsService")
 public class WmsServiceImp implements WmsService {
-
-	public List<Object[]> getCustomerList() {
-//		HttpSession session = Context.getRequestContext().getRequest().getSession();
-//		Long userId = (Long) session.getAttribute("loginUserId");
-		
-		List<Object[]> list = new ArrayList<Object[]>();
-		list.add(new Object[]{1L, "李宁"});
-		list.add(new Object[]{2L, "茵曼"});
-		list.add(new Object[]{3L, "七匹狼"});
-		return list;
-	}
-
+ 
 	public List<Object[]> getWarehouseList() {
-		List<Object[]> list = new ArrayList<Object[]>();
-		list.add(new Object[]{1L, "上海仓"});
-		list.add(new Object[]{2L, "杭州仓"});
-		list.add(new Object[]{3L, "广州仓"});
+	    HttpSession session = Context.getRequestContext().getRequest().getSession();
+	    Long userId = (Long) session.getAttribute("loginUserId");
+	    
+	    List<Object[]> list = new ArrayList<Object[]>();
+	    if( userId != null ) {
+	        list.add(new Object[]{104221L, "上海EC仓"});
+	        list.add(new Object[]{100544L, "杭州OFC - 海宁仓"});
+	        list.add(new Object[]{100200L, "李宁仓库"});
+	    }
 		return list;
 	}
 

@@ -11,7 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.best.oasis.wmsx.Constants;
 import com.jinhe.tss.framework.component.param.ParamConstants;
+import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.persistence.entityaop.IDecodable;
 import com.jinhe.tss.framework.persistence.entityaop.OperateInfo;
 import com.jinhe.tss.framework.web.dispaly.tree.ILevelTreeNode;
@@ -19,6 +21,9 @@ import com.jinhe.tss.framework.web.dispaly.tree.TreeAttributesMap;
 import com.jinhe.tss.framework.web.dispaly.xform.IXForm;
 import com.jinhe.tss.util.BeanUtil;
 
+/**
+ * alter table wmsx_report add column datasource varchar(100);
+ */
 @Entity
 @Table(name = "wmsx_report")
 @SequenceGenerator(name = "report_sequence", sequenceName = "report_sequence", initialValue = 1, allocationSize = 10)
@@ -38,6 +43,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     @Column(length = 2000)  
     private String  script;     // SQL
     private String  param;      // 参数值
+    private String  datasource; // 单独为报表指定数据源
     
     private Integer type;       // 种类  0：报表分组 1: 业务报表
     private String  remark; 
@@ -125,6 +131,18 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     }
     public void setScript(String script) {
         this.script = script;
+    }
+    public String getDatasource() {
+        if( datasource == null ) {
+            try {
+                return ParamManager.getValue(Constants.DEFAULT_CONN_POOL); // 默认数据源
+            } catch (Exception e) {
+            }
+        }
+        return datasource;
+    }
+    public void setDatasource(String datasource) {
+        this.datasource = datasource;
     }
 
     public TreeAttributesMap getAttributes() {
