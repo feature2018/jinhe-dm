@@ -54,32 +54,32 @@ function init() {
 
 function preLogoutWMS() {
 	var userName = Cookie.getValue("userName");
-	$("userInfo").innerText = "  |  注销【" + userName + "】";
-	$("userInfo").style.cursor = "hand";
-	$("userInfo").onclick = function() {
+	$$("userInfo").innerText = "  |  注销【" + userName + "】";
+	$$("userInfo").style.cursor = "hand";
+	$$("userInfo").onclick = function() {
 		Cookie.del("userName");
 		Cookie.del("token");
-		$("userInfo").innerText = "";
+		$$("userInfo").innerText = "";
 	}	
 }
 	
 function initBlocks() {
-	var paletteObj = $("palette");
+	var paletteObj = $$("palette");
 	Blocks.create(paletteObj);
 
-	var treeContainerObj = $("treeContainer");
+	var treeContainerObj = $$("treeContainer");
 	Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
 }
 
 function initFocus() {
-	Focus.register($("treeTitle").firstChild);
-	Focus.register($("gridTitle"));
+	Focus.register($$("treeTitle").firstChild);
+	Focus.register($$("gridTitle"));
 }
 
 function initEvents() {
-	Event.attachEvent($("treeBtRefresh"), "click", onClickTreeBtRefresh);
-	Event.attachEvent($("treeTitle"), "click", onClickTreeTitle);
-	Event.attachEvent($("gridTitle"), "click", onClickGridTitle);
+	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
+	Event.attachEvent($$("treeTitle"), "click", onClickTreeTitle);
+	Event.attachEvent($$("gridTitle"), "click", onClickGridTitle);
 }
 
 /* 菜单初始化 */
@@ -160,7 +160,7 @@ function initMenus() {
 		visible:function() {return isReport() && !isTreeNodeDisabled();}
 	}
 
-	var treeObj = $("tree");
+	var treeObj = $$("tree");
 
 	var menu = new Menu();
 	menu.addItem(item1);
@@ -203,9 +203,9 @@ function loadInitData() {
 	var onresult = function() {
 		var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));
 
-		var treeElement = $("tree");
+		var treeElement = $$("tree");
 		treeElement.onTreeNodeActived = function(eventObj) {
-			Focus.focus($("treeTitle").firstChild.id);
+			Focus.focus($$("treeTitle").firstChild.id);
 		}
 		treeElement.onTreeNodeDoubleClick = function(eventObj) {
 		   if( isReport() ) {
@@ -216,8 +216,8 @@ function loadInitData() {
 			}
 		}
 		treeElement.onTreeNodeRightClick = function(eventObj) {
-			if($("tree").contextmenu) {
-				$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY);                
+			if($$("tree").contextmenu) {
+				$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY);                
 			}
 		}
 		treeElement.onTreeNodeMoved = function(eventObj) {
@@ -233,7 +233,7 @@ function loadReportDetail(isCreate, readonly, type) {
 	var treeID = treeNode.getId();
 	type = type || treeNode.getAttribute("type") ;
 	
-	Element.show($("reportFormDiv"));
+	Element.show($$("reportFormDiv"));
 	
 	var params = {};
 	if( isCreate ) {
@@ -250,21 +250,21 @@ function loadReportDetail(isCreate, readonly, type) {
 			var sourceInfoNode = this.getNodeValue(XML_SOURCE_INFO);
 			Cache.XmlDatas.add(treeID, sourceInfoNode);
 			
-			$("reportForm").editable = readonly ? "false" : "true";
+			$$("reportForm").editable = readonly ? "false" : "true";
 			var xform = $X("reportForm", sourceInfoNode);
 
 			attachReminder(treeID, xform); // 离开提醒
 		
 			// 设置保存/关闭按钮操作
-			$("closeReportForm").onclick = function() {
-				Element.hide($("reportFormDiv"));
+			$$("closeReportForm").onclick = function() {
+				Element.hide($$("reportFormDiv"));
 			}
-			$("sourceSave").onclick = function() {
+			$$("sourceSave").onclick = function() {
 				saveReport(treeID);
 			}
 		},
 		onexception : function() { 
-			Element.hide($("reportFormDiv"));
+			Element.hide($$("reportFormDiv"));
 		}
 	});
 }
@@ -292,14 +292,14 @@ function saveReport(treeID) {
 	if( flag ) {
 		var request = new HttpRequest(p);
 	   
-		syncButton([$("sourceSave")], request); // 同步按钮状态
+		syncButton([$$("sourceSave")], request); // 同步按钮状态
 		detachReminder(treeID); // 解除提醒
 
 		request.onresult = function() { // 新增结果返回              
 			var treeNode = this.getNodeValue(XML_SOURCE_TREE).selectSingleNode("treeNode");
 			appendTreeNode(treeID, treeNode); // treeID即为父节点
 			
-			Element.hide($("reportFormDiv"));
+			Element.hide($$("reportFormDiv"));
 		}
 
 		request.onsuccess = function() { // 更新
@@ -308,7 +308,7 @@ function saveReport(treeID) {
 				modifyTreeNode(treeID, "name", name, true);
 			}
 			
-			Element.hide($("reportFormDiv"));
+			Element.hide($$("reportFormDiv"));
 		}
 		request.send();
 	}
@@ -534,8 +534,8 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	layouts[layouts.length] = "          </TD>";
 	layouts[layouts.length] = "        </TR>";
 	
-	Element.show($("searchFormDiv"));
-	$("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
+	Element.show($$("searchFormDiv"));
+	$$("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
 	
 	var str = [];
 	str[str.length] = "<xform>";
@@ -554,12 +554,12 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	var searchForm = $X("searchForm", searchFormXML);
 	Cache.XmlDatas.add("searchForm", searchFormXML);
 	
-	$("btSearch").onclick = function () {
+	$$("btSearch").onclick = function () {
 		var treeID = getTreeNodeId();
 		searchReport(treeID);
 	}
-	$("btCloseSearchForm").onclick = function () {
-		Element.hide($("searchFormDiv"));
+	$$("btCloseSearchForm").onclick = function () {
+		Element.hide($$("searchFormDiv"));
 	}
 }
 
@@ -567,7 +567,7 @@ function searchReport(treeID) {
 	var xform = $X("searchForm");	
 	if( xform && !xform.checkForm() ) return;
 
-	Element.hide($("searchFormDiv"));
+	Element.hide($$("searchFormDiv"));
 
 	var p = new HttpRequestParams();		      
 	var searchLogFormXML = Cache.XmlDatas.get("searchForm");
@@ -582,7 +582,7 @@ function searchReport(treeID) {
 	var request = new HttpRequest(p);
 	request.onresult = function() {
 		$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
-		var gridToolBar = $("gridToolBar");
+		var gridToolBar = $$("gridToolBar");
 
 		var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 		initGridToolBar(gridToolBar, pageListNode, function(page) {
@@ -593,12 +593,12 @@ function searchReport(treeID) {
 			request.send();
 		} );
 		
-		var gridElement = $("grid"); 
+		var gridElement = $$("grid"); 
 		gridElement.onDblClickRow = function(eventObj) {
 			showLogInfo();
 		}
 		gridElement.onRightClickRow = function() {
-			$("grid").contextmenu.show(event.clientX, event.clientY);
+			$$("grid").contextmenu.show(event.clientX, event.clientY);
 		}   
 		gridElement.onScrollToBottom = function () {			
 			var currentPage = gridToolBar.getCurrentPage();
@@ -645,11 +645,11 @@ function showLoginForm() {
 	Cache.XmlDatas.add("loginForm", loginFormXML);
 
 	// 初始化登录xform
-	Element.show($("loginFormDiv"));
+	Element.show($$("loginFormDiv"));
 	$X("loginForm", loginFormXML);
 
-	$("btCloseLoginForm").onclick = function () {
-		Element.hide($("loginFormDiv"));
+	$$("btCloseLoginForm").onclick = function () {
+		Element.hide($$("loginFormDiv"));
 	}
 }
 
@@ -681,7 +681,7 @@ function login() {
 			Cookie.setValue("userName", result[1]);
 			preLogoutWMS();
 
-			Element.hide($("loginFormDiv"));
+			Element.hide($$("loginFormDiv"));
 
 			getWarehouseList();
 		}

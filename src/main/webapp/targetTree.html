@@ -25,7 +25,7 @@
 			url : params.url,
 			onresult : function() { 
 				var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));		
-				$("tree").onTreeNodeDoubleClick = function(eventObj) {
+				$$("tree").onTreeNodeDoubleClick = function(eventObj) {
 					getTargetParent();
 				}
 			}

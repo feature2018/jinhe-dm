@@ -31,10 +31,10 @@ URL_CORE = "../";
 						var gridPage = this.getNodeValue("PageList");
 						createGridToolBar(gridPage);
 
-						$("grid").onScrollToBottom = function () {
+						$$("grid").onScrollToBottom = function () {
 							grid.load(gridData, true);
 						}
-						$("grid").onRightClickRow = function () {
+						$$("grid").onRightClickRow = function () {
 							alert("show right menu!");
 						}
 					}
@@ -42,7 +42,7 @@ URL_CORE = "../";
     }
 
     function createGridToolBar(gridPage) {
-        var toolbarObj = $("gridToolBar");
+        var toolbarObj = $$("gridToolBar");
 				initGridToolBar(toolbarObj, gridPage, function(page) {
 						Ajax({
 							url : "test/data.xml",

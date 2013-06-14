@@ -74,13 +74,13 @@
 	 *	区块初始化
 	 */
 	function initBlocks() {
-		var paletteObj = $("palette");
+		var paletteObj = $$("palette");
 		Blocks.create(paletteObj);
 
-		var treeContainerObj = $("treeContainer");
+		var treeContainerObj = $$("treeContainer");
 		Blocks.create(treeContainerObj, treeContainerObj.parentNode);
 
-		var statusContainerObj = $("statusContainer");
+		var statusContainerObj = $$("statusContainer");
 		Blocks.create(statusContainerObj, statusContainerObj.parentNode, false);
 
 		// 状态信息区实例继承WritingBlock可写功能
@@ -94,7 +94,7 @@
 	 *	聚焦初始化
 	 */
 	function initFocus() {
-		var treeTitleObj = $("treeTitle");
+		var treeTitleObj = $$("treeTitle");
 		Focus.register(treeTitleObj.firstChild);
 	}
 
@@ -112,7 +112,7 @@
 			var tree = $T("tree", mainTreeXML); 
 			
 			// 添加自定义树事件
-			var treeElement = $("tree");
+			var treeElement = $$("tree");
 			treeElement.onTreeNodeActived = function(eventObj) {
 				onTreeNodeActived(eventObj);
 			}
@@ -177,7 +177,7 @@
 		menu.addItem(item2);
 		menu.addItem(item3);
 
-		$("tree").contextmenu = menu;
+		$$("tree").contextmenu = menu;
 	}
 
 	function getTreeNodeId() {
@@ -233,7 +233,7 @@
 		var tree = $T("tree");
 		var treeNode = tree.getActiveTreeNode();
 		
-		var rowIndex = $("page1Grid").selectRowIndex;
+		var rowIndex = $$("page1Grid").selectRowIndex;
 		var row = $G("page1Grid").getRowByIndex(rowIndex);
 		if( row ) {
 			var key = row.getAttribute("key");
@@ -249,7 +249,7 @@
 	 *	参数：	Object:eventObj     模拟事件对象
 	 */
 	function onTreeNodeActived(eventObj) {
-		Focus.focus($("treeTitle").firstChild.id);
+		Focus.focus($$("treeTitle").firstChild.id);
 		showTreeNodeStatus({id : "ID", name : "名称"});
 
 		// 防止因为载入工具条数据而导致不响应双击事件
@@ -278,7 +278,7 @@
 
 		// 延时一会，等onTreeNodeActived事件先执行完
 		setTimeout(function() {
-			var tree = $("tree");
+			var tree = $$("tree");
 			if( tree.contextmenu ) {
 				tree.contextmenu.show(eventObj.clientX, eventObj.clientY);                
 			}
@@ -361,7 +361,7 @@
 			var strategyXML = Cache.XmlDatas.get(cacheID + XML_CACHE_STRATEGY);
 			if( strategyXML && !justRefreshGrid) {
 				$X("page1Form", strategyXML);
-				attachReminder(cacheID, $("page1Form"));
+				attachReminder(cacheID, $$("page1Form"));
 			}
 
 			createGridToolBar(cacheID); // 重新创建grid工具条
@@ -374,7 +374,7 @@
 			//设置点击率
 			var hitRateData = Cache.XmlDatas.get(cacheID + XML_HIT_RATE);
 			if( hitRateData ) {
-				$("page1HitRate").innerHTML = "『 池命中率：" + hitRateData + " 』";
+				$$("page1HitRate").innerHTML = "『 池命中率：" + hitRateData + " 』";
 			}
 		}
 		
@@ -390,7 +390,7 @@
 	function createGridToolBar(cacheID) {
 		var xmlData = Cache.XmlDatas.get(cacheID + XML_PAGE_INFO);
 		if( xmlData ) {
-			initGridToolBar($("gridToolBar"), xmlData, refreshGrid);
+			initGridToolBar($$("gridToolBar"), xmlData, refreshGrid);
 
 			function refreshGrid(page) {
 				var treeId =  $T("tree").getActiveTreeNode().getId();
@@ -412,7 +412,7 @@
 		var menu = new Menu();
 		menu.addItem(item1);
 
-		var gridObj = $("page1Grid");
+		var gridObj = $$("page1Grid");
 		gridObj.contextmenu = menu;
 
 		/* grid绑定事件 */

@@ -57,7 +57,7 @@ function initUserInfo() {
 		contents : {"anonymous": "true"}, 
 		onresult : function() {
 			var userName = this.getNodeValue("name");
-			$("userInfo").innerText = userName;
+			$$("userInfo").innerText = userName;
 		}
 	});
 }
@@ -139,13 +139,15 @@ function delCacheData(cacheID, flag) {
 
 
 var ws;
+var wsElement;
 function initWorkSpace() {
-	ws = new WorkSpace($("ws"));
+	wsElement = $$("ws");
+	ws = new WorkSpace(wsElement);
 	 
-	$("ws").onTabCloseAll = function(event) {
+	$$("ws").onTabCloseAll = function(event) {
 		hideWorkSpace();
 	}
-	$("ws").onTabChange = function(event) {
+	$$("ws").onTabChange = function(event) {
 		var fromTab = event.lastTab;
 		var toTab = event.tab;
 		showWorkSpace();
@@ -156,7 +158,7 @@ function initWorkSpace() {
  *	隐藏tab页工作区
  */
 function hideWorkSpace() {
-	var tr = $("ws").parentNode.parentNode;
+	var tr = wsElement.parentNode.parentNode;
 	tr.style.display = "none";
 	tr.previousSibling.style.display = "none";    
 }
@@ -165,7 +167,7 @@ function hideWorkSpace() {
  *	显示tab页工作区
  */
 function showWorkSpace() {
-	var tr = $("ws").parentNode.parentNode;
+	var tr = wsElement.parentNode.parentNode;
 	tr.style.display = "";
 	tr.previousSibling.style.display = "";
 }
@@ -175,7 +177,7 @@ function showWorkSpace() {
  *	左栏添加左右拖动效果
  */
 function initPaletteResize() {
-	var palette = $("palette");
+	var palette = $$("palette");
 	Element.attachColResize(palette, -1);
 }
 
@@ -183,7 +185,7 @@ function initPaletteResize() {
  *	添加上下拖动效果
  */
 function initListContainerResize() {
-	var listContainer = $("listContainer");
+	var listContainer = $$("listContainer");
 	Element.attachRowResize(listContainer, 8);
 }
 
@@ -191,7 +193,7 @@ function initListContainerResize() {
 var toolbar;
  
 function initToolBar() {
-	toolbar = ToolBars.create($("toolbar"));
+	toolbar = ToolBars.create($$("toolbar"));
 }
 
 /*
@@ -205,8 +207,8 @@ function onClickTreeBtRefresh() {
  *	点击树标题按钮
  */
 function onClickTreeTitleBt() {
-	var treeTitleObj = $("treeTitle");
-	var statusTitleObj = $("statusTitle");
+	var treeTitleObj = $$("treeTitle");
+	var statusTitleObj = $$("statusTitle");
 
 	var block = Blocks.getBlock("treeContainer");
 	if( block ) {
@@ -235,8 +237,8 @@ function onClickTreeTitleBt() {
  *	点击状态栏标题按钮
  */
 function onClickStatusTitleBt() {
-	var treeTitleObj = $("treeTitle");
-	var statusTitleObj = $("statusTitle");
+	var treeTitleObj = $$("treeTitle");
+	var statusTitleObj = $$("statusTitle");
 
 	var block = Blocks.getBlock("statusContainer");
 	if( block ) {
@@ -270,21 +272,21 @@ function onClickPaletteBt() {
 		block.switchTo();
 	}
 	
-	$("paletteBt").className = block.visible ? "icon" : "iconClosed";
+	$$("paletteBt").className = block.visible ? "icon" : "iconClosed";
 }
 
 /*
  *	点击树标题
  */
 function onClickTreeTitle() {
-	Focus.focus($("treeTitle").firstChild.id);
+	Focus.focus($$$("treeTitle").firstChild.id);
 }
 
 /*
  *	点击状态栏标题
  */
 function onClickStatusTitle() {
-	Focus.focus($("statusTitle").firstChild.id);
+	Focus.focus($$("statusTitle").firstChild.id);
 }
 
 /*
@@ -667,20 +669,20 @@ function initNaviBar(curId, relativePath) {
 				var cssStyle = (curId == id) ? "naviActive" : "navi";
 				str[str.length] = "<a href=\"" + href + "\" class=\"" + cssStyle + "\">" + name + "</a>";
 			}
-			$("navibar").innerHTML = str.join(" ");
-			$("navibar").style.display = "inline";
+			$$("navibar").innerHTML = str.join(" ");
+			$$("navibar").style.display = "inline";
 		}
 	});
 }
 
 function initBlocks(){
-	var paletteObj = $("palette");
+	var paletteObj = $$("palette");
 	Blocks.create(paletteObj);
 
-	var treeContainerObj = $("treeContainer");
+	var treeContainerObj = $$("treeContainer");
 	Blocks.create(treeContainerObj,treeContainerObj.parentNode);
 
-	var statusContainerObj = $("statusContainer");
+	var statusContainerObj = $$("statusContainer");
 	Blocks.create(statusContainerObj, statusContainerObj.parentNode, false);
 
 	//状态信息区实例继承WritingBlock可写功能
@@ -691,8 +693,8 @@ function initBlocks(){
 }
 
 function initFocus(){
-	var treeTitleObj = $("treeTitle");
-	var statusTitleObj = $("statusTitle");
+	var treeTitleObj = $$("treeTitle");
+	var statusTitleObj = $$("statusTitle");
 
 	Focus.register(treeTitleObj.firstChild);
 	Focus.register(statusTitleObj.firstChild);
@@ -702,12 +704,12 @@ function initFocus(){
  *	事件绑定初始化
  */
 function initEvents() {
-	Event.attachEvent($("treeBtRefresh"), "click", onClickTreeBtRefresh);
-	Event.attachEvent($("treeTitleBt"),   "click", onClickTreeTitleBt);
-	Event.attachEvent($("statusTitleBt"), "click", onClickStatusTitleBt);
-	Event.attachEvent($("paletteBt"),     "click", onClickPaletteBt);
-	Event.attachEvent($("treeTitle"),     "click", onClickTreeTitle);
-	Event.attachEvent($("statusTitle"),   "click", onClickStatusTitle);
+	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
+	Event.attachEvent($$("treeTitleBt"),   "click", onClickTreeTitleBt);
+	Event.attachEvent($$("statusTitleBt"), "click", onClickStatusTitleBt);
+	Event.attachEvent($$("paletteBt"),     "click", onClickPaletteBt);
+	Event.attachEvent($$("treeTitle"),     "click", onClickTreeTitle);
+	Event.attachEvent($$("statusTitle"),   "click", onClickStatusTitle);
 }
 
 /*
@@ -761,3 +763,116 @@ function _loadToolBar(_operation, contentXML) {
 		}
 	}
 }
+
+
+/*
+ *	重新封装alert
+ *	参数：	string:info     简要信息
+			string:detail   详细信息
+ */
+function Alert(info, detail) {
+	info = convertToString(info);
+	detail = convertToString(detail);
+
+	var maxWords = 100;
+	var params = {};
+	params.type = "alert";
+	params.info = info;
+	params.detail = detail;
+	if("" == detail && maxWords < info.length) {
+		params.info = info.substring(0, maxWords) + "...";
+		params.detail = info;        
+	}
+	params.title = "";
+	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+}
+
+/*
+ *	重新封装confirm
+ *	参数：	string:info             简要信息
+			string:detail           详细信息
+ *	返回值：boolean:returnValue     用户选择确定/取消
+ */
+function Confirm(info,detail) {
+	info = convertToString(info);
+	detail = convertToString(detail);
+
+	var maxWords = 100;
+	var params = {};
+	params.type = "confirm";
+	params.info = info;
+	params.detail = detail;
+	if("" == detail && maxWords<info.length) {
+		params.info = info.substring(0, maxWords) + "...";
+		params.detail = info;        
+	}
+	params.title = "";
+	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+	return returnValue;
+}
+
+/*
+ *	带是/否/取消三个按钮的对话框
+ *	参数：	string:info             简要信息
+			string:detail           详细信息
+ *	返回值：boolean:returnValue     用户选择是/否/取消
+ */
+function Confirm2(info,detail) {
+	info = convertToString(info);
+	detail = convertToString(detail);
+
+	var maxWords = 100;
+	var params = {};
+	params.type = "confirm2";
+	params.info = info;
+	params.detail = detail;
+	if("" == detail && maxWords < info.length) {
+		params.info = info.substring(0, maxWords) + "...";
+		params.detail = info;        
+	}
+	params.title = "";
+	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+	return returnValue;
+}
+
+/*
+ *	重新封装prompt
+ *	参数：	string:info             简要信息
+			string:defaultValue     默认值
+			string:title            标题
+			boolean:protect         是否保护
+			number:maxBytes         最大字节数
+ *	返回值：string:returnValue      用户输入的文字
+ */
+function Prompt(info, defaultValue, title, protect, maxBytes) {
+	info = convertToString(info);
+	defaultValue = convertToString(defaultValue);
+	title = convertToString(title);
+
+	var params = {};
+	params.info = info;
+	params.defaultValue = defaultValue;
+	params.title = title;
+	params.protect = protect;
+	params.maxBytes = maxBytes;
+	var returnValue = window.showModalDialog(URL_CORE + '_prompt.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:no;unadorned:yes');
+	return returnValue;
+}
+
+/*
+ *	捕获页面js报错
+ */
+function onError(msg,url,line) {
+	alert(msg, "错误:" + msg + "\r\n行:" + line + "\r\n地址:" + url);
+	event.returnValue = true;
+}
+
+window._alert = window.alert;
+window._confirm = window.confirm;
+window._prompt = window.prompt;
+
+window.alert = Alert;
+window.confirm = Confirm;
+window.confirm2 = Confirm2;
+window.prompt = Prompt;
+window.onerror = onError;

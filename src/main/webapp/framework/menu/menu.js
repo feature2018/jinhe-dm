@@ -188,7 +188,7 @@ Menu.prototype.show = function(x, y, autofit, offX, offY) {
 	this.active();
 	this.refreshSeparators();
 
-	if(null == $(this.uniqueID)) {
+	if(null == $$(this.uniqueID)) {
 		this.appendToDocument();
 	}
 	this.bringToTop();

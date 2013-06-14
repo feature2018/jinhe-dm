@@ -8,7 +8,7 @@ function $X(xformId, data) {
 	}
 
 	if( xform == null || data ) {
-		xform = new XForm($(xformId));
+		xform = new XForm($$(xformId));
 		xform.load(data);
 
 		XFormCache.add(xform.element.id, xform);	
@@ -124,7 +124,7 @@ XForm.prototype.attachEditor = function() {
 		var nodeValue = this.getColumnValue(colName);
 
 		// 取layout中绑定该columne的元素
-		var tempObj = $(colName);
+		var tempObj = $$(colName);
 		if(tempObj == null) {
 			continue;
 		}
@@ -191,7 +191,7 @@ XForm.prototype.checkForm = function() {
 		}
 	}
 
-	$("xml").value = this.xmlDoc.Data.xml;
+	$$("xml").value = this.xmlDoc.Data.xml;
 
 	return true;
 }
@@ -248,7 +248,7 @@ XForm.prototype.updateDataExternal = function(name, value) {
 }
 
 XForm.prototype.updateUnbindingDataExternal = function(id, value) {
-	$(id).value = value;
+	$$(id).value = value;
 
 	var node = this.xmlDoc.Layout.selectSingleNode(".//*[@id='" + id + "']");
 	if(node) {
@@ -263,7 +263,7 @@ XForm.prototype.setEditable = function(status) {
 
 	this.element.editable = status;
 
-	var buttonBox = $("buttonBox");
+	var buttonBox = $$("buttonBox");
 	if(buttonBox) {
 		buttonBox.style.display = (status == "true" ? "block": "none");
 	}
@@ -360,7 +360,7 @@ XForm.prototype.setFocus = function(name) {
 	var _column = this._columnList[name];
 	if( _column ) {
 		_column.setFocus();
-		$(name).focus();
+		$$(name).focus();
 	}
 }
 
@@ -394,7 +394,7 @@ XForm.prototype.getColumnAttribute = function(name, attrName) {
 }
 
 XForm.prototype.setLabelContent = function(name, content) {
-	var labelObj = $("label_" + name);
+	var labelObj = $$("label_" + name);
 	if( labelObj ) {
 		if(labelObj.length > 1) {
 			labelObj = labelObj[0];
@@ -451,7 +451,7 @@ XForm.prototype.setColumnValue = function(name, value) {
 
 function Mode_String(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
 	this.obj._value = this.obj.value;
 
 	this.setEditable();
@@ -528,7 +528,7 @@ Mode_String.prototype = {
 // 下拉选择框，单选或多选
 function Mode_ComboEdit(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
  	this.obj._value = this.obj.attributes["value"].nodeValue;
 	this.obj.disabled = (this.obj.getAttribute("editable") == "false");
 
@@ -647,7 +647,7 @@ Mode_ComboEdit.prototype.setFocus = function() {
 
 function Mode_Radio(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
 
 	var tempThis = this;
 	this.obj._value = this.obj.value;
@@ -737,7 +737,7 @@ Mode_Radio.prototype.setFocus = function(){
 
 function Mode_Number(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
 
 	var tempThis = this;
 	this.obj._value = this.obj.value;
@@ -816,7 +816,7 @@ Mode_Number.prototype.setFocus = function(){
 
 function Mode_Function(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
 
 	var tempThis = this;
 	this.obj._value = this.obj.value;
@@ -911,7 +911,7 @@ Mode_Function.prototype.setFocus = function() {
 
 function Mode_Hidden(colName, element) {
 	this.name = colName;
-	this.obj = $(colName);
+	this.obj = $$(colName);
 }
 Mode_Hidden.prototype.setValue = function(s) {}
 Mode_Hidden.prototype.setEditable = function(s) {}

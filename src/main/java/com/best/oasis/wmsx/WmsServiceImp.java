@@ -28,6 +28,18 @@ public class WmsServiceImp implements WmsService {
 		return list;
 	}
 
+	/* 
+  select d.docno, d.operatetype_id
+   from GV_LOG_DOCUMENT_LOG d, gv_sys_codeinfo dt
+  where d.doctype_id = dt.id
+    and dt.code in ('SO', 'PK')
+    and d.warehouse_id = 104221
+    and d.createdtime >= trunc(sysdate)
+  order by d.createdtime asc
+
+  select count(*) from gv_sales_order_header h 
+    where h.wh_id = :warehouse_id and h.createdtime >= trunc(sysdate)
+	 */
 	public Map<String, Object> kanban(Long whId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("总订单数", 10000);

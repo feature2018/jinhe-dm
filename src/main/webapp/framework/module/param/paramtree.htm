@@ -31,7 +31,7 @@
 			url : URL_INIT  + params.id,
 			onresult : function() { 
 				var tree = $T("tree", this.getNodeValue("ParamTree"));		
-				$("tree").onTreeNodeDoubleClick = function(eventObj) {
+				$$("tree").onTreeNodeDoubleClick = function(eventObj) {
 					getTargetParent();
 				}
 			}

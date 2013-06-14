@@ -325,7 +325,9 @@ HttpRequest.prototype.packageContent = function() {
 	}
 
 	var contentStr = contentXml.toXml();
-	this.xmlhttp.setRequestHeader("Content-Length", contentStr.length);
+	if( !window.DOMParser ) {
+		this.xmlhttp.setRequestHeader("Content-Length", contentStr.length);
+	}
 	this.requestBody = contentStr;
 }
 
@@ -334,7 +336,7 @@ HttpRequest.prototype.packageContent = function() {
  */
 HttpRequest.prototype.setCustomRequestHeader = function() {
 	this.xmlhttp.setRequestHeader("REQUEST-TYPE", "xmlhttp");
-	this.xmlhttp.setRequestHeader("REFERER", this.params.url);
+	// this.xmlhttp.setRequestHeader("REFERER", this.params.url);
 	for(var item in this.params.header) {									
 		var itemValue = String(this.params.header[item]);
 		if( itemValue != "" ) {

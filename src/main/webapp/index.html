@@ -59,10 +59,10 @@ function loadInitData() {
 		var tree = $T("tree", mainTreeXML); 
 		
 		// 添加自定义树事件
-		$("tree").onTreeNodeDoubleClick = function(eventObj) {
+		$$("tree").onTreeNodeDoubleClick = function(eventObj) {
 			onTreeNodeDoubleClick(eventObj);
 		}
-		$("tree").onTreeNodeRightClick = function(eventObj) {
+		$$("tree").onTreeNodeRightClick = function(eventObj) {
 			onTreeNodeRightClick(eventObj);
 		}
 	}
@@ -97,7 +97,7 @@ function initMenus() {
 	menu1.addItem(item2);
 	menu1.addItem(item3);
 
-	$("tree").contextmenu = menu1;
+	$$("tree").contextmenu = menu1;
 }
 
 function editReportSQL(reportName) {
@@ -121,7 +121,7 @@ function onTreeNodeDoubleClick(eventObj) {
  *	右击树节点
  */
 function onTreeNodeRightClick(eventObj) { 
-	var treeObj = $("tree");
+	var treeObj = $$("tree");
 	if( treeObj.contextmenu ) {
 		treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                 
 	}
@@ -139,7 +139,7 @@ function showReport() {
 		var grid = $G("reportGrid", gridData);       
 
 		var gridPage = this.getNodeValue("PageData");
-		var toolbarObj = $("gridToolBar");
+		var toolbarObj = $$("gridToolBar");
 		initGridToolBar(toolbarObj, gridPage, function(page) {
 				alert("翻页")
 		});

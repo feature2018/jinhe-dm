@@ -85,7 +85,7 @@ var TreeCache = new Collection();
 function $T(treeId, dataXML) {
 	var tree = TreeCache.get(treeId);
 	if( tree == null || dataXML ) {
-		var element = $(treeId);
+		var element = $$(treeId);
 
 		dataXML = (typeof(dataXML) == 'string') ? dataXML : dataXML.toXml();
 		element._dataXML = dataXML;
@@ -1827,16 +1827,16 @@ function TreeDisplay(treeObj) {
 		var vScrollStr = '<div id="treeVScrollBox" style="position:absolute;overflow-y:auto;heigth:100%;width:17px;top:0px;right:0px;"><div id="treeVScrollDiv" style="width:1px"></div></div>';
 		var hScrollStr = '<div id="treeHScrollBox" style="position:absolute;overflow-x:auto;overflow-y:hidden;heigth:17px;width:100%;bottom:0px;left:0px"><div id="treeHScrollDiv" style="higth:1px"></div></div>';
 		treeObj.element.insertAdjacentHTML('afterBegin', vScrollStr + hScrollStr);
-		_vScrollBox = $("treeVScrollBox");
-		_vScrollDiv = $("treeVScrollDiv");
-		_hScrollBox = $("treeHScrollBox");
-		_hScrollDiv = $("treeHScrollDiv");
+		_vScrollBox = $$("treeVScrollBox");
+		_vScrollDiv = $$("treeVScrollDiv");
+		_hScrollBox = $$("treeHScrollBox");
+		_hScrollDiv = $$("treeHScrollDiv");
 		
 		// 生成页面上显示节点的table对象。
 		var tableStr = '<div id="treeRootBox" style="position:absolute;overflow:hidden;top:0px;left:0px"><table id="treeRootTable" cellspacing="0"></table></div>';
 		treeObj.element.insertAdjacentHTML('afterBegin', tableStr);
-		_rootBox   = $("treeRootBox");
-		_rootTable = $("treeRootTable");
+		_rootBox   = $$("treeRootBox");
+		_rootTable = $$("treeRootTable");
 		for(var i = 0; i < _pageSize; i++) {
 			var tr = _rootTable.insertRow();
 			tr.insertCell();

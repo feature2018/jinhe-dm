@@ -37,20 +37,20 @@
 			inputType = "password";
         }
 
-        var infoBox = $("infoBox");
-        var textBox = $("textBox");
+        var infoBox = $$("infoBox");
+        var textBox = $$("textBox");
         infoBox.innerText = params.info.replace(/[\r\n]/g, "");
 		textBox.innerHTML = "<input type=\" " + inputType +  "\" id=\"txtfield\" class=\"txtfield\" style=\"width:100%\"/>";        
 
-		$("bt_cancel").focus();
+		$$("bt_cancel").focus();
 
         setTimeout(function() {
-            $("txtfield").value = params.defaultValue;
+            $$("txtfield").value = params.defaultValue;
         }, 0);
     }
 
     function ok() {
-        var txtfield = $("txtfield");
+        var txtfield = $$("txtfield");
         var value = txtfield.value;
 
 		var maxLength = params.maxBytes;

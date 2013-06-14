@@ -74,7 +74,7 @@ URL_CORE = "../";
 		// 初始化登录xform
 		loginXForm = $X("loginForm", loginFormXML)
 		
-		$("userName").onblur = function() { 
+		$$("userName").onblur = function() { 
 			var value = this.value;
 			if(value == null || value == "") return;
 			
@@ -158,7 +158,7 @@ URL_CORE = "../";
         if( 13 == event.keyCode ){
             event.returnValue = false;
 
-            var btLogin = $("btLogin");
+            var btLogin = $$("btLogin");
             btLogin.focus();
 
             setTimeout(function() {

@@ -85,7 +85,7 @@ URL_CORE = "../../";
 			visible:function() {return !isTreeRoot();}
 		}
 
-		var treeObj = $("tree");
+		var treeObj = $$("tree");
 
 		var menu = new Menu();
 		menu.addItem(item1);
@@ -93,7 +93,7 @@ URL_CORE = "../../";
 		treeObj.contextmenu = menu;
 
 		/* Grid菜单初始化  */
-		var gridObj = $("grid");
+		var gridObj = $$("grid");
 		var item1 = {
 			label:"查看",
 			callback:function() {
@@ -110,10 +110,10 @@ URL_CORE = "../../";
     }
 
     function initBlocks() {
-        var paletteObj = $("palette");
+        var paletteObj = $$("palette");
         Blocks.create(paletteObj);
 
-        var treeContainerObj = $("treeContainer");
+        var treeContainerObj = $$("treeContainer");
         Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
     }
 
@@ -121,9 +121,9 @@ URL_CORE = "../../";
         var onresult = function() {
             var tree = $T("tree", this.getNodeValue(XML_MAIN_TREE));
 
-			var treeElement = $("tree");
+			var treeElement = $$("tree");
             treeElement.onTreeNodeActived = function(eventObj) {
-                Focus.focus($("treeTitle").firstChild.id);
+                Focus.focus($$("treeTitle").firstChild.id);
             }
             treeElement.onTreeNodeDoubleClick = function(eventObj) {
                if( !isTreeRoot() ) {
@@ -131,7 +131,7 @@ URL_CORE = "../../";
 				}
             }
             treeElement.onTreeNodeRightClick = function(eventObj) {
-				var treeObj = $("tree");
+				var treeObj = $$("tree");
 				if(treeObj.contextmenu) {
 					treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
 				}
@@ -149,16 +149,16 @@ URL_CORE = "../../";
     }
 	
     function initFocus() {
-        Focus.register($("treeTitle").firstChild);
-        Focus.register($("gridTitle"));
+        Focus.register($$("treeTitle").firstChild);
+        Focus.register($$("gridTitle"));
     }
 
     function initEvents() {
-        Event.attachEvent($("treeBtRefresh"), "click", onClickTreeBtRefresh);
-        Event.attachEvent($("treeTitleBt"), "click", onClickTreeTitleBt);
-        Event.attachEvent($("paletteBt"), "click", onClickPaletteBt);
-        Event.attachEvent($("treeTitle"), "click", onClickTreeTitle);
-        Event.attachEvent($("gridTitle"), "click", onClickGridTitle);
+        Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
+        Event.attachEvent($$("treeTitleBt"), "click", onClickTreeTitleBt);
+        Event.attachEvent($$("paletteBt"), "click", onClickPaletteBt);
+        Event.attachEvent($$("treeTitle"), "click", onClickTreeTitle);
+        Event.attachEvent($$("gridTitle"), "click", onClickGridTitle);
     }
 
 	var currentPage
@@ -171,7 +171,7 @@ URL_CORE = "../../";
 		var request = new HttpRequest(p);
 		request.onresult = function() {
 			$G("grid", this.getNodeValue(XML_LOG_LIST)); 
-			var gridToolBar = $("gridToolBar");
+			var gridToolBar = $$("gridToolBar");
 
 			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 			initGridToolBar(gridToolBar, pageListNode, function(page) {
@@ -182,12 +182,12 @@ URL_CORE = "../../";
 				request.send();
 			} );
 			
-			var gridElement = $("grid"); 
+			var gridElement = $$("grid"); 
 			gridElement.onDblClickRow = function(eventObj) {
 				showLogInfo();
 			}
 			gridElement.onRightClickRow = function() {
-				$("grid").contextmenu.show(event.clientX, event.clientY);
+				$$("grid").contextmenu.show(event.clientX, event.clientY);
 			}   
 			gridElement.onScrollToBottom = function () {		
 				var currentPage = gridToolBar.getCurrentPage();
@@ -235,12 +235,12 @@ URL_CORE = "../../";
      *	参数：	boolean:editable            是否可编辑(默认true)
      */
     function showLogInfo() {		
-		var rowIndex = $("grid").selectRowIndex; 
+		var rowIndex = $$("grid").selectRowIndex; 
 		var row = $G("grid").getRowByIndex(rowIndex);
 		var rowID = row.getAttribute("id");  
 		var rowName = "日志";
 		
-		var wsContainer = $("ws").parentElement.parentElement;
+		var wsContainer = $$("ws").parentElement.parentElement;
         var callback = {};
 		callback.onTabClose = function(eventObj){
 			if( ws.noTabOpend() ) {
@@ -274,10 +274,10 @@ URL_CORE = "../../";
 				var logInfoNode = this.getNodeValue(XML_LOG_INFO);
 				var page1FormObj = $X("page1Form", logInfoNode);
 
-				$("page1BtPrev").style.display = "none";
-				$("page1BtNext").style.display = "none";
-				$("page1BtSave").style.display = "none";
-				// $("page1BtSave").disabled = true;
+				$$("page1BtPrev").style.display = "none";
+				$$("page1BtNext").style.display = "none";
+				$$("page1BtSave").style.display = "none";
+				// $$("page1BtSave").disabled = true;
 			}
 		});
     }

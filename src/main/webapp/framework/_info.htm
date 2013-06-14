@@ -73,12 +73,12 @@
 
 				var tempContentHeight = document.body.scrollHeight;
 
-				var infoBox       = $("infoBox");
-				var detailBox     = $("detailBox");
-				var bt_showDetail = $("bt_showDetail");
-				var bt_cancel     = $("bt_cancel");
-				var bt_ok         = $("bt_ok");
-				var bt_copy       = $("bt_copy");
+				var infoBox       = $$("infoBox");
+				var detailBox     = $$("detailBox");
+				var bt_showDetail = $$("bt_showDetail");
+				var bt_cancel     = $$("bt_cancel");
+				var bt_ok         = $$("bt_ok");
+				var bt_copy       = $$("bt_copy");
 
 				var gif;
 						switch(params.type) {
@@ -123,12 +123,12 @@
             return;
         }
 
-        var infoBox = $("infoBox");
-        var detailBox = $("detailBox");
-        var bt_showDetail = $("bt_showDetail");
-        var bt_cancel = $("bt_cancel");
-        var bt_ok = $("bt_ok");
-        var bt_copy = $("bt_copy");
+        var infoBox = $$("infoBox");
+        var detailBox = $$("detailBox");
+        var bt_showDetail = $$("bt_showDetail");
+        var bt_cancel = $$("bt_cancel");
+        var bt_ok = $$("bt_ok");
+        var bt_copy = $$("bt_copy");
 
         bt_ok.focus();
 
@@ -158,8 +158,8 @@
     }
 
     function resizeDetailBox() {	
-        var infoBox   = $("infoBox");
-        var detailBox = $("detailBox");
+        var infoBox   = $$("infoBox");
+        var detailBox = $$("detailBox");
 
 				// 当前网页高度 - 65 - infoBox的高度
         detailBox.style.height = Math.max(1, document.body.offsetHeight - 65 - infoBox.offsetHeight);  
@@ -176,7 +176,7 @@
     }
 
     function copy() {
-        var detailBox = $("detailBox");
+        var detailBox = $$("detailBox");
         window.clipboardData.setData("text", detailBox.value);
     }
 

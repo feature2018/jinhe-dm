@@ -25,7 +25,7 @@ body, td{
 
 	var ws;
 	window.onload = function () {
-		  ws = new WorkSpace($("ws"));
+		  ws = new WorkSpace($$("ws"));
 
 		  var inf = {};
 		  inf.label = "页面1";
@@ -94,7 +94,7 @@ body, td{
       <TD>
 				<INPUT TYPE="button" value="open" onclick="openNewTab()"/>
 				<INPUT TYPE="button" value="switch" onclick="switchPage(0)"/>
-				<INPUT TYPE="button" value="innerHTML" onclick="alert($('ws').innerHTML)"/>
+				<INPUT TYPE="button" value="innerHTML" onclick="alert($$('ws').innerHTML)"/>
 				<INPUT TYPE="button" value="back" onclick="back()"/>
 		  </TD>
     </TR>

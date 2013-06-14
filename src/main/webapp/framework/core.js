@@ -8,7 +8,7 @@ _TYPE_STRING = "string";
 _TYPE_BOOLEAN = "boolean";
 
 /* 常用方法缩写 */
-$ = function(id){
+$$ = function(id){
 	return document.getElementById(id);
 }
 
@@ -97,7 +97,7 @@ Public.executeCommand = function(callback, param) {
 
 /* 显示等待状态 */
 Public.showWaitingLayer = function () {
-	var waitingDiv = $("_waitingDiv");
+	var waitingDiv = $$("_waitingDiv");
 	if(waitingDiv == null) {
 		var waitingDiv = document.createElement("div");    
 		waitingDiv.id = "_waitingDiv";    
@@ -144,11 +144,11 @@ Public.showWaitingLayer = function () {
 }
 
 Public.hideWaitingLayer = function() {
-	var waitingDiv = $("_waitingDiv");
+	var waitingDiv = $$("_waitingDiv");
 	if( waitingDiv  ) {
 		setTimeout( function() {
 			waitingDiv.style.display = "none";
-			$("coverDiv").style.display = "none";
+			$$("coverDiv").style.display = "none";
 		}, 100);
 	}
 }
@@ -1463,8 +1463,8 @@ Reminder.cancel = function() {
 Reminder.restore = function() {
 	this.flag = true;
 }
-
-window.attachEvent("onbeforeunload", function() {
+ 
+Event.attachEvent(window, "beforeunload", function() {
 	if(Reminder.getCount() > 0) {            
 		event.returnValue = "当前有 <" + count + "> 项修改未保存，您确定要离开吗？";
 	}
@@ -1772,120 +1772,4 @@ Focus.unregister = function(id){
 		delete this.items[id];
 	}
 }
-
-
-
-
-/*
- *	重新封装alert
- *	参数：	string:info     简要信息
-			string:detail   详细信息
- */
-function Alert(info, detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
-
-	var maxWords = 100;
-	var params = {};
-	params.type = "alert";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords < info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
-	}
-	params.title = "";
-	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
-}
-
-/*
- *	重新封装confirm
- *	参数：	string:info             简要信息
-			string:detail           详细信息
- *	返回值：boolean:returnValue     用户选择确定/取消
- */
-function Confirm(info,detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
-
-	var maxWords = 100;
-	var params = {};
-	params.type = "confirm";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords<info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
-	}
-	params.title = "";
-	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
-	return returnValue;
-}
-
-/*
- *	带是/否/取消三个按钮的对话框
- *	参数：	string:info             简要信息
-			string:detail           详细信息
- *	返回值：boolean:returnValue     用户选择是/否/取消
- */
-function Confirm2(info,detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
-
-	var maxWords = 100;
-	var params = {};
-	params.type = "confirm2";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords < info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
-	}
-	params.title = "";
-	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
-	return returnValue;
-}
-
-/*
- *	重新封装prompt
- *	参数：	string:info             简要信息
-			string:defaultValue     默认值
-			string:title            标题
-			boolean:protect         是否保护
-			number:maxBytes         最大字节数
- *	返回值：string:returnValue      用户输入的文字
- */
-function Prompt(info, defaultValue, title, protect, maxBytes) {
-	info = convertToString(info);
-	defaultValue = convertToString(defaultValue);
-	title = convertToString(title);
-
-	var params = {};
-	params.info = info;
-	params.defaultValue = defaultValue;
-	params.title = title;
-	params.protect = protect;
-	params.maxBytes = maxBytes;
-	var returnValue = window.showModalDialog(URL_CORE + '_prompt.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:no;unadorned:yes');
-	return returnValue;
-}
-
-/*
- *	捕获页面js报错
- */
-function onError(msg,url,line) {
-	alert(msg, "错误:" + msg + "\r\n行:" + line + "\r\n地址:" + url);
-	event.returnValue = true;
-}
-
-window._alert = window.alert;
-window._confirm = window.confirm;
-window._prompt = window.prompt;
-
-window.alert = Alert;
-window.confirm = Confirm;
-window.confirm2 = Confirm2;
-window.prompt = Prompt;
-window.onerror = onError;
-
 

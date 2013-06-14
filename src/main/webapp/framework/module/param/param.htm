@@ -222,7 +222,7 @@
 		menu1.addSeparator();
 		menu1.addItem(item15);
 
-        $("tree").contextmenu = menu1;
+        $$("tree").contextmenu = menu1;
     }
 
 	function loadInitData() {
@@ -231,9 +231,9 @@
 			onresult : function() { 
 				$T("tree", this.getNodeValue(XML_MAIN_TREE)); 
 
-				var treeObj = $("tree");
+				var treeObj = $$("tree");
 				treeObj.onTreeNodeActived = function(eventObj) {
-					Focus.focus($("treeTitle").firstChild.id);
+					Focus.focus($$("treeTitle").firstChild.id);
 					showTreeNodeInfo();
 					loadToolBar();
 				}
@@ -246,7 +246,7 @@
 					sortParamTo(eventObj);
 				}
 				treeObj.onTreeNodeRightClick = function(eventObj) {
-					$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
+					$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
 					loadToolBar();
 					showTreeNodeInfo();
 				}	 
@@ -360,13 +360,13 @@
 				var paramInfoNode = this.getNodeValue(XML_PARAM_INFO);
 				Cache.XmlDatas.add(treeID, paramInfoNode);
 				
-				$("page1Form").editable = editable ? "true" : "false";
+				$$("page1Form").editable = editable ? "true" : "false";
 				var xform = $X("page1Form", paramInfoNode);
 
 				attachReminder(treeID, xform); // 离开提醒
 	 
 				// 设置保存按钮操作
-				var page1BtSaveObj = $("page1BtSave");
+				var page1BtSaveObj = $$("page1BtSave");
 				page1BtSaveObj.onclick = function() {
 					saveParam(treeID, parentID, type);
 				}
@@ -409,7 +409,7 @@
         if( flag ) {
             var request = new HttpRequest(p);
            
-            syncButton([$("page1BtSave")], request); // 同步按钮状态
+            syncButton([$$("page1BtSave")], request); // 同步按钮状态
 			detachReminder(cacheID); // 解除提醒
 
             request.onresult = function() {                  

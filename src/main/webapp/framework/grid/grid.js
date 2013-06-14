@@ -4,7 +4,7 @@ var GridCache = new Collection();
 function $G(gridId, data) {
 	var grid = GridCache.get(gridId);
 	if( grid == null || data ) {
-		grid = new Grid($(gridId), data);
+		grid = new Grid($$(gridId), data);
 	}
 	
 	return grid;
@@ -25,7 +25,7 @@ var Grid = function(element, data) {
 	this.iconPath = this.baseurl + "images/"
 	
 	this.element.innerHTML = "<div id='" + this.id + "Box' style='position:absolute;overflow:auto;left:0px;top:0px;z-index:1'></div>";
-	this.gridBox   = $(this.id + "Box");
+	this.gridBox   = $$(this.id + "Box");
 	this.gridBox.style.height = this.windowHeight = element.height || "100%";
 	this.gridBox.style.width  = this.windowWidth  = element.width  || "100%";
 
@@ -375,12 +375,12 @@ function initGridToolBar(gridPageBar, pageInfo, callback) {
 	
 	//绑定事件
 	gridPageBar.attachEvents = function() {
-		var gridBtRefreshObj = $("GridBtRefresh");
-		var gridBtFirstObj   = $("GridBtFirst");
-		var gridBtPrevObj    = $("GridBtPrev");
-		var gridBtNextObj    = $("GridBtNext");
-		var gridBtLastObj    = $("GridBtLast");
-		var gridPageListObj  = $("GridPageList");
+		var gridBtRefreshObj = $$("GridBtRefresh");
+		var gridBtFirstObj   = $$("GridBtFirst");
+		var gridBtPrevObj    = $$("GridBtPrev");
+		var gridBtNextObj    = $$("GridBtNext");
+		var gridBtLastObj    = $$("GridBtLast");
+		var gridPageListObj  = $$("GridPageList");
 
 		Event.attachEvent(gridBtRefreshObj, "click", function() {
 			var curPage = gridPageBar.getCurrentPage();
