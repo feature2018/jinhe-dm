@@ -25,6 +25,6 @@ public interface WmsService {
 
 	@GET
 	@Path("/kanban/{whId}")
-	Map<String, Object> kanban(@PathParam("whId") Long whId);
+	List<Map<String, Object>> kanban(@PathParam("whId") Long whId);
 
 }

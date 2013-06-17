@@ -22,8 +22,8 @@ public class SQLExcutor {
     
     SQLParser parser;
     
-    int count;
-    List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+    public int count;
+    public List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     
     public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize, String datasource) {
         Pool connpool = JCache.getInstance().getCachePool(datasource);

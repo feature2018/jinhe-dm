@@ -10,24 +10,70 @@
 
 	<script type="text/javascript">
 
-		Ajax({
-			url : "http://localhost:9000/wmsx/rs/wms/kanban/1004221",
-			method : "GET",
-			type : "json",
-			ondata : function() { 
-				alert(this.getResponseText());
-			}
-		});
- 
-
-		$(function(){   
-			var data = [
+/*
+				var data = [
+						{name : '总的订单数',value : 100, color:'red'},
 						{name : '分配订单数',value : 30, color:'#3883bd'},
 						{name : '拣货订单数',value : 26, color:'#3F5C71'},
 						{name : '验货订单数',value : 10, color:'#a6bfd2'},
 						{name : '发运订单数',value : 34, color:'#d6ffd2'}
 					];
-			
+*/			
+
+	var data;
+	var total;
+
+	window.setInterval(function() {
+		Ajax({
+			url : "http://localhost:9000/wmsx/rs/wms/kanban/104221",
+			method : "GET",
+			type : "json",
+			ondata : function() { 
+				data = eval(this.getResponseText());
+				total = data[0].value;
+				show();
+			}
+		});	  
+	  }, 1000*30);
+
+
+
+	function show() {
+	  $(function(){
+			new iChart.Column2D({
+				render : 'canvasDiv2',
+				data: data,
+				title : '',
+				// showpercent:true,
+				decimalsnum:2,
+				width : 800,
+				height : 400,
+				sub_option : {
+					label : {
+						fontsize:11,
+						fontweight:600,
+						color : '#4572a7'
+					},
+					border : {
+						width : 2,
+						radius : '5 5 0 0', //上圆角设置
+						color : '#ffffff'
+					}
+				},
+				coordinate:{
+					background_color:'#fefefe',
+					scale:[{
+						 position:'left',	
+						 start_scale:0,
+						 end_scale:total,
+						 scale_space:total/4
+					}]
+				}
+			}).draw();
+		});
+
+		// data.splice(0, 1);
+		$(function(){   
 			var chart = new iChart.Pie2D({
 				render : 'canvasDiv',
 				title:{
@@ -98,47 +144,7 @@
 			chart.bound(2);
 			chart.bound(3);
 		});
-
-		$(function(){
-			var data = [
-						{name : '新建订单数', value : 15000, color:'#a5c2d5'},
-						{name : '分配订单数', value : 3000, color:'#cbab4f'},
-						{name : '拣货订单数', value : 2600, color:'#76a871'},
-						{name : '验货订单数', value : 1000, color:'#9f7961'},
-						{name : '发运订单数', value : 3400, color:'#6f83a5'}
-					];
-			
-			new iChart.Column2D({
-				render : 'canvasDiv2',
-				data: data,
-				title : '',
-				// showpercent:true,
-				decimalsnum:2,
-				width : 800,
-				height : 400,
-				sub_option : {
-					label : {
-						fontsize:11,
-						fontweight:600,
-						color : '#4572a7'
-					},
-					border : {
-						width : 2,
-						radius : '5 5 0 0', //上圆角设置
-						color : '#ffffff'
-					}
-				},
-				coordinate:{
-					background_color:'#fefefe',
-					scale:[{
-						 position:'left',	
-						 start_scale:0,
-						 end_scale:25000,
-						 scale_space:5000
-					}]
-				}
-			}).draw();
-		});
+	}
 	</script>
 </head>
 
