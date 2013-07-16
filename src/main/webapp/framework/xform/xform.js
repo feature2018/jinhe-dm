@@ -29,7 +29,7 @@ var XForm = function(element) {
 	this.xmlDoc;
 	
 	this._baseurl  = element.baseurl || "";
-	this._iconPath = this._baseurl + "images/"
+	this._iconPath = this._baseurl + "images/";
 
 	this._columnList = {};
 }
@@ -360,7 +360,7 @@ XForm.prototype.setFocus = function(name) {
 	var _column = this._columnList[name];
 	if( _column ) {
 		_column.setFocus();
-		$$(name).focus();
+		// $$(name).focus();
 	}
 }
 
@@ -449,7 +449,7 @@ XForm.prototype.setColumnValue = function(name, value) {
 
 
 
-function Mode_String(colName, element) {
+function Mode_String(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
 	this.obj._value = this.obj.value;
@@ -468,7 +468,7 @@ function Mode_String(colName, element) {
 			showErrorInfo("[" + this.caption.replace(/\s/g, "") + "] 格式不正确，请更正。", this);
 		}
 		else {
-			element.updateData(this);
+			xform.updateData(this);
 		}
 	}
 
@@ -526,7 +526,7 @@ Mode_String.prototype = {
 
 
 // 下拉选择框，单选或多选
-function Mode_ComboEdit(colName, element) {
+function Mode_ComboEdit(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
  	this.obj._value = this.obj.attributes["value"].nodeValue;
@@ -573,7 +573,7 @@ function Mode_ComboEdit(colName, element) {
 			}
 		}
 		this._value = x.join(",");
-		element.updateData(this);
+		xform.updateData(this);
 	}
 }
 
@@ -645,7 +645,7 @@ Mode_ComboEdit.prototype.setFocus = function() {
 
 
 
-function Mode_Radio(colName, element) {
+function Mode_Radio(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
 
@@ -676,7 +676,7 @@ function Mode_Radio(colName, element) {
 		inputObj.multipleIndex = tempObj.multipleIndex;
 
 		inputObj.onclick = function() {
-			element.updateData(this);
+			xform.updateData(this);
 			tempObj._value = this.value;
 		}
 	}
@@ -735,7 +735,7 @@ Mode_Radio.prototype.setFocus = function(){
 
 
 
-function Mode_Number(colName, element) {
+function Mode_Number(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
 
@@ -765,7 +765,7 @@ function Mode_Number(colName, element) {
 		}
 		else {
 			tempThis.setValue(this.value);
-			element.updateData(this);
+			xform.updateData(this);
 		}
 	}
 
@@ -814,7 +814,7 @@ Mode_Number.prototype.setFocus = function(){
 
 
 
-function Mode_Function(colName, element) {
+function Mode_Function(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
 
@@ -835,7 +835,7 @@ function Mode_Function(colName, element) {
 
 	waitingForVisible(function() {
 		tempThis.obj.style.width = Math.max(1, tempThis.obj.offsetWidth - 20);
-	});
+	}, tempThis.obj);
 
 	this.obj.onblur = function() {
 		if("text" == this.type) {
@@ -849,7 +849,7 @@ function Mode_Function(colName, element) {
 			showErrorInfo("[" + this.caption.replace(/\s/g,"") + "] 格式不正确，请更正",this);
 		}
 		else{
-			element.updateData(this);
+			xform.updateData(this);
 		}
 	};
 	this.obj.onpropertychange = function() {
@@ -870,7 +870,7 @@ function Mode_Function(colName, element) {
 		var tempThisObj = this.obj;
 
 		//添加点击按钮
-		this.obj.insertAdjacentHTML('afterEnd', '<button style="width:20px;height:18px;background-color:transparent;border:0px;"><img src="' + _iconPath + 'function.gif"></button>');
+		this.obj.insertAdjacentHTML('afterEnd', '<button style="width:20px;height:18px;background-color:transparent;border:0px;"><img src="' + xform._iconPath + 'function.gif"></button>');
 		var btObj = this.obj.nextSibling; // 动态添加进去的按钮
 		btObj.onclick = function(){
 			try {
@@ -909,7 +909,7 @@ Mode_Function.prototype.setFocus = function() {
 }
 
 
-function Mode_Hidden(colName, element) {
+function Mode_Hidden(colName, xform) {
 	this.name = colName;
 	this.obj = $$(colName);
 }
@@ -1054,4 +1054,32 @@ function waitingForVisible(func, element) {
 			element.onresize = null;
 		}
 	}
+}
+
+function dataNode2Map(dataNode, prefix) {
+	var map = {};
+	if(dataNode && dataNode.nodeName == "data") {
+		var rename = dataNode.getAttribute("name");
+		var nodes = dataNode.selectNodes("./row/*");
+		for(var i = 0; i < nodes.length; i++) {
+			var name = rename || nodes[i].nodeName; // 从data节点上获取保存名，如果没有则用原名
+			
+			// 前缀，xform declare节点上设置，以便于把值设置到action的bean对象里
+			if( prefix ) {
+				name = prefix + "." + name;
+			}
+
+			map[name] = nodes[i].text;
+		}
+	}
+	return map;
+}
+
+function xformExtractData(xformNode) {
+	if( xformNode ) {
+		var dataNode = xformNode.selectSingleNode(".//data");
+		var prefix   = xformNode.selectSingleNode("./declare").getAttribute("prefix");
+		return dataNode2Map(dataNode, prefix);
+	}
+	return null;
 }

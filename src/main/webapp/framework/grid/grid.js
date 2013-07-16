@@ -123,8 +123,7 @@ Grid.prototype.processDataRow = function(curRow) {
 		}
  
 		var value = curRow.getAttribute(columnName); // xsl解析后，各行的各个TD值统一记录在了TR上。
-		// curRow.removeAttribute(columnName);
-		var nobrNodeInCell = cell.childNodes[0];  // nobr 节点
+		var nobrNodeInCell = cell.childNodes[0];    // nobr 节点
 		var mode = columnNode.getAttribute("mode");
 		switch( mode ) {
 			case "string":
@@ -175,6 +174,27 @@ Grid.prototype.getRowByIndex = function(index) {
 			return row;
 		}
 	}
+}
+
+// 删除单行
+Grid.prototype.deleteRow = function(row) {
+	Element.addClass(row, "hidden");
+}
+
+Grid.prototype.deleteRowByIndex = function(rowIndex) {
+	var row = this.getRowByIndex(rowIndex);
+	deleteRow(row);
+}
+	
+// 更新单行记录的某个属性值
+Grid.prototype.modifyRow = function(row, propertyName, propertyValue) {
+	row.setAttribute(propertyName, propertyValue);
+	this.processDataRow(row);
+}
+
+Grid.prototype.modifyRowByIndex = function(rowIndex, propertyName, propertyValue) {
+	var row = this.getRowByIndex(rowIndex);
+	modifyRow(row, propertyName, propertyValue);
 }
 
 Grid.prototype.getHighlightRow = function() {

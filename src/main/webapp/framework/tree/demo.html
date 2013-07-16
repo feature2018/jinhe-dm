@@ -34,7 +34,8 @@ function init() {
 		var request = new HttpRequest(p);
 		request.onresult = function() {
 				var treeData = this.getNodeValue("ParamTree");
-				var tree = $T("tree", treeData);	 
+				var tree1 = $T("tree1", treeData);	
+				var tree2 = $T("tree2", treeData);	
 		}
 		request.send();
 }
@@ -47,7 +48,14 @@ window.onload = init;
 
 <body>
 
-	<Tree:Box id="tree" treeType="menu" baseurl="" canMoveNode="true" height=600><div class="loading"></div></Tree:Box>
- 
+<div style="display:inline">
+   <span>
+	<Tree:Box id="tree1" treeType="menu" baseurl="" canMoveNode="true" height="400"><div class="loading"></div></Tree:Box>
+   </span>
+   <span>
+	<Tree:Box id="tree2" treeType="multi" baseurl="" canMoveNode="true" height="400" selectSelf="false"><div class="loading"></div></Tree:Box>
+   </span>
+</div>
+
 </body>
 </html>

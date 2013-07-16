@@ -388,7 +388,7 @@
 
         var p = new HttpRequestParams();
         p.url = URL_SAVE_PARAM;
-        p.setContent("type", type);
+        p.addParam("type", type);
 
         //是否提交
         var flag = false;
@@ -631,7 +631,7 @@
 
 	//关闭页面自动注销
     window.attachEvent("onunload", function() {
-        if(10000<window.screenTop || 10000<window.screenLeft) {
+        if(10000 < window.screenTop || 10000 < window.screenLeft) {
             logout();
         }
 	});

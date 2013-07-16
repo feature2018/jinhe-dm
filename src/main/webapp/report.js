@@ -594,9 +594,6 @@ function searchReport(treeID) {
 		} );
 		
 		var gridElement = $$("grid"); 
-		gridElement.onDblClickRow = function(eventObj) {
-			showLogInfo();
-		}
 		gridElement.onRightClickRow = function() {
 			$$("grid").contextmenu.show(event.clientX, event.clientY);
 		}   

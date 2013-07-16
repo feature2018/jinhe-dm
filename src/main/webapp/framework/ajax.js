@@ -33,7 +33,7 @@ function HttpRequestParams() {
 	this.method = "POST";
 	this.type = "xml"; // "xml or json"
 	this.async = true;
-	this.content = {};
+	this.params = {};
 	this.header = {};
 }
 
@@ -44,8 +44,8 @@ HttpRequestParams.prototype.setMethod = function(value) {
 /*
  *	设置发送数据
  */
-HttpRequestParams.prototype.setContent = function(name, value) {
-	this.content[name] = value;
+HttpRequestParams.prototype.addParam = HttpRequestParams.prototype.setContent = function(name, value) {
+	this.params[name] = value;
 }
 
 /*
@@ -67,7 +67,7 @@ HttpRequestParams.prototype.setXFormContent = function(dataNode, prefix) {
 			name = prefix + "." + name;
 		}
 
-		this.setContent(name, value, false);
+		this.addParam(name, value);
 	}
 }
 
@@ -75,14 +75,14 @@ HttpRequestParams.prototype.setXFormContent = function(dataNode, prefix) {
  *	清除制定名称的发送数据
  */
 HttpRequestParams.prototype.clearContent = function(name) {
-	delete this.content[name];
+	delete this.params[name];
 }
 
 /*
  *	清除所有发送数据
  */
 HttpRequestParams.prototype.clearAllContent = function() {
-	this.content = {};
+	this.params = {};
 }
 
 /*
@@ -98,7 +98,7 @@ HttpRequestParams.prototype.setHeader = function(name, value) {
 	例子：
 		var p = new HttpRequestParams();
 		p.url = URL_GET_USER_NAME;
-		p.setContent("loginName", loginName);
+		p.addParam("loginName", loginName);
 		p.setHeader("appCode", APP_CODE);
 
 		var request = new HttpRequest(p);
@@ -113,15 +113,15 @@ function HttpRequest(paramsInstance) {
 	this.xmlhttp = new XmlHttp();
 	this.xmlReader = new XmlReader();
 
-	this.params = paramsInstance;
+	this.requestParam = paramsInstance;
 }
 
 HttpRequest.prototype.getParamValue = function(name) {
-	return this.params.content[name];
+	return this.requestParam.params[name];
 }
 
 HttpRequest.prototype.setParamValue = function(name, value) {
-	this.params.content[name] = value;
+	this.requestParam.params[name] = value;
 }
 
 /*
@@ -208,7 +208,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 	 }
 	
 	 try {
-		 if(this.params.waiting) {
+		 if(this.requestParam.waiting) {
 			 Public.showWaitingLayer();
 		 }
 
@@ -242,7 +242,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 			 }
 		 }
 
-		 this.xmlhttp.open(this.params.method, this.params.url, this.params.async);
+		 this.xmlhttp.open(this.requestParam.method, this.requestParam.url, this.requestParam.async);
 		 this.setTimeout(); // 增加超时判定
 		 this.packageContent();
 		 this.setCustomRequestHeader();
@@ -315,8 +315,8 @@ HttpRequest.prototype.packageContent = function() {
 		contentXmlRoot.appendChild(tempParamNode);
 	}
 
-	for(var name in this.params.content) {
-		var value = this.params.content[name];
+	for(var name in this.requestParam.params) {
+		var value = this.requestParam.params[name];
 		if(value == null) {
 			continue;
 		}
@@ -336,9 +336,8 @@ HttpRequest.prototype.packageContent = function() {
  */
 HttpRequest.prototype.setCustomRequestHeader = function() {
 	this.xmlhttp.setRequestHeader("REQUEST-TYPE", "xmlhttp");
-	// this.xmlhttp.setRequestHeader("REFERER", this.params.url);
-	for(var item in this.params.header) {									
-		var itemValue = String(this.params.header[item]);
+	for(var item in this.requestParam.header) {									
+		var itemValue = String(this.requestParam.header[item]);
 		if( itemValue != "" ) {
 			this.xmlhttp.setRequestHeader(item, itemValue);
 		}
@@ -371,13 +370,13 @@ HttpRequest.prototype.onload = function(response) {
 		param.type = 1;
 		param.source = this.value;
 		param.msg = "HTTP " + httpStatus + " 错误\r\n" + response.statusText;
-		param.description = "请求远程地址\"" + this.params.url + "\"出错";
+		param.description = "请求远程地址\"" + this.requestParam.url + "\"出错";
 		new Message_Exception(param, this);
 		this.returnValue = false;
 		return;
 	}
 
-	if(this.params.type == "json") {
+	if(this.requestParam.type == "json") {
 		this.ondata();
 		return;
 	}
@@ -656,7 +655,7 @@ HttpRequests.onFinishAll = function(callback) {
 		url : url,
 		method : "GET",
 		headers : {},
-		contents : {}, 
+		params  : {}, 
 		ondata : function() { },
 		onresult : function() { },
 		onexception : function() { },
@@ -672,20 +671,35 @@ function Ajax() {
 	if(arg.method) {
 		p.method = arg.method;
 	}
-
 	if(arg.type) {
 		p.type = arg.type;
 	}
-
 	if(arg.waiting) {
 		p.waiting = arg.waiting;
+	}
+	if(arg.relogin) {
+		p.relogin = arg.relogin;
 	}
 
 	for(var item in arg.headers) {
 		p.setHeader(item, arg.headers[item]);
 	}
 	for(var item in arg.contents) {
-		p.setContent(item, arg.contents[item]);
+		p.addParam(item, arg.contents[item]);
+	}
+	for(var item in arg.params) {
+		p.addParam(item, arg.params[item]);
+	}
+
+	if(arg.xformNode) {
+		var dataMap = xformExtractData(arg.xformNode);
+		for( var key in dataMap) {
+			if( arg.add2Header ) {
+				p.setHeader(key, dataMap[key]);
+			} else {
+				p.addParam(key, dataMap[key]);
+			}
+		}
 	}
 
 	var request = new HttpRequest(p);

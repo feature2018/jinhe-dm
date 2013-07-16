@@ -28,14 +28,20 @@ URL_CORE = "../";
 						var gridData = this.getNodeValue("SourceList");
 						var grid = $G("grid", gridData);       
 
-						var gridPage = this.getNodeValue("PageList");
+						var gridPage = this.getNodeValue("PageInfo");
 						createGridToolBar(gridPage);
 
 						$$("grid").onScrollToBottom = function () {
 							grid.load(gridData, true);
 						}
 						$$("grid").onRightClickRow = function () {
+						    var rowIndex = $$("grid").selectRowIndex; 
+							var row = $G("grid").getRowByIndex(rowIndex);
+							$G("grid").modifyRow(row, "loginName", "天地玄黄");
+
 							alert("show right menu!");
+
+							// $G("grid").deleteRow(row);
 						}
 					}
 				});
@@ -52,13 +58,14 @@ URL_CORE = "../";
 								var gridData = this.getNodeValue("SourceList");
 								var grid = $G("grid", gridData);       
 
-								var gridPage = this.getNodeValue("PageList");
+								var gridPage = this.getNodeValue("PageInfo");
 								createGridToolBar(gridPage);
 							}
 						});
 				});
     }
 	
+ 
 	window.onload = init;
    
 //-->
