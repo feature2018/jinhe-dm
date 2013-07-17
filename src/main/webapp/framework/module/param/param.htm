@@ -205,7 +205,6 @@
 				treeObj.onTreeNodeActived = function(eventObj) {
 					Focus.focus($$("treeTitle").firstChild.id);
 					showTreeNodeInfo();
-					loadToolBar();
 				}
 				treeObj.onTreeNodeDoubleClick = function(eventObj) {
 					if( !isTreeRoot() ) {
@@ -217,11 +216,8 @@
 				}
 				treeObj.onTreeNodeRightClick = function(eventObj) {
 					$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
-					loadToolBar();
 					showTreeNodeInfo();
 				}	 
-
-				loadToolBar();
 			}
 		});
     }
@@ -420,8 +416,6 @@
 			onsuccess : function() { 
 				var xmlNode = new XmlNode(treeNode.node);
 				refreshTreeNodeStates(xmlNode, status);
-
-				loadToolBar(); // 刷新工具条
 			}
 		});
     }

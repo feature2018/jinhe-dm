@@ -11,7 +11,6 @@ import com.best.oasis.wmsx.TxTestSupport;
 import com.best.oasis.wmsx.report.result.Display;
 import com.jinhe.tss.framework.component.param.Param;
 import com.jinhe.tss.framework.component.param.ParamConstants;
-import com.jinhe.tss.framework.component.param.ParamService;
 import com.jinhe.tss.framework.sso.context.Context;
 
 public class DisplayTest extends TxTestSupport {
@@ -43,13 +42,16 @@ public class DisplayTest extends TxTestSupport {
                     Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
         }
         
-        display.showAsGrid(request, response, report1.getId(), 1, 10);
-        display.showAsJson(request, report1.getId());
+        Long reportId = report1.getId();
+        display.showAsGrid(request, response, reportId, 1, 10);
+        display.showAsJson(request, reportId);
+        
+        if(paramService.getParam(Constants.TEMP_EXPORT_PATH) == null) {
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "默认导出目录", "D:/temp");
+        }
+        display.exportAsCSV(request, response, reportId, 1, 0);
     }
     
-    
-    @Autowired private ParamService paramService;
- 
     /** 简单参数 */
     Param addParam(Long parentId, String code, String name, String value) {
         Param param = new Param();

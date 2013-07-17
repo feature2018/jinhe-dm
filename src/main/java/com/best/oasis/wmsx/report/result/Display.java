@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.best.oasis.wmsx.Constants;
 import com.best.oasis.wmsx.report.Report;
 import com.best.oasis.wmsx.report.ReportService;
+import com.best.oasis.wmsx.util.DataExport;
+import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.persistence.pagequery.PageInfo;
 import com.jinhe.tss.framework.web.dispaly.grid.DefaultGridNode;
 import com.jinhe.tss.framework.web.dispaly.grid.GridDataEncoder;
@@ -64,6 +67,20 @@ public class Display extends BaseActionSupport {
         print(new String[] {"ReportData", "PageInfo"}, new Object[] {gEncoder, pageInfo});
     }
     
+    @RequestMapping("/export/{reportId}/{page}/{pagesize}")
+    public void exportAsCSV(HttpServletRequest request, HttpServletResponse response, 
+            @PathVariable("reportId") Long reportId, 
+            @PathVariable("page") int page,
+            @PathVariable("pagesize") int pagesize) {
+        
+        SQLExcutor excutor = queryReport(request, reportId, page, pagesize);
+        
+        String fileName = reportId + ".csv";
+        String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
+        DataExport.exportCSV(exportPath, excutor.result, excutor.parser.selectFields);
+        DataExport.downloadFileByHttp(response, exportPath);
+    }
+    
     @RequestMapping("/json/{reportId}")
     @ResponseBody
     public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("reportId") Long reportId) {
@@ -71,11 +88,9 @@ public class Display extends BaseActionSupport {
         return excutor.result;
     }
     
-	private SQLExcutor queryReport(HttpServletRequest request, Long reportId,
-			int page, int pagesize) {
+	private SQLExcutor queryReport(HttpServletRequest request, Long reportId, int page, int pagesize) {
 	    
 		Map<String, String[]> requestMap = request.getParameterMap();
-    	
     	Report report = reportService.getReport(reportId);
         
         String params = report.getParam();

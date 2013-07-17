@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.jinhe.tss.framework.Global;
+import com.jinhe.tss.framework.component.param.ParamService;
 import com.jinhe.tss.framework.sso.IOperator;
 import com.jinhe.tss.framework.sso.IdentityCard;
 import com.jinhe.tss.framework.sso.TokenUtil;
@@ -22,7 +23,6 @@ import com.jinhe.tss.framework.test.IH2DBServer;
 @ContextConfiguration(
 	  locations={
 		    "classpath:META-INF/framework-spring.xml",
-		    "classpath:META-INF/spring.xml",
 		    "classpath:META-INF/spring-mvc.xml",
 		    "classpath:META-INF/spring-test.xml"
 	  }   
@@ -33,6 +33,7 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
     protected static Logger log = Logger.getLogger(TxTestSupport.class);    
     
     @Autowired protected IH2DBServer dbserver;
+    @Autowired protected ParamService paramService;
     
     @Before
     public void setUp() throws Exception {

@@ -13,6 +13,7 @@ PAGESIZE = 100;
 URL_SOURCE_TREE    = "rp/all";
 URL_GROUPS_TREE    = "rp/groups";
 URL_REPORT_DATA    = "display/";
+URL_REPORT_EXPORT  = "display/export/";
 URL_SOURCE_DETAIL  = "rp/detail";
 URL_SAVE_SOURCE    = "rp";
 URL_DELETE_SOURCE  = "rp/";
@@ -25,6 +26,7 @@ if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/report_init.xml?";
 	URL_GROUPS_TREE    = "data/report_init.xml?";
 	URL_REPORT_DATA    = "data/reportData2.xml?";
+	URL_REPORT_EXPORT  = "data/_success.xml?";
 	URL_SOURCE_DETAIL  = "data/report1.xml?";
 	URL_SAVE_SOURCE    = "data/_success.xml?";
 	URL_DELETE_SOURCE  = "data/_success.xml?";
@@ -464,22 +466,19 @@ function showReport() {
 	}
 
 	var paramConfig = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
-	if(paramConfig == null || paramConfig.length == 0) {
-		searchReport(treeID);
-		return;
+	if( paramConfig && paramConfig.length > 0) {
+		if( paramConfig.indexOf("仓库") >= 0 ) {
+			if( Cookie.getValue("token")  ) {
+				getWarehouseList(); // 已经登录
+			}
+			else {
+				showLoginForm();
+			}
+			return;
+		}
 	}
 
-	if( paramConfig.indexOf("仓库") >= 0 ) {
-		if( Cookie.getValue("token")  ) {
-			getWarehouseList(); // 已经登录
-		}
-		else {
-			showLoginForm();
-		}
-		return;
-	}
-
-	showSearchForm(paramConfig);
+	showSearchForm(paramConfig || "");
 }
 
 function showSearchForm(paramConfig, whIds, whNames) {	
@@ -556,28 +555,52 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	
 	$$("btSearch").onclick = function () {
 		var treeID = getTreeNodeId();
-		searchReport(treeID);
+		searchReport(treeID, false);
+	}
+	$$("btDownload").onclick = function () {
+		var treeID = getTreeNodeId();
+		searchReport(treeID, true);
 	}
 	$$("btCloseSearchForm").onclick = function () {
 		Element.hide($$("searchFormDiv"));
 	}
 }
 
-function searchReport(treeID) {		
+function searchReport(treeID, download) {		
 	var xform = $X("searchForm");	
 	if( xform && !xform.checkForm() ) return;
 
 	Element.hide($$("searchFormDiv"));
+	var searchLogFormXML = Cache.XmlDatas.get("searchForm");
+
+	if(download) {
+		var queryString = "?";
+		if( searchLogFormXML ) {
+			var dataNode = searchLogFormXML.selectSingleNode(".//data");
+			if (dataNode) {
+				var nodes = dataNode.selectNodes("./row/*");
+				for(var i = 0; i < nodes.length; i++) {
+					var name  = nodes[i].nodeName;
+					var value = nodes[i].text;
+					queryString +=  name + "=" + value
+					if( queryString.length > 1 ) {
+						queryString += "&";
+					}
+				}
+			}
+		}
+		window.frames["downloadFrame"].location.href = URL_REPORT_EXPORT + treeID + "/1/0" + queryString;
+		return;
+	}
 
 	var p = new HttpRequestParams();		      
-	var searchLogFormXML = Cache.XmlDatas.get("searchForm");
 	if( searchLogFormXML ) {
 		var dataNode = searchLogFormXML.selectSingleNode(".//data");
 		if (dataNode) {
 			p.setXFormContent(dataNode);
 		}
 	}
-
+ 
 	p.url = URL_REPORT_DATA + treeID + "/1/" + PAGESIZE;
 	var request = new HttpRequest(p);
 	request.onresult = function() {

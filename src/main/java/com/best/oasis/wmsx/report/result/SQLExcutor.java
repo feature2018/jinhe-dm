@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,7 +68,7 @@ public class SQLExcutor {
             
             this.parser = SQLParser.getInstance(sql);
             while(rs.next()) {
-                Map<String, Object> rowData = new HashMap<String, Object>(); 
+                Map<String, Object> rowData = new LinkedHashMap<String, Object>(); 
                 
                 int index = 1;  // 从1开始，非0
                 for(String field : this.parser.selectFields) {
