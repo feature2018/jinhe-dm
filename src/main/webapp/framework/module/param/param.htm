@@ -7,10 +7,8 @@
 <link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
 <link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
 <link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
-<link href="../../toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
 <link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
 <link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
-<link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
 <link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
 
 <script language="javascript" src="../../core.js"></script>
@@ -18,10 +16,8 @@
 <script language="javascript" src="../../framework.js"></script>
 <script language="javascript" src="../../menu/menu.js"></script>
 <script language="javascript" src="../../balloon/balloon.js"></script>
-<script language="javascript" src="../../toolbar/toolbar.js"></script>
 <script language="javascript" src="../../workspace/workspace.js"></script>
 <script language="javascript" src="../../tree/tree.js"></script>
-<script language="javascript" src="../../grid/grid.js"></script>
 <script language="javascript" src="../../xform/xform.js"></script>
 
 <SCRIPT type="text/javascript">
@@ -44,7 +40,6 @@
 	URL_SAVE_PARAM    = "/" + CONTEXTPATH + "param";
     URL_PARAM_DELETE  = "/" + CONTEXTPATH + "param/";
 	URL_FLUSH_CACHE   = "/" + CONTEXTPATH + "param/cache/";
-
     URL_PARAM_DISABLE = "/" + CONTEXTPATH + "param/disable/";
     URL_SORT_PARAM    = "/" + CONTEXTPATH + "param/sort/";
     URL_COPY_PARAM    = "/" + CONTEXTPATH + "param/copy/";
@@ -66,7 +61,6 @@
     function init() {
         initPaletteResize();
         initUserInfo();
-        initToolBar();
         initNaviBar();
         initMenus();
         initBlocks();
@@ -75,30 +69,6 @@
         initFocus();
 
         loadInitData();
-    }
- 
-    function loadToolBar(_operation) {
-		var str = [];
-		str[str.length] = "<toolbar>";
-
-		//公共
-		str[str.length] = "    <button id=\"a1\" code=\"p1\" icon=\"" + ICON + "icon_pre.gif\" label=\"上页\" cmd=\"ws.prevTab()\" enable=\"true\"/>";
-		str[str.length] = "    <button id=\"a2\" code=\"p2\" icon=\"" + ICON + "icon_next.gif\" label=\"下页\" cmd=\"ws.nextTab()\" enable=\"true\"/>";
-		str[str.length] = "    <separator/>";
-
-		//参数管理
-		str[str.length] = "    <button id=\"b1\" code=\"2\" icon=\"" + ICON + "start.gif\" label=\"启用\" cmd=\"enableParam()\" enable=\"!isTreeRoot() &amp;&amp; '0'!=getTreeNodeDisabled()\"/>";
-		str[str.length] = "    <button id=\"b2\" code=\"2\" icon=\"" + ICON + "stop.gif\" label=\"停用\" cmd=\"disableParam()\" enable=\"!isTreeRoot() &amp;&amp; '0'==getTreeNodeDisabled()\"/>";
-		str[str.length] = "    <button id=\"b4\" code=\"1\" icon=\"" + ICON + "view.gif\" label=\"查看\" cmd=\"editParamInfo(false)\" enable=\"!isTreeRoot()\"/>";
-		str[str.length] = "    <button id=\"b5\" code=\"2\" icon=\"" + ICON + "edit.gif\" label=\"编辑\" cmd=\"editParamInfo()\" enable=\"!isTreeRoot()\"/>";
-		str[str.length] = "    <button id=\"b6\" code=\"2\" icon=\"" + ICON + "del.gif\" label=\"删除\" cmd=\"delParam()\" enable=\"!isTreeRoot()\"/>";
-		str[str.length] = "    <button id=\"b7\" code=\"2\" icon=\"" + ICON + "copy.gif\" label=\"复制\" cmd=\"copyParam()\" enable=\"'1' == getTreeNodeType()\"/>";
-		str[str.length] = "    <button id=\"b8\" code=\"2\" icon=\"" + ICON + "copy_to.gif\" label=\"复制到...\" cmd=\"copyParamTo()\" enable=\"'1' == getTreeNodeType()\"/>";
-		str[str.length] = "    <button id=\"b9\" code=\"2\" icon=\"" + ICON + "move.gif\" label=\"移动到...\" cmd=\"moveParamTo()\" enable=\"'1' == getTreeNodeType()\"/>";
-		str[str.length] = "    <button id=\"b10\" code=\"2\" icon=\"" + ICON + "new_param_group.gif\" label=\"新建参数组\" cmd=\"addNewParam('0')\" enable=\"'0'==getTreeNodeType() || '_rootId'==getTreeNodeId()\"/>";
-		str[str.length] = "</toolbar>";
-
-		_loadToolBar(_operation, str.join("\r\n"));
     }
  
     function initMenus() {
@@ -243,7 +213,7 @@
 					}
 				}
 				treeObj.onTreeNodeMoved = function(eventObj) {
-					sortParamTo(eventObj);
+					sortTreeNode(URL_SORT_PARAM, eventObj);
 				}
 				treeObj.onTreeNodeRightClick = function(eventObj) {
 					$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
@@ -255,7 +225,6 @@
 			}
 		});
     }
- 
 
     /* 编辑参数信息 */
     function editParamInfo(editable) {
@@ -440,21 +409,7 @@
     }
  
     function delParam() {
-        if(true != confirm("您确定要删除吗？"))  return;
-        
-        var tree = $T("tree");
-        var treeNode = tree.getActiveTreeNode();
-		Ajax({
-			url : URL_PARAM_DELETE + treeNode.getId(),
-			method : "DELETE",
-			onsuccess : function() { 
-				var parentNode = treeNode.getParent();
-				if( parentNode ) {
-					tree.setActiveTreeNode(parentNode.getId());
-				}
-				tree.removeTreeNode(treeNode);
-			}
-		});	
+		 delTreeNode(URL_PARAM_DELETE);
     }
  
     function enableOrDisable(status) {
@@ -612,19 +567,6 @@
 			});
 		}
     }
-
-	function sortParamTo(eventObj) {
-        var movedTreeNode = eventObj.movedTreeNode;
-        var toTreeNode = eventObj.toTreeNode;
-        var moveState  = eventObj.moveState; // -1: 目标上方, 1: 目标下方
-
-		Ajax({
-			url : URL_SORT_PARAM + movedTreeNode.getId() + "/" + toTreeNode.getId() + "/" + moveState,
-			onsuccess : function() { 
-				 $T("tree").moveTreeNode(movedTreeNode, toTreeNode, moveState);
-			}
-		});
-    }
 	
 
     window.onload = init;
@@ -671,9 +613,6 @@
 		  <td class="separator"></td>
 		</tr>
 		<tr> 
-		  <td height="20"><!-- 工具条 开始 --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- 工具条 结束 --></td>
-		</tr>
-		<tr> 
 		  <td valign="top">
 			<table class="full" border="0" cellpadding="0" cellspacing="0">
 			  <tr> 
@@ -705,9 +644,6 @@
 				</td>
 				<td>
 				  <table class="full" border="0" cellpadding="0" cellspacing="0">
-					<tr> 
-					  <td class="location"><span class="icon" id="paletteBt"></span>您当前所在的位置:<span class="locationInfo"></span></td>
-					</tr>
 					<tr valign="top">
 					  <!-- 主内容区域 开始 -->
 					  <td class="groove">

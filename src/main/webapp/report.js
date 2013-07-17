@@ -586,7 +586,7 @@ function searchReport(treeID) {
 
 		var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 		initGridToolBar(gridToolBar, pageListNode, function(page) {
-			request.params.url = URL_REPORT_DATA + treeID + "/" + page + "/" + PAGESIZE;
+			request.paramObj.url = URL_REPORT_DATA + treeID + "/" + page + "/" + PAGESIZE;
 			request.onresult = function() {
 				$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 			}				
@@ -602,7 +602,7 @@ function searchReport(treeID) {
 			if(gridToolBar.getTotalPages() <= currentPage) return;
 
 			var nextPage = parseInt(currentPage) + 1; 
-			request.params.url = URL_REPORT_DATA + treeID + "/" + nextPage + "/" + PAGESIZE;
+			request.paramObj.url = URL_REPORT_DATA + treeID + "/" + nextPage + "/" + PAGESIZE;
 			request.onresult = function() {
 				$G("grid").load(this.getNodeValue(XML_REPORT_DATA), true);
 				initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));

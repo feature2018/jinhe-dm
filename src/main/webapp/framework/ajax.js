@@ -113,15 +113,15 @@ function HttpRequest(paramsInstance) {
 	this.xmlhttp = new XmlHttp();
 	this.xmlReader = new XmlReader();
 
-	this.requestParam = paramsInstance;
+	this.paramObj = paramsInstance;
 }
 
 HttpRequest.prototype.getParamValue = function(name) {
-	return this.requestParam.params[name];
+	return this.paramObj.params[name];
 }
 
 HttpRequest.prototype.setParamValue = function(name, value) {
-	this.requestParam.params[name] = value;
+	this.paramObj.params[name] = value;
 }
 
 /*
@@ -208,7 +208,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 	 }
 	
 	 try {
-		 if(this.requestParam.waiting) {
+		 if(this.paramObj.waiting) {
 			 Public.showWaitingLayer();
 		 }
 
@@ -242,7 +242,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 			 }
 		 }
 
-		 this.xmlhttp.open(this.requestParam.method, this.requestParam.url, this.requestParam.async);
+		 this.xmlhttp.open(this.paramObj.method, this.paramObj.url, this.paramObj.async);
 		 this.setTimeout(); // 增加超时判定
 		 this.packageContent();
 		 this.setCustomRequestHeader();
@@ -315,8 +315,8 @@ HttpRequest.prototype.packageContent = function() {
 		contentXmlRoot.appendChild(tempParamNode);
 	}
 
-	for(var name in this.requestParam.params) {
-		var value = this.requestParam.params[name];
+	for(var name in this.paramObj.params) {
+		var value = this.paramObj.params[name];
 		if(value == null) {
 			continue;
 		}
@@ -336,8 +336,8 @@ HttpRequest.prototype.packageContent = function() {
  */
 HttpRequest.prototype.setCustomRequestHeader = function() {
 	this.xmlhttp.setRequestHeader("REQUEST-TYPE", "xmlhttp");
-	for(var item in this.requestParam.header) {									
-		var itemValue = String(this.requestParam.header[item]);
+	for(var item in this.paramObj.header) {									
+		var itemValue = String(this.paramObj.header[item]);
 		if( itemValue != "" ) {
 			this.xmlhttp.setRequestHeader(item, itemValue);
 		}
@@ -370,13 +370,13 @@ HttpRequest.prototype.onload = function(response) {
 		param.type = 1;
 		param.source = this.value;
 		param.msg = "HTTP " + httpStatus + " 错误\r\n" + response.statusText;
-		param.description = "请求远程地址\"" + this.requestParam.url + "\"出错";
+		param.description = "请求远程地址\"" + this.paramObj.url + "\"出错";
 		new Message_Exception(param, this);
 		this.returnValue = false;
 		return;
 	}
 
-	if(this.requestParam.type == "json") {
+	if(this.paramObj.type == "json") {
 		this.ondata();
 		return;
 	}
@@ -531,7 +531,7 @@ function Message_Success(param, request) {
 	str[str.length] = "msg=\"" + param.msg + "\"";
 	str[str.length] = "description=\"" + param.description + "\"";
 
-	if(param.type != "0" && request.params.type != "0") {
+	if(param.type != "0" && request.paramObj.type != "0") {
 		alert(param.msg, str.join("\r\n"));
 	}
 
@@ -558,15 +558,15 @@ function Message_Exception(param, request) {
 	str[str.length] = "description=\"" + param.description + "\"";
 	str[str.length] = "source=\"" + param.source + "\"";
 
-	if(param.type != "0" && request.params.type != "0") {
+	if(param.type != "0" && request.paramObj.type != "0") {
 		alert(param.msg, str.join("\r\n"));
 	}
 
 	request.onexception(param);
 
 	//初始化默认值
-	if( request.params.relogin != null) {
-		param.relogin = request.params.relogin;
+	if( request.paramObj.relogin != null) {
+		param.relogin = request.paramObj.relogin;
 	}
 	else if( param.relogin == null ) { // 默认不重新登录
 		param.relogin = "0";
@@ -577,7 +577,7 @@ function Message_Exception(param, request) {
 
 		var loginObj = window.showModalDialog(URL_CORE + "_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
 		if( loginObj != null) {
-			var p = request.params;
+			var p = request.paramObj;
 			p.setHeader("loginName", loginObj.loginName);
 			p.setHeader("password",  loginObj.password);
 			p.setHeader("identifier", loginObj.identifier);
@@ -588,7 +588,7 @@ function Message_Exception(param, request) {
 	else if(param.relogin == "2" ) { // 单点登录应用跳转，需要输入用户在目标系统中的密码
 		var loginObj = window.showModalDialog(URL_CORE + "_relogin2.htm",{title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
 		if(loginObj != null) {
-			request.params.setHeader("pwd", loginObj.password);
+			request.paramObj.setHeader("pwd", loginObj.password);
 			request.send();
 		}
 	}

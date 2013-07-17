@@ -175,7 +175,7 @@ URL_CORE = "../../";
 
 			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
 			initGridToolBar(gridToolBar, pageListNode, function(page) {
-				request.params.url = URL_LOG_LIST + page;
+				request.paramObj.url = URL_LOG_LIST + page;
 				request.onresult = function() {
 					$G("grid", this.getNodeValue(XML_LOG_LIST)); 
 				}				
@@ -194,7 +194,7 @@ URL_CORE = "../../";
 				if(gridToolBar.getTotalPages() <= currentPage) return;
 
 				var nextPage = parseInt(currentPage) + 1; 
-				request.params.url = URL_LOG_LIST + nextPage;
+				request.paramObj.url = URL_LOG_LIST + nextPage;
 				request.onresult = function() {
 					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
 					initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));
@@ -340,9 +340,7 @@ URL_CORE = "../../";
 					</tr>
 					<tr>
 					  <td id="treeContainer">
-						<!-- tree 开始 -->
 						<Tree:Box id="tree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
-						<!-- tree 结束 -->
 					  </td>
 					</tr>
 				  </table>                        
@@ -351,7 +349,7 @@ URL_CORE = "../../";
 				<td>
 				  <table class="full" border="0" cellpadding="0" cellspacing="0">
 					<tr> 
-					  <td class="location"><span class="icon" id="paletteBt"></span>您当前所在的位置:<span class="locationInfo"></span></td>
+					  <td class="location"><span class="icon" id="paletteBt"></span></td>
 					</tr>
 					<tr valign="top">
 					  <!-- 主内容区域 开始 -->

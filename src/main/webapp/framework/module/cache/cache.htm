@@ -7,7 +7,6 @@
 <link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
 <link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
 <link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
-<link href="../../toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
 <link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
 <link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
 <link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
@@ -18,7 +17,6 @@
 <script language="javascript" src="../../framework.js"></script>
 <script language="javascript" src="../../menu/menu.js"></script>
 <script language="javascript" src="../../balloon/balloon.js"></script>
-<script language="javascript" src="../../toolbar/toolbar.js"></script>
 <script language="javascript" src="../../workspace/workspace.js"></script>
 <script language="javascript" src="../../tree/tree.js"></script>
 <script language="javascript" src="../../grid/grid.js"></script>
@@ -42,7 +40,6 @@
 	URL_VIEW_ITEM    = "/" + CONTEXTPATH + "cache/item";
 	URL_CACHE_CLEAR  = "/" + CONTEXTPATH + "cache/release";
 	URL_CACHE_INIT   = "/" + CONTEXTPATH + "cache/init";	
-	URL_GET_OPERATION = "data/operation.xml";
 	
 	if(IS_TEST) {
 		URL_INIT = "data/cache_init.xml?";
@@ -50,16 +47,13 @@
 		URL_CACHE_CLEAR = "data/_success.xml?";
 		URL_CACHE_INIT = "data/_success.xml?";
 		URL_VIEW_ITEM = "data/option1.xml?";
-		URL_GET_OPERATION = "data/operation.xml?";
-	}
-	
+	}	
 	 
 	/*页面初始化 */
 	function init() {
 		initPaletteResize();
 		initListContainerResize();
 		initUserInfo();
-		initToolBar();
 		initNaviBar();
 		initMenus();
 		initBlocks();
@@ -71,43 +65,11 @@
 	}
 
 	/*
-	 *	区块初始化
-	 */
-	function initBlocks() {
-		var paletteObj = $$("palette");
-		Blocks.create(paletteObj);
-
-		var treeContainerObj = $$("treeContainer");
-		Blocks.create(treeContainerObj, treeContainerObj.parentNode);
-
-		var statusContainerObj = $$("statusContainer");
-		Blocks.create(statusContainerObj, statusContainerObj.parentNode, false);
-
-		// 状态信息区实例继承WritingBlock可写功能
-		var block = Blocks.getBlock("statusContainer");
-		if( block ) {
-			block.inherit(WritingBlock);
-		}     
-	}
-	 
-	/*
-	 *	聚焦初始化
-	 */
-	function initFocus() {
-		var treeTitleObj = $$("treeTitle");
-		Focus.register(treeTitleObj.firstChild);
-	}
-
-	/*
 	 *	页面初始化加载数据(包括工具条、菜单树)：
 	 */
 	function loadInitData() {
 		var onresult = function() {
-			var _operation = this.getNodeValue(XML_OPERATION);
-			loadToolBar(_operation);
-
 			var mainTreeXML = this.getNodeValue(XML_MAIN_TREE);
-			Cache.XmlDatas.add(CACHE_MAIN_TREE, mainTreeXML);
 					
 			var tree = $T("tree", mainTreeXML); 
 			
@@ -127,48 +89,27 @@
 		Ajax({url : URL_INIT, onresult : onresult});
 	}
 
-	/*
-	 *	工具条加载数据
-	 *	参数：	string:_operation      操作权限
-	 */
-	function loadToolBar(_operation) {
-			var str = [];
-			str[str.length] = "<toolbar>";
-			str[str.length] = "    <button id=\"a1\" code=\"p1\" icon=\"images/icon_pre.gif\" label=\"上页\" cmd=\"ws.prevTab()\" enable=\"true\"/>";
-			str[str.length] = "    <button id=\"a2\" code=\"p2\" icon=\"images/icon_next.gif\" label=\"下页\" cmd=\"ws.nextTab()\" enable=\"true\"/>";
-			str[str.length] = "    <separator/>";
-			str[str.length] = "    <button id=\"b1\" code=\"2\" icon=\"images/edit.gif\" label=\"维护\" cmd=\"maintainCache()\" enable=\"!isTreeRoot()\"/>";
-			str[str.length] = "    <button id=\"b2\" code=\"2\" icon=\"images/init.gif\" label=\"初始化\" cmd=\"initCache()\" enable=\"!isTreeRoot() &amp;&amp; isCacheReleased()\"/>";
-			str[str.length] = "    <button id=\"b3\" code=\"2\" icon=\"images/clear.gif\" label=\"清空\" cmd=\"clearCache()\" enable=\"!isTreeRoot()\"/>";
-			str[str.length] = "</toolbar>";
-
-			_loadToolBar(_operation, str.join("\r\n"));
-	}
-
-	/*
-	 *	菜单初始化
-	 */
 	function initMenus() {
 		var item1 = {
 			label:"维护",
 			callback:maintainCache,
 			icon:"images/edit.gif",
 			enable: function() {return true;},
-			visible:function() {return !isTreeRoot() && true == getOperation("2");}
+			visible:function() {return !isTreeRoot();}
 		}
 		var item2 = {
 			label:"初始化",
 			callback:initCache,
 			icon:"images/init.gif",
 			enable:function() {return true;},
-			visible:function() {return !isTreeRoot() && isCacheReleased() && true==getOperation("2");}
+			visible:function() {return !isTreeRoot() && isCacheReleased();}
 		}
 		var item3 = {
 			label:"清空",
 			callback:clearCache,
 			icon:"images/clear.gif",
 			enable:function() {return true;},
-			visible:function() {return !isTreeRoot() && true==getOperation("2");}
+			visible:function() {return !isTreeRoot();}
 		}
 
 		var menu = new Menu();
@@ -179,18 +120,12 @@
 
 		$$("tree").contextmenu = menu;
 	}
-
-	function getTreeNodeId() {
-		return getTreeAttribute("id");
-	}
-	 
+ 
 	function isCacheReleased() {
 		return getTreeAttribute("released") == "1";
 	}
 
-	/*
-	 *	初始化缓存池
-	 */
+	/* 初始化缓存池  */
 	function initCache() {
 		var tree = $T("tree");
 		var treeNode = tree.getActiveTreeNode();
@@ -207,9 +142,7 @@
 		}
 	}
 
-	/*
-	 *	清空缓存池
-	 */
+	/* 清空缓存池  */
 	function clearCache() {
 		var tree = $T("tree");
 		var treeNode = tree.getActiveTreeNode();
@@ -226,9 +159,7 @@
 		}
 	}
 	
-	/*
-	 *	查看缓存项信息
-	 */
+	/* 查看缓存项信息  */
 	function showItemInfo() { 
 		var tree = $T("tree");
 		var treeNode = tree.getActiveTreeNode();
@@ -251,18 +182,6 @@
 	function onTreeNodeActived(eventObj) {
 		Focus.focus($$("treeTitle").firstChild.id);
 		showTreeNodeStatus({id : "ID", name : "名称"});
-
-		// 防止因为载入工具条数据而导致不响应双击事件
-		clearTimeout(window._toolbarTimeout);
-		
-		var treeNode = eventObj.treeNode;
-		window._toolbarTimeout = setTimeout(function() {
-			if( treeNode ) {
-				getTreeOperation(treeNode, function(_operation) {
-					loadToolBar(_operation);
-				});
-			}
-		}, 10);
 	}
 
 	/* 双击树节点  */
@@ -284,35 +203,6 @@
 			}
 		}, 100);
 	}
-
-	/*
-	 *	获取树操作权限
-	 *	参数：	treeNode:treeNode       treeNode实例
-				function:callback       回调函数
-	 */
-	function getTreeOperation(treeNode, callback) {
-		var _operation = treeNode.getAttribute("_operation");
-
-		// 如果节点上还没有_operation属性，则发请求从后台获取信息
-		if( isNullOrEmpty(_operation) ) { 		
-			Ajax({
-				url : URL_GET_OPERATION,
-				method : "GET",
-				contents : {"resourceId": treeNode.getId()}, 
-				onresult : function() {
-					_operation = this.getNodeValue(XML_OPERATION);
-					treeNode.setAttribute("_operation", _operation);
-
-					if( callback ) { callback(_operation); }	
-				}
-			});
-		} 
-		else {	
-			if( callback ) { callback(_operation); }	
-		}
-	}
-
-
 
 	/*
 	 *	编辑缓存信息
@@ -384,9 +274,7 @@
 		});
 	}
 	 
-	/*
-	 *	创建grid工具条
-	 */
+	/* 创建grid工具条 */
 	function createGridToolBar(cacheID) {
 		var xmlData = Cache.XmlDatas.get(cacheID + XML_PAGE_INFO);
 		if( xmlData ) {
@@ -425,9 +313,7 @@
 		}
 	}
 
-	/*
-	 *	显示缓存项信息
-	 */
+	/* 显示缓存项信息  */
 	function showItemStatus() {
 		var row = $G("page1Grid").getHighlightRow();
 		if( row ) {		
@@ -489,9 +375,6 @@
 		  <td class="separator"></td>
 		</tr>
 		<tr> 
-		  <td height="20"><!-- 工具条 开始 --><ToolBar:Bar id="toolbar"><div class="loading"></div></ToolBar:Bar><!-- 工具条 结束 --></td>
-		</tr>
-		<tr> 
 		  <td valign="top">
 			<table class="full" border="0" cellpadding="0" cellspacing="0">
 			  <tr> 
@@ -506,9 +389,7 @@
 					</tr>
 					<tr>
 					  <td id="treeContainer">
-						<!-- tree 开始 -->
 						<Tree:Box id="tree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
-						<!-- tree 结束 -->
 					  </td>
 					</tr>
 					<tr id="statusTitle" class="bar">
@@ -524,9 +405,6 @@
 				</td>
 				<td>
 				  <table class="full" border="0" cellpadding="0" cellspacing="0">
-					<tr> 
-					  <td class="location"><span class="icon" id="paletteBt"></span>您当前所在的位置:<span class="locationInfo"></span></td>
-					</tr>
 					<tr valign="top">
 					  <!-- 主内容区域 开始 -->
 					  <td class="groove">
@@ -549,18 +427,14 @@
 											</tr>
 											<tr>
 											  <td class="">
-												<!-- grid 开始 -->
 												<Grid:Box id="page1Grid" baseurl="../../grid/"><div class="loading"></div></Grid:Box>
-												<!-- grid 结束 -->
 											  </td>
 											</tr>
 										  </table>
 										</td>
 										<td class="" valign="top">
 										  <div style="width:100%;height:100%;overflow:auto;padding:10px;">
-											<!-- xform 开始 -->
 											<XForm:Box id="page1Form" baseurl="../../xform/" editable="true"><div class="loading"></div></XForm:Box>
-											<!-- xform 结束 -->
 										  </div>
 										</td>
 									  </tr>
@@ -592,7 +466,6 @@
   </tr>
 </table>
 <!-- 版面 结束 -->
-
 
 </body>
 </html>
