@@ -4,7 +4,7 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.best.oasis.datamining</groupId>
-	<artifactId>dm</artifactId>
+	<artifactId>DataMining</artifactId>
 	<packaging>war</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>DM Maven Webapp</name>

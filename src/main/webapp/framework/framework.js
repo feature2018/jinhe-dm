@@ -3,7 +3,7 @@ IS_TEST = false;
 /* 
  * 当前应用名 
  */
-APP_CODE    = "WMSX";
+APP_CODE    = "DM";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
 
