@@ -13,6 +13,7 @@ PAGESIZE = 100;
 URL_SOURCE_TREE    = "rp/all";
 URL_GROUPS_TREE    = "rp/groups";
 URL_REPORT_DATA    = "display/";
+URL_REPORT_JSON    = "display/json/";
 URL_REPORT_EXPORT  = "display/export/";
 URL_SOURCE_DETAIL  = "rp/detail";
 URL_SAVE_SOURCE    = "rp";
@@ -22,10 +23,14 @@ URL_SORT_SOURCE    = "rp/sort/";
 URL_COPY_SOURCE    = "rp/copy/";
 URL_MOVE_SOURCE    = "rp/move/";
 
+URL_RS_LOGIN       = "rs/wms/login/";
+URL_RS_WH_LIST     = "rs/wms/warehouseList";
+
 if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/report_init.xml?";
 	URL_GROUPS_TREE    = "data/report_init.xml?";
 	URL_REPORT_DATA    = "data/reportData2.xml?";
+	URL_REPORT_JSON    = "data/json.txt?";
 	URL_REPORT_EXPORT  = "data/_success.xml?";
 	URL_SOURCE_DETAIL  = "data/report1.xml?";
 	URL_SAVE_SOURCE    = "data/_success.xml?";
@@ -687,10 +692,9 @@ function login() {
 	}
 
 	Ajax({
-		url : "http://localhost:9000/wmsx/rs/wms/login/" + loginName + "/" + password,
+		url : "rs/wms/login/" + loginName + "/" + password,
 		method : "POST",
 		type : "json",
-		// contents : {"loginName" : loginName, "password" : password},
 		ondata : function() { 
 			var result = eval(this.getResponseText());
 			if(result == null) {
@@ -710,7 +714,7 @@ function login() {
 
 function getWarehouseList() {
 	Ajax({
-		url : "http://localhost:9000/wmsx/rs/wms/warehouseList",
+		url : URL_RS_WH_LIST,
 		method : "GET",
 		type : "json",
 		ondata : function() { 
@@ -739,7 +743,7 @@ function testRestfulReportService() {
 	var treeID = treeNode.getId();
 	var url = treeNode.getAttribute("url");
 	if( url == null ) {
-		url = "http://localhost:9000/wmsx/display/json/" + treeID;
+		url = URL_REPORT_JSON + treeID;
 	}
 	Ajax({
 		url : url,
@@ -747,17 +751,6 @@ function testRestfulReportService() {
 		type : "json",
 		ondata : function() { 
 			alert("调试接口：" + url + "，返回结果：", this.getResponseText());
-		}
-	});
-}
-
-function testJason() {
-	Ajax({
-		url : "http://localhost:9000/wmsx/rs/wms/kanban",
-		method : "GET",
-		type : "json",
-		ondata : function() { 
-			alert(this.getResponseText());
 		}
 	});
 }

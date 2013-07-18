@@ -19,7 +19,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>cxf</servlet-name>
-		<url-pattern>rs/*</url-pattern>
+		<url-pattern>/rs/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>

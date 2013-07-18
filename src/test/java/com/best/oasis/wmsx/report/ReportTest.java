@@ -70,7 +70,7 @@ public class ReportTest extends TxTestSupport {
         action.getAllReport(response);
         
         try {
-            Thread.sleep(300); // 等待日志异步输出完毕
+            Thread.sleep(1000); // 等待日志异步输出完毕
         } catch (InterruptedException e) {
         }
         
