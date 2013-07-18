@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<SourceTree>
+		<actionSet>
+			<treeNode id="_rootId" name="全部" display="1">
+				<treeNode icon="framework/images/folder.gif" createTime="2013-06-08" type="0" id="9" 
+					parentId="0" name="业务报表" disabled="0">
+					<treeNode icon="framework/images/article.gif" 
+						createTime="2013-06-09" 
+						param="仓库:Number,货主ID:Number:false,货物:String,库位:String" 
+						updateTime="2013-06-13" creatorId="" type="1" id="17" 
+						parentId="9" name="库存余量" disabled="0"></treeNode>
+				</treeNode>
+				<treeNode icon="framework/images/folder.gif" 
+					createTime="2013-06-08" updateTime="2013-06-08" 
+					creatorId="" type="0" id="10" parentId="0" name="临时报表" 
+					disabled="0">
+					<treeNode icon="framework/images/article.gif" 
+						createTime="2013-06-13" updateTime="" 
+						creatorId="" type="1" id="127" parentId="10" 
+						name="仓库列表" disabled="0"></treeNode>
+				</treeNode>
+				<treeNode icon="framework/images/folder.gif" 
+					createTime="2013-06-08" type="0" id="11" 
+					parentId="0" name="测试分组1" disabled="0">
+					<treeNode icon="framework/images/folder.gif" 
+						createTime="2013-06-09" updateTime="" 
+						creatorId="" type="0" id="15" parentId="11" name="子组一" 
+						disabled="0"></treeNode>
+				</treeNode>
+				<treeNode icon="framework/images/folder.gif" 
+					createTime="2013-06-08" updateTime="2013-06-09" 
+					creatorId="" type="0" id="12" parentId="0" name="测试分组2" 
+					disabled="0">
+					<treeNode icon="framework/images/article.gif" 
+						createTime="2013-06-09" 
+						updateTime="2013-06-09" creatorId="" type="1" id="14" 
+						parentId="12" name="测试报表二" disabled="0"></treeNode>
+					<treeNode icon="framework/images/article.gif" 
+						createTime="2013-06-09" 
+						updateTime="2013-06-09" creatorId="" type="1" id="16" 
+						parentId="12" name="测试报表四" disabled="0"></treeNode>
+				</treeNode>
+			</treeNode>
+		</actionSet>
+	</SourceTree>
+</Response>

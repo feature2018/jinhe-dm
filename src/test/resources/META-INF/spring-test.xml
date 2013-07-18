@@ -23,7 +23,7 @@
 	</bean> 
 	
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="wmsxUnit" />
+		<property name="persistenceUnitName" value="DMUnit" />
 		
 		<property name="dataSource" ref="testDataSource" /> <!-- 注入数据源 -->
 		<property name="jpaVendorAdapter">

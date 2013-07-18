@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>wmsx</display-name>
+	<display-name>dm</display-name>
 	
 	<context-param>
 		<param-name>contextClass</param-name>

@@ -3,13 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	
-	<persistence-unit name="wmsxUnit" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="DMUnit" transaction-type="RESOURCE_LOCAL">
 		<!-- JPA驱动提供者 -->
 		<provider>org.hibernate.ejb.HibernatePersistence</provider> 
 		
 		<!-- 实体映射 -->
 		<mapping-file>META-INF/framework-orm.xml</mapping-file>
-		<mapping-file>META-INF/wmsx-orm.xml</mapping-file>
+		<mapping-file>META-INF/dm-orm.xml</mapping-file>
 		 
 		<properties>
 			<!-- 使用spring配置里的 generateDdl=true，这里的无效

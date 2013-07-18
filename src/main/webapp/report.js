@@ -27,18 +27,20 @@ URL_RS_LOGIN       = "rs/wms/login/";
 URL_RS_WH_LIST     = "rs/wms/warehouseList";
 
 if(IS_TEST) {
-	URL_SOURCE_TREE    = "data/report_init.xml?";
-	URL_GROUPS_TREE    = "data/report_init.xml?";
-	URL_REPORT_DATA    = "data/reportData2.xml?";
-	URL_REPORT_JSON    = "data/json.txt?";
+	URL_SOURCE_TREE    = "data/SOURCE_TREE.xml?";
+	URL_GROUPS_TREE    = "data/GROUPS_TREE.xml?";
+	URL_REPORT_DATA    = "data/REPORT_DATA.xml?";
+	URL_REPORT_JSON    = "data/REPORT_JSON.txt?";
 	URL_REPORT_EXPORT  = "data/_success.xml?";
-	URL_SOURCE_DETAIL  = "data/report1.xml?";
+	URL_SOURCE_DETAIL  = "data/SOURCE_DETAIL.xml?";
 	URL_SAVE_SOURCE    = "data/_success.xml?";
 	URL_DELETE_SOURCE  = "data/_success.xml?";
 	URL_DISABLE_SOURCE = "data/_success.xml?";
 	URL_SORT_SOURCE    = "data/_success.xml?";
 	URL_COPY_SOURCE    = "data/_success.xml?";
 	URL_MOVE_SOURCE    = "data/_success.xml?";
+
+	URL_CORE = "framework/";
 }
 
 /* 页面初始化 */
@@ -46,7 +48,7 @@ function init() {
 	initPaletteResize();
 	initListContainerResize();
 
-	initNaviBar("wmsx.1", " ");
+	initNaviBar("dm.1", " ");
 	initMenus();
 	initBlocks();
 	initEvents();
@@ -460,7 +462,7 @@ function showReport() {
 	var url = treeNode.getAttribute("url");
 	if(url != null) {
 		Ajax({
-			url : url,  // 如: "http://localhost:9000/wmsx/rs/customer/info",
+			url : url,  // 如: "http://localhost:9000/dm/rs/customer/info",
 			method : "GET",
 			type : "json",
 			ondata : function() { 
