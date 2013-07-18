@@ -36,6 +36,11 @@ public class SQLExcutor {
         try {
         	if(page > 0 && pagesize > 0) {
         	    String queryCountSql = " select count(*) " + sql.substring(sql.indexOf("from"));
+        	    int orderbyIndex = queryCountSql.lastIndexOf("order by");
+        	    if(orderbyIndex > 0) {
+        	        queryCountSql = queryCountSql.substring(0, orderbyIndex);
+        	    }
+        	    
         	    log.debug("    queryCountSql: "  + queryCountSql);
         	    
         	    pstmt = conn.prepareStatement(queryCountSql);
