@@ -135,7 +135,7 @@ public class WmsServiceImp implements WmsService {
         }
    
         List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
-        List<String> names  = Arrays.asList("总订单数", "分配订单数", "拣货订单数", "验货订单数", "称重订单数", "发运订单数");
+        List<String> names  = Arrays.asList("今日下单数", "分配订单数", "拣货订单数", "验货订单数", "称重订单数", "发运订单数");
         List<String> colors = Arrays.asList("red", "#3F5C71", "#a6bfd2", "#d6ffd2", "#3883bd", "green");
         
         for(int i = 0; i < kanban.length; i++) {

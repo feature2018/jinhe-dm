@@ -98,7 +98,7 @@ function initMenus() {
 		label:"报表查询",
 		callback:showReport,
 		icon:"framework/images/search.gif",
-		visible:function() {return isReport();}
+		visible:function() {return isReport() && !isTreeNodeDisabled();}
 	}
 	var item10 = {
 		label:"查看",
@@ -114,7 +114,7 @@ function initMenus() {
 			loadReportDetail(false, false);
 		},
 		icon:"framework/images/icon_edit.gif",
-		visible:function() {return !isTreeRoot()}
+		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled(); }
 	}
 	var item3 = {
 		label:"新增报表",
@@ -122,7 +122,7 @@ function initMenus() {
 			loadReportDetail(true, false, "1");
 		},
 		icon:"framework/images/new_article.gif",
-		visible:function() {return isReportGroup() || isTreeRoot();}
+		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
 	}
 	var item4 = {
 		label:"新增分组",
@@ -130,7 +130,7 @@ function initMenus() {
 			loadReportDetail(true, false, "0");
 		},
 		icon:"framework/images/new_folder.gif",
-		visible:function() {return isReportGroup() || isTreeRoot();}
+		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
 	}
 	var item5 = {
 		label:"删除",
@@ -460,15 +460,10 @@ function showReport() {
 	var treeNode = $T("tree").getActiveTreeNode();
 	var treeID = treeNode.getId();
 	var url = treeNode.getAttribute("url");
-	if(url != null) {
-		Ajax({
-			url : url,  // 如: "http://localhost:9000/dm/rs/customer/info",
-			method : "GET",
-			type : "json",
-			ondata : function() { 
-				alert("调试接口：" + url + "，返回结果：", this.getResponseText());
-			}
-		});
+	if( url && url.split(",").length ==2 ) {
+		var showPage = url.split(",")[0];
+		var serviceUri = url.split(",")[1]; // 如: "http://localhost:9000/dm/rs/kanban/{whId}"
+		window.open(showPage + "?service=" + serviceUri);
 		return;
 	}
 
@@ -600,7 +595,9 @@ function searchReport(treeID, download) {
 		return;
 	}
 
-	var p = new HttpRequestParams();		      
+	var p = new HttpRequestParams();	
+	p.waiting = true;
+
 	if( searchLogFormXML ) {
 		var dataNode = searchLogFormXML.selectSingleNode(".//data");
 		if (dataNode) {

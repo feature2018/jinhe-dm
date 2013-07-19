@@ -23,14 +23,16 @@
 	var data;
 	var total;
 
+	var url = Query.get("service"); // "rs/wms/kanban/104221"
+
 	window.setInterval(function() {
 		Ajax({
-			url : "rs/wms/kanban/104221",
+			url : url,
 			method : "GET",
 			type : "json",
 			ondata : function() { 
 				data = eval(this.getResponseText());
-				total = data[0].value;
+				total = Math.round(data[0].value/1000) * 1000 + 1000;
 				show();
 			}
 		});	  
@@ -140,9 +142,9 @@
 			});
 			
 			chart.bound(0);
-			chart.bound(1);
-			chart.bound(2);
-			chart.bound(3);
+//			chart.bound(1);
+//			chart.bound(2);
+//			chart.bound(3);
 		});
 	}
 	</script>

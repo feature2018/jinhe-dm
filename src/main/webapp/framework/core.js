@@ -99,7 +99,7 @@ Public.executeCommand = function(callback, param) {
 Public.showWaitingLayer = function () {
 	var waitingDiv = $$("_waitingDiv");
 	if(waitingDiv == null) {
-		var waitingDiv = document.createElement("div");    
+		waitingDiv = document.createElement("div");    
 		waitingDiv.id = "_waitingDiv";    
 		waitingDiv.style.width ="100%";    
 		waitingDiv.style.height = "100%";    
@@ -138,7 +138,7 @@ Public.showWaitingLayer = function () {
 		document.body.appendChild(coverDiv);
 	}
 
-	if(waitingDiv ) {
+	if( waitingDiv ) {
 		waitingDiv.style.display = "block";
 	}
 }
@@ -561,10 +561,10 @@ Element.show = function(element) {
 	element.style.position = "absolute";  
 	element.style.left = "18%";   
 	element.style.top  = "70px"; 		
-	element.style.zIndex = "10000"; 
+	element.style.zIndex = "999"; 
 	element.style.overflow = "hidden";
 
-	Element.setOpacity(element, 92);
+	Element.setOpacity(element, 95);
 }
 
 Element.hide = function(element) {
