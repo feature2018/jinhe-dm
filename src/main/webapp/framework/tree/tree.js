@@ -92,10 +92,10 @@ function $T(treeId, dataXML) {
 
 		var _treeType = eval("element." + _TREE_TREE_TYPE) ||  _TREE_TYPE_SINGLE;
 		if(_treeType == _TREE_TYPE_MULTI) {
-			tree = new MultiCheckTree(element)
+			tree = new MultiCheckTree(element);
 		} 
 		else {
-			tree = new SingleCheckTree(element)
+			tree = new SingleCheckTree(element);
 		}
 		
 		TreeCache.add(element.id, tree);
@@ -480,6 +480,7 @@ var Tree = function(element) {
 	this.element.onclick = function() {
 		var srcElement = window.event.srcElement;
 		window.event.returnValue = false;
+
 		var row = getRow(srcElement);
 		if(row instanceof Row) {
 			var treeNode = instanceTreeNode(row.node, oThis);

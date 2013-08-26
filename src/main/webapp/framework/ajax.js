@@ -575,7 +575,7 @@ function Message_Exception(param, request) {
 	if(param.relogin == "1") {
 		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
 
-		var loginObj = window.showModalDialog(URL_CORE + "_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
+		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
 		if( loginObj != null) {
 			var p = request.paramObj;
 			p.setHeader("loginName", loginObj.loginName);

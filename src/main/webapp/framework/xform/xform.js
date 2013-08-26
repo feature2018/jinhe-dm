@@ -50,7 +50,7 @@ XForm.prototype.load = function(data) {
 
 		this.xslDom.load(this._baseurl + "xform.xsl");
 		this.xslDom.selectSingleNode("/xsl:stylesheet/xsl:script").text = "\r\nvar uniqueID=\"" + this.element.uniqueID 
-		+ "\";\r\nvar baseurl=\"" + this._baseurl + "\";\r\nvar formEditable=\"" + this.element.editable + "\";\r\n";
+		+ "\";\r\nvar baseurl=\"" + this._baseurl + "\";\r\nvar formEditable=\"" + (this.element.editable || "true") + "\";\r\n";
 		
 		var htmlStr = this.xmlDoc.transformXML(this.xslDom); // 利用XSL把XML解析成Html
 		this.element.innerHTML = htmlStr.replace(/<\/br>/gi, "");
@@ -987,7 +987,9 @@ function validate() {
 		showErrorInfo(errorInfo, this.obj);
 
 		if(this.isInstance != false) {
-			this.setFocus();
+			if(this.setFocus) {
+				this.setFocus();
+			}
 		}
 		if( event ) {
 			event.returnValue = false;

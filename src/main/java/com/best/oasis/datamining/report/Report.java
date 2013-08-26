@@ -150,7 +150,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
             icon_path = "framework/images/folder.gif";
         } 
         else {
-            icon_path = "framework/images/article" + (ParamConstants.TRUE.equals(disabled) ? "_2" : "") + ".gif";
+            icon_path = "framework/images/cms/article_" + disabled + ".gif";
         } 
         map.put("icon", icon_path);
         map.put("parentId", parentId);

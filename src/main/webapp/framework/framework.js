@@ -6,6 +6,7 @@ IS_TEST = false;
 APP_CODE    = "DM";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
+AUTH_PATH = CONTEXTPATH + "auth/"
 
 if( IS_TEST ) {
 	URL_CORE = "../framework/";
@@ -58,10 +59,10 @@ document.oncontextmenu = function(eventObj) {
  *	用户信息初始化
  */
 function initUserInfo() {
-	if( true ) return;
+	if( IS_TEST ) return;
 
 	Ajax({
-		url : "um/user!getOperatorInfo.action",
+		url : "/" + AUTH_PATH + "user/operatorInfo",
 		method : "POST",
 		headers : {"appCode": APP_CODE},
 		contents : {"anonymous": "true"}, 
@@ -78,7 +79,7 @@ function logout() {
 		method : "GET",
 		onsuccess : function() { 
 			Cookie.del("token", "/" + CONTEXTPATH);
-			location.href = URL_CORE + "../login.htm";
+			location.href = URL_CORE + "../login.html";
 		}
 	});
 }
@@ -307,6 +308,22 @@ function onClickGridTitle() {
 	Focus.focus("gridTitle");
 }
 
+function onTreeNodeActived(eventObj) {
+	Focus.focus($$("treeTitle").firstChild.id);
+	showTreeNodeInfo();
+}
+
+function onTreeNodeRightClick(eventObj) {
+	var treeObj = $$("tree");
+	var treeNode = eventObj.treeNode;
+
+	showTreeNodeInfo();
+	getTreeOperation(treeNode, function(_operation) {
+		if( treeObj.contextmenu ) {
+			treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
+		}
+	});
+}
 
 /*
  *	获取树操作权限
@@ -366,7 +383,6 @@ function checkOperation(code, _operation) {
 	}
 	return flag;
 }
-
 
 /*
  *	获取树节点属性
@@ -605,7 +621,7 @@ function addTreeNode(fromTree, toTree, checkFunction) {
 			var treeNode = toTree.getTreeNodeById("_rootId");
 			if( treeNode ) {
 				var cloneNode = new XmlNode(curNode.node).cloneNode(false);
-				toTree.insertTreeNodeXml(cloneNode.toXml(),treeNode);
+				toTree.insertTreeNodeXml(cloneNode.toXml(), treeNode);
 			}
 		}
 	}
@@ -668,12 +684,12 @@ function showTreeNodeInfo() {
 
 // 删除选中节点，适用于多层结构树
 function delTreeNode(url) {
-	if( !confirm("您确定要删除吗？") )  return;
+	if( !confirm("您确定要删除该节点吗？") )  return;
 
 	var tree = $T("tree");
 	var treeNode = tree.getActiveTreeNode();
 	Ajax({
-		url : url || URL_DELETE_NODE + treeNode.getId(),
+		url : (url || URL_DELETE_NODE) + treeNode.getId(),
 		method : "DELETE",
 		onsuccess : function() { 
 			var parentNode = treeNode.getParent();
@@ -687,7 +703,7 @@ function delTreeNode(url) {
 
 // 删除选中Grid行
 function delGridRow(url) {
-	if( !confirm("您确定要删除吗？") ) return;
+	if( !confirm("您确定要删除该行记录吗？") ) return;
 	
 	var rowIndex = $$("grid").selectRowIndex; 
 	if( rowIndex ) {
@@ -711,17 +727,17 @@ function delGridRow(url) {
 			state    状态
 			iconName 节点图标
  */
-function stopOrStartTreeNode(url, state, iconName) {		
+function stopOrStartTreeNode(state, iconName, url) {		
 	var tree = $T("tree");
 	var treeNode = tree.getActiveTreeNode();
 	Ajax({
-		url : url || URL_STOP_NODE + treeNode.getId() + "/" + state,
+		url : (url || URL_STOP_NODE) + treeNode.getId() + "/" + state,
 		onsuccess : function() { 
 			// 刷新父子树节点停用启用状态: 启用上溯，停用下溯
 			var curNode = new XmlNode(treeNode.node);
 			refreshTreeNodeState(curNode, state);
 	
-			if("1"==state) {
+			if("1" == state) {
 				var childNodes = curNode.selectNodes(".//treeNode");
 				for(var i=0; i < childNodes.length; i++) {                
 					refreshTreeNodeState(childNodes[i], state);
@@ -737,9 +753,9 @@ function stopOrStartTreeNode(url, state, iconName) {
 		}
 	});
 	
-	this.refreshTreeNodeState = function(xmlNode) {
+	this.refreshTreeNodeState = function(xmlNode, state) {
         xmlNode.setAttribute("disabled", state);
-        xmlNode.setAttribute("icon", ICON + iconName + (state == "0" ? "" : "_2 ") + ".gif");
+        xmlNode.setAttribute("icon", ICON + iconName + "_" + state + ".gif");
     }
 }
 
@@ -750,10 +766,36 @@ function sortTreeNode(url, eventObj) {
 	var direction  = eventObj.moveState; // -1: 往上, 1: 往下
 	var movedNodeID = movedNode.getId();
  
+	if(targetNode) {
+		Ajax({
+			url : url + movedNodeID + "/" + targetNode.getId() + "/" + direction,
+			onsuccess : function() { 
+				 $T("tree").moveTreeNode(movedNode, targetNode, direction);
+			}
+		});
+	}
+}
+
+// 移动树节点
+function moveTreeNode(tree, id, targetId, url) {
 	Ajax({
-		url : url + movedNodeID + "/" + targetNode.getId() + "/" + direction,
-		onsuccess : function() { 
-			 $T("tree").moveTreeNode(movedNode, targetNode, direction);
+		url : (url || URL_MOVE_NODE) + id + "/" + targetId,
+		onsuccess : function() {  // 移动树节点					
+			var treeNode = tree.getTreeNodeById(id);
+			var xmlNode = new XmlNode(treeNode.node);
+			var parentNode = tree.getTreeNodeById(targetId);
+
+			// 父节点停用则下溯
+			var parentNodeState = parentNode.node.getAttribute("disabled");
+			if("1" == parentNodeState) {
+				refreshTreeNodeState(xmlNode, "1");
+			}
+			parentNode.node.appendChild(treeNode.node);
+			parentNode.node.setAttribute("_open", "true");
+
+			clearOperation(xmlNode);
+
+			tree.reload();
 		}
 	});
 }
@@ -808,6 +850,11 @@ function initNaviBar(curId, relativePath) {
 				var id   = menuItem.getAttribute("id");
 				var href = menuItem.getAttribute("href");
 				var name = menuItem.getAttribute("name");
+
+				if(href == null) {
+					str[str.length] = name;
+					continue;
+				}
 
 				if( false == /^javascript\:/.test(href) ) {
 					href = relativePath + href;

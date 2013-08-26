@@ -40,9 +40,9 @@ URL_CORE = "../../";
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_INIT       = "/" + CONTEXTPATH + "log/apps";
-    URL_LOG_LIST   = "/" + CONTEXTPATH + "log/";
-    URL_LOG_DETAIL = "/" + CONTEXTPATH + "log/item/";
+	URL_INIT       = "/" + AUTH_PATH + "log/apps";
+    URL_LOG_LIST   = "/" + AUTH_PATH + "log/";
+    URL_LOG_DETAIL = "/" + AUTH_PATH + "log/item/";
 
 	if(IS_TEST) {
 		URL_INIT = "data/log_init.xml?";
@@ -55,7 +55,6 @@ URL_CORE = "../../";
     function init() {
 		initPaletteResize();
 		initListContainerResize();
-		initUserInfo();
 
 		initNaviBar();
 		initMenus();

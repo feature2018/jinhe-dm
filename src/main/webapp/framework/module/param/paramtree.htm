@@ -24,7 +24,7 @@
 		URL_INIT = "data/paramtree_init.xml?";
 	}
 
-	var params = window.dialogArguments.params;
+	var params = window.dialogArguments ? window.dialogArguments.params : {};
 
 	function init() {		
 		Ajax({
@@ -59,7 +59,8 @@
 </head>
 
 <body>
-  <table class="full" border="0" cellspacing="0" cellpadding="0">
+<div class="mainBox" id="mainBox">
+  <table class="full"  border="0" cellspacing="0" cellpadding="0">
     <tr valign="top">
       <td>
 		<Tree:Box id="tree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
@@ -72,5 +73,6 @@
       </td>
     </tr>
   </table>
+</div>
 </body>
 </html>

@@ -107,16 +107,17 @@ Public.showWaitingLayer = function () {
 		waitingDiv.style.left = "0px";   
 		waitingDiv.style.top = "0px";   
 		waitingDiv.style.cursor = "wait"; 
- 
+		
+		var waitingFlash = ICON + "images/loadingbar.swf";
  		var str = [];
 		str[str.length] = "<TABLE width=\"100%\" height=\"100%\"><TR><TD align=\"center\">";
 		str[str.length] = "	 <object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" ";
 		str[str.length] = "		   codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0\" ";
 		str[str.length] = "        width=\"140\" height=\"30\" id=\"loadingbar\" align=\"middle\">";
-		str[str.length] = "		<param name=\"movie\" value=\"../images/loadingbar.swf\" />";
+		str[str.length] = "		<param name=\"movie\" value=' " + waitingFlash + "' />";
 		str[str.length] = "		<param name=\"quality\" value=\"high\" />";
 		str[str.length] = "		<param name=\"wmode\" value=\"transparent\" />";
-		str[str.length] = "		<embed src=\"../images/loadingbar.swf\" quality=\"high\" ";
+		str[str.length] = "		<embed src=' " + waitingFlash + "' quality=\"high\" ";
 		str[str.length] = "		       wmode=\"transparent\" width=\"140\" height=\"30\" align=\"middle\" ";
 		str[str.length] = "		       type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />";
 		str[str.length] = "  </object>";
@@ -555,6 +556,15 @@ Element.createElement = function(tagName, ns) {
 	}
 	return obj;
 }
+
+Element.createElement = function(tagName, className) {
+	var element = document.createElement(tagName);
+	if( className ) {
+		Element.addClass(element, className)
+	}
+	return element;
+}
+
 
 Element.show = function(element) {
 	element.style.display = "block"; 

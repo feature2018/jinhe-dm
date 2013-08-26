@@ -176,6 +176,15 @@ Grid.prototype.getRowByIndex = function(index) {
 	}
 }
 
+Grid.prototype.getRowAttributeValue = function(attrName) {
+	var rowIndex = this.element.selectRowIndex; 
+	if(rowIndex) {
+		var row = this.getRowByIndex(rowIndex);
+		return row.getAttribute(attrName);
+	}
+	return null;
+}
+
 // 删除单行
 Grid.prototype.deleteRow = function(row) {
 	Element.addClass(row, "hidden");

@@ -35,11 +35,11 @@
 	XML_CACHE_STRATEGY  = "CacheStrategy";
 
 	/* XMLHTTP请求地址汇总  */
-	URL_INIT         = "/" + CONTEXTPATH + "cache/list";
-	URL_CACHE_DETAIL = "/" + CONTEXTPATH + "cache/list/";
-	URL_VIEW_ITEM    = "/" + CONTEXTPATH + "cache/item";
-	URL_CACHE_CLEAR  = "/" + CONTEXTPATH + "cache/release";
-	URL_CACHE_INIT   = "/" + CONTEXTPATH + "cache/init";	
+	URL_INIT         = "/" + AUTH_PATH + "cache/list";
+	URL_CACHE_DETAIL = "/" + AUTH_PATH + "cache/list/";
+	URL_VIEW_ITEM    = "/" + AUTH_PATH + "cache/item";
+	URL_CACHE_CLEAR  = "/" + AUTH_PATH + "cache/release";
+	URL_CACHE_INIT   = "/" + AUTH_PATH + "cache/init";	
 	
 	if(IS_TEST) {
 		URL_INIT = "data/cache_init.xml?";
@@ -53,7 +53,6 @@
 	function init() {
 		initPaletteResize();
 		initListContainerResize();
-		initUserInfo();
 		initNaviBar();
 		initMenus();
 		initBlocks();
