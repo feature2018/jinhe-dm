@@ -35,15 +35,15 @@
     /* 
 	 * XMLHTTP请求地址汇总 
 	 */
-	URL_INIT          = "/" + AUTH_PATH + "param/list";
-    URL_PARAM_DETAIL  = "/" + AUTH_PATH + "param/detail";
-	URL_SAVE_PARAM    = "/" + AUTH_PATH + "param";
-    URL_PARAM_DELETE  = "/" + AUTH_PATH + "param/";
-	URL_FLUSH_CACHE   = "/" + AUTH_PATH + "param/cache/";
-    URL_PARAM_DISABLE = "/" + AUTH_PATH + "param/disable/";
-    URL_SORT_PARAM    = "/" + AUTH_PATH + "param/sort/";
-    URL_COPY_PARAM    = "/" + AUTH_PATH + "param/copy/";
-    URL_MOVE_PARAM_TO = "/" + AUTH_PATH + "param/move/";
+	URL_INIT          = "/" + NO_AUTH_PATH + "param/list";
+    URL_PARAM_DETAIL  = "/" + NO_AUTH_PATH + "param/detail";
+	URL_SAVE_PARAM    = "/" + NO_AUTH_PATH + "param";
+    URL_PARAM_DELETE  = "/" + NO_AUTH_PATH + "param/";
+	URL_FLUSH_CACHE   = "/" + NO_AUTH_PATH + "param/cache/";
+    URL_PARAM_DISABLE = "/" + NO_AUTH_PATH + "param/disable/";
+    URL_SORT_PARAM    = "/" + NO_AUTH_PATH + "param/sort/";
+    URL_COPY_PARAM    = "/" + NO_AUTH_PATH + "param/copy/";
+    URL_MOVE_PARAM_TO = "/" + NO_AUTH_PATH + "param/move/";
 	
 	if(IS_TEST) {
 		URL_INIT = "data/param_init.xml?";
@@ -408,25 +408,6 @@
     function delParam() {
 		 delTreeNode(URL_PARAM_DELETE);
     }
- 
-    function enableOrDisable(status) {
-        var tree = $T("tree");
-        var treeNode = tree.getActiveTreeNode();
-		Ajax({
-			url : URL_PARAM_DISABLE + treeNode.getId() + "/" + status,
-			onsuccess : function() { 
-				var xmlNode = new XmlNode(treeNode.node);
-				refreshTreeNodeStates(xmlNode, status);
-			}
-		});
-    }
-
-	function enableParam() {
-		enableOrDisable("0");
-	}
-    function disableParam() {
-        enableOrDisable("1");
-    }
 
 	function flushParamCache() {
        Ajax({
@@ -444,61 +425,13 @@
         return getTreeAttribute("mode");
     }
 
-    /*
-     *	刷新树节点停用启用状态
-     *	参数：	treeNode:treeNode       treeNode实例
-                string:state            停/启用状态
-     */
-    function refreshTreeNodeState(treeNode, state) {
-        state = state || treeNode.getAttribute("disabled");
-        var type = treeNode.getAttribute("type");
-        var mode = treeNode.getAttribute("mode");
-        switch(type) {
-            case "0":
-                var img = "param_group";
-                break;
-            case "1":
-                if("0"==mode) {
-                    var img = "param_simple";
-                }
-				if("1"==mode) {
-                    var img = "param_combo";
-                }
-				if("2"==mode) {
-                    var img = "param_tree";
-                }
-                break;
-            case "2":
-                var img = "param_item";
-                break;
-        }
-        treeNode.setAttribute("disabled", state);
-        treeNode.setAttribute("icon", ICON + img + "_" + state + ".gif");       
+	function enableParam() {
+		stopOrStartTreeNode("0");
+	}
+    function disableParam() {
+        stopOrStartTreeNode("1");
     }
-
-    /*
-     *	刷新级联树节点停用启用状态
-     *	参数：	XmlNode:curNode         XmlNode实例
-                string:state            停/启用状态
-     */
-    function refreshTreeNodeStates(curNode, state) {
-        refreshTreeNodeState(curNode,state);
-
-        if("0" == state) { // 启用，上溯
-            while( curNode && "_rootId" != curNode.getAttribute("id") ) {
-                refreshTreeNodeState(curNode, state);
-                curNode = curNode.getParent();
-            }        
-        }
-		else if("1" == state) { // 停用，下溯
-            var childNodes = curNode.selectNodes(".//treeNode");
-            for(var i=0; i < childNodes.length; i++) {                
-                refreshTreeNodeState(childNodes[i], state);
-            }
-        }
-
-        $T("tree").reload(); 
-    }
+ 
  
     function copyParam() {
         var treeNode = $T("tree").getActiveTreeNode();
@@ -543,23 +476,9 @@
 
 		var params = { id:id, parentID:parentID };
 		var targetParent = window.showModalDialog("paramtree.htm", {params:params, title:"将\"" + name + "\"移动到"},"dialogWidth:300px;dialogHeight:400px;");
-	   
 		if(targetParent) {
 			var targetParentId = targetParent.id;
-			Ajax({
-				url : URL_MOVE_PARAM_TO + id + "/" + targetParentId,
-				onsuccess : function() { 
-					// 移动树节点
-					var parentNode = tree.getTreeNodeById(targetParentId);
-					parentNode.node.appendChild(treeNode.node);
-
-					var xmlNode = new XmlNode(treeNode.node);
-					refreshTreeNodeStates(xmlNode, parentNode.getAttribute("disabled"));
-					clearOperation(xmlNode);
-
-					tree.reload();
-				}
-			});
+			moveTreeNode(tree, id, targetParentId, URL_MOVE_PARAM_TO);
 		}
     }
 	

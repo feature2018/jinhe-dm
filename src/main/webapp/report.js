@@ -121,7 +121,7 @@ function initMenus() {
 		callback: function() {
 			loadReportDetail(true, false, "1");
 		},
-		icon:"framework/images/new_article.gif",
+		icon:"framework/images/cms/new_article.gif",
 		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
 	}
 	var item4 = {
@@ -324,93 +324,19 @@ function saveReport(treeID) {
 }
 
 function deleteReport() {
-	if( !confirm("您确定要删除吗？") )  return;
-	
-	var tree = $T("tree");
-	var treeNode = tree.getActiveTreeNode();
-	Ajax({
-		url : URL_DELETE_SOURCE + treeNode.getId(),
-		method : "DELETE",
-		onsuccess : function() { 
-			var parentNode = treeNode.getParent();
-			if( parentNode ) {
-				tree.setActiveTreeNode(parentNode.getId());
-			}
-			tree.removeTreeNode(treeNode);
-		}
-	});	
+    delTreeNode(URL_DELETE_SOURCE);
 }
 
 function disableReport() {
-	disable("1");
+	stopOrStartTreeNode("1", URL_DISABLE_SOURCE);
 }
 
 function enableReport() {
-	disable("0");
-}
-
-function disable(status) {
-	var tree = $T("tree");
-	var treeNode = tree.getActiveTreeNode();
-	Ajax({
-		url : URL_DISABLE_SOURCE + treeNode.getId() + "/" + status,
-		onsuccess : function() { 
-			var xmlNode = new XmlNode(treeNode.node);
-			refreshTreeNodeStates(xmlNode, status);
-		}
-	});
-}
-
-/*
- *	刷新级联树节点停用启用状态
- *	参数：	XmlNode:curNode         XmlNode实例
-			string:state            停/启用状态
- */
-function refreshTreeNodeStates(curNode, state) {
-	refreshTreeNodeState(curNode, state);
-
-	if("0" == state) { // 启用，上溯
-		while( curNode && "_rootId" != curNode.getAttribute("id") ) {
-			refreshTreeNodeState(curNode, state);
-			curNode = curNode.getParent();
-		}        
-	}
-	else if("1" == state) { // 停用，下溯
-		var childNodes = curNode.selectNodes(".//treeNode");
-		for(var i=0; i < childNodes.length; i++) {                
-			refreshTreeNodeState(childNodes[i], state);
-		}
-	}
-
-	$T("tree").reload(); 
-}
-
-function refreshTreeNodeState(treeNode, state) {
-	state = state || treeNode.getAttribute("disabled");
-	var type = treeNode.getAttribute("type");
-	switch(type) {
-		case "0":
-			var img = "framework/images/folder";
-			break;
-		case "1":
-			var img = "framework/images/article";
-			break;
-	}
-	treeNode.setAttribute("disabled", state);
-	treeNode.setAttribute("icon", img + (state == "1" ? "_2" : "") + ".gif");       
+	stopOrStartTreeNode("0", URL_DISABLE_SOURCE);
 }
 
 function sort(eventObj) {
-	var movedNode  = eventObj.movedTreeNode;
-	var targetNode = eventObj.toTreeNode;
-	var direction  = eventObj.moveState; // -1: 往上, 1: 往下
-
-	Ajax({
-		url : URL_SORT_SOURCE + movedNode.getId() + "/" + targetNode.getId() + "/" + direction,
-		onsuccess : function() { 
-			 $T("tree").moveTreeNode(movedNode, targetNode, direction);
-		}
-	});
+    sortTreeNode(URL_SORT_SOURCE, eventObj);
 }
 
 function copyReportTo() {
@@ -440,19 +366,7 @@ function moveReport() {
 	var params = { id:id, url:URL_GROUPS_TREE };
 	var targetParentId = window.showModalDialog("targetTree.html", {params:params, title:"将\"" + name + "\"移动到"}, "dialogWidth:300px;dialogHeight:400px;");	   
 	if(targetParentId) {
-		Ajax({
-			url : URL_MOVE_SOURCE + id + "/" + targetParentId,
-			onsuccess : function() {  // 移动树节点					
-				var parentNode = tree.getTreeNodeById(targetParentId);
-				parentNode.node.appendChild(treeNode.node);
-
-				var xmlNode = new XmlNode(treeNode.node);
-				refreshTreeNodeStates(xmlNode, parentNode.getAttribute("disabled"));
-				clearOperation(xmlNode);
-
-				tree.reload();
-			}
-		});
+		moveTreeNode(tree, id, targetParentId, URL_MOVE_SOURCE);
 	}
 }		
 

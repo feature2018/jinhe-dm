@@ -6,7 +6,8 @@ IS_TEST = false;
 APP_CODE    = "DM";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
-AUTH_PATH = CONTEXTPATH + "auth/"
+AUTH_PATH   = CONTEXTPATH + "auth/";
+NO_AUTH_PATH = CONTEXTPATH;
 
 if( IS_TEST ) {
 	URL_CORE = "../framework/";
@@ -725,9 +726,8 @@ function delGridRow(url) {
  *	停用启用节点
  *	参数：	url      请求地址
 			state    状态
-			iconName 节点图标
  */
-function stopOrStartTreeNode(state, iconName, url) {		
+function stopOrStartTreeNode(state, url) {		
 	var tree = $T("tree");
 	var treeNode = tree.getActiveTreeNode();
 	Ajax({
@@ -752,11 +752,14 @@ function stopOrStartTreeNode(state, iconName, url) {
 			tree.reload(); 
 		}
 	});
-	
-	this.refreshTreeNodeState = function(xmlNode, state) {
-        xmlNode.setAttribute("disabled", state);
-        xmlNode.setAttribute("icon", ICON + iconName + "_" + state + ".gif");
-    }
+}
+
+function refreshTreeNodeState(xmlNode, state) {
+	xmlNode.setAttribute("disabled", state);
+
+	var iconPath = xmlNode.getAttribute("icon");
+	iconPath = iconPath.replace( /_[0,1].gif/gi, "_" + state + ".gif");
+	xmlNode.setAttribute("icon", iconPath); 
 }
 
 // 对同层的树节点进行排序

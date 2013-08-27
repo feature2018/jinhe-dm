@@ -35,11 +35,11 @@
 	XML_CACHE_STRATEGY  = "CacheStrategy";
 
 	/* XMLHTTP请求地址汇总  */
-	URL_INIT         = "/" + AUTH_PATH + "cache/list";
-	URL_CACHE_DETAIL = "/" + AUTH_PATH + "cache/list/";
-	URL_VIEW_ITEM    = "/" + AUTH_PATH + "cache/item";
-	URL_CACHE_CLEAR  = "/" + AUTH_PATH + "cache/release";
-	URL_CACHE_INIT   = "/" + AUTH_PATH + "cache/init";	
+	URL_INIT         = "/" + NO_AUTH_PATH + "cache/list";
+	URL_CACHE_DETAIL = "/" + NO_AUTH_PATH + "cache/list/";
+	URL_VIEW_ITEM    = "/" + NO_AUTH_PATH + "cache/item";
+	URL_CACHE_CLEAR  = "/" + NO_AUTH_PATH + "cache/release";
+	URL_CACHE_INIT   = "/" + NO_AUTH_PATH + "cache/init";	
 	
 	if(IS_TEST) {
 		URL_INIT = "data/cache_init.xml?";
