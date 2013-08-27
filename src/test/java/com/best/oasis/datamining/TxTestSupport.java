@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.jinhe.tss.framework.Global;
+import com.jinhe.tss.framework.component.param.Param;
+import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.component.param.ParamService;
 import com.jinhe.tss.framework.sso.IOperator;
 import com.jinhe.tss.framework.sso.IdentityCard;
@@ -23,7 +25,6 @@ import com.jinhe.tss.framework.test.IH2DBServer;
 
 @ContextConfiguration(
 	  locations={
-		    "classpath:META-INF/framework-spring.xml",
 		    "classpath:META-INF/spring-mvc.xml",
 		    "classpath:META-INF/spring-test.xml"
 	  }   
@@ -45,6 +46,10 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
         String token = TokenUtil.createToken(new Random().toString(), 12L); 
         IdentityCard card = new IdentityCard(token, new TempOperator());
         Context.initIdentityInfo(card);
+        
+        if(paramService.getParam(Constants.DEFAULT_CONN_POOL) == null) {
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+        }
     }
  
     @After
@@ -77,4 +82,17 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
             return null;
         }
     } 
+    
+    /** 简单参数 */
+    protected Param addParam(Long parentId, String code, String name, String value) {
+        Param param = new Param();
+        param.setCode(code);
+        param.setName(name);
+        param.setValue(value);
+        param.setParentId(parentId);
+        param.setType(ParamConstants.NORMAL_PARAM_TYPE);
+        param.setModality(ParamConstants.SIMPLE_PARAM_MODE);
+        paramService.saveParam(param);
+        return param;
+    }
 }

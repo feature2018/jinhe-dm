@@ -3,6 +3,8 @@
 	<NaviInfo>
 		<Menus>
             <MenuItem id="dm.1" name="数据挖掘" href="report.html"/>
+			
+			<!--
             <MenuItem id="dm.2" name="对外接口" href="webservice.html"/>
             <MenuItem id="dm.3" name="量能监控" href="monitor.html"/>
 			
@@ -13,6 +15,7 @@
 			<MenuItem id="dm.6" name="资源管理" href="resource.html"/>
 
 			<MenuItem id="none" name="|"/>
+			-->
 
 			<MenuItem id="dm.7" name="缓存管理" href="framework/module/cache/cache.htm"/>
 			<MenuItem id="dm.8" name="参数管理" href="framework/module/param/param.htm"/>

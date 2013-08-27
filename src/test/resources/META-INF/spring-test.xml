@@ -14,7 +14,34 @@
 	http://www.springframework.org/schema/aop  
 	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
  
-	<context:property-placeholder location="classpath:application.test.properties"/>
+	<!-- framework config Interceptor -->
+	<bean id="operateInfoInterceptor" class="com.jinhe.tss.framework.persistence.entityaop.OperateInfoInterceptor" />
+	<bean id="decodeInterceptor"  class="com.jinhe.tss.framework.persistence.entityaop.DecodeInterceptor" />
+	
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames"> <value>*DAO, *Dao</value> </property>
+		<property name="interceptorNames">
+			<list>
+				<value>operateInfoInterceptor</value>
+				<value>decodeInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="businessLogInterceptor" class="com.jinhe.tss.framework.component.log.BusinessLogInterceptor"/>
+	
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames"> <value>*Service</value> </property>
+		<property name="interceptorNames">
+			<list>
+				<value>businessLogInterceptor</value>
+			</list>
+		</property>
+	</bean>
+ 
+ 
+ 
+	<context:property-placeholder location="classpath:test.properties"/>
 	<bean id="testDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"><value>${db.connection.driver_class}</value></property>
 		<property name="url"><value>${db.connection.url}</value></property>
