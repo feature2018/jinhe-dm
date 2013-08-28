@@ -1,7 +1,11 @@
 package com.best.oasis.datamining.report;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -11,6 +15,8 @@ import com.best.oasis.datamining.TxTestSupport;
 import com.best.oasis.datamining.report.query.Display;
 import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.sso.context.Context;
+import com.jinhe.tss.util.FileHelper;
+import com.jinhe.tss.util.URLUtil;
 
 public class DisplayTest extends TxTestSupport {
     
@@ -72,7 +78,14 @@ public class DisplayTest extends TxTestSupport {
         display.showAsJson(request, reportId);
         
         if(paramService.getParam(Constants.TEMP_EXPORT_PATH) == null) {
-            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "默认导出目录", "D:/temp");
+        	URL url = URLUtil.getResourceFileUrl("log4j.properties");
+            String log4jPath = url.getPath(); 
+            File classDir = new File(log4jPath).getParentFile();
+            
+            Assert.assertTrue(FileHelper.checkFile(classDir, "log4j.properties"));
+            
+            String tempDir = classDir.getPath() + "/temp";
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "默认导出目录", tempDir);
         }
         display.exportAsCSV(request, response, reportId, 1, 0);
     }

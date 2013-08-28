@@ -41,7 +41,7 @@
  
  
  
-	<context:property-placeholder location="classpath:test.properties"/>
+	<context:property-placeholder location="classpath:application.properties"/>
 	<bean id="testDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"><value>${db.connection.driver_class}</value></property>
 		<property name="url"><value>${db.connection.url}</value></property>

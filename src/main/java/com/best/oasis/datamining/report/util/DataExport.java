@@ -18,6 +18,11 @@ public class DataExport {
 
     public static void exportCSV(String path, List<Map<String, Object>> data, List<String> fields) {
         try {
+        	File parent = new File(path).getParentFile();
+        	if( !parent.exists() ) {
+        		parent.mkdirs();
+        	}
+        	
             FileWriter fw = new FileWriter(path);
             fw.write(EasyUtils.list2Str(fields)); // 表头
             fw.write("\r\n");
@@ -49,6 +54,7 @@ public class DataExport {
         File sourceFile = new File(sourceFilePath);
         
         response.reset();
+        response.setCharacterEncoding("utf-8");
         response.setContentType("application/octet-stream"); // 设置附件类型
         response.setContentLength((int) sourceFile.length());
         response.setHeader("Content-Disposition", "attachment; filename=\"" + sourceFile.getName() + "\"");

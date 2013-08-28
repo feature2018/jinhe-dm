@@ -13,14 +13,150 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
 		<cxf.version>2.7.4</cxf.version>  
+		<tss.version>1.0.0</tss.version>
 		<spring.version>3.2.0.RELEASE</spring.version>
-	</properties> 
+		<hibernate.version>3.5.1-Final</hibernate.version>
+	</properties>
 	
 	<dependencies>
 		<dependency>
 			<groupId>com.jinhe.tss</groupId>
+			<artifactId>cache</artifactId>
+			<version>${tss.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jinhe.tss</groupId>
 			<artifactId>framework</artifactId>
-			<version>1.0.0</version>
+			<version>${tss.version}</version>
+		</dependency>
+		
+		<!-- BASE dependency -->
+		<dependency>
+    	   <groupId>commons-beanutils</groupId>
+		   <artifactId>commons-beanutils</artifactId>
+		   <version>1.8.3</version>
+        </dependency>
+
+		<dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+			<exclusions>
+				<exclusion>
+				  <groupId>com.ibm.icu</groupId>
+				  <artifactId>icu4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		
+		<!--  SPRING DEPENDENCIES -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+        </dependency>
+		
+		<!-- Add JPA 2.0 / Hibernate 3 dependencies -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+		<!--  Other DEPENDENCIES -->
+		<dependency>
+			<groupId>freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+
+		<!-- H2 DEPENDENCIES -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.2.125</version>
 		</dependency>
 		
 		<!--  CXF DEPENDENCIES -->
@@ -76,6 +212,12 @@
 			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>2.3</version>
+			<scope>test</scope>
+		</dependency>
 		
 		<!-- Oracle DB driver 4 release -->
 		<dependency>
@@ -95,7 +237,7 @@
 	
 	 <build>
         <defaultGoal>install</defaultGoal>
-        <finalName>${artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
 
 		<pluginManagement>
 			<plugins>
@@ -103,7 +245,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-report-plugin</artifactId>
-					<version>2.12</version>
+					<version>2.16</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -111,7 +253,8 @@
         <plugins>
         	<plugin>
 				<groupId>org.apache.maven.plugins</groupId>  
-                <artifactId>maven-compiler-plugin</artifactId>  
+                <artifactId>maven-compiler-plugin</artifactId> 
+                <version>3.1</version> 
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -121,6 +264,7 @@
 			
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
                 <configuration>
 					<skip>false</skip> <!-- skip junit test -->
 					<includes> 
@@ -129,20 +273,11 @@
 					<testFailureIgnore>true</testFailureIgnore> 
                 </configuration>
             </plugin>
-
-            <plugin>
-				<groupId>org.apache.maven.plugins</groupId>  
-                <artifactId>maven-compiler-plugin</artifactId>  
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
 			
 			<plugin>  
 			    <groupId>org.mortbay.jetty</groupId>
 			    <artifactId>jetty-maven-plugin</artifactId>
+			    <version>8.1.12.v20130726</version>
 				<configuration>  
 					<webAppConfig>  
 						<contextPath>/dm</contextPath>  
@@ -169,6 +304,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.16</version>
 			</plugin>
 
 			<plugin>
@@ -185,6 +321,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.16</version>
 			</plugin>
 			<!-- findbugs -->
 			<plugin>  
@@ -208,7 +345,7 @@
 	<distributionManagement>
 		<site>
 			<id>dm.rd.800best.com</id>      
-			<url>file://</url>  <!-- \target\staging\localhost -->
+			<url>file://</url>
 		</site>
 	</distributionManagement>
 	
