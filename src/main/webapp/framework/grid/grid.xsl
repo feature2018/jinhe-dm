@@ -73,6 +73,7 @@
             <xsl:if test=".[@header!='']">
                 <td width="50px">
                     <xsl:attribute name="class">column</xsl:attribute>
+					<xsl:attribute name="name">headerCheck</xsl:attribute>
                     <nobr>
 						<xsl:if test=".[@header='checkbox']">
 							<input type="checkbox" id="headerCheckAll"/>
@@ -86,6 +87,7 @@
             <xsl:if test=".[(@sequence='true') or not(@sequence)]">
                 <td width="50px">
                     <xsl:attribute name="class">column</xsl:attribute>
+					<xsl:attribute name="name">sequence</xsl:attribute>
                     <nobr>序号</nobr>
 				</td>
             </xsl:if>

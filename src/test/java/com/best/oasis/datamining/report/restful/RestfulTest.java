@@ -1,11 +1,22 @@
 package com.best.oasis.datamining.report.restful;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-
-import com.jinhe.tss.framework.test.TestUtil;
 
 public class RestfulTest {
 
@@ -25,23 +36,77 @@ public class RestfulTest {
         
         startServer();
         
-        TestUtil.doPut("http://localhost:9000/dm/rs/customer/info/", 
+        doPut("http://localhost:9000/dm/rs/customer/info/", 
                 "<Customer><birthday>2013-05-13T12:36:07.814+08:00</birthday><id>1</id><name>Jon.King</name></Customer>");
-        TestUtil.doPut("http://localhost:9000/dm/rs/customer/info/", 
+        doPut("http://localhost:9000/dm/rs/customer/info/", 
                 "<Customer><birthday>2012-05-13T12:36:07.814+08:00</birthday><id>2</id><name>Lao.Zi</name></Customer>");
-        TestUtil.doGet("http://localhost:9000/dm/rs/customer/info/2");  
+        doGet("http://localhost:9000/dm/rs/customer/info/2");  
         
-        TestUtil.doPost("http://localhost:9000/dm/rs/customer/info/", 
+        doPost("http://localhost:9000/dm/rs/customer/info/", 
                 "<Customer><birthday>2012-05-13T12:36:07.814+08:00</birthday><id>2</id><name>Dao.Dao</name></Customer>");
-        TestUtil.doGet("http://localhost:9000/dm/rs/customer/info/2");  
+        doGet("http://localhost:9000/dm/rs/customer/info/2");  
         
-        TestUtil.doGet("http://localhost:9000/dm/rs/customer/info/");
-        TestUtil.doDelete("http://localhost:9000/dm/rs/customer/info/1");
-        TestUtil.doGet("http://localhost:9000/dm/rs/customer/info/");
+        doGet("http://localhost:9000/dm/rs/customer/info/");
+        doDelete("http://localhost:9000/dm/rs/customer/info/1");
+        doGet("http://localhost:9000/dm/rs/customer/info/");
         
-        TestUtil.doGet("http://localhost:9000/dm/rs/customer/search?name=2");  
+        doGet("http://localhost:9000/dm/rs/customer/search?name=2");  
         
     }  
+    
+    public static void excuteMethod(HttpMethod method) throws IOException {  
+        method.setRequestHeader("Content-Type", "application/xml");    
+        
+        HttpClient httpClient = new HttpClient();  
+        int statusCode = httpClient.executeMethod(method);  
+        if (statusCode == HttpStatus.SC_NO_CONTENT) {  
+            System.out.print("No Content 没有新文档，浏览器应该继续显示原来的文档。");
+        }
+        if (statusCode != HttpStatus.SC_OK) {  
+            System.out.println("Method failed: " + method.getStatusLine());  
+            return;
+        } 
+        
+        byte[] responseBody = method.getResponseBody();  
+        System.out.println(new String(responseBody)); 
+    }  
+    
+    
+    public static void doGet(String url) throws IOException {
+        GetMethod method = new GetMethod(url);
+        excuteMethod(method);
+    }
+    
+    public static void doDelete(String url) throws IOException {
+        DeleteMethod method = new DeleteMethod(url);
+        excuteMethod(method);
+    }
+    
+    public static void doPut(String url, String paramData) throws IOException {
+        PutMethod method = new PutMethod(url);
+        
+        // 设置请求内容，将原请求中的数据流转给新的请求
+        byte[] b = paramData.getBytes("UTF-8");  
+        InputStream is = new ByteArrayInputStream(b, 0, b.length);  
+        RequestEntity requestEntity = new InputStreamRequestEntity(is, 
+                "application/xop+xml; charset=UTF-8; type=\"text/xml\"");
+        method.setRequestEntity(requestEntity);
+        
+        excuteMethod(method);
+    }  
+
+    public static void doPost(String url, String paramData) throws IOException {
+        PostMethod method = new PostMethod(url);
+        
+        // 设置请求内容，将原请求中的数据流转给新的请求
+        byte[] b = paramData.getBytes("UTF-8");  
+        InputStream is = new ByteArrayInputStream(b, 0, b.length);  
+        RequestEntity requestEntity = new InputStreamRequestEntity(is, 
+                "application/xml; charset=UTF-8; type=\"text/xml\"");
+        method.setRequestEntity(requestEntity);
+        
+        excuteMethod(method);
+    } 
       
  
 }

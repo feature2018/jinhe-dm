@@ -41,7 +41,10 @@ URL_CORE = "../";
 
 							alert("show right menu!");
 
-							// $G("grid").deleteRow(row);
+							$G("grid").deleteRow(row);
+							
+							var map = {"loginName":"潜龙勿用", "telephone":"8888888888", "set":"1"};
+							$G("grid").insertRow(map);
 						}
 					}
 				});
@@ -82,7 +85,7 @@ URL_CORE = "../";
   </tr>
   <tr>
 	<td>
-	  <Grid:Box id="grid" baseurl="" height="330" width="1000">
+	  <Grid:Box id="grid" baseurl="" height="630" width="1000">
 			<div class="loading"/>
 		</Grid:Box>
 	</td>

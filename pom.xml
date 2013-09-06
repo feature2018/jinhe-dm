@@ -313,18 +313,19 @@
 				<version>1.0.0-beta-1</version>
 			</plugin>	
 			
-			<!-- -->
+<!-- 
+	<licenseLocation>D:/project/clover.license</licenseLocation>
+-->
 			<plugin>
 	            <groupId>com.atlassian.maven.plugins</groupId>
 	            <artifactId>maven-clover2-plugin</artifactId>
 	            <version>3.0.5</version>
 	            <configuration>
-		          <licenseLocation>D:/project/clover.license</licenseLocation>
 		          <generateHtml>true</generateHtml>
 		          <generateXml>true</generateXml>
 		        </configuration>
 	        </plugin>
-	        
+
  
         </plugins>
     </build>

@@ -22,7 +22,7 @@ var Grid = function(element, data) {
 	this.element = element;
  
 	this.baseurl  = element.baseurl || "";
-	this.iconPath = this.baseurl + "images/"
+	this.iconPath = this.baseurl + "images/";
 	
 	this.element.innerHTML = "<div id='" + this.id + "Box' style='position:absolute;overflow:auto;left:0px;top:0px;z-index:1'></div>";
 	this.gridBox   = $$(this.id + "Box");
@@ -183,6 +183,32 @@ Grid.prototype.getRowAttributeValue = function(attrName) {
 		return row.getAttribute(attrName);
 	}
 	return null;
+}
+
+// 新增一行
+Grid.prototype.insertRow = function(map) {
+	var rowIndex = this.totalRowsNum ++ ;
+	var newRow = this.tbody.insertRow(rowIndex);
+
+	var thList = this.gridBox.childNodes[0].tHead.firstChild.childNodes;
+	for(var i = 0; i < thList.length; i++) {
+		var columnName = thList[i].name;
+
+		var cell = newRow.insertCell(i);
+		cell.setAttribute( "name", columnName );
+
+		var nobr = document.createElement("nobr");
+		cell.appendChild( nobr );		
+
+		if(columnName == "sequence") {
+			nobr.innerText = this.totalRowsNum;
+		}
+	}
+
+	for(var property in map) {
+		newRow.setAttribute(property, map[property]);
+	}
+	this.processDataRow(newRow);
 }
 
 // 删除单行
