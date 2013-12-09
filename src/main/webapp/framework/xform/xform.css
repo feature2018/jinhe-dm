@@ -1,6 +1,7 @@
 XForm\:Box {
     width:100%;
-    font-size:12px;
+	display:block;
+	font-size:12px;
 }
 XForm\:Box .contentBox{
     overflow:auto;

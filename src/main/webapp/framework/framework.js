@@ -6,8 +6,10 @@ IS_TEST = false;
 APP_CODE    = "DM";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
-AUTH_PATH   = CONTEXTPATH + "auth/";
-NO_AUTH_PATH = CONTEXTPATH;
+AUTH_PATH    = "/" + CONTEXTPATH + "auth/";
+NO_AUTH_PATH = "/" + CONTEXTPATH;
+
+URL_UPLOAD_FILE  = AUTH_PATH + "file/upload";	
 
 if( IS_TEST ) {
 	URL_CORE = "../framework/";
@@ -30,6 +32,7 @@ OPERATION_VIEW = "查看\"$label\"";
 OPERATION_DEL  = "删除\"$label\"";
 OPERATION_EDIT = "编辑\"$label\"";
 OPERATION_SEARCH = "查询\"$label\"";
+OPERATION_SETTING = "设置\"$label\"";
 OPERATION_PERMISSION = "设置\"$label\"权限";
 
 /* 延时 */
@@ -39,28 +42,16 @@ TIMEOUT_GRID_SEARCH = 200;
 /* 默认唯一编号名前缀 */
 CACHE_TREE_NODE = "_treeNode_";
 CACHE_MAIN_TREE = "_tree_";
-CACHE_TOOLBAR   = "_toolbar_";
 
 DEFAULT_NEW_ID = "-10";
 
 
-/*
- *	禁止鼠标右键 
- */
-document.oncontextmenu = function(eventObj) {
-	eventObj = eventObj || window.event;
-	var srcElement = Event.getSrcElement(eventObj);
-	var tagName = srcElement.tagName.toLowerCase();
-	if("input" != tagName && "textarea" != tagName) {
-		event.returnValue = false;            
-	}
-}
 
-/*
- *	用户信息初始化
- */
+/* 用户信息初始化  */
 function initUserInfo() {
 	if( IS_TEST ) return;
+
+	if( Query.get("login") != "true" ) return;
 
 	Ajax({
 		url : "/" + AUTH_PATH + "user/operatorInfo",
@@ -87,7 +78,7 @@ function logout() {
 
 // 关闭页面时候自动注销
 function logoutOnClose() {
-	window.attachEvent("onuload", function() {
+	Event.attachEvent(window, "unload", function() {
 		if(10*1000 < window < screenTop || 10*1000 < window.screenLeft) {
 			logout();
 		}
@@ -132,22 +123,6 @@ function showPasswordSecurityLevel(formObj) {
 	formObj.showCustomErrorInfo("password", errorInfo[formObj.securityLevel]);
 }
 
-/*
- *	删除缓存(公用)
- *	参数：	string:cacheID      缓存数据id
-			boolean:flag        是否清除关联的XML数据
- */
-function delCacheData(cacheID, flag) {
-	var cacheData = Cache.Variables.get(cacheID);
-	Cache.Variables.del(cacheID);
-
-	if( flag ) {
-		for(var i=0; cacheData && i < cacheData.length; i++) {
-			Cache.XmlDatas.del(cacheData[i]);
-		}
-	}
-}
-
 
 var ws;
 var wsElement;
@@ -165,18 +140,14 @@ function initWorkSpace() {
 	}
 }
 
-/*
- *	隐藏tab页工作区
- */
+/* 隐藏tab页工作区 */
 function hideWorkSpace() {
 	var tr = wsElement.parentNode.parentNode;
 	tr.style.display = "none";
 	tr.previousSibling.style.display = "none";    
 }
 
-/*
- *	显示tab页工作区
- */
+/* 显示tab页工作区 */
 function showWorkSpace() {
 	var tr = wsElement.parentNode.parentNode;
 	tr.style.display = "";
@@ -184,99 +155,24 @@ function showWorkSpace() {
 }
 
 
-/*
- *	左栏添加左右拖动效果
- */
+/* 左栏添加左右拖动效果 */
 function initPaletteResize() {
 	var palette = $$("palette");
-	Element.attachColResize(palette, -1);
+	//Element.attachColResize(palette);
 }
 
-/*
- *	添加上下拖动效果
- */
+/* 添加上下拖动效果 */
 function initListContainerResize() {
 	var listContainer = $$("listContainer");
-	Element.attachRowResize(listContainer, 8);
+	// Element.attachRowResize(listContainer);
 }
-
-
-var toolbar;
  
-function initToolBar() {
-	toolbar = ToolBars.create($$("toolbar"));
-}
-
-/*
- *	点击树刷新按钮
- */
+/* 点击树刷新按钮 */
 function onClickTreeBtRefresh() {
 	loadInitData();
 }
 
-/*
- *	点击树标题按钮
- */
-function onClickTreeTitleBt() {
-	var treeTitleObj = $$("treeTitle");
-	var statusTitleObj = $$("statusTitle");
-
-	var block = Blocks.getBlock("treeContainer");
-	if( block ) {
-		block.switchTo();
-	}
-	if( block.visible ) {
-		treeTitleObj.firstChild.className = "opened";
-		statusTitleObj.firstChild.className = "opened";
-
-		var block = Blocks.getBlock("statusContainer");
-		if( block ) {
-			block.show();
-		}
-	} else {
-		treeTitleObj.firstChild.className = "closed";
-		statusTitleObj.firstChild.className = "opened";
-
-		var block = Blocks.getBlock("statusContainer");
-		if( block ) {
-			block.show(false);
-		}
-	}
-}
-
-/*
- *	点击状态栏标题按钮
- */
-function onClickStatusTitleBt() {
-	var treeTitleObj = $$("treeTitle");
-	var statusTitleObj = $$("statusTitle");
-
-	var block = Blocks.getBlock("statusContainer");
-	if( block ) {
-		block.switchTo();
-	}
-
-	if(block.visible) {
-		statusTitleObj.firstChild.className = "opened";        
-	}
-	else {
-		statusTitleObj.firstChild.className = "closed";
-
-		var block = Blocks.getBlock("treeContainer");
-		if( block && true != block.visible ) {
-			treeTitleObj.firstChild.className = "opened";
-
-			var block = Blocks.getBlock("treeContainer");
-			if( block ) {
-				block.show();
-			}
-		}
-	}
-}
-
-/*
- *	点击左栏控制按钮
- */
+/* 点击左栏控制按钮 */
 function onClickPaletteBt() {
 	var block = Blocks.getBlock("palette");
 	if( block ) {
@@ -286,44 +182,43 @@ function onClickPaletteBt() {
 	$$("paletteBt").className = block.visible ? "icon" : "iconClosed";
 }
 
-/*
- *	点击树标题
- */
+/* 点击树标题  */
 function onClickTreeTitle() {
 	Focus.focus($$("treeTitle").firstChild.id);
 }
 
-/*
- *	点击状态栏标题
- */
+/* 点击状态栏标题 */
 function onClickStatusTitle() {
 	Focus.focus($$("statusTitle").firstChild.id);
 }
 
-/*
- *	点击grid标题
- *	参数：	
- *	返回值：
- */
+/* 点击grid标题 */
 function onClickGridTitle() {
 	Focus.focus("gridTitle");
 }
 
-function onTreeNodeActived(eventObj) {
-	Focus.focus($$("treeTitle").firstChild.id);
-	showTreeNodeInfo();
+function onTreeNodeActived(eventObj){
+	 Focus.focus( $$("treeTitle").firstChild.id );
+	 showTreeNodeInfo();
 }
 
-function onTreeNodeRightClick(eventObj) {
-	var treeObj = $$("tree");
-	var treeNode = eventObj.treeNode;
-
+function onTreeNodeRightClick(eventObj, carePermission, treeName) {
 	showTreeNodeInfo();
-	getTreeOperation(treeNode, function(_operation) {
-		if( treeObj.contextmenu ) {
-			treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
-		}
-	});
+
+	var menu = $$(treeName || "tree").contextmenu;
+	if(menu == null) {
+		return;
+	}
+
+	if( carePermission ) {
+        var treeNode = eventObj.treeNode;
+        getTreeOperation(treeNode, function(_operation) {
+			menu.show(eventObj.clientX, eventObj.clientY);
+        });
+	}
+	else {
+		menu.show(eventObj.clientX, eventObj.clientY);
+	}
 }
 
 /*
@@ -334,11 +229,16 @@ function onTreeNodeRightClick(eventObj) {
 function getTreeOperation(treeNode, callback, url) {
 	url = url || URL_GET_OPERATION;
 	var _operation = treeNode.getAttribute("_operation");
+
+	var treeId = treeNode.getId();
+	if(treeId == "_rootId") {
+		treeId = 0;
+	}
 	
 	// 如果节点上还没有_operation属性，则发请求从后台获取信息
 	if( isNullOrEmpty(_operation) ) { 
 		Ajax({
-			url : url + treeNode.getId(),
+			url : url + treeId,
 			onresult : function() {
 				_operation = this.getNodeValue(XML_OPERATION);
 				treeNode.setAttribute("_operation", _operation);
@@ -355,14 +255,30 @@ function getTreeOperation(treeNode, callback, url) {
 		}
 	}    
 }
+
+/*
+ *	清除树节点操作权限
+ *	参数：	xmlNode:treeNode                XmlNode实例
+			boolean:clearChildren           是否清除子节点
+ */
+function clearOperation(treeNode, clearChildren) {
+	treeNode.removeAttribute("_operation");
+
+	if( clearChildren != false ) {
+		var childs = treeNode.selectNodes(".//treeNode");
+		for(var i=0; i < childs.length; i++) {
+			childs[i].removeAttribute("_operation");
+		}
+	}
+}
 	
 /*
  *	检测右键菜单项是否可见
  *	参数：	string:code     操作码
  */
-function getOperation(code) {
+function getOperation(code, treeName) {
 	var flag = false;
-	var treeNode = $T("tree").getActiveTreeNode();
+	var treeNode = $T(treeName || "tree").getActiveTreeNode();
 	if( treeNode ) {
 		var _operation = treeNode.getAttribute("_operation");
 		flag = checkOperation(code, _operation);
@@ -385,440 +301,7 @@ function checkOperation(code, _operation) {
 	return flag;
 }
 
-/*
- *	获取树节点属性
- *	参数：	string:name         属性名
- *	返回值：string:value        属性值
- */
-function getTreeAttribute(name) {
-	var treeObj = $T("tree");
-	var treeNode = treeObj.getActiveTreeNode();
-	if( treeNode ) {
-		return treeNode.getAttribute(name);
-	}
-	return null;   
-}
-
-function getTreeNodeId() {
-	return getTreeAttribute("id");
-}
-
-function getTreeNodeName() {
-	return getTreeAttribute("name");
-}
-
-function isTreeNodeDisabled() {
-	return getTreeAttribute("disabled") == "1";
-}
-
-function isTreeRoot() {
-	return "_rootId" == getTreeNodeId();
-}
-
-/*
- *	修改树节点属性
- *	参数：  string:id               树节点id
-			string:attrName         属性名
-			string:attrValue        属性值
-			string:refresh          是否刷新树
- *	返回值：
- */
-function modifyTreeNode(id, attrName, attrValue, refresh) {
-	var treeObj = $T("tree");
-	var treeNode = treeObj.getTreeNodeById(id);
-	if( treeNode ) {
-		treeNode.setAttribute(attrName, attrValue);
-	}
-	if( refresh ) {
-		treeObj.reload();
-	}
-}
-
-/*
- *	添加子节点
- *	参数：	string:id           树节点id
-			XmlNode:xmlNode     XmlNode实例
- *	返回值：
- */
-function appendTreeNode(id, xmlNode) {
-	var treeObj = $T("tree");
-	var treeNode = treeObj.getTreeNodeById(id);
-	if( treeNode && xmlNode ) {
-		treeObj.insertTreeNodeXml(xmlNode.toXml(), treeNode);
-	}
-}
-
-/*
- *	获取树全部节点id数组
- *	参数：	XmlNode:xmlNode         XmlNode实例
-			string:xpath            选取节点xpath
- *	返回值：Array:Ids               节点id数组
- */
-function getTreeNodeIds(xmlNode, xpath) {
-	  var idArray = [];
-	  var treeNodes = xmlNode.selectNodes(xpath || "./treeNode//treeNode");
-	  for(var i=0; i < treeNodes.length; i++) {
-		  var curNode = treeNodes[i];
-		  var id = curNode.getAttribute("id");
-		  if( id ) {
-			  idArray.push(id);
-		  }
-	  }
-	  return idArray;
-}
-
-/*
- *	树节点定位
- *	参数：	Element:treeObj         tree控件
-			Element:keywordObj      关键字输入框
- *	返回值：
- */
-function searchTree(treeObj, keywordObj) {	
-	var tempAlert = window.alert;  // 覆盖树控件搜索出错信息提示方法
-	
-	window.alert = function(str) {
-		var balloon = Balloons.create(str);
-		balloon.dockTo(keywordObj);
-	}
-
-	if( treeObj.research ) {
-		var keyword = treeObj.keyword;
-		treeObj.searchNode(keyword, "name", "hazy", "down");
-		treeObj.research = false;
-	}
-	else{
-		treeObj.searchNext("down", true);
-	}
-
-	// 还原信息提示方法
-	window.alert = tempAlert;
-}
-
-/*
- *	树节点定位
- *	参数：	Element:treeObj         tree控件
-			Element:btObj           搜索按钮
-			Element:keywordObj      关键字输入框
- *	返回值：
- */
-function attachSearchTree(treeObj, btObj, keywordObj) {
-	// 设置搜索按钮操作
-	btObj.onclick = function() {
-		searchTree(treeObj, keywordObj);
-	}
-
-	// 设置搜索关键字操作
-	keywordObj.value = "";
-	keywordObj.onchange = function() {
-		treeObj.research = true;
-		treeObj.keyword = this.value;
-	}
-
-	keywordObj.onchange();    
-}
-
-/*
- *	清除tree数据
- *	参数：	Element:treeObj         tree控件对象
- */
-function clearTreeData(treeObj) {
-	var xmlReader = new XmlReader("<actionSet/>");
-	var emptyNode = new XmlNode(xmlReader.documentElement);
-	treeObj.load(emptyNode.node);
-	treeObj.research = true;
-}    
-
-/*
- *	根据条件将部分树节点设置为不可选状态
- */
-function disableTreeNodes(treeXML, xpath) {
-	var nodeLsit = treeXML.selectNodes(xpath);
-	if(nodeLsit) {
-		for(var i = 0; i < nodeLsit.length; i++) {
-			nodeLsit[i].setAttribute("canselected", "0");
-		}
-	}
-}
-
-function disableSingleTreeNode(treeXML, xpath) {
-	var node = treeXML.selectSingleNode(xpath);
-	if(node) {
-		node.setAttribute("canselected", "0");
-	}
-}
-			
-/*
- *	删除树选中节点
- *	参数：	Element:treeObj         tree控件对象
-			Array:exceptIds         例外的id
- *	返回值：
- */
-function removeTreeNode(treeObj, exceptIds) {
-	exceptIds = exceptIds || ["_rootId"];
-
-	var selectedNodes = treeObj.getSelectedTreeNode();
-	for(var i=0; i < selectedNodes.length; i++) {
-		var curNode = selectedNodes[i];
-		var id = curNode.getId();
-
-		var flag = true;
-		for(var j=0; j < exceptIds.length; j++) {
-			if(id == exceptIds[j]) {
-				flag = false;
-				break;
-			}
-		}
-
-		if(flag) {
-			treeObj.removeTreeNode(curNode);
-		}
-	}
-}
-
-/*
- *	将树选中节点添加到另一树中(注：过滤重复id节点，并且结果树只有一层结构)
- *	参数：	Element:fromTree         树控件
-			Element:toTree           树控件
-			Function:checkFunction      检测单个节点是否允许添加
- *	返回值：
- */
-function addTreeNode(fromTree, toTree, checkFunction) {	
-	var reload = false;
-	var selectedNodes = fromTree.getSelectedTreeNode(false);	
-	for(var i=0; i < selectedNodes.length; i++) {
-		var curNode = selectedNodes[i];
-
-		if("0" == curNode.getAttribute("canselected")) {
-			continue;  // 过滤不可选择的节点
-		}
-
-		curNode.setSelectedState(0, true, true);
-
-		if( checkFunction ) {
-			var result = checkFunction(curNode);
-			if( result && result.error ) {
-				// 显示错误信息
-				if( result.message ) {
-					var balloon = Balloons.create(result.message);
-					balloon.dockTo(toTree.element);
-				}
-
-				if( result.stop ) {
-					return;
-				}
-				continue;
-			}
-		}
-
-		var groupName = curNode.getName();
-		var id = curNode.getId();
-
-		var sameAttributeTreeNode = hasSameAttributeTreeNode(toTree, "id", id);
-		if("_rootId" != id && false == sameAttributeTreeNode) {
-			// 至少有一行添加才刷新Tree
-			reload = true;
-
-			// 排除子节点
-			var treeNode = toTree.getTreeNodeById("_rootId");
-			if( treeNode ) {
-				var cloneNode = new XmlNode(curNode.node).cloneNode(false);
-				toTree.insertTreeNodeXml(cloneNode.toXml(), treeNode);
-			}
-		}
-	}
-
-	if( reload ) {
-		toTree.reload();
-	}
-	fromTree.reload();
-}
-
-/*
- *	检测是否有相同属性节点
- *	参数：	Element:treeObj         tree控件对象
-			string:attrName         属性名
-			string:attrValue        属性值
- *	返回值：
- */
-function hasSameAttributeTreeNode(treeObj, attrName, attrValue) {
-	var flag = false;
-	var root = treeObj.getTreeNodeById("_rootId").node;
-	var treeNode = root.selectSingleNode(".//treeNode[@" + attrName + "='" + attrValue + "']");
-	if( treeNode ) {
-		flag = true;
-		flag.treeNode = treeNode;
-	}
-	return flag;
-}
-
-/*
- *	显示当前树节点信息
- */
-function showTreeNodeStatus(params) {
-	var treeObj = $T("tree");
-	var treeNode = treeObj.getActiveTreeNode();
-	if( treeNode ) {
-		var id = treeNode.getId();
-		var block = Blocks.getBlock("statusContainer");
-		if( block && "_rootId" != id ) {
-			block.open();
-
-			for(var item in params) {
-				var name = params[item];
-				var val = treeNode.getAttribute(item);
-				block.writeln(name, val);                
-			}
-
-			block.close();
-		}
-		if( "_rootId" == id ) {
-		   block.hide();
-		}
-	}
-}
-
-function showTreeNodeInfo() {
-	showTreeNodeStatus(
-		{id:"ID", name:"名称", creatorName:"创建者", createTime:"创建时间", updatorName:"修改者", updateTime:"修改时间"}
-	);
-}
-
-// 删除选中节点，适用于多层结构树
-function delTreeNode(url) {
-	if( !confirm("您确定要删除该节点吗？") )  return;
-
-	var tree = $T("tree");
-	var treeNode = tree.getActiveTreeNode();
-	Ajax({
-		url : (url || URL_DELETE_NODE) + treeNode.getId(),
-		method : "DELETE",
-		onsuccess : function() { 
-			var parentNode = treeNode.getParent();
-			if( parentNode ) {
-				tree.setActiveTreeNode(parentNode.getId());
-			}
-			tree.removeTreeNode(treeNode);
-		}
-	});	
-}
-
-// 删除选中Grid行
-function delGridRow(url) {
-	if( !confirm("您确定要删除该行记录吗？") ) return;
-	
-	var rowIndex = $$("grid").selectRowIndex; 
-	if( rowIndex ) {
-		var grid = $G("grid");
-		var row = grid.getRowByIndex(rowIndex);
-		var userID = row.getAttribute("id");  
-		
-		Ajax({
-			url : url + userID,
-			method : "DELETE",
-			onsuccess : function() { 
-				grid.deleteRow(row);
-			}
-		});	
-	}
-}
-
-/*
- *	停用启用节点
- *	参数：	url      请求地址
-			state    状态
- */
-function stopOrStartTreeNode(state, url) {		
-	var tree = $T("tree");
-	var treeNode = tree.getActiveTreeNode();
-	Ajax({
-		url : (url || URL_STOP_NODE) + treeNode.getId() + "/" + state,
-		onsuccess : function() { 
-			// 刷新父子树节点停用启用状态: 启用上溯，停用下溯
-			var curNode = new XmlNode(treeNode.node);
-			refreshTreeNodeState(curNode, state);
-	
-			if("1" == state) {
-				var childNodes = curNode.selectNodes(".//treeNode");
-				for(var i=0; i < childNodes.length; i++) {                
-					refreshTreeNodeState(childNodes[i], state);
-				}
-			} else if ("0" == state) {
-				while( curNode && curNode.getAttribute("id") > 0 ) {
-					refreshTreeNodeState(curNode, state);
-					curNode = curNode.getParent();
-				}            
-			}
-			
-			tree.reload(); 
-		}
-	});
-}
-
-function refreshTreeNodeState(xmlNode, state) {
-	xmlNode.setAttribute("disabled", state);
-
-	var iconPath = xmlNode.getAttribute("icon");
-	iconPath = iconPath.replace( /_[0,1].gif/gi, "_" + state + ".gif");
-	xmlNode.setAttribute("icon", iconPath); 
-}
-
-// 对同层的树节点进行排序
-function sortTreeNode(url, eventObj) {
-	var movedNode  = eventObj.movedTreeNode;
-	var targetNode = eventObj.toTreeNode;
-	var direction  = eventObj.moveState; // -1: 往上, 1: 往下
-	var movedNodeID = movedNode.getId();
- 
-	if(targetNode) {
-		Ajax({
-			url : url + movedNodeID + "/" + targetNode.getId() + "/" + direction,
-			onsuccess : function() { 
-				 $T("tree").moveTreeNode(movedNode, targetNode, direction);
-			}
-		});
-	}
-}
-
-// 移动树节点
-function moveTreeNode(tree, id, targetId, url) {
-	Ajax({
-		url : (url || URL_MOVE_NODE) + id + "/" + targetId,
-		onsuccess : function() {  // 移动树节点					
-			var treeNode = tree.getTreeNodeById(id);
-			var xmlNode = new XmlNode(treeNode.node);
-			var parentNode = tree.getTreeNodeById(targetId);
-
-			// 父节点停用则下溯
-			var parentNodeState = parentNode.node.getAttribute("disabled");
-			if("1" == parentNodeState) {
-				refreshTreeNodeState(xmlNode, "1");
-			}
-			parentNode.node.appendChild(treeNode.node);
-			parentNode.node.setAttribute("_open", "true");
-
-			clearOperation(xmlNode);
-
-			tree.reload();
-		}
-	});
-}
-
-
-/*
- *	禁止点击按钮
- */
-function disableButton(btObj) {
-	btObj.disabled = true;
-}
-/*
- *	允许点击按钮：
- */
-function enableButton(btObj) {
-	btObj.disabled = false;
-}
-/*
- *	request请求期间，同步按钮禁止/允许状态
- */
+/* request请求期间，同步按钮禁止/允许状态 */
 function syncButton(btObjs, request) {
 	for(var i=0; i < btObjs.length; i++) {
 		disableButton(btObjs[i]);
@@ -830,7 +313,14 @@ function syncButton(btObjs, request) {
 		}
 	}
 }
-
+/* 禁止点击按钮 */
+function disableButton(btObj) {
+	btObj.disabled = true;
+}
+/* 允许点击按钮 */
+function enableButton(btObj) {
+	btObj.disabled = false;
+}
 
 /*
  *	初始化导航条
@@ -872,91 +362,76 @@ function initNaviBar(curId, relativePath) {
 	});
 }
 
-function initBlocks(){
-	Blocks.create($$("palette"));
-
-	var treeContainerObj = $$("treeContainer");
-	Blocks.create(treeContainerObj, treeContainerObj.parentNode);
-
-	var statusContainerObj = $$("statusContainer");
-	Blocks.create(statusContainerObj, statusContainerObj.parentNode, false);
-
-	//状态信息区实例继承WritingBlock可写功能
-	var block = Blocks.getBlock("statusContainer");
-	if( block ){
-		block.inherit(WritingBlock);
-	}     
-}
-
-function initFocus(){
-	var treeTitleObj = $$("treeTitle");
-	var statusTitleObj = $$("statusTitle");
-
-	Focus.register(treeTitleObj.firstChild);
-	Focus.register(statusTitleObj.firstChild);
-}
-
-/*
- *	事件绑定初始化
- */
+/* 事件绑定初始化 */
 function initEvents() {
 	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
-	Event.attachEvent($$("treeTitleBt"),   "click", onClickTreeTitleBt);
-	Event.attachEvent($$("statusTitleBt"), "click", onClickStatusTitleBt);
 	Event.attachEvent($$("treeTitle"),     "click", onClickTreeTitle);
-	Event.attachEvent($$("statusTitle"),   "click", onClickStatusTitle);
+
+	Focus.register( $$("treeTitle").firstChild );
+
+	logoutOnClose(); // 关闭页面自动注销
 }
 
-/*
- *	清除树节点操作权限
- *	参数：	xmlNode:treeNode                XmlNode实例
-			boolean:clearChildren           是否清除子节点
- */
-function clearOperation(treeNode, clearChildren) {
-	treeNode.removeAttribute("_operation");
+/* 创建导入Div */
+function createImportDiv(remark, checkFileWrong, importUrl) {
+	var importDiv = $$("importDiv");
+	if( importDiv == null ) {
+		importDiv = document.createElement("div");    
+		importDiv.id = "importDiv";      
+		importDiv.style.background = "#BEC6EE";    
+		importDiv.style.width = "250px";    
+		importDiv.style.height = "100px";   
+		importDiv.style.padding = "10px 10px 10px 10px";   
+		importDiv.style.fontSize = "12px"; 
+		document.body.appendChild(importDiv);
 
-	if( clearChildren != false ) {
-		var childs = treeNode.selectNodes(".//treeNode");
-		for(var i=0; i < childs.length; i++) {
-			childs[i].removeAttribute("_operation");
-		}
-	}
-}
-
-/*
- *	工具条加载数据
- *	参数：	string:_operation      操作权限
-			string:contentXML      工具条具体内容
- */
-function _loadToolBar(_operation, contentXML) {
-	var toolbarXML = Cache.XmlDatas.get(CACHE_TOOLBAR);
-	if( toolbarXML == null ) { // 还没有就创建
-		var xmlReader = new XmlReader(contentXML);
-		toolbarXML = new XmlNode(xmlReader.documentElement);
-		Cache.XmlDatas.add(CACHE_TOOLBAR, toolbarXML);
-		toolbar.loadXML(toolbarXML); // 载入工具条
-	}
-
-	// 控制显示
-	var buttons = toolbarXML.selectNodes("./button");
-	for(var i=0; i < buttons.length; i++) {
-		var curButton = buttons[i];
-		var id = curButton.getAttribute("id");
-		var code = curButton.getAttribute("code");
-		var enableStr = curButton.getAttribute("enable");
+		var str = [];
+		str[str.length] = "<form id='importForm' method='post' target='fileUpload' enctype='multipart/form-data'>";
+		str[str.length] = "	 <input type='file' name='file' id='sourceFile'/> <br> " + remark + "<br> ";
+		str[str.length] = "	 <input type='button' id='importBt' value='导入' /> ";
+		str[str.length] = "	 <input type='button' id='closeBt'  value='关闭' /> ";
+		str[str.length] = "</form>";
+		str[str.length] = "<iframe width='0px' height='0px' name='fileUpload'></iframe>";
 		
-		var visible = true;
-		if("string" == typeof(_operation)) {
-			var reg = new RegExp("(^" + code + ",)|(^" + code + "$)|(," + code + ",)|(," + code + "$)", "gi");
-			visible = reg.test(_operation);
-		}
-		toolbar.setVisible(id, visible); // 按钮是否显示
+		importDiv.innerHTML = str.join("\r\n");
 
-		if( visible ) {
-			var enable = Public.executeCommand(enableStr);
-			toolbar.enable(id, enable); // 按钮是否禁用
+		$$("closeBt").onclick = function () {
+			Element.hide(importDiv);
 		}
 	}
+
+	// 每次 importUrl 可能不一样，比如导入门户组件时。不能缓存
+	$$("importBt").onclick = function() {
+		var fileValue = $$("sourceFile").value;
+		if( fileValue == null) {
+			 return alert("请选择导入文件!");				 
+		}
+
+		var length = fileValue.length;
+		var subfix = fileValue.substring(length - 4, length);
+		if( checkFileWrong && checkFileWrong(subfix) ) {
+		   return alert(remark);
+		}
+
+		var form = $$("importForm");
+		form.action = importUrl;
+		form.submit();
+
+		Element.hide(importDiv);
+	}
+
+	return importDiv;
+}
+
+ /* 创建导出用iframe */
+function createExportFrame() {
+	var frameName = "exportFrame";
+	var frameObj = $$(frameName);
+	if( frameObj == null ) {
+		frameObj = document.createElement("<iframe name='" + frameName + "' id='" + frameName + "' src='about:blank' style='display:none'></iframe>");
+		document.body.appendChild(frameObj);
+	}
+	return frameName;
 }
 
 
@@ -979,7 +454,7 @@ function Alert(info, detail) {
 		params.detail = info;        
 	}
 	params.title = "";
-	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:278px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
 }
 
 /*
@@ -1054,10 +529,8 @@ function Prompt(info, defaultValue, title, protect, maxBytes) {
 	return returnValue;
 }
 
-/*
- *	捕获页面js报错
- */
-function onError(msg,url,line) {
+/* 捕获页面js报错 */
+function onError(msg, url, line) {
 	alert(msg, "错误:" + msg + "\r\n行:" + line + "\r\n地址:" + url);
 	event.returnValue = true;
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>各省份货量</title>
+
+	<script type="text/javascript" src="../framework/core.js"></script>
+	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+	<script type="text/javascript" src="TransQ.js"></script>
+	<script type="text/javascript" src="Income.js"></script>
+	<script type="text/javascript">
+
+	</script>
+	<style type="text/css">
+
+		#canvasDivTransQ{
+			margin-left: 10px;
+		}
+
+		#canvasDivIncome{
+			margin-top: 20px;
+			margin-left: 0px;
+		}
+
+	</style>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="queryTransQ();queryIncome()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDivTransQ'></div>	
+	<div id='canvasDivIncome'></div>
+
+</body>
+
+</html>

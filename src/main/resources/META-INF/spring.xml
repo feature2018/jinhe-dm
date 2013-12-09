@@ -47,8 +47,8 @@
 		</property>
 		<property name="interceptorNames">
 			<list>
-				<!-- 测试时先注释掉，会和spring test的自动回滚矛盾，导致回滚不了。发布时再采用此方法声明事务 -->
 				<value>transactionInterceptor</value> 
+				<value>cacheInterceptor</value>
 			</list>
 		</property>
 	</bean>

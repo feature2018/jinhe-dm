@@ -1,4 +1,3 @@
-
     /* 标签名 */
     _TAG_NAME_BALLOON = "div";
     _TAG_NAME_TABLE = "table";
@@ -37,7 +36,6 @@
     _SRC_ARROW_4 = "balloon_04.gif";
 
 
-
     /*
      *	对象名称：Balloons（全局静态对象）
      *	职责：负责管理所有气球提示界面
@@ -48,7 +46,7 @@
     Balloons.items = {};
 
     /*
-     *	函数说明：获取下一个层次  
+     *	获取下一个层次  
      *	返回值：number:nextPath     下一个层次
      */
     Balloons.getNextDepth = function() {
@@ -58,7 +56,7 @@
     }
 	
     /*
-     *	函数说明：创建一个新气球
+     *	创建一个新气球
      *	参数：  string:content  气球显示的内容
      *	返回值：Balloon实例
 	 */
@@ -74,9 +72,7 @@
         return balloon;
     }
 	
-    /*
-     *	函数说明：清除所有气球实例
-     */
+    /* 清除所有气球实例 */
     Balloons.dispose = function() {
         for(var item in this.items) {
             var curBalloon = this.items[item];
@@ -85,9 +81,7 @@
         this.items = {};
     }
 	
-    /*
-     *	函数说明：统计所有气球数量
-     */
+    /* 统计所有气球数量 */
     Balloons.count = function() {
         var count = 0;
         for(var item in this.items) {
@@ -96,16 +90,12 @@
         return count;
     }
 	
-    /*
-     *	函数说明：以文本方式输出对象信息
-     */
     Balloons.toString = function() {
         var str = [];
         str[str.length] = "[Balloons 对象]";
-        str[str.length] = "singleInstance:" + this.singleInstance;
-        str[str.length] = "items:" + this.count();
+        str[str.length] = " singleInstance:" + this.singleInstance;
+        str[str.length] = " items:" + this.count();
         return str.join("\r\n");
-
     }
 
 
@@ -117,22 +107,29 @@
     function Balloon(content) {
         this.content = content;
         this.uniqueID = null;
-        this.object = null;
-        this.timeout = null;
+        this.object   = null;
+        this.timeout  = null;
         this.init();
     }
 	
-    /*
-     *	函数说明：Balloon初始化
-     */
+    /* Balloon初始化 */
     Balloon.prototype.init = function() {
         this.create();
-        this.attachEvents();
+
+		// 绑定事件
+		Balloon.prototype.attachEvents = function() {
+			if( this.object ) {
+				this.object.onmousedown = _Balloon_onMouseDown;
+				this.object.onmouseup   = _Balloon_onMouseUp;
+				this.object.onmousemove = _Balloon_onMouseMove;
+				this.object.oncontextmenu = _Balloon_onContextMenu;
+
+				Event.attachEvent(document, "mousedown", _Balloon_Document_onMouseDown);
+			}
+		}
     }
 	
-    /*
-     *	函数说明：创建新气球
-     */
+    /* 创建新气球 */
     Balloon.prototype.create = function() {
         this.uniqueID = UniqueID.generator(_UNIQUE_ID_BALLOON_PREFIX);
 
@@ -165,7 +162,7 @@
     }
 	
     /*
-     *	函数说明：定位气球
+     *	定位气球
      *	参数：  number:x		坐标x
                 number:y		坐标y
 				number:delay	延时
@@ -205,7 +202,7 @@
     }
 	
     /*
-     *	函数说明：移动气球
+     *	移动气球
      *	参数：  number:x  坐标x
                 number:y  坐标y
      */
@@ -216,9 +213,7 @@
         }
     }
 	
-    /*
-     *	函数说明：将气球置于最顶上
-     */
+    /* 将气球置于最顶上 */
     Balloon.prototype.bringToTop = function() {
         if(null != this.object) {
             this.object.style.zIndex = Balloons.getNextDepth();
@@ -226,7 +221,7 @@
     }
 	
     /*
-     *	函数说明：设置气球持续时间
+     *	设置气球持续时间
      *	参数：  number:delay    持续时间(ms)
      */
     Balloon.prototype.duration = function(delay) {
@@ -238,9 +233,7 @@
 		}, delay || 5000);
     }
 	
-    /*
-     *	函数说明：添加气球箭头
-     */
+    /* 添加气球箭头  */
     Balloon.prototype.addArrow = function(type) {
         var arrow = document.createElement(_TAG_NAME_ARROW);
         switch(type) {
@@ -284,9 +277,7 @@
         }
     }
 	
-    /*
-     *	函数说明：释放气球实例
-     */
+    /* 释放气球实例 */
     Balloon.prototype.dispose = function() {
         delete Balloons.items[this.uniqueID];
 		Element.showConflict(this.object);
@@ -298,24 +289,7 @@
 		
 		Event.detachEvent(document, "mousedown", _Balloon_Document_onMouseDown);
     }
-	
-    /*
-     *	函数说明：绑定事件
-     */
-    Balloon.prototype.attachEvents = function() {
-        if(null!=this.object) {
-            this.object.onmousedown = _Balloon_onMouseDown;
-            this.object.onmouseup   = _Balloon_onMouseUp;
-            this.object.onmousemove = _Balloon_onMouseMove;
-            this.object.oncontextmenu = _Balloon_onContextMenu;
 
-            Event.attachEvent(document,"mousedown",_Balloon_Document_onMouseDown);
-        }
-    }
-	
-    /*
-     *	函数说明：以文本方式输出对象信息
-     */
     Balloon.prototype.toString = function() {
         var str = [];
         str[str.length] = "[Balloon 对象]";
@@ -326,16 +300,12 @@
 
 
 
-    /*
-     *	函数说明：整个文档对象鼠标按下
-     */
+    /* 整个文档对象鼠标按下 */
     function _Balloon_Document_onMouseDown() {
         Balloons.dispose();
     }
 	
-    /*
-     *	函数说明：鼠标按下
-     */
+    /* 鼠标按下 */
     function _Balloon_onMouseDown(eventObj) {
         eventObj = eventObj || window.event;
 		
@@ -348,32 +318,26 @@
         }
     }
 	
-    /*
-     *	函数说明：鼠标松开
-     */
+    /* 鼠标松开 */
     function _Balloon_onMouseUp(eventObj) {
         var srcElement = this;
         _Balloon_onBalloonRelease(srcElement, eventObj || window.event);
     }
 	
-    /*
-     *	函数说明：鼠标移动
-     */
+    /* 鼠标移动 */
     function _Balloon_onMouseMove(eventObj) {
         var srcElement = this;
         _Balloon_onBalloonMove(srcElement, eventObj || window.event);
     }
 	
-    /*
-     *	函数说明：鼠标右键点击
-     */
+    /* 鼠标右键点击 */
     function _Balloon_onContextMenu(eventObj) {
         var srcElement = this;
         _Balloon_onBalloonClose(srcElement, eventObj || window.event);
     }
 	
     /*
-     *	函数说明：鼠标按下气球（虚拟事件）
+     *	鼠标按下气球（虚拟事件）
      *	参数：  object:srcElement   HTML对象
                 event:eventObj      事件对象
      */
@@ -389,7 +353,7 @@
     }
 	
     /*
-     *	函数说明：鼠标松开气球（虚拟事件）
+     *	鼠标松开气球（虚拟事件）
      *	参数：  object:srcElement   HTML对象
      */
     function _Balloon_onBalloonRelease(srcElement) {
@@ -398,7 +362,7 @@
     }
 	
     /*
-     *	函数说明：鼠标拖动气球（虚拟事件）
+     *	鼠标拖动气球（虚拟事件）
      *	参数：  object:srcElement   HTML对象
                 event:eventObj      事件对象
      */
@@ -414,7 +378,7 @@
     }
 	
     /*
-     *	函数说明：鼠标右键点击气球（虚拟事件）
+     *	鼠标右键点击气球（虚拟事件）
      *	参数：  object:srcElement   HTML对象
                 event:eventObj      事件对象
      */
@@ -424,4 +388,3 @@
         var balloon = Balloons.items[srcElement.id];
         balloon.dispose();
     }
-	

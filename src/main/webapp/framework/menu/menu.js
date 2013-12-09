@@ -20,9 +20,7 @@ Menus.nextDepth = 1000;
 Menus.collection = {};
 
 /*
- *	函数说明：获取下一个层次
- *	参数：  
- *	返回值：number:nextPath     下一个层次
+ *	获取下一个层次
  */
 Menus.getNextDepth = function() {
 	var nextDepth = this.nextDepth;
@@ -31,7 +29,7 @@ Menus.getNextDepth = function() {
 }
 
 /*
- *	函数说明：将Menu实例加入集合
+ *	将Menu实例加入集合
  *	参数：  instance:menu		Menu实例
  */
 Menus.add = function(menu) {
@@ -43,7 +41,7 @@ Menus.add = function(menu) {
 }
 
 /*
- *	函数说明：将Menu实例从集合中去除
+ *	将Menu实例从集合中去除
  *	参数：  instance:menu		Menu实例
  */
 Menus.del = function(menu) {
@@ -54,8 +52,7 @@ Menus.del = function(menu) {
 	}
 }
 /*
- *	函数说明：统计所有Menu实例数量
- *	参数：
+ *	统计所有Menu实例数量
  *	返回值：number:count	Menu实例数量
  */
 Menus.count = function() {
@@ -67,7 +64,7 @@ Menus.count = function() {
 }
 
 /*
- *	函数说明：inactive所有Menu实例
+ *	inactive所有Menu实例
  */
 Menus.inactiveAllMenus = function() {
 	for(var menuId in this.collection) {
@@ -76,7 +73,7 @@ Menus.inactiveAllMenus = function() {
 }
 
 /*
- *	函数说明：隐藏所有Menu实例
+ *	隐藏所有Menu实例
  */
 Menus.hideAllMenus = function() {
 	for(var menuId in this.collection) {
@@ -85,7 +82,7 @@ Menus.hideAllMenus = function() {
 }
 
 /*
- *	函数说明：获取当前激活Menu实例
+ *	获取当前激活Menu实例
  *	参数：
  *	返回值：instance:menu	Menu实例
  */
@@ -100,7 +97,7 @@ Menus.getActiveMenu = function() {
 }
 
 /*
- *	函数说明：根据菜单项ID获取所属Menu实例
+ *	根据菜单项ID获取所属Menu实例
  */
 Menus.getMenuByItemID = function(id) {
 	for(var menuId in this.collection) {
@@ -113,7 +110,7 @@ Menus.getMenuByItemID = function(id) {
 }
 
 /*
- *	函数说明：以文本方式输出对象信息
+ *	以文本方式输出对象信息
  */
 Menus.toString = function() {
 	var str = [];
@@ -152,7 +149,7 @@ function Menu() {
 }
 
 /*
- *	函数说明：将实例绑定到指定对象
+ *	将实例绑定到指定对象
  *	参数：  object:srcElement       HTML对象
 			string:eventName		事件名称
  */
@@ -170,7 +167,7 @@ Menu.prototype.attachTo = function(srcElement, eventName) {
 }
 
 /*
- *	函数说明：显示菜单
+ *	显示菜单
  *	参数：  number:x            菜单参考点位置
 			number:y            菜单参考点位置
 			boolean:autofit		是否需要启用自适应
@@ -245,7 +242,7 @@ Menu.prototype.show = function(x, y, autofit, offX, offY) {
 }
 
 /*
- *	函数说明：隐藏菜单
+ *	隐藏菜单
  */
 Menu.prototype.hide = function() {
 	this.setVisible(false);
@@ -259,21 +256,21 @@ Menu.prototype.hide = function() {
 }
 
 /*
- *	函数说明：激活当前菜单
+ *	激活当前菜单
  */
 Menu.prototype.active = function() {
 	this.isActive = true;
 }
 
 /*
- *	函数说明：不激活当前菜单
+ *	不激活当前菜单
  */
 Menu.prototype.inactive = function() {
 	this.isActive = false;
 }
 
 /*
- *	函数说明：不激活当前菜单的所有菜单项
+ *	不激活当前菜单的所有菜单项
  */
 Menu.prototype.inactiveAllItems = function() {
 	for(var item in this.items) {
@@ -282,7 +279,7 @@ Menu.prototype.inactiveAllItems = function() {
 }
 
 /*
- *	函数说明：刷新菜单项状态
+ *	刷新菜单项状态
  *	参数：  
  *	返回值：number:visibleItemsCount   可见菜单项的数量
  */
@@ -299,7 +296,7 @@ Menu.prototype.refreshItems = function() {
 }
 
 /*
- *	函数说明：调整分隔线
+ *	调整分隔线
  */
 Menu.prototype.refreshSeparators = function() {
 	// 先获取所有可见菜单项数组(含分隔线)
@@ -345,7 +342,7 @@ Menu.prototype.refreshSeparators = function() {
 }
 
 /*
- *	函数说明：将菜单加入到页面文档
+ *	将菜单加入到页面文档
  */
 Menu.prototype.appendToDocument = function() {
 	if(this.object) {
@@ -354,7 +351,7 @@ Menu.prototype.appendToDocument = function() {
 }
 
 /*
- *	函数说明：设置菜单是否可见
+ *	设置菜单是否可见
  *	参数：  boolean:visible     菜单是否可见
  */
 Menu.prototype.setVisible = function(visible) {
@@ -364,7 +361,7 @@ Menu.prototype.setVisible = function(visible) {
 }
 
 /*
- *	函数说明：设置菜单位置
+ *	设置菜单位置
  *	参数：  number:x        菜单参考点位置
 			number:y        菜单参考点位置
  */
@@ -376,7 +373,7 @@ Menu.prototype.moveTo = function(x, y) {
 }
 
 /*
- *	函数说明：将菜单置于顶层
+ *	将菜单置于顶层
  */
 Menu.prototype.bringToTop = function() {
 	if(this.object) {
@@ -385,7 +382,7 @@ Menu.prototype.bringToTop = function() {
 }
 
 /*
- *	函数说明：添加菜单项
+ *	添加菜单项
  *	参数：      object:menuItem     菜单项定义
  *	返回值：    string:uniqueID     菜单项唯一ID
  */
@@ -398,7 +395,7 @@ Menu.prototype.addItem = function(menuItem) {
 }
 
 /*
- *	函数说明：删除菜单项
+ *	删除菜单项
  *	参数：      string:uniqueID     菜单项唯一ID
  */
 Menu.prototype.delItem = function(uniqueID) {
@@ -410,7 +407,7 @@ Menu.prototype.delItem = function(uniqueID) {
 }
 
 /*
- *	函数说明：添加分隔线
+ *	添加分隔线
  */
 Menu.prototype.addSeparator = function() {
 	var separator = document.createElement("div");
@@ -420,7 +417,7 @@ Menu.prototype.addSeparator = function() {
 }
 
 /*
- *	函数说明：统计所有MenuItem实例数量
+ *	统计所有MenuItem实例数量
  */
 Menu.prototype.count = function() {
 	var count = 0;
@@ -431,7 +428,7 @@ Menu.prototype.count = function() {
 }
 
 /*
- *	函数说明：释放实例
+ *	释放实例
  */
 Menu.prototype.dispose = function() {
 	for(var item in this.items) {
@@ -445,7 +442,7 @@ Menu.prototype.dispose = function() {
 }
 
 /*
- *	函数说明：以文本方式输出对象信息
+ *	以文本方式输出对象信息
  */
 Menu.prototype.toString = function() {
 	var str = [];
@@ -498,7 +495,7 @@ function MenuItem(itemProperties) {
 }
 
 /*
- *	函数说明：将菜单项插入指定容器
+ *	将菜单项插入指定容器
  *	参数：  object:container        HTML容器对象
  */
 MenuItem.prototype.dockTo = function(container) {
@@ -508,7 +505,7 @@ MenuItem.prototype.dockTo = function(container) {
 }
 
 /*
- *	函数说明：高亮菜单项
+ *	高亮菜单项
  */
 MenuItem.prototype.active = function() {
 	if(this.object && true == this.isEnable) {
@@ -517,7 +514,7 @@ MenuItem.prototype.active = function() {
 }
 
 /*
- *	函数说明：低亮菜单项
+ *	低亮菜单项
  */
 MenuItem.prototype.inactive = function() {
 	if(this.object && this.isEnable) {
@@ -530,7 +527,7 @@ MenuItem.prototype.inactive = function() {
 }
 
 /*
- *	函数说明：设置菜单项可见性
+ *	设置菜单项可见性
  *	参数：  boolean:visible     是否可见
  */
 MenuItem.prototype.setVisible = function(visible) {
@@ -541,7 +538,7 @@ MenuItem.prototype.setVisible = function(visible) {
 }
 
 /*
- *	函数说明：设置菜单项是否可用
+ *	设置菜单项是否可用
  *	参数：  boolean:enable     是否可用
  */
 MenuItem.prototype.setEnable = function(enable) {
@@ -552,7 +549,7 @@ MenuItem.prototype.setEnable = function(enable) {
 }
 
 /*
- *	函数说明：刷新菜单项状态
+ *	刷新菜单项状态
  */
 MenuItem.prototype.refresh = function() {
 	var visible = true;
@@ -570,7 +567,7 @@ MenuItem.prototype.refresh = function() {
 }
 
 /*
- *	函数说明：执行菜单项回调方法
+ *	执行菜单项回调方法
  */
 MenuItem.prototype.execCallBack = function(event) {
 	if(this.isEnable) {
@@ -579,7 +576,7 @@ MenuItem.prototype.execCallBack = function(event) {
 }
 
 /*
- *	函数说明：显示子菜单
+ *	显示子菜单
  */
 MenuItem.prototype.showSubMenu = function() {
 	if( this.submenu ) {
@@ -590,7 +587,7 @@ MenuItem.prototype.showSubMenu = function() {
 }
 
 /*
- *	函数说明：释放实例
+ *	释放实例
  */
 MenuItem.prototype.dispose = function() {
 	Element.removeNode(this.object);
@@ -601,7 +598,7 @@ MenuItem.prototype.dispose = function() {
 }
 
 /*
- *	函数说明：以文本方式输出对象信息
+ *	以文本方式输出对象信息
  */
 MenuItem.prototype.toString = function() {
 	var str = [];
@@ -616,7 +613,7 @@ MenuItem.prototype.toString = function() {
 
 
 /*
- *	函数说明：鼠标在页面文档中按下
+ *	鼠标在页面文档中按下
  */
 function _Menu_Document_onMouseDown(eventObj) {
 	eventObj = eventObj || window.event;
@@ -626,7 +623,7 @@ function _Menu_Document_onMouseDown(eventObj) {
 }
 
 /*
- *	函数说明：窗口改变尺寸
+ *	窗口改变尺寸
  */
 function _Menu_Window_onResize(eventObj) {
 	eventObj = eventObj || window.event;	
@@ -635,7 +632,7 @@ function _Menu_Window_onResize(eventObj) {
 	_Menu_onCloseAll();
 }
 /*
- *	函数说明：鼠标按下
+ *	鼠标按下
  */
 function _Menu_Item_onMouseDown(eventObj) {
 	eventObj = eventObj || window.event;
@@ -643,7 +640,7 @@ function _Menu_Item_onMouseDown(eventObj) {
 }
 
 /*
- *	函数说明：鼠标悬停
+ *	鼠标悬停
  */
 function _Menu_Item_onMouseOver(eventObj) {
 	eventObj = eventObj || window.event;
@@ -652,7 +649,7 @@ function _Menu_Item_onMouseOver(eventObj) {
 }
 
 /*
- *	函数说明：鼠标离开
+ *	鼠标离开
  */
 function _Menu_Item_onMouseOut(eventObj) {
 	eventObj = eventObj || window.event;
@@ -661,7 +658,7 @@ function _Menu_Item_onMouseOut(eventObj) {
 }
 
 /*
- *	函数说明：鼠标点击
+ *	鼠标点击
  */
 function _Menu_Item_onClick(eventObj) {
 	eventObj = eventObj || window.event;
@@ -670,7 +667,7 @@ function _Menu_Item_onClick(eventObj) {
 }
 
 /*
- *	函数说明：鼠标右键点击
+ *	鼠标右键点击
  */
 function _Menu_Item_onContextMenu(eventObj) {
 	eventObj = eventObj || window.event;
@@ -679,7 +676,7 @@ function _Menu_Item_onContextMenu(eventObj) {
 }
 
 /*
- *	函数说明：鼠标拖动选择文本
+ *	鼠标拖动选择文本
  */
 function _Menu_onSelectStart(eventObj) {
 	eventObj = eventObj || window.event;
@@ -687,14 +684,14 @@ function _Menu_onSelectStart(eventObj) {
 }
 
 /*
- *	函数说明：隐藏所有菜单(虚拟事件)
+ *	隐藏所有菜单(虚拟事件)
  */
 function _Menu_onCloseAll() {
 	Menus.hideAllMenus();
 }
 
 /*
- *	函数说明：高亮菜单项(虚拟事件)
+ *	高亮菜单项(虚拟事件)
  */
 function _Menu_Item_onActive(srcElement, eventObj) {
 	var id = srcElement.id;
@@ -708,7 +705,7 @@ function _Menu_Item_onActive(srcElement, eventObj) {
 }
 
 /*
- *	函数说明：低亮菜单项(虚拟事件)
+ *	低亮菜单项(虚拟事件)
  */
 function _Menu_Item_onInActive(srcElement, eventObj) {
 	var id = srcElement.id;
@@ -722,7 +719,7 @@ function _Menu_Item_onInActive(srcElement, eventObj) {
 }
 
 /*
- *	函数说明：执行菜单项回调方法(虚拟事件)
+ *	执行菜单项回调方法(虚拟事件)
  */
 function _Menu_Item_onCallBack(srcElement, eventObj) {
 	var id = srcElement.id;

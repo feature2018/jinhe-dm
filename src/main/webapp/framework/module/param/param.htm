@@ -20,6 +20,12 @@
 <script language="javascript" src="../../tree/tree.js"></script>
 <script language="javascript" src="../../xform/xform.js"></script>
 
+<style>
+  #palette {
+    width: 250px;
+  }
+</style> 
+
 <SCRIPT type="text/javascript">
 <!--
 	
@@ -35,15 +41,14 @@
     /* 
 	 * XMLHTTP请求地址汇总 
 	 */
-	URL_INIT          = "/" + NO_AUTH_PATH + "param/list";
-    URL_PARAM_DETAIL  = "/" + NO_AUTH_PATH + "param/detail";
-	URL_SAVE_PARAM    = "/" + NO_AUTH_PATH + "param";
-    URL_PARAM_DELETE  = "/" + NO_AUTH_PATH + "param/";
-	URL_FLUSH_CACHE   = "/" + NO_AUTH_PATH + "param/cache/";
-    URL_PARAM_DISABLE = "/" + NO_AUTH_PATH + "param/disable/";
-    URL_SORT_PARAM    = "/" + NO_AUTH_PATH + "param/sort/";
-    URL_COPY_PARAM    = "/" + NO_AUTH_PATH + "param/copy/";
-    URL_MOVE_PARAM_TO = "/" + NO_AUTH_PATH + "param/move/";
+	URL_INIT          = NO_AUTH_PATH + "param/list";
+    URL_PARAM_DETAIL  = NO_AUTH_PATH + "param/detail";
+	URL_SAVE_PARAM    = NO_AUTH_PATH + "param";
+    URL_PARAM_DELETE  = NO_AUTH_PATH + "param/";
+    URL_PARAM_DISABLE = NO_AUTH_PATH + "param/disable/";
+    URL_SORT_PARAM    = NO_AUTH_PATH + "param/sort/";
+    URL_COPY_PARAM    = NO_AUTH_PATH + "param/copy/";
+    URL_MOVE_PARAM_TO = NO_AUTH_PATH + "param/move/";
 	
 	if(IS_TEST) {
 		URL_INIT = "data/param_init.xml?";
@@ -52,20 +57,16 @@
 		URL_PARAM_DISABLE = "data/_success.xml?";
 		URL_SAVE_PARAM = "data/_success.xml?";
 		URL_SORT_PARAM = "data/_success.xml?";
-		URL_FLUSH_CACHE  = "data/_success.xml?";
 		URL_COPY_PARAM = "data/_success.xml?";
 		URL_MOVE_PARAM_TO = "data/_success.xml?";
 	}
- 
 
     function init() {
         initPaletteResize();
-        initNaviBar();
+        initNaviBar("param");
         initMenus();
-        initBlocks();
         initWorkSpace();
         initEvents();
-        initFocus();
 
         loadInitData();
     }
@@ -139,13 +140,6 @@
             },
             visible:function() {return (("1"==getTreeNodeMode() && "1"==getTreeNodeType()) || "2"==getTreeNodeMode());}
         }
-		var item15 = {
-            label:"刷新参数缓存",
-            callback:function() {
-                flushParamCache();
-            },
-            visible:function() {return "1"==getTreeNodeType();}
-        }
 
 
         //新建参数子菜单
@@ -188,9 +182,6 @@
         menu1.addItem(item1);
         menu1.addItem(item14);
 
-		menu1.addSeparator();
-		menu1.addItem(item15);
-
         $$("tree").contextmenu = menu1;
     }
 
@@ -201,10 +192,6 @@
 				$T("tree", this.getNodeValue(XML_MAIN_TREE)); 
 
 				var treeObj = $$("tree");
-				treeObj.onTreeNodeActived = function(eventObj) {
-					Focus.focus($$("treeTitle").firstChild.id);
-					showTreeNodeInfo();
-				}
 				treeObj.onTreeNodeDoubleClick = function(eventObj) {
 					if( !isTreeRoot() ) {
 						editParamInfo();
@@ -215,7 +202,6 @@
 				}
 				treeObj.onTreeNodeRightClick = function(eventObj) {
 					$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY); 
-					showTreeNodeInfo();
 				}	 
 			}
 		});
@@ -232,9 +218,6 @@
 			var mode = getTreeNodeMode();
 
             var callback = {};
-            callback.onTabClose = function(eventObj) {
-                delCacheData(eventObj.tab.SID);
-            };
             callback.onTabChange = function() {
                 setTimeout(function() {
                     loadTreeDetailData(treeID, editable, treeID, type, mode);
@@ -280,9 +263,6 @@
             var parentID = treeNode.getId();
 
             var callback = {};
-            callback.onTabClose = function(eventObj) {
-                delCacheData(eventObj.tab.SID);
-            };
             callback.onTabChange = function() {
                 setTimeout(function() {
                     loadTreeDetailData(null, true, parentID, type, mode);
@@ -324,8 +304,8 @@
 				var paramInfoNode = this.getNodeValue(XML_PARAM_INFO);
 				Cache.XmlDatas.add(treeID, paramInfoNode);
 				
-				$$("page1Form").editable = editable ? "true" : "false";
 				var xform = $X("page1Form", paramInfoNode);
+				xform.setEditable(editable ? "true" : "false");
 
 				attachReminder(treeID, xform); // 离开提醒
 	 
@@ -363,13 +343,10 @@
 			var paramInfoDataNode = paramInfoNode.selectSingleNode(".//data");
 			if( paramInfoDataNode ) {
 				flag = true;
-
-				var prefix = paramInfoNode.selectSingleNode("./declare").getAttribute("prefix");
-				p.setXFormContent(paramInfoDataNode, prefix);
+				p.setXFormContent(paramInfoDataNode);
 			}
 		}
  
-
         if( flag ) {
             var request = new HttpRequest(p);
            
@@ -407,14 +384,6 @@
  
     function delParam() {
 		 delTreeNode(URL_PARAM_DELETE);
-    }
-
-	function flushParamCache() {
-       Ajax({
-			url : URL_FLUSH_CACHE + getTreeNodeId(),
-			onsuccess : function() { 
-			}
-		});
     }
  
     function getTreeNodeType() {
@@ -485,13 +454,6 @@
 
     window.onload = init;
 
-	//关闭页面自动注销
-    window.attachEvent("onunload", function() {
-        if(10000 < window.screenTop || 10000 < window.screenLeft) {
-            logout();
-        }
-	});
-
 //-->
 </SCRIPT>
 
@@ -500,7 +462,7 @@
 <body>
 
 <!-- 版面 开始 -->
-<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+<table class="panel" >
   <tr class="header"> 
 	<td class="left"></td>
 	<td class="center"></td>
@@ -510,9 +472,10 @@
 	<td class="left"></td>
 	<td class="center">
 	  <!-- 版面内容 开始 -->
-	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+	  <table class="full" >
 		<tr class="hidden"> 
-		  <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+		  <td height="20">
+		    <table class="hFull">
 			  <tr> 
 				<td> 
 				  <!-- 主菜单 开始 -->
@@ -528,75 +491,35 @@
 		</tr>
 		<tr> 
 		  <td valign="top">
-			<table class="full" border="0" cellpadding="0" cellspacing="0">
+			<table class="full" >
 			  <tr> 
 				<td id="palette">
 				  <!-- 左栏 开始 -->
-				  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+				  <table class="full border" >
 					<tr id="treeTitle" class="bar"> 
 					  <td class="opened">
-						<span class="icon"></span>资源<span class="button refresh" id="treeBtRefresh" title="刷新"></span><span class="button collapse" id="treeTitleBt"></span>
+						<span class="icon"></span>参数列表<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
 					  </td>
 					</tr>
 					<tr>
 					  <td id="treeContainer">
-						<!-- tree 开始 -->
 						 <Tree:Box id="tree" treeType="menu" baseurl="../../tree/" canMoveNode="true"><div class="loading"></div></Tree:Box>
-						<!-- tree 结束 -->
 					  </td>
-					</tr>
-					<tr id="statusTitle" class="bar">
-					  <td class="opened">
-						<span class="icon"></span>状态信息<span class="button collapse" id="statusTitleBt"></span>
-					  </td>
-					</tr>
-					<tr style="display:none">
-					  <td id="statusContainer"></td>
 					</tr>
 				  </table>                        
 				  <!-- 左栏 结束 -->
 				</td>
-				<td>
-				  <table class="full" border="0" cellpadding="0" cellspacing="0">
-					<tr valign="top">
-					  <!-- 主内容区域 开始 -->
-					  <td class="groove">
-						<div class="groove">
-						  <table class="full" border="0" cellspacing="2" cellpadding="0">
-							<tr>
-							  <td>
-								<!-- 标签区域 开始 -->
-								<WorkSpace:Box id="ws" baseurl="../../workspace/">
-								  <!-- page1 开始 -->
-								  <WorkSpace:Page id=page1>
-									<table class="full" border="0" cellspacing="0" cellpadding="0">
-									  <tr valign="top">
-										<td>
-										  <!-- xform 开始 -->
-										  <XForm:Box id="page1Form" baseurl="../../xform/"><div class="loading"></div></XForm:Box>
-										  <!-- xform 结束 -->
-										</td>
-									  </tr>
-									  <tr height="20">
-										<td>
-										  <WorkSpace:PageStep>
-											<input type="button" class="btStrong" value="完成" id="page1BtSave"/>
-										  </WorkSpace:PageStep>
-										</td>
-									  </tr>
-									</table>
-								  </WorkSpace:Page>
-								  <!-- page1 结束 -->
-								</WorkSpace:Box>
-								<!-- 标签区域 结束 -->
-							  </td>
-							</tr>
-						  </table>                                
-						</div>
-					  </td>
-					  <!-- 主要内容区域 结束 -->
-					</tr>
-				  </table></td>
+				<td class="groove"> 
+					<WorkSpace:Box id="ws" baseurl="../../workspace/">
+					  <!-- page1 开始 -->
+					  <WorkSpace:Page id="page1">
+						  <XForm:Box id="page1Form" baseurl="../../xform/"><div class="loading"></div></XForm:Box>
+						  <WorkSpace:PageStep>
+							<input type="button" class="btStrong" value="完成" id="page1BtSave"/>
+						  </WorkSpace:PageStep>
+					  </WorkSpace:Page>
+					</WorkSpace:Box>
+				</td>
 			  </tr>
 			</table></td>
 		</tr>

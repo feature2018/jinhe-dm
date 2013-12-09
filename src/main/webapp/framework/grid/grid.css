@@ -1,26 +1,21 @@
 
 Grid\:Box {
-	position:absolute;
-	border:1px solid #96969E;
+	position:relative;
+	border:0px solid #96969E;
 	background-color:#FFFFFF;
 	padding-top:0px;
 	width:100%;
 	height:100%;
-	font-size:12px;
 	font-family: "宋体";
+	display:inline-block;
 }
 
-Grid\:Box .cell {
-	background-color:#F7F8FD;	
-}
-
-Grid\:Box .cell td, Grid\:Box .header td {
-	border-style:solid;
-	border-color:#FFFFFF #96969E #96969E #FFFFFF;	
-	border-width: 1 1 1 1;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	height:22px;
+Grid\:Box table {
+	width:100%;
+	table-layout:fixed;
+    border: 0;
+    margin: 0;
+    border-collapse:collapse;
 }
 
 Grid\:Box .column {
@@ -29,7 +24,25 @@ Grid\:Box .column {
 	border-color:#FFFFFF #96969E #96969E #FFFFFF;
 	border-width: 1 1 1 1;
 	background-color:#E4E6F5;
-	height:25px;
+    height:25px;
+    font-size:12px;
+}
+
+Grid\:Box .cell {
+	background-color:#F7F8FD;	
+}
+
+Grid\:Box .cell td, Grid\:Box .header td {
+    font-size:12px;
+	border-style:solid;
+	border-color:#FFFFFF #96969E #96969E #FFFFFF;	
+	border-width: 1 1 1 1;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+Grid\:Box .cell tr {
+    height:22px;
 }
 
 Grid\:Box .highlightCol {
@@ -45,9 +58,8 @@ Grid\:Box .rolloverRow {
 }
 
 Grid\:Box .hidden {
-	display: none;
+	display:none;
 }
-
 
 Grid\:Box .asc {  
 	background: #FFFFCC url(../images/up.gif) no-repeat right 5px;
@@ -73,6 +85,7 @@ Grid\:Box .sorting {
     cursor:default;
 }
 #gridTitle .icon {
+    display:inline-block;
     width: 8px;
     height: 8px;
     font-size: 1px;
@@ -88,32 +101,35 @@ Grid\:Box .sorting {
 }
 
 #gridTitle .button {
+    display:inline-block;
     width: 16px;
     height: 15px;
     background-repeat: no-repeat;
     background-position: center;
     cursor: hand;
-    margin:0 2px;
-  }
-  #gridTitle .refresh {
-    background-image: url(../images/icon_refresh.gif);
-  }
-  #gridTitle .first {
-    background-image: url(../images/first.gif);
-  }
-  #gridTitle .prev {
-    background-image: url(../images/prev.gif);
-  }
-  #gridTitle .next {
-    background-image: url(../images/next.gif);
-  }
-  #gridTitle .last {
-    background-image: url(../images/last.gif);
-  }
+    margin:2 2 2 2px;
+}
+ 
+#gridTitle .refresh {
+  background-image: url(../images/icon_refresh.gif);
+}
+#gridTitle .first {
+  background-image: url(../images/first.gif);
+}
+#gridTitle .prev {
+  background-image: url(../images/prev.gif);
+}
+#gridTitle .next {
+  background-image: url(../images/next.gif);
+}
+#gridTitle .last {
+  background-image: url(../images/last.gif);
+}
 
 #gridTitle select {
     font-size:10px;
     font-family:Verdana;
     position:relative;
-    top:1px;
+    top:-4px;
+    right:1px;
 }

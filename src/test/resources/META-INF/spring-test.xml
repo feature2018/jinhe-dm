@@ -35,6 +35,7 @@
 		<property name="interceptorNames">
 			<list>
 				<value>businessLogInterceptor</value>
+				<value>cacheInterceptor</value>
 			</list>
 		</property>
 	</bean>

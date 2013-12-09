@@ -17,7 +17,7 @@
 <SCRIPT type="text/javascript">
 <!--
  
-    URL_CORE = "../../";
+    if(IS_TEST) URL_CORE = "../../"; 
 
     /* 后台响应数据节点名称  */
     XML_MAIN_FORM = "SearchLog";
@@ -57,7 +57,6 @@
         if( searchLogFormXML ) {
             var dataNode = searchLogFormXML.selectSingleNode(".//data");
             if(dataNode){
-                condition.prefix = searchLogFormXML.selectSingleNode("./declare").getAttribute("prefix");
                 condition.dataXml = dataNode.toXml();
             }
         }

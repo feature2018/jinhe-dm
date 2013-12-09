@@ -8,7 +8,7 @@ _TYPE_STRING = "string";
 _TYPE_BOOLEAN = "boolean";
 
 /* 常用方法缩写 */
-$$ = function(id){
+$$ = function(id) {
 	return document.getElementById(id);
 }
 
@@ -44,18 +44,19 @@ function assertNotNull(result, msg) {
 	}
 }
 
+
 /* 对象名称：Public（全局静态对象） */
 var Public = {};
 
 /* 浏览器类型 */
 _BROWSER_IE = "IE";
-_BROWSER_FF = "FF";
+_BROWSER_FF = "FIREFOX";
 _BROWSER_OPERA = "OPERA";
 _BROWSER_CHROME = "CHROME";
 _BROWSER = _BROWSER_IE;
 
 Public.checkBrowser = function() {
-	var ua = navigator.userAgent.toUpperCase();
+	var ua = navigator.userAgent.toUpperCase(); 
 	if(ua.indexOf(_BROWSER_IE)!=-1) {
 		_BROWSER = _BROWSER_IE;
 	}
@@ -71,10 +72,13 @@ Public.checkBrowser = function() {
 }
 Public.checkBrowser();
 
+Public.isIE = function() {
+	return _BROWSER == _BROWSER_IE;
+}
+
 Public.executeCommand = function(callback, param) {
 	var returnVal;
-	try
-	{
+	try {
 		switch (typeof(callback))
 		{
 		case _TYPE_STRING:
@@ -87,9 +91,8 @@ Public.executeCommand = function(callback, param) {
 			returnVal = callback;
 			break;
 		}
-	}
-	catch (e)
-	{
+	} catch (e) {
+		alert(e.message);
 		returnVal = false;
 	}
 	return returnVal;
@@ -107,36 +110,11 @@ Public.showWaitingLayer = function () {
 		waitingDiv.style.left = "0px";   
 		waitingDiv.style.top = "0px";   
 		waitingDiv.style.cursor = "wait"; 
-		
-		var waitingFlash = ICON + "images/loadingbar.swf";
- 		var str = [];
-		str[str.length] = "<TABLE width=\"100%\" height=\"100%\"><TR><TD align=\"center\">";
-		str[str.length] = "	 <object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" ";
-		str[str.length] = "		   codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0\" ";
-		str[str.length] = "        width=\"140\" height=\"30\" id=\"loadingbar\" align=\"middle\">";
-		str[str.length] = "		<param name=\"movie\" value=' " + waitingFlash + "' />";
-		str[str.length] = "		<param name=\"quality\" value=\"high\" />";
-		str[str.length] = "		<param name=\"wmode\" value=\"transparent\" />";
-		str[str.length] = "		<embed src=' " + waitingFlash + "' quality=\"high\" ";
-		str[str.length] = "		       wmode=\"transparent\" width=\"140\" height=\"30\" align=\"middle\" ";
-		str[str.length] = "		       type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />";
-		str[str.length] = "  </object>";
-		str[str.length] = "</TD></TR></TABLE>";
-		waitingDiv.innerHTML = str.join("\r\n");
-
-		var coverDiv = document.createElement("div");  
-		coverDiv.id = "coverDiv";
-		coverDiv.style.width  = "100%";    
-		coverDiv.style.height = "100%";    
-		coverDiv.style.position = "absolute";    
-		coverDiv.style.left = "0px";   
-		coverDiv.style.top  = "0px";   
-		coverDiv.style.zIndex = "10000"; 
-		coverDiv.style.background = "black";   
-		Element.setOpacity(coverDiv, 10);
+		waitingDiv.style.zIndex = "10000";
+		waitingDiv.style.background = "black";   
+		Element.setOpacity(waitingDiv, 10);
 
 		document.body.appendChild(waitingDiv);
-		document.body.appendChild(coverDiv);
 	}
 
 	if( waitingDiv ) {
@@ -147,22 +125,72 @@ Public.showWaitingLayer = function () {
 Public.hideWaitingLayer = function() {
 	var waitingDiv = $$("_waitingDiv");
 	if( waitingDiv  ) {
-		setTimeout( function() {
-			waitingDiv.style.display = "none";
-			$$("coverDiv").style.display = "none";
-		}, 100);
+		waitingDiv.style.display = "none";
 	}
 }
 
-Public.writeTitle = function() {
+Public.initBrowser = function() {
 	if(window.dialogArguments) {
 		var title = window.dialogArguments.title;
 		if( title  ) {
 			document.write("<title>" + title + new Array(100).join("　") + "</title>");
 		}
 	}
+
+	/* 禁止鼠标右键 */
+	document.oncontextmenu = function(eventObj) {
+		eventObj = eventObj || window.event;
+		var srcElement = Event.getSrcElement(eventObj);
+		var tagName = srcElement.tagName.toLowerCase();
+		if("input" != tagName && "textarea" != tagName) {
+			preventDefault(event);            
+		}
+	}
 }
-Public.writeTitle();
+Public.initBrowser();
+
+// -------------------------------------------------- 添加方法，以兼容FireFox、Chrome -----------------------------------------------
+if(!window.getComputedStyle) {
+  window.getComputedStyle = function(target) {
+    return target.currentStyle;
+  };
+}
+
+
+function preventDefault(event) {
+	if (event.preventDefault) {
+		event.preventDefault();
+	} else {
+		event.returnValue = false;
+	}
+}
+
+if ( !Public.isIE() ) {
+	Element.prototype.selectNodes = function(p_xPath) {
+		var m_Evaluator = new XPathEvaluator();
+		var m_Result = m_Evaluator.evaluate(p_xPath, this, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+
+		var m_Nodes = [];
+		if (m_Result) {
+			var m_Element;
+			while (m_Element = m_Result.iterateNext()) {
+				m_Nodes.push(m_Element);
+			}
+		} 
+		return m_Nodes;
+	};
+
+	Element.prototype.selectSingleNode = function(p_xPath) {
+		var m_Evaluator = new XPathEvaluator();
+		var m_Result = m_Evaluator.evaluate(p_xPath, this, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+
+		if (m_Result) {
+			return m_Result.singleNodeValue;
+		} else {
+			return null;
+		}
+	};
+}
 
 
 /* 负责生成对象唯一编号（为了兼容FF） */
@@ -184,6 +212,22 @@ UniqueID.generator = function(prefix) {
 var Cache = {};
 Cache.Variables = new Collection();
 Cache.XmlDatas  = new Collection();
+
+/*
+ *	删除缓存(公用)
+ *	参数：	string:cacheID      缓存数据id
+			boolean:flag        是否清除关联的XML数据
+ */
+function delCacheData(cacheID, flag) {
+	var cacheData = Cache.Variables.get(cacheID);
+	Cache.Variables.del(cacheID);
+
+	if( flag ) {
+		for(var i=0; cacheData && i < cacheData.length; i++) {
+			Cache.XmlDatas.del(cacheData[i]);
+		}
+	}
+}
 
 /* 集合类: 类似java Map */
 function Collection() {
@@ -402,7 +446,7 @@ String.prototype.substringB = function(startB, endB){
 		var chr = str.charAt(i);
 		if( true == /[^\u0000-\u00FF]/.test( chr ) ){
 			iByte += 2;
-		}else{
+		} else {
 			iByte ++;
 		}
 	}
@@ -502,14 +546,14 @@ var Element = {};
 Element.removeNode = function(node) {
 	if( node == null ) return;
 
-	if(window.DOMParser) {
+	if(node.removeNode) {
+		node.removeNode(true); // IE支持
+	}
+	else {
 		var parentNode = node.parentNode;
 		if( parentNode  ) {
 			parentNode.removeChild(node);
 		}
-	}
-	else {
-		node.removeNode(true);
 	}
 }
 
@@ -521,7 +565,7 @@ Element.removeNode = function(node) {
 Element.absLeft = function(srcElement) {
 	var absLeft = 0;
 	var tempObj = srcElement;
-	while( tempObj  && tempObj != document.body) {
+	while( tempObj && tempObj.offsetParent && tempObj != document.body) {
 		absLeft += tempObj.offsetLeft - tempObj.offsetParent.scrollLeft;
 		tempObj = tempObj.offsetParent;
 	}
@@ -530,7 +574,7 @@ Element.absLeft = function(srcElement) {
 Element.absTop = function(srcElement) {
 	var absTop = 0;
 	var tempObj = srcElement;
-	while( tempObj  && tempObj != document.body) {
+	while( tempObj && tempObj.offsetParent && tempObj != document.body) {
 		absTop += tempObj.offsetTop - tempObj.offsetParent.scrollTop;
 		tempObj = tempObj.offsetParent;
 	}
@@ -543,7 +587,7 @@ Element.absTop = function(srcElement) {
 			string:ns			命名空间
  *	返回值：object	html对象
  */
-Element.createElement = function(tagName, ns) {
+Element.createNSElement = function(tagName, ns) {
 	var obj;
 	if( ns == null ) {
 		obj = document.createElement(tagName);
@@ -554,13 +598,29 @@ Element.createElement = function(tagName, ns) {
 		obj = tempDiv.firstChild.cloneNode(false);
 		Element.removeNode(tempDiv);
 	}
+
+	if (obj.uniqueID == null) {
+		obj.uniqueID = UniqueID.generator(); // 非IE
+	}
 	return obj;
+}
+
+Element.getNSElements = function(element, tagName, ns) {
+	var childs = element.getElementsByTagName(tagName);
+	if ( childs == null || childs.length == 0 ) {
+		childs = element.getElementsByTagName(ns + ":" + tagName);
+	}
+	return childs;
 }
 
 Element.createElement = function(tagName, className) {
 	var element = document.createElement(tagName);
 	if( className ) {
 		Element.addClass(element, className)
+	}
+
+	if (element.uniqueID == null) {
+		element.uniqueID = UniqueID.generator(); // 非IE
 	}
 	return element;
 }
@@ -685,7 +745,9 @@ Element.setOpacity = function(obj, opacity) {
 	}
 
 	if(window.DOMParser) {
-		obj.style.opacity = opacity / 100;
+		if(obj.style) {
+			obj.style.opacity = opacity / 100;
+		}
 	}
 	else {
 		obj.style.filter = "alpha(opacity=" + opacity + ")";
@@ -765,102 +827,256 @@ Element.removeClass = function(element, className) {
 	}
 }
 
+/*
+ * where：插入位置。包括beforeBegin,beforeEnd,afterBegin,afterEnd。
+ * el：用于参照插入位置的html元素对象
+ * html：要插入的html代码
+ */
+Element.insertHtml = function(where, el, html) {
+    where = where.toLowerCase();
+    if(el.insertAdjacentHTML){
 
-
-
-
-/* 缓存页面所有的resize拖动条；元素拖动后可能引起了其他元素位置改变，需要刷新其他元素所对应的resize条位置 */
-Element.ruleObjList = [];
-
+        switch(where){
+            case "beforebegin":
+                el.insertAdjacentHTML('BeforeBegin', html);
+                return el.previousSibling;
+            case "afterbegin":
+                el.insertAdjacentHTML('AfterBegin', html);
+                return el.firstChild;
+            case "beforeend":
+                el.insertAdjacentHTML('BeforeEnd', html);
+                return el.lastChild;
+            case "afterend":
+                el.insertAdjacentHTML('AfterEnd', html);
+                return el.nextSibling;
+        }
+    }
+    var range = el.ownerDocument.createRange();
+    var frag;
+    switch(where){
+         case "beforebegin":
+            range.setStartBefore(el);
+            frag = range.createContextualFragment(html);
+            el.parentNode.insertBefore(frag, el);
+            return el.previousSibling;
+         case "afterbegin":
+            if(el.firstChild){
+                range.setStartBefore(el.firstChild);
+                frag = range.createContextualFragment(html);
+                el.insertBefore(frag, el.firstChild);
+                return el.firstChild;
+             }else{
+                el.innerHTML = html;
+                return el.firstChild;
+             }
+        case "beforeend":
+            if(el.lastChild){
+                range.setStartAfter(el.lastChild);
+                frag = range.createContextualFragment(html);
+                el.appendChild(frag);
+                return el.lastChild;
+            }else{
+                el.innerHTML = html;
+                return el.lastChild;
+            }
+        case "afterend":
+            range.setStartAfter(el);
+            frag = range.createContextualFragment(html);
+            el.parentNode.insertBefore(frag, el.nextSibling);
+            return el.nextSibling;
+    }
+};
+ 
 /*
  * 控制对象拖动改变宽度
- * 参数：	Object:obj			要拖动改变宽度的HTML对象
+ * 参数：	Object:element   要拖动改变宽度的HTML对象
  */
-Element.attachColResize = function(obj) {
-	var offsetX = 3;
+Element.attachColResize = function(element) {
+	 Element.attachResize(element, "col");
+}
 
-	// 添加resize条
-	var ruleObj = document.createElement("DIV");
-	ruleObj.style.cssText = "cursor:col-resize;position:absolute;overflow:hidden;";
-	document.body.appendChild(ruleObj);
-	setDivPosition(ruleObj, obj);
-
-	ruleObj.target = obj;
-	Element.ruleObjList.push(ruleObj);
-
-    // 计算resize条的坐标值
-	function setDivPosition(ruleElement, element) {
-		ruleElement.style.width = offsetX;
-		ruleElement.style.height = element.offsetHeight;
-		ruleElement.style.top  = Element.absTop(element);
-		ruleElement.style.left = Element.absLeft(element) + element.offsetWidth - offsetX;
-		ruleElement.style.backgroundColor = "white";
-		ruleElement.style.filter = "alpha(opacity=0)";		
-	}
-
-	// 刷新所有resize条的位置
-	function refreshResizeDivPosition() {
-		for(var i = 0; i < Element.ruleObjList.length; i++) {
-			var ruleElement = Element.ruleObjList[i];
-			setDivPosition(ruleElement, ruleElement.target);
-		}
-	}
-
-	obj.onresize = refreshResizeDivPosition;
-
-	var moveHandler = function() {
-		if(ruleObj._isMouseDown == true) {
-			ruleObj.style.left = Math.max( Element.absLeft(obj), event.clientX - offsetX);
-
-			if (document.addEventListener) {             
-				document.addEventListener("mouseup", stopHandler, true);  
-			}
-		}
-	}
-
-	var stopHandler = function() {
-		ruleObj._isMouseDown = false;
-		obj.style.width = Math.max(1, obj.offsetWidth + event.clientX - ruleObj._fromX); 
-
-		if (ruleObj.releaseCapture) {             
-			ruleObj.releaseCapture();         
-		} 
-		else {
-			document.removeEventListener("mousemove", moveHandler, true);
-			document.removeEventListener("mouseup", stopHandler, true);  
-		}			
-	}
+/*
+ * 控制对象拖动改变高度
+ * 参数：	Object:element   要拖动改变高度的HTML对象
+ */
+Element.attachRowResize = function(element) {
+	 Element.attachResize(element, "row");
+}
  
-	ruleObj.onmousedown = function() {
-		this.style.backgroundColor = "#999999";
-		this.style.filter = "alpha(opacity=50)";
+Element.attachResize = function(element, type) {
+	var handle = document.createElement("DIV"); // 拖动条
+	if (type == "col") {
+		handle.style.cssText = "cursor:col-resize;position:absolute;overflow:hidden;float:right;top:0px;right:0px;width:3px;height:100%;z-index:3;filter:alpha(opacity:80);opacity:80;background:red;";
+	} else if(type == "row") {
+		handle.style.cssText = "cursor:row-resize;position:absolute;overflow:hidden;left:0px;bottom:0px;width:100%;height:3px;z-index:3;filter:alpha(opacity:0);opacity:0;";
+	} else {
+		handle.style.cssText = "cursor:nw-resize;position:absolute;overflow:hidden;right:0px;bottom:0px;width:8px;height:8px;z-index:3;background:#99CC00";
+	}
+	
+	element.appendChild(handle);
 
-		this._isMouseDown = true;
-		this._fromX = event.clientX;
+	var mouseStart  = {x:0, y:0};  // 鼠标起始位置
+	var handleStart = {x:0, y:0};  // 拖动条起始位置
 
-		if (this.setCapture) {             
-			this.setCapture();    
-		} 
-		else {
-			document.addEventListener("mousemove", moveHandler, true);
+	handle.onmousedown = function(ev) {
+		var oEvent = ev || event;
+		mouseStart.x  = oEvent.clientX;
+		mouseStart.y  = oEvent.clientY;
+		handleStart.x = handle.offsetLeft;
+		handleStart.y = handle.offsetTop;
+
+		if (handle.setCapture) {
+			handle.onmousemove = doDrag;
+			handle.onmouseup = stopDrag;
+			handle.setCapture();
+		} else {
+			document.addEventListener("mousemove", doDrag, true);
+			document.addEventListener("mouseup", stopDrag, true);
 		}
 	};
-	ruleObj.onmousemove = function() {
-		moveHandler();
+
+	function doDrag(ev) {
+		var oEvent = ev || event;
+
+		// 水平移动距离
+		if (type == "col" || type == null) {
+			var _width = oEvent.clientX - mouseStart.x + handleStart.x + handle.offsetWidth;
+			if (_width < handle.offsetWidth) {
+				_width = handle.offsetWidth;
+			} 
+			else if (_width > document.documentElement.clientWidth - element.offsetLeft) {
+				_width = document.documentElement.clientWidth - element.offsetLeft - 2; // 防止拖出窗体外
+			}
+			element.style.width = _width + "px";
+		}
+
+		// 垂直移动距离
+		if (type == "row" || type == null) {
+			var _height = oEvent.clientY - mouseStart.y + handleStart.y + handle.offsetHeight;
+			if (_height < handle.offsetHeight) {
+				_height = handle.offsetHeight;
+			} 
+			else if (_height > document.documentElement.clientHeight - element.offsetTop) {
+				_height = document.documentElement.clientHeight - element.offsetTop - 2; // 防止拖出窗体外
+			}
+			element.style.height = _height + "px";
+		}
 	};
-	ruleObj.onmouseup = function() { 
-		stopHandler();
+
+	function stopDrag() {
+		if (handle.releaseCapture) {
+			handle.onmousemove = handle.onmouseup = null;
+			handle.releaseCapture();
+		} else {
+			document.removeEventListener("mousemove", doDrag, true);
+			document.removeEventListener("mouseup", stopDrag, true);
+		}
 	};
 }
 
-Element.attachRowResize = function(obj) {
+Element.attachColResizeII = function(element) {
+	var handle = element; // 拖动条(使用自己)
 
+	var mouseStart  = {x:0, y:0};  // 鼠标起始位置
+	var handleStart = {x:0, y:0};  // 拖动条起始位置
+
+	handle.onmousedown = function(ev) {
+		var oEvent = ev || event;
+		mouseStart.x  = oEvent.clientX;
+		handleStart.x = handle.offsetLeft;
+
+		if (handle.setCapture) {
+			handle.onmousemove = doDrag;
+			handle.onmouseup = stopDrag;
+			handle.setCapture();
+		} else {
+			document.addEventListener("mousemove", doDrag, true);
+			document.addEventListener("mouseup", stopDrag, true);
+		}
+	};
+
+	function doDrag(ev) {
+		var oEvent = ev || event;
+
+		var _width = oEvent.clientX - mouseStart.x + handle.offsetWidth;
+		if (_width > document.documentElement.clientWidth - handle.offsetLeft) {
+			_width = document.documentElement.clientWidth - handle.offsetLeft - 2; // 防止拖出窗体外
+		}
+		if (_width < 0) {
+			_width = handle.width;
+		}
+
+		handle.style.width = Math.max(_width, 10) + "px";
+	};
+
+	function stopDrag() {
+		if (handle.releaseCapture) {
+			handle.onmousemove = handle.onmouseup = null;
+			handle.releaseCapture();
+		} else {
+			document.removeEventListener("mousemove", doDrag, true);
+			document.removeEventListener("mouseup", stopDrag, true);
+		}
+	};
 }
 
-Element.attachResize = function(obj) {
+/*
+ * 拖动对象，改变其位置
+ * 参数：	Object:element   要拖动的HTML对象
+ */
+Element.moveable = function(element) {
+	var handle = element.getElementsByTagName("h2")[0]; // 拖动条
+	if(handle == null) return;
 
+	var mouseStart  = {x:0, y:0};  // 鼠标起始位置
+	var elementStart = {x:0, y:0};  // 拖动条起始位置
+
+	handle.onmousedown = function(ev) {
+		var oEvent = ev || event;
+		mouseStart.x  = oEvent.clientX;
+		mouseStart.y  = oEvent.clientY;
+		elementStart.x = element.offsetLeft;
+		elementStart.y = element.offsetTop;
+
+		if (handle.setCapture) {
+			handle.onmousemove = doDrag;
+			handle.onmouseup = stopDrag;
+			handle.setCapture();
+		} else {
+			document.addEventListener("mousemove", doDrag, true);
+			document.addEventListener("mouseup", stopDrag, true);
+		}
+	};
+
+	function doDrag(ev) {
+		var oEvent = ev || event;
+
+		var x = oEvent.clientX - mouseStart.x + elementStart.x;
+		var y = oEvent.clientY - mouseStart.y + elementStart.y;
+		if (x < 0) {
+			x = 0;
+		} else if (x > document.documentElement.clientWidth - element.offsetWidth) {
+			x = document.documentElement.clientWidth - element.offsetWidth;
+		}
+		if (y < 0) {
+			y = 0;
+		} else if (y > document.documentElement.clientHeight - element.offsetHeight) {
+			y = document.documentElement.clientHeight - element.offsetHeight;
+		}
+		element.style.left = x + "px";
+		element.style.top  = y + "px";
+	};
+
+	function stopDrag() {
+		if (handle.releaseCapture) {
+			handle.onmousemove = handle.onmouseup = null;
+			handle.releaseCapture();
+		} else {
+			document.removeEventListener("mousemove", doDrag, true);
+			document.removeEventListener("mouseup", stopDrag, true);
+		}
+	};
 }
-
 
 
 /*********************************** html dom 操作  end **********************************/
@@ -883,13 +1099,7 @@ Event.timeout = {};
  *	返回值：object:object       HTML对象
  */
 Event.getSrcElement = function(eventObj) {
-	var srcElement = null;
-	if(window.DOMParser) {
-		srcElement = eventObj.target;
-	}
-	else {
-		srcElement = eventObj.srcElement;
-	}
+	var srcElement =  eventObj.target || eventObj.srcElement;
 	return srcElement;
 }
 
@@ -938,7 +1148,6 @@ Event.cancelBubble = function(eventObj) {
  *	参数：	object:srcElement       HTML对象
 			string:eventName        事件名称(不带on前缀)
 			function:listener       回调方法                
- *	返回值：
  */
 Event.attachEvent = function(srcElement, eventName, listener) {
 	if(null == srcElement || null == eventName || null == listener) {
@@ -952,7 +1161,7 @@ Event.attachEvent = function(srcElement, eventName, listener) {
 		srcElement.attachEvent("on" + eventName, listener);
 	}
 	else {
-		srcElement['on' + type] = listener;
+		srcElement['on' + eventName] = listener;
 	}
 }
 
@@ -1017,7 +1226,7 @@ function createEventObject() {
 function EventFirer(element, eventName) {
 	var _name = eventName;
 	this.fire = function (event) {
-		var func = element.getAttribute(_name);
+		var func = element.getAttribute(_name) || eval("element." + _name);
 		if( func ) {
 			var funcType = typeof(func);
 			if("string" == funcType) {
@@ -1034,9 +1243,9 @@ function EventFirer(element, eventName) {
 
 /*********************************** xml文档、节点相关操作  start **********************************/
 
-/*
- * 将字符串转化成xml节点对象
- */
+MSXML_DOCUMENT_VERSION = "Msxml2.DOMDocument.6.0";
+
+/* 将字符串转化成xml节点对象 */
 function loadXmlToNode(xml) {
 	if(xml == null || xml == "" || xml == "undifined") {
 		return null;
@@ -1047,33 +1256,59 @@ function loadXmlToNode(xml) {
 
 function getXmlDOM() {
 	var xmlDom;
-	if (window.DOMParser) {
+	if (Public.isIE()) {
+		xmlDom = new ActiveXObject(MSXML_DOCUMENT_VERSION);
+		xmlDom.async = false;
+	}
+	else {
 		var parser = new DOMParser();
 		xmlDom = parser.parseFromString("<null/>", "text/xml");
 		xmlDom.parser = parser;
-	}
-	else { // Internet Explorer
-		xmlDom = new ActiveXObject("Msxml2.DOMDOCUMENT");
-		xmlDom.async = false;
     } 
 	return xmlDom;
 }
 
+function loadXmlDOM(url) {
+	var xmlDom;
+	if (window.DOMParser) {
+		var xmlhttp = new window.XMLHttpRequest();  
+	    xmlhttp.open("GET", url, false);  
+		try {  xmlhttp.responseType = 'msxml-document';  } catch (e) {  } 
+	    xmlhttp.send(null);  
+	    xmlDom = xmlhttp.responseXML.documentElement;  
+	}
+	else { // < IE10
+		xmlDom = new ActiveXObject(MSXML_DOCUMENT_VERSION);
+		xmlDom.async = false;
+		xmlDom.load(url);
+    } 
+	return xmlDom;
+}
 
 function XmlReader(text) {
 	this.xmlDom = null;
 
-	if (window.DOMParser) {
-		var parser = new DOMParser();
-		this.xmlDom = parser.parseFromString(text, "text/xml");
-	}
-	else { // Internet Explorer
-		this.xmlDom = new ActiveXObject("Msxml2.DOMDOCUMENT");
+	if (Public.isIE()) {
+		this.xmlDom = new ActiveXObject(MSXML_DOCUMENT_VERSION);
 		this.xmlDom.async = false;
 		this.xmlDom.loadXML(text); 
+	}
+	else {
+		var parser = new DOMParser();
+		this.xmlDom = parser.parseFromString(text, "text/xml"); 
     } 
 
 	this.documentElement = this.xmlDom.documentElement;
+}
+
+XmlReader.prototype.loadXml = function(text) {
+	if (Public.isIE()) {
+		this.xmlDom.loadXML(text); 
+	}
+	else { 
+		var parser = new DOMParser();
+		this.xmlDom = parser.parseFromString(text, "text/xml");
+    } 
 }
 
 XmlReader.prototype.createElement = function(name) {
@@ -1102,36 +1337,7 @@ XmlReader.prototype.createCDATA = function(data) {
 	return xmlNode;
 }
 
-XmlReader.prototype.load = function(url, async) {
-	if(window.DOMParser) {
-
-	}
-	else {
-		var thisObj = this;
-		this.xmlDom.async = async;
-		this.xmlDom.onreadystatechange = function() {
-			if(thisObj.xmlDom.readyState == 4) {
-				var onloadType = typeof(thisObj.onload);
-				try {
-					if(onloadType == _TYPE_FUNCTION) {
-						thisObj.onload();
-					} 
-					else if(onloadType == _TYPE_STRING) {
-						eval(thisObj.onload);
-					}
-				}
-				catch (e) { }
-			}
-		}
-		this.xmlDom.load(url);
-	}
-
-	this.documentElement = this.xmlDom.documentElement;
-}
-
-/*
- *	获取解析错误
- */
+/* 获取解析错误 */
 XmlReader.prototype.getParseError = function() {
 	var parseError = null;
 	if(window.DOMParser) {
@@ -1153,15 +1359,23 @@ XmlReader.prototype.toString = function() {
 }
 
 XmlReader.prototype.toXml = function() {
-	var str = "";
-	if(window.DOMParser) { 
-		var xmlSerializer = new XMLSerializer();
-        str = xmlSerializer.serializeToString(this.xmlDom.documentElement);
+	if (Public.isIE()) {
+		return this.xmlDom.xml;
 	}
 	else {
-		str = this.xmlDom.xml;
+		var xmlSerializer = new XMLSerializer();
+        return xmlSerializer.serializeToString(this.xmlDom.documentElement);
 	}
-	return str;
+}
+
+function xml2String(element) {
+	if (Public.isIE()) {
+		return element.xml;
+	}
+	else {
+		var xmlSerializer = new XMLSerializer();
+        return xmlSerializer.serializeToString(element);
+	}
 }
 
 /*
@@ -1182,7 +1396,7 @@ function XmlNode(node) {
 	this.nodeName = this.node.nodeName;
 	this.nodeType = this.node.nodeType;
 	this.nodeValue = this.node.nodeValue;
-	this.text = this.node.text;
+	this.text = this.node.text || this.node.textContent; // 取CDATA节点值时，chrome里用textContent
 	this.firstChild = this.node.firstChild;
 	this.lastChild = this.node.lastChild;
 	this.childNodes = this.node.childNodes;
@@ -1249,9 +1463,13 @@ XmlNode.prototype.removeCDATA = function(name) {
 
 XmlNode.prototype.cloneNode = function(deep) {
 	var tempNode;
-	if( window.DOMParser ) {
+	if( !Public.isIE() ) {
+		if(this.nodeType == _XML_NODE_TYPE_TEXT) {
+			return this;
+		}
 		tempNode = new XmlNode(new XmlReader(this.toXml()).documentElement);
-	} else {
+	} 
+	else {
 		tempNode = new XmlNode(this.node.cloneNode(deep));
 	}
 	return tempNode;
@@ -1259,7 +1477,7 @@ XmlNode.prototype.cloneNode = function(deep) {
 
 XmlNode.prototype.getParent = function() {
 	var xmlNode = null;
-	if( this.node.parentNode  ) {
+	if( this.node.parentNode) {
 		xmlNode = new XmlNode(this.node.parentNode);
 	}
 	return xmlNode;
@@ -1274,7 +1492,7 @@ XmlNode.prototype.removeNode = function() {
 
 XmlNode.prototype.selectSingleNode = function(xpath) {
 	var xmlNode = null;
-	if(window.DOMParser) {
+	if(window.DOMParser && !Public.isIE()) {
 		var ownerDocument;
 		if(_XML_NODE_TYPE_DOCUMENT == this.nodeType) {
 			ownerDocument = this.node;
@@ -1302,7 +1520,7 @@ XmlNode.prototype.selectSingleNode = function(xpath) {
  */
 XmlNode.prototype.selectNodes = function(xpath) {
 	var xmlNodes = [];
-	if(window.DOMParser) {
+	if(window.DOMParser && !Public.isIE()) {
 		var ownerDocument = null;
 		if(_XML_NODE_TYPE_DOCUMENT == this.nodeType) {
 			ownerDocument = this.node;
@@ -1328,7 +1546,12 @@ XmlNode.prototype.selectNodes = function(xpath) {
 }
 
 XmlNode.prototype.appendChild = function(xmlNode) {
-	this.node.appendChild(xmlNode.node);
+	if(xmlNode instanceof XmlNode) {
+		this.node.appendChild(xmlNode.node);
+	}
+	else {
+		this.node.appendChild(xmlNode);
+	}
 
 	this.nodeValue = this.node.nodeValue;
 	this.text = this.node.text;
@@ -1374,9 +1597,7 @@ XmlNode.prototype.swapNode = function(xmlNode) {
 	}
 }
 
-/*
- *	获取前一个兄弟节点
- */
+/* 获取前一个兄弟节点 */
 XmlNode.prototype.getPrevSibling = function() {
 	var xmlNode = null;
 	if( this.node.previousSibling ) {
@@ -1385,9 +1606,7 @@ XmlNode.prototype.getPrevSibling = function() {
 	return xmlNode;
 }
 
-/*
- * 获取后一个兄弟节点
- */
+/* 获取后一个兄弟节点 */
 XmlNode.prototype.getNextSibling = function() {
 	if( this.node.nextSibling ) {
 		var node = new XmlNode(this.node.nextSibling);
@@ -1411,12 +1630,12 @@ XmlNode.prototype.toString = function() {
 }
 
 XmlNode.prototype.toXml = function() {
-	if(window.DOMParser) {
-		var xs = new XMLSerializer();
-		return xs.serializeToString(this.node);
+	if (Public.isIE()) {
+		return this.node.xml
 	}
 	else {
-		return this.node.xml
+		var xs = new XMLSerializer();
+		return xs.serializeToString(this.node);
 	}
 }
 
@@ -1449,9 +1668,7 @@ Reminder.remind = function() {
 	}
 }
 
-/*
- * 统计提醒项
- */
+/* 统计提醒项 */
 Reminder.getCount = function() {
 	if( true== this.flag) {
 		return this.count;
@@ -1460,16 +1677,12 @@ Reminder.getCount = function() {
 	}
 }
 
-/*
- * 取消提醒
- */
+/* 取消提醒 */
 Reminder.cancel = function() {
 	this.flag = false;
 }
 
-/*
- * 允许提醒
- */
+/* 允许提醒  */
 Reminder.restore = function() {
 	this.flag = true;
 }
@@ -1496,226 +1709,6 @@ function detachReminder(id) {
 	Reminder.del(id);
 }
 
-
-
-/*
- *	对象名称：Blocks
- *	职责：负责管理所有Block实例
- */
-var Blocks = {};
-Blocks.items = {};
-
-/*
- *	创建区块实例
- *	参数：	Object:blockObj		HTML对象
-			Object:associate	关联的HTML对象
-			boolean:visible		默认显示状态
- *	返回值：
- */
-Blocks.create = function(blockObj, associate, visible) {
-	var block = new Block(blockObj, associate, visible);
-	this.items[block.uniqueID] = block;
-}
-/*
- *	获取区块实例
- *	参数：	string:id		HTML对象id
- *	返回值：Block:block		Block实例
- */
-Blocks.getBlock = function(id) {
-	var block = this.items[id];
-	return block;
-}
-
-
-/*
- *	对象名称：Block
- *	职责：负责控制区块显示隐藏等
- */
-var Block = function(blockObj, associate, visible) {
-	this.object = blockObj;
-	this.uniqueID = this.object.id;
-	this.associate = associate;
-	this.visible = visible || true;
-
-	this.width = null;
-	this.height = null;	
-	this.mode = null;
-
-	this.init();
-}
-
-/*
- *	初始化区块
- */
-Block.prototype.init = function() {
-	this.width  = this.object.currentStyle.width;
-	this.height = this.object.currentStyle.height;
-
-	if(false == this.visible) {
-		this.hide();
-	}
-}
-
-/*
- *	显示详细信息
- *	参数：	boolean:useFixedSize	是否启用固定尺寸显示
- */
-Block.prototype.show = function(useFixedSize) {
-	if( this.associate ) {
-		this.associate.style.display = "";
-	}
-	this.object.style.display = "";
-
-	var width  = "auto";
-	var height = "auto";
-	
-	// 启用固定尺寸
-	if(false != useFixedSize) {
-		width  = this.width || width;
-		height = this.height || height;
-	}
-	this.object.style.width = width;
-	this.object.style.height = height;
-
-	this.visible = true;
-}
-
-/*
- *	隐藏详细信息
- */
-Block.prototype.hide = function() {
-	if(  this.associate){
-		this.associate.style.display = "none";
-	}
-	this.object.style.display = "none";
-
-	this.visible = false;
-}
-
-/*
- *	切换显示隐藏状态
- *	参数：	boolean:visible		是否显示状态（可选，无参数则默认切换下一状态）
- */
-Block.prototype.switchTo = function(visible) {
-	visible = visible || !this.visible;
-
-	if( visible){
-		this.show();	
-	}
-	else {
-		this.hide();
-	}
-}
-
-/*
- *	原型继承
- *	参数：	function:Class		将被继承的类
- */
-Block.prototype.inherit = function(Class) {
-	var inheritClass = new Class();
-	for(var item in inheritClass){
-		this[item] = inheritClass[item];
-	}
-}
-
-
-/*
- *	对象名称：WritingBlock
- *	职责：负责区块内容写入
- *
- */
-function WritingBlock() {
-	this.mode = null;
-	this.line = 0;
-	this.minLine = 3;
-	this.maxLength = 16;
-}
-
-/*
- *	打开分行写入模式
- */
-WritingBlock.prototype.open = function(){
-	this.mode = "line";
-	this.line = 0;
-	this.writeTable();
-}
-
-/*
- *	写入分行模式用的表格
- */
-WritingBlock.prototype.writeTable = function() {
-	var str = [];
-	str[str.length] = "<table class=hfull><tbody>";
-	for(var i = 0;i < this.minLine; i++) {
-		str[str.length] = "<tr>";
-		str[str.length] = "  <td class=bullet>&nbsp;</td>";
-		str[str.length] = "  <td style=\"width: 55px\"></td>";
-		str[str.length] = "  <td></td>";
-		str[str.length] = "</tr>";
-	}
-	str[str.length] = "</tbody></table>";
-
-	this.object.innerHTML = str.join("");    
-}
-
-/*
- *	清除内容
- */
-WritingBlock.prototype.clear = function() {
-	this.object.innerHTML = "";
-}
-
-/*
- *	关闭分行写入模式
- */
-WritingBlock.prototype.close = function() {
-	this.mode = null;
-}
-
-/*
- *	分行写入内容（左右两列）
- *	参数：	string:name     名称
-			string:value    值
- */
-WritingBlock.prototype.writeln = function(name, value) {
-	if("line" == this.mode){
-		var table = this.object.firstChild;
-		if(table && "TABLE" != table.nodeName.toUpperCase()) {
-			this.clear();
-			table = null;
-		}
-		if(null == table) {
-			this.writeTable();
-		}
-
-		// 大于最小行数，则插入新行
-		if(this.line >= this.minLine) {
-			var newrow = table.rows[0].cloneNode(true);
-			table.firstChild.appendChild(newrow);
-		}
-
-		if(value && value.length > this.maxLength) {
-			value = value.substring(0, this.maxLength) + "...";
-		}
-
-		var row = table.rows[this.line];
-		var cells = row.cells;
-		cells[1].innerText = name + ":";
-		cells[2].innerText = value || "-";
-
-		this.line++;
-	}
-}
-
-/*
- *	写入内容
- */
-WritingBlock.prototype.write = function(content) {
-	this.mode = null;
-	this.object.innerHTML = content;
-}
-
-
 /*
  *	对象名称：Focus（全局静态对象）
  *	职责：负责管理所有注册进来对象的聚焦操作
@@ -1732,7 +1725,7 @@ Focus.lastID = null;
 Focus.register = function(focusObj) {
 	var id = focusObj.id;
 
-	//如果id不存在则自动生成一个
+	// 如果id不存在则自动生成一个
 	if(null == id || "" == id) {
 		id = UniqueID.generator();
 		focusObj.id = id;
@@ -1754,8 +1747,8 @@ Focus.focus = function(id){
 		if(this.lastID) {
 			this.blurItem(this.lastID);
 		}
-		
-		focusObj.style.filter = ""; // 施加聚焦效果
+
+		Element.setOpacity(focusObj, 100); // 施加聚焦效果
 		this.lastID = id;
 	}
 }
@@ -1767,7 +1760,7 @@ Focus.focus = function(id){
 Focus.blurItem = function(id){
 	var focusObj = this.items[id];
 	if(focusObj){
-		focusObj.style.filter = "alpha(opacity=50) gray()";
+		Element.setOpacity(focusObj, 50);
 	}
 }
 
@@ -1782,4 +1775,3 @@ Focus.unregister = function(id){
 		delete this.items[id];
 	}
 }
-

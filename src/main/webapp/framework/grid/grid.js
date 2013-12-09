@@ -21,13 +21,22 @@ var Grid = function(element, data) {
 	this.id = element.id;
 	this.element = element;
  
-	this.baseurl  = element.baseurl || "";
+	this.baseurl  = element.getAttribute("baseurl") || "";
 	this.iconPath = this.baseurl + "images/";
 	
-	this.element.innerHTML = "<div id='" + this.id + "Box' style='position:absolute;overflow:auto;left:0px;top:0px;z-index:1'></div>";
-	this.gridBox   = $$(this.id + "Box");
-	this.gridBox.style.height = this.windowHeight = element.height || "100%";
-	this.gridBox.style.width  = this.windowWidth  = element.width  || "100%";
+	this.gridBoxId = this.id + "Box";
+	this.element.innerHTML = "<div id='" + this.gridBoxId + "' style='position:relative;overflow:auto;left:0px;top:0px;z-index:1'></div>";
+	this.gridBox   = $$(this.gridBoxId);
+
+	this.gridBox.style.width  = this.windowWidth  = element.getAttribute("width")  || "100%";
+	var pointHeight = element.getAttribute("height");
+	if( pointHeight ) {
+		this.gridBox.style.height = this.windowHeight = pointHeight;
+	} else {
+		// this.gridBox.style.height = "100%";
+		this.gridBox.style.height = element.clientHeight; // 固定住grid高度，以免在IE部分版本及FF里被撑开
+		this.windowHeight = Math.max(element.offsetHeight, 500);
+	}
 
 	this.pageSize = Math.floor(this.windowHeight / cellHeight);
 	
@@ -41,24 +50,18 @@ var Grid = function(element, data) {
 
 
 Grid.prototype.load = function(data, append) {
-	if("object" != typeof(data) || data.nodeType != 1) {
+	if("object" != typeof(data) || data.nodeType != _XML_NODE_TYPE_ELEMENT) {
 		alert("传入的Grid数据有问题。")	
 	} 
 	
-	this.gridDoc = new Grid_DOCUMENT(data.node);	
-	if( this.gridDoc.xmlDom == null ) return;
- 
-	this.xslDom = getXmlDOM();
-	this.xslDom.resolveExternals = false;
-	this.xslDom.load(this.baseurl + "grid.xsl");
+	this.template = new GridTemplate(data.node);	
+	if( this.template.declare == null ) return;
 
-	// 初始化XSL里的变量
-	var startNum = append ? this.totalRowsNum : 0;
-	this.xslDom.selectSingleNode("/xsl:stylesheet/xsl:script").text = "\r\n" 
-		+ "; var startNum=" + startNum + ";"
-		+ "; var gridId='" + this.id + "'; \r\n"; 
-		
-	var gridTableHtml = this.gridDoc.transformXML(this.xslDom); // 利用XSL把XML解析成Html
+	// 初始化变量
+	var startNum = append ? this.totalRowsNum : 0;		
+
+	// 解析成Html
+	var gridTableHtml = parseTempalte(this.template, startNum, this.id); 
 	
 	if(append) {
 		var tempGridNode = document.createElement("div");
@@ -69,43 +72,160 @@ Grid.prototype.load = function(data, append) {
 			this.tbody.appendChild(cloneRow);
 		}
 
-		tempGridNode.removeNode(true);
+		Element.removeNode(tempGridNode);
 	}
 	else {
 		this.gridBox.innerHTML = ""; // 初始化容器
 		this.gridBox.innerHTML = gridTableHtml.replace(/<\/br>/gi, "") ;
+
+		var table  = $$(this.gridBoxId).childNodes[0];
+		this.tbody = table.tBodies[0];
 		
 		// 拖动改变列宽
 		Element.ruleObjList = []; // 先清空原来的拖动条
-		var thList = this.gridBox.childNodes[0].tHead.firstChild.childNodes;
+		var thList = table.tHead.firstChild.childNodes;
 		for( var i = 0; i < thList.length; i++ ) {
-			Element.attachColResize(thList[i]);
+			Element.attachColResizeII(thList[i]);
 		}
 		
 		// 设置隐藏列事件，双击隐藏列
-		var colList = this.gridBox.childNodes[0].childNodes[0].childNodes;
-		for( var i = 0; i < colList.length; i++ ) {
+		for( var i = 0; i < thList.length; i++ ) {
 			var th = thList[i];
 			th.index = i;
+			th.rows = this.tbody.rows;
 			Event.attachEvent(th, "dblclick", function() {
 				var srcElement = Event.getSrcElement(event);
 				while(srcElement.tagName.toLowerCase() != "td") {
 					srcElement = srcElement.parentNode;
 				}
-				colList[srcElement.index].style.display = "none";
+				srcElement.style.display = "none";
+
+				var rows = srcElement.rows;
+				for(var j = 0; j < rows.length; j++ ) {
+					rows[j].childNodes[srcElement.index].style.display = "none";
+				}
 			}) ;
 		}		
 	}
 	
-	this.tbody = this.tbody || this.gridBox.childNodes[0].tBodies[0];
-	this.rows = this.tbody.rows;
+	var table  = $$(this.gridBoxId).childNodes[0];
+	this.tbody = table.tBodies[0];
+	this.rows  = this.tbody.rows;
 	this.totalRowsNum = this.rows.length;
 	for(var i=startNum; i < this.totalRowsNum; i++) {
 		this.processDataRow(this.rows[i]); // 表格行TR
 	}
 	
-	bindSortHandler(this.gridBox.childNodes[0]);
+	bindSortHandler(table); // table
 } 
+
+var GridTemplate = function(xmlDom) {
+	if( xmlDom && xmlDom.xml != "" ) {
+		this.declare = xmlDom.getElementsByTagName("declare")[0];
+		this.script  = xmlDom.getElementsByTagName("script")[0];
+		this.columns = this.declare.getElementsByTagName("column");
+		this.data    = xmlDom.getElementsByTagName("data")[0];
+		this.dataRows = this.data.getElementsByTagName("row") || [];
+
+		this.columnsMap = {};
+		for(var i = 0; i < this.columns.length; i++) {
+			this.columnsMap[this.columns[i].getAttribute("name")] = this.columns[i];
+		}
+		
+		this.hasHeader    = this.declare.getAttribute("header") == "checkbox";
+		this.needSequence = this.declare.getAttribute("sequence") != "false";
+ 	}
+}
+
+function parseTempalte(template, startNum, gridID) {
+	 var thead = new Array();
+	 var tbody = new Array();
+
+	 thead.push("<thead><tr>");
+	 tbody.push("<tbody class=\"cell\">");
+	 if(template.hasHeader) {
+		thead.push("<td width=\"50px\" align=\"center\" class=\"column\"><input type=\"checkbox\" id=\"headerCheckAll\"/></td>");
+	 }
+	 if(template.needSequence) {
+		thead.push("<td width=\"50px\" align=\"center\" name=\"sequence\" class=\"column\"><nobr>序号</nobr></td>");
+	 }
+	 for(var name in template.columnsMap) {
+		var column = template.columnsMap[name];
+		var width    = column.getAttribute("width");
+		width = width ? " width=\"" + width + "\" " : "";
+		var _class   = column.getAttribute("display") == "none" ?  "hidden" : "column";
+		var caption  = column.getAttribute("caption");
+		var sortable = column.getAttribute("sortable") == "true" ? "sortable=\"true\"" : "";
+		var align = " align=\"" + getAlign(column) + "\" ";
+		thead.push("<td " + width + align + " name=\"" + name + "\" class=\"" + _class + "\" " + sortable + "><nobr>" + caption + "</nobr></td>")
+	 }
+
+	 for(var i=0; i < template.dataRows.length; i++) {
+		var row = template.dataRows[i];
+		var _class =  column.getAttribute("class");
+		_class = _class ? "class = \"" + _class + "\"" : "";
+		var index = startNum + i + 1;
+		
+		tbody.push("<tr " + _class + " _index=\"" + index + "\" ");
+		for(var name in template.columnsMap) {
+			// 把各个属性值复制一份到 tr 的属性上
+			var value = row.getAttribute(name);
+			if(value) {
+				tbody.push( name + "=\"" + row.getAttribute(name) + "\" "); 
+			}
+		}
+		tbody.push(">");
+
+		if(template.hasHeader) {
+			tbody.push("<td align=\"center\" mode=\"cellheader\" name=\"cellheader\"><nobr>");
+			tbody.push("<input class=\"selectHandle\" name=\"" + gridID + "_header\" type=\"checkbox\" >");
+			tbody.push("</nobr></td>")
+		}
+		if(template.needSequence) {
+			tbody.push("<td align=\"center\" mode=\"cellsequence\" name=\"cellsequence\"><nobr>" + index + "</nobr></td>");
+		}
+
+		for(var name in template.columnsMap) {
+			var column = template.columnsMap[name];
+			
+			var _class = "";
+			if(column.getAttribute("display") == "none") {
+				_class = "class=\"hidden\"";
+			} 
+			else if(column.getAttribute("highlightCol") == "true") {
+				_class = "class=\"highlightCol\"";
+			}
+			tbody.push("<td align=\"" + getAlign(column) + "\" name=\"" + name + "\" " + _class + "><nobr></nobr></td>");
+		}
+		tbody.push("</tr>");
+	 }
+
+	 thead.push("</thead></tr>");	 
+	 tbody.push("</tbody>");
+
+	 var htmls = new Array();
+     htmls.push("<table>");
+	 htmls.push(thead.join(""));
+	 htmls.push(tbody.join(""));
+	 return htmls.join("");
+}
+
+function getAlign(column) {
+	var align = column.getAttribute("align");
+	if(align) {
+		return align;
+	}
+
+	switch(column.getAttribute("mode")) {
+		case "number":
+			return "right";
+		case "boolean":
+		case "date":
+			return "center";
+		default:
+			return "left";
+	}
+}
 
 /*
  * 处理数据行，按各列的属性设置每一行上对应该列的值.
@@ -117,12 +237,13 @@ Grid.prototype.processDataRow = function(curRow) {
 	for(var j=0; j < cells.length; j++) {
 		var cell = cells[j];
 		var columnName = cell.getAttribute("name");
-		var columnNode = this.gridDoc.columnsMap[columnName]; 
+		var columnNode = this.template.columnsMap[columnName]; 
 		if( columnName == null || columnName == "cellsequence" || columnName == "cellheader" || columnNode == null)  {
 			continue;
 		}
- 
-		var value = curRow.getAttribute(columnName); // xsl解析后，各行的各个TD值统一记录在了TR上。
+
+		var value = curRow.getAttribute(columnName) || " "; // xsl解析后，各行的各个TD值统一记录在了TR上。
+
 		var nobrNodeInCell = cell.childNodes[0];    // nobr 节点
 		var mode = columnNode.getAttribute("mode");
 		switch( mode ) {
@@ -147,7 +268,11 @@ Grid.prototype.processDataRow = function(curRow) {
 			case "number":
 				nobrNodeInCell.innerText = value;
 				cell.setAttribute("title", value);
-				break;                       
+				break;       
+			case "date":
+				nobrNodeInCell.innerText = value;
+				cell.setAttribute("title", value);
+				break;         
 			case "function":                          
 				break;    
 			case "image":          
@@ -155,8 +280,8 @@ Grid.prototype.processDataRow = function(curRow) {
 				break;    
 			case "boolean":      
 				var checked = (value =="true") ? "checked" : "";
-				nobrNodeInCell.innerHTML = "<input class='selectHandle' name='" + columnName + "' type='radio' " + checked + "/>";
-				nobrNodeInCell.all.tags("INPUT")[0].disabled = true;
+				nobrNodeInCell.innerHTML = "<form style='padding:0px;margin:0px;'><input class='selectHandle' name='" + columnName + "' type='radio' " + checked + "/></form>";
+				nobrNodeInCell.getElementsByTagName("INPUT")[0].disabled = true;
 				break;
 		}							
 	}	
@@ -176,6 +301,7 @@ Grid.prototype.getRowByIndex = function(index) {
 	}
 }
 
+// 获取选中行中指定列的值
 Grid.prototype.getRowAttributeValue = function(attrName) {
 	var rowIndex = this.element.selectRowIndex; 
 	if(rowIndex) {
@@ -185,6 +311,16 @@ Grid.prototype.getRowAttributeValue = function(attrName) {
 	return null;
 }
 
+// 获取某一列的值
+Grid.prototype.getColumnValues = function(columnName) {
+	var values = [];
+	for(var i = 0; i < this.rows.length; i++) {
+		var row = this.rows[i];
+		values[i] = row.getAttribute(columnName);
+	}
+	return values;
+}
+
 // 新增一行
 Grid.prototype.insertRow = function(map) {
 	var rowIndex = this.totalRowsNum ++ ;
@@ -192,11 +328,19 @@ Grid.prototype.insertRow = function(map) {
 
 	var thList = this.gridBox.childNodes[0].tHead.firstChild.childNodes;
 	for(var i = 0; i < thList.length; i++) {
-		var columnName = thList[i].name;
-
+		var columnName = thList[i].getAttribute("name");
+		
 		var cell = newRow.insertCell(i);
 		cell.setAttribute( "name", columnName );
-
+		
+		var column = this.template.columnsMap[columnName];
+		if(column && column.getAttribute("display") == "none" ) {
+			Element.addClass(cell, "hidden");
+		} 
+		else {
+			Element.addClass(cell, "column");
+		}
+		
 		var nobr = document.createElement("nobr");
 		cell.appendChild( nobr );		
 
@@ -213,12 +357,18 @@ Grid.prototype.insertRow = function(map) {
 
 // 删除单行
 Grid.prototype.deleteRow = function(row) {
-	Element.addClass(row, "hidden");
+	// Element.addClass(row, "hidden");
+	this.tbody.removeChild(row);
 }
 
 Grid.prototype.deleteRowByIndex = function(rowIndex) {
 	var row = this.getRowByIndex(rowIndex);
-	deleteRow(row);
+	this.deleteRow(row);
+}
+
+Grid.prototype.deleteSelectedRow = function() {
+	var rowIndex = this.element.selectRowIndex;
+	this.deleteRowByIndex(rowIndex);
 }
 	
 // 更新单行记录的某个属性值
@@ -229,7 +379,12 @@ Grid.prototype.modifyRow = function(row, propertyName, propertyValue) {
 
 Grid.prototype.modifyRowByIndex = function(rowIndex, propertyName, propertyValue) {
 	var row = this.getRowByIndex(rowIndex);
-	modifyRow(row, propertyName, propertyValue);
+	this.modifyRow(row, propertyName, propertyValue);
+}
+
+Grid.prototype.modifySelectedRow = function(propertyName, propertyValue) {
+	var rowIndex = this.element.selectRowIndex;
+	this.modifyRowByIndex(rowIndex, propertyName, propertyValue);
 }
 
 Grid.prototype.getHighlightRow = function() {
@@ -273,7 +428,7 @@ Grid.prototype.attachEventHandler = function() {
 	this.element.onkeydown = function() {
 		switch (event.keyCode) {
 		    case 33:	//PageUp
-				oThis.gridBox.scrollTop -= oThis._ageSize * cellHeight;
+				oThis.gridBox.scrollTop -= oThis.pageSize * cellHeight;
 				return false;
 		    case 34:	//PageDown
 				oThis.gridBox.scrollTop += oThis.pageSize * cellHeight;
@@ -347,44 +502,6 @@ Grid.prototype.attachEventHandler = function() {
         }
 		return false;
     }
-}
-
-
-var Grid_DOCUMENT = function(xmlDom) {
-	this.xmlDom = xmlDom;
-
-	this.transformXML = function(xslDom) {			
-		return this.xmlDom.transformNode(xslDom).replace(/&amp;nbsp;/g, "&nbsp;").replace(/\u00A0/g, "&amp;nbsp;");
-	}
-	
-	this.refresh = function() {
-		this.hasData = (this.xmlDom && this.xmlDom.xml != "");
-		if( this.hasData ) {
-			this.Declare = this.xmlDom.selectSingleNode("./declare");
-			this.Script  = this.xmlDom.selectSingleNode("./script");
-			this.Columns = this.xmlDom.selectNodes("./declare/column");
-			this.Data    = this.xmlDom.selectSingleNode("./data");
-
-			this.columnsMap = {};
-			for(var i = 0; i < this.Columns.length; i++) {
-				this.columnsMap[this.Columns[i].getAttribute("name")] = this.Columns[i];
-			}
-			
-			this.header = this.Declare.getAttribute("header");
-			this.hasHeader = (this.header == "radio" || this.header == "checkbox");
-	 
-			this.VisibleColumns = this.selectNodes(".//declare//column[(@display!='none') or not(@display)]");
-			this.dataRows = this.selectNodes(".//data//row");
-		}
-	}
-
-	this.refresh();
-}
-Grid_DOCUMENT.prototype.selectNodes = function(xpath) {
-	return this.xmlDom.selectNodes(xpath);
-}
-Grid_DOCUMENT.prototype.selectSingleNode = function(xpath) {
-	return this.xmlDom.selectSingleNode(xpath);
 }
 
 
@@ -496,12 +613,64 @@ function initGridToolBar(gridPageBar, pageInfo, callback) {
 	gridPageBar.init();
 }
 
+/* 显示Grid列表 */
+function showGrid(serviceUrl, dataNodeName, editRowFuction, gridName, page, requestParam, pageBar) {
+	pageBar  = pageBar || $$("gridToolBar");
+	gridName = gridName || "grid";
+	page     =  page || "1";
+
+	var p = requestParam || new HttpRequestParams();
+	p.url = serviceUrl + "/" + page;
+
+	var request = new HttpRequest(p);
+	request.onresult = function() {
+		$G(gridName, this.getNodeValue(dataNodeName)); 
+ 
+		var gotoPage = function(page) {
+			request.paramObj.url = serviceUrl + "/" + page;
+			request.onresult = function() {
+				$G(gridName, this.getNodeValue(dataNodeName)); 
+			}				
+			request.send();
+		}
+
+		var pageInfoNode = this.getNodeValue(XML_PAGE_INFO);			
+		initGridToolBar(pageBar, pageInfoNode, gotoPage);
+		
+		var gridElement = $$(gridName); 
+		gridElement.onDblClickRow = function(eventObj) {
+			editRowFuction();
+		}
+		gridElement.onRightClickRow = function() {
+			gridElement.contextmenu.show(event.clientX, event.clientY);
+		}   
+		gridElement.onScrollToBottom = function () {			
+			var currentPage = pageBar.getCurrentPage();
+			if(pageBar.getTotalPages() <= currentPage) return;
+
+			var nextPage = parseInt(currentPage) + 1; 
+			request.paramObj.url = serviceUrl + "/" + nextPage;
+			request.onresult = function() {
+				$G(gridName).load(this.getNodeValue(dataNodeName), true);
+
+				var pageInfoNode = this.getNodeValue(XML_PAGE_INFO);
+				initGridToolBar(pageBar, pageInfoNode, gotoPage);
+			}				
+			request.send();
+		}
+	}
+	request.send();
+}
+
 
 function bindSortHandler(table) {
 	this.rows  = table.tBodies[0].rows;
 	this.tags  = table.tHead.rows[0].cells;
-	var defaultClass = this.tags[0].className;
-
+	var defaultClass = [];
+	for(var i=0; i < this.tags.length; i++) {
+		defaultClass[i] = this.tags[i].className;
+	}
+	
 	// 将数据行和列转换成二维数组
 	this._2DArray = [];
 	for(var i=0; i < this.rows.length; i++) {
@@ -525,7 +694,7 @@ function bindSortHandler(table) {
 	var direction = 1;
 	function sortHandler() {
 		for(var i=0; i < oThis.tags.length; i++) {
-			oThis.tags[i].className = defaultClass;
+			oThis.tags[i].className = defaultClass[i];
 		}
 
 		if(direction == 1) {
@@ -569,5 +738,22 @@ function bindSortHandler(table) {
 				}
 			}
 		}
+	}
+}
+
+// 删除选中Grid行
+function delGridRow(url, gridName) {
+	if( !confirm("您确定要删除该行记录吗？") ) return;
+	
+	var grid = $G(gridName || "grid");
+	var userID = grid.getRowAttributeValue("id");
+	if( userID ) {
+		Ajax({
+			url : url + userID,
+			method : "DELETE",
+			onsuccess : function() { 
+				grid.deleteSelectedRow();
+			}
+		});	
 	}
 }

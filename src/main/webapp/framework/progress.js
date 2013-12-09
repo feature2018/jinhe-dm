@@ -1,8 +1,8 @@
 /*
- *	函数说明：大数据显示进度
+ *	大数据显示进度
  *	参数：	string:url                      同步进度请求地址
 			xmlNode:data                    XmlNode实例
- *	返回值：
+			string:cancelUrl                取消进度请求地址
  */
 var Progress = function(url, data, cancelUrl) {
 	this.progressUrl = url;
@@ -11,9 +11,7 @@ var Progress = function(url, data, cancelUrl) {
 	this.refreshData(data);
 }
 
-/*
- *	函数说明：更新数据
- */
+/* 更新数据 */
 Progress.prototype.refreshData = function(data) {
 	this.percent      = data.selectSingleNode("./percent").text;
 	this.delay        = data.selectSingleNode("./delay").text;
@@ -21,44 +19,34 @@ Progress.prototype.refreshData = function(data) {
 	this.code         = data.selectSingleNode("./code").text;
 
 	var feedback = data.selectSingleNode("./feedback");
-	if(feedback != null) {
+	if( feedback ) {
 		alert(feedback.text);
 	}
 }
 
-/*
- *	开始执行
- */
+/* 开始执行  */
 Progress.prototype.start = function() {
 	this.show();
 	this.next();
 }
 
-/*
- *	停止执行
- */
+/* 停止执行  */
 Progress.prototype.stop = function() {
-	var p = new HttpRequestParams();
-	p.url = this.cancelUrl;
-	p.setContent("code", this.code);
-
 	var thisObj = this;
-	var request = new HttpRequest(p);
-	request.onsuccess = function() {
-		thisObj.hide();
-		clearTimeout(thisObj.timeout);
-	}
-	request.send();
+	Ajax({
+		url: this.cancelUrl + this.code,
+		method: "DELETE",
+		onsuccess: function() {
+			thisObj.hide();
+			clearTimeout(thisObj.timeout);
+		}
+	});
 }
 
-/*
- *	函数说明：显示进度
- *	参数：
- *	返回值：
- */
+/* 显示进度  */
 Progress.prototype.show = function() {
 	var thisObj = this;
-	var barObj = $(this.id);
+	var barObj = $$(this.id);
 	if(null == barObj) {
 		barObj = Element.createElement("div");
 		barObj.id = this.id;
@@ -103,42 +91,34 @@ Progress.prototype.show = function() {
 	}
 }
 
-/*
- *	函数说明：隐藏进度
- */
+/* 隐藏进度 */
 Progress.prototype.hide = function() {
-	var barObj = $(this.id);
-	if(null != barObj) {
+	var barObj = $$(this.id);
+	if( barObj ) {
 		barObj.style.visibility = "hidden";
 	}
 }
 
-/*
- *	函数说明： 同步进度
- */
+/* 同步进度  */
 Progress.prototype.sync = function() {
-	var p = new HttpRequestParams();
-	p.url = this.progressUrl;
-	p.setContent("code", this.code);
-	p.ani = false;
-
 	var thisObj = this;
-	var request = new HttpRequest(p);
-	request.onexception = function() {
-		thisObj.hide();
-	}
-	request.onresult = function() {
-		var data = this.getNodeValue("ProgressInfo");
-		thisObj.refreshData(data);
-		thisObj.show();
-		thisObj.next();
-	}
-	request.send();
+	Ajax({
+		url: this.progressUrl + this.code,
+		method: "GET",
+		async: false,
+		onresult: function() {
+			var data = this.getNodeValue("ProgressInfo");
+			thisObj.refreshData(data);
+			thisObj.show();
+			thisObj.next();
+		},
+		onexception: function() {
+			thisObj.hide();
+		}
+	});
 }
 
-/*
- *	函数说明： 延时进行下一次同步
- */
+/* 延时进行下一次同步  */
 Progress.prototype.next = function() {
 	var thisObj = this;
 
@@ -149,7 +129,7 @@ Progress.prototype.next = function() {
 			thisObj.sync();
 		}, delay);
 	}
-	else if(null != this.oncomplete) {
+	else if( this.oncomplete ) {
 		setTimeout(function() {
 			thisObj.hide();
 			thisObj.oncomplete();

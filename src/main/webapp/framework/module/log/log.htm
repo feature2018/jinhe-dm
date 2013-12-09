@@ -7,7 +7,6 @@
 <link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
 <link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
 <link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
-<link href="../../toolbar/toolbar.css" rel="stylesheet" type="text/css"></link>
 <link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
 <link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
 <link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
@@ -18,18 +17,17 @@
 <script language="javascript" src="../../framework.js"></script>
 <script language="javascript" src="../../menu/menu.js"></script>
 <script language="javascript" src="../../balloon/balloon.js"></script>
-<script language="javascript" src="../../toolbar/toolbar.js"></script>
 <script language="javascript" src="../../workspace/workspace.js"></script>
 <script language="javascript" src="../../tree/tree.js"></script>
 <script language="javascript" src="../../grid/grid.js"></script>
 <script language="javascript" src="../../xform/xform.js"></script>
 
 <SCRIPT type="text/javascript">
-<!--
- 
-/* 框架包相对路径 */
-URL_CORE = "../../"; 
-    
+<!-- 
+
+	/* 框架包相对路径 */
+	if(IS_TEST) URL_CORE = "../../"; 
+
     /*
      *	后台响应数据节点名称
      */
@@ -40,28 +38,23 @@ URL_CORE = "../../";
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_INIT       = "/" + NO_AUTH_PATH + "log/apps";
-    URL_LOG_LIST   = "/" + NO_AUTH_PATH + "log/";
-    URL_LOG_DETAIL = "/" + NO_AUTH_PATH + "log/item/";
+	URL_INIT       = NO_AUTH_PATH + "log/apps";
+    URL_LOG_LIST   = NO_AUTH_PATH + "log/";
+    URL_LOG_DETAIL = NO_AUTH_PATH + "log/item/";
 
 	if(IS_TEST) {
 		URL_INIT = "data/log_init.xml?";
 		URL_LOG_LIST = "data/loglist.xml?";
 		URL_LOG_DETAIL = "data/log1.xml?";
 	}
-	// URL_INIT = "data/log_init.xml";
 	
     /* 页面初始化 */
     function init() {
 		initPaletteResize();
-		initListContainerResize();
-
-		initNaviBar();
+		initNaviBar("log");
 		initMenus();
-		initBlocks();
 		initWorkSpace();
 		initEvents();
-		initFocus();
 
 		loadInitData();
     }
@@ -73,26 +66,21 @@ URL_CORE = "../../";
 			label:"浏览日志",
 			callback:showLogList,
 			icon:"images/view_list.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot();}
 		}
 		var item2 = {
 			label:"搜索日志",
 			callback:searchLog,
 			icon:"images/search.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot();}
 		}
-
-		var treeObj = $$("tree");
 
 		var menu = new Menu();
 		menu.addItem(item1);
 		menu.addItem(item2);
-		treeObj.contextmenu = menu;
+		$$("tree").contextmenu = menu;
 
 		/* Grid菜单初始化  */
-		var gridObj = $$("grid");
 		var item1 = {
 			label:"查看",
 			callback:function() {
@@ -105,15 +93,7 @@ URL_CORE = "../../";
 
 		var menu = new Menu();
 		menu.addItem(item1);
-		gridObj.contextmenu = menu;
-    }
-
-    function initBlocks() {
-        var paletteObj = $$("palette");
-        Blocks.create(paletteObj);
-
-        var treeContainerObj = $$("treeContainer");
-        Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
+		$$("grid").contextmenu = menu;
     }
 
 	function loadInitData() {
@@ -130,82 +110,20 @@ URL_CORE = "../../";
 				}
             }
             treeElement.onTreeNodeRightClick = function(eventObj) {
-				var treeObj = $$("tree");
-				if(treeObj.contextmenu) {
-					treeObj.contextmenu.show(eventObj.clientX, eventObj.clientY);                
-				}
+				onTreeNodeRightClick(eventObj);
             }
         }
 
         Ajax({url : URL_INIT, onresult : onresult});
     }
-	
-    function getTreeId() {
-        var treeNode = $T("tree").getActiveTreeNode();
-        if( treeNode ) {
-            return treeNode.getId();
-        }
-    }
-	
-    function initFocus() {
-        Focus.register($$("treeTitle").firstChild);
-        Focus.register($$("gridTitle"));
-    }
 
-    function initEvents() {
-        Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
-        Event.attachEvent($$("treeTitleBt"), "click", onClickTreeTitleBt);
-        Event.attachEvent($$("paletteBt"), "click", onClickPaletteBt);
-        Event.attachEvent($$("treeTitle"), "click", onClickTreeTitle);
-        Event.attachEvent($$("gridTitle"), "click", onClickGridTitle);
-    }
-
-	var currentPage
-
-    /*
-     *	grid加载数据
-     */
-    function loadGridData(p, page) {
-		p.url = URL_LOG_LIST + page || "1";
-		var request = new HttpRequest(p);
-		request.onresult = function() {
-			$G("grid", this.getNodeValue(XML_LOG_LIST)); 
-			var gridToolBar = $$("gridToolBar");
-
-			var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
-			initGridToolBar(gridToolBar, pageListNode, function(page) {
-				request.paramObj.url = URL_LOG_LIST + page;
-				request.onresult = function() {
-					$G("grid", this.getNodeValue(XML_LOG_LIST)); 
-				}				
-				request.send();
-			} );
-			
-			var gridElement = $$("grid"); 
-			gridElement.onDblClickRow = function(eventObj) {
-				showLogInfo();
-			}
-			gridElement.onRightClickRow = function() {
-				$$("grid").contextmenu.show(event.clientX, event.clientY);
-			}   
-			gridElement.onScrollToBottom = function () {		
-				var currentPage = gridToolBar.getCurrentPage();
-				if(gridToolBar.getTotalPages() <= currentPage) return;
-
-				var nextPage = parseInt(currentPage) + 1; 
-				request.paramObj.url = URL_LOG_LIST + nextPage;
-				request.onresult = function() {
-					$G("grid").load(this.getNodeValue(XML_LOG_LIST), true);
-					initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));
-				}				
-				request.send();
-			}
-		}
-		request.send();
+    /* grid加载数据  */
+    function loadGridData(requestParam, page) {
+		showGrid(URL_LOG_LIST, XML_LOG_LIST, showLogInfo, "grid", page, requestParam);
     }
 	
 	function showLogList() {		
-	    var appCode = getTreeId();
+	    var appCode = getTreeNodeId();
 		var p = new HttpRequestParams();
 		p.setContent("appCode", appCode);
 		loadGridData(p, "1"); 
@@ -223,7 +141,7 @@ URL_CORE = "../../";
                 var p = new HttpRequestParams();
 				var xmlReader = new XmlReader(condition.dataXml);
 				var dataNode  = new XmlNode(xmlReader.documentElement);
-				p.setXFormContent(dataNode, condition.prefix);
+				p.setXFormContent(dataNode);
 				loadGridData(p, "1"); 
             }
         }
@@ -234,16 +152,13 @@ URL_CORE = "../../";
      *	参数：	boolean:editable            是否可编辑(默认true)
      */
     function showLogInfo() {		
-		var rowIndex = $$("grid").selectRowIndex; 
-		var row = $G("grid").getRowByIndex(rowIndex);
-		var rowID = row.getAttribute("id");  
-		var rowName = "日志";
+		var rowID = $G("grid").getRowAttributeValue("id");  
+		var rowName = "日志" + rowID;
 		
-		var wsContainer = $$("ws").parentElement.parentElement;
         var callback = {};
 		callback.onTabClose = function(eventObj){
 			if( ws.noTabOpend() ) {
-				wsContainer.style.display = "none";
+				//$$("wsTR").style.display = "none";
 			}            
         };
         callback.onTabChange = function() {
@@ -259,24 +174,15 @@ URL_CORE = "../../";
         inf.phases = null;
         inf.callback = callback;
         var tab = ws.open(inf);       
-		
-		wsContainer.style.display = "inline";
     }
 	
-    /*
-     *	日志详细信息加载数据
-     */
+    /* 日志详细信息加载数据 */
     function loadLogDetailData(logId) {
 		Ajax({
 			url : URL_LOG_DETAIL + logId,
 			onresult : function() { 
 				var logInfoNode = this.getNodeValue(XML_LOG_INFO);
 				var page1FormObj = $X("page1Form", logInfoNode);
-
-				$$("page1BtPrev").style.display = "none";
-				$$("page1BtNext").style.display = "none";
-				$$("page1BtSave").style.display = "none";
-				// $$("page1BtSave").disabled = true;
 			}
 		});
     }
@@ -284,12 +190,7 @@ URL_CORE = "../../";
 	
     window.onload = init;
 
-	//关闭页面自动注销
-    window.attachEvent("onunload", function() {
-        if(10000<window.screenTop || 10000<window.screenLeft) {
-            logout();
-        }
-	});
+	logoutOnClose(); // 关闭页面自动注销
 
 //-->
 </SCRIPT>
@@ -299,7 +200,7 @@ URL_CORE = "../../";
 <body>
 
 <!-- 版面 开始 -->
-<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+<table class="panel" >
   <tr class="header"> 
 	<td class="left"></td>
 	<td class="center"></td>
@@ -309,9 +210,9 @@ URL_CORE = "../../";
 	<td class="left"></td>
 	<td class="center">
 	  <!-- 版面内容 开始 -->
-	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+	  <table class="full">
 		<tr class="hidden"> 
-		  <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+		  <td height="20"><table class="hFull">
 			  <tr> 
 				<td> 
 				  <!-- 主菜单 开始 -->
@@ -327,14 +228,15 @@ URL_CORE = "../../";
 
 		<tr> 
 		  <td valign="top">
-			<table class="full" border="0" cellpadding="0" cellspacing="0">
+			<table class="full">
 			  <tr> 
 				<td id="palette">
 				  <!-- 左栏 开始 -->
-				  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+				  <table class="full border">
 					<tr id="treeTitle" class="bar"> 
 					  <td class="opened">
-						<span class="icon"></span>资源<span class="button refresh" id="treeBtRefresh" title="刷新"></span><span class="button collapse" id="treeTitleBt"></span>
+						<span class="icon"></span>系统<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
+						<span id="paletteBt"></span>
 					  </td>
 					</tr>
 					<tr>
@@ -345,77 +247,27 @@ URL_CORE = "../../";
 				  </table>                        
 				  <!-- 左栏 结束 -->
 				</td>
-				<td>
-				  <table class="full" border="0" cellpadding="0" cellspacing="0">
-					<tr> 
-					  <td class="location"><span class="icon" id="paletteBt"></span></td>
+				<td class="groove">
+				  <table class="full">
+					<tr>
+						<td id="gridTitle">
+						  <span class="icon"></span>日志列表<span class="buttonBox" id="gridToolBar"></span>
+						</td>
 					</tr>
-					<tr valign="top">
-					  <!-- 主内容区域 开始 -->
-					  <td class="groove">
-						<div class="groove">
-						  <table class="full" border="0" cellspacing="2" cellpadding="0">
-							<tr>
-							  <td id="listContainer" class="gridContainer">
-								<!-- 列表区域 开始 -->
-								<table class="full border" border="0" cellspacing="0" cellpadding="0">
-								  <tr>
-									<td id="gridTitle">
-									  <span class="icon"></span>
-									  日志列表
-									  <span class="buttonBox" id="gridToolBar"></span>
-									</td>
-								  </tr>
-								  <tr>
-									<td>
-									  <!-- grid 开始 -->
-									   <Grid:Box id="grid" baseurl="../../grid/"></Grid:Box>
-									  <!-- grid 结束 -->
-									</td>
-								  </tr>
-								</table>
-								<!-- 列表区域 结束 -->
-							  </td>
-							</tr>
-							<tr>
-							  <td class="separator"></td>
-							</tr>
-							<tr style="display:none">
-							  <td>
-								<!-- 标签区域 开始 -->
-								<WorkSpace:Box id="ws" baseurl="../../workspace/">
-								  <!-- page1 开始 -->
-								  <WorkSpace:Page id=page1>
-									<table class="full" border="0" cellspacing="0" cellpadding="0">
-									  <tr valign="top">
-										<td>
-										  <!-- xform 开始 -->
-										  <XForm:Box id="page1Form" baseurl="../../xform/" editable="false"><div class="loading"></div></XForm:Box>
-										  <!-- xform 结束 -->
-										</td>
-									  </tr>
-									  <tr height="20">
-										<td>
-										  <WorkSpace:PageStep>
-											<input type="button" class="btWeak" value="上一步" id="page1BtPrev" onclick="ws.prevPhase(false)"/>
-											<input type="button" class="btWeak" value="下一步" id="page1BtNext" onclick="ws.nextPhase(false)"/>
-											<input type="button" class="btStrong" value="完成" id="page1BtSave"/>
-										  </WorkSpace:PageStep>
-										</td>
-									  </tr>
-									</table>
-								  </WorkSpace:Page>
-								  <!-- page1 结束 -->
-								</WorkSpace:Box>
-								<!-- 标签区域 结束 -->
-							  </td>
-							</tr>
-						  </table>                                
-						</div>
+					<tr id="gridTR">
+						<td><Grid:Box id="grid" baseurl="../../grid/"></Grid:Box></td>
+					</tr>
+					<tr id="wsTR" height="235px">
+					  <td>
+						<WorkSpace:Box id="ws" baseurl="../../workspace/">
+						  <WorkSpace:Page id="page1">
+							 <XForm:Box id="page1Form" baseurl="../../xform/" editable="false"></XForm:Box>
+						  </WorkSpace:Page>
+						</WorkSpace:Box>
 					  </td>
-					  <!-- 主要内容区域 结束 -->
 					</tr>
-				  </table></td>
+				  </table>
+				 </td>
 			  </tr>
 			</table></td>
 		</tr>

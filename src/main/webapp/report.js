@@ -23,8 +23,8 @@ URL_SORT_SOURCE    = "rp/sort/";
 URL_COPY_SOURCE    = "rp/copy/";
 URL_MOVE_SOURCE    = "rp/move/";
 
-URL_RS_LOGIN       = "rs/wms/login/";
-URL_RS_WH_LIST     = "rs/wms/warehouseList";
+URL_RS_LOGIN       = "wms/login";
+URL_RS_WH_LIST     = "wms/whList";
 
 if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/SOURCE_TREE.xml?";
@@ -46,13 +46,10 @@ if(IS_TEST) {
 /* 页面初始化 */
 function init() {
 	initPaletteResize();
-	initListContainerResize();
 
 	initNaviBar("dm.1", " ");
 	initMenus();
-	initBlocks();
 	initEvents();
-	initFocus();
 
 	if( Cookie.getValue("token") ) {
 		preLogoutWMS();
@@ -70,25 +67,6 @@ function preLogoutWMS() {
 		Cookie.del("token");
 		$$("userInfo").innerText = "";
 	}	
-}
-	
-function initBlocks() {
-	var paletteObj = $$("palette");
-	Blocks.create(paletteObj);
-
-	var treeContainerObj = $$("treeContainer");
-	Blocks.create(treeContainerObj,treeContainerObj.parentNode);  
-}
-
-function initFocus() {
-	Focus.register($$("treeTitle").firstChild);
-	Focus.register($$("gridTitle"));
-}
-
-function initEvents() {
-	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
-	Event.attachEvent($$("treeTitle"), "click", onClickTreeTitle);
-	Event.attachEvent($$("gridTitle"), "click", onClickGridTitle);
 }
 
 /* 菜单初始化 */
@@ -148,7 +126,7 @@ function initMenus() {
 		label:"移动到",
 		callback:moveReport,
 		icon:"framework/images/icon_move.gif",
-		visible:function() {return isReport();}
+		visible:function() {return !isTreeRoot();}
 	}
 	var item8 = {
 		label:"停用",
@@ -163,9 +141,9 @@ function initMenus() {
 		visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
 	}
 	var item11 = {
-		label:"测试报表Restful服务",
+		label:"测试报表服务JSON",
 		callback:testRestfulReportService,
-		icon:"framework/images/entity.gif",
+		icon:"framework/images/other/entity_0.gif",
 		visible:function() {return isReport() && !isTreeNodeDisabled();}
 	}
 
@@ -373,14 +351,7 @@ function moveReport() {
 function showReport() {
 	var treeNode = $T("tree").getActiveTreeNode();
 	var treeID = treeNode.getId();
-	var url = treeNode.getAttribute("url");
-	if( url && url.split(",").length ==2 ) {
-		var showPage = url.split(",")[0];
-		var serviceUri = url.split(",")[1]; // 如: "http://localhost:9000/dm/rs/kanban/{whId}"
-		window.open(showPage + "?service=" + serviceUri);
-		return;
-	}
-
+	
 	var paramConfig = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
 	if( paramConfig && paramConfig.length > 0) {
 		if( paramConfig.indexOf("仓库") >= 0 ) {
@@ -389,8 +360,8 @@ function showReport() {
 			}
 			else {
 				showLoginForm();
+				return;
 			}
-			return;
 		}
 	}
 
@@ -398,6 +369,11 @@ function showReport() {
 }
 
 function showSearchForm(paramConfig, whIds, whNames) {	
+	if( paramConfig.indexOf("customizeReport") >= 0 ) {
+		showReportInPointUrl();
+		return;
+	}
+
 	var columns = [];
 	var layouts = [];
 	var paramArray = paramConfig.split(",");
@@ -421,7 +397,7 @@ function showSearchForm(paramConfig, whIds, whNames) {
 					break;
 				case "date":
 					mode = "string";
-					inputReg = "/^((?:19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/";
+					inputReg = "/^((?:19|20)\\d\\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/";
 					break;
 			}
 			
@@ -443,8 +419,8 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	}		
 	layouts[layouts.length] = "        <TR>";
 	layouts[layouts.length] = "          <TD colspan='2' align='center' height='36'>";
-	layouts[layouts.length] = "				<input type='button' class='btStrong' id='btSearch' value='查询'/>";
-	layouts[layouts.length] = "				<input type='button' class='btStrongL' id='btDownload' value='查询并导出'/>";
+	layouts[layouts.length] = "				<input type='button' class='btStrong' id='btSearch' value='查询'/> - ";
+	layouts[layouts.length] = "				<input type='button' class='btStrongL' id='btDownload' value='查询并导出'/> - ";
 	layouts[layouts.length] = "				<input type='button' class='btWeak' id='btCloseSearchForm' value='关闭'/>";
 	layouts[layouts.length] = "          </TD>";
 	layouts[layouts.length] = "        </TR>";
@@ -479,6 +455,22 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	}
 	$$("btCloseSearchForm").onclick = function () {
 		Element.hide($$("searchFormDiv"));
+	}
+}
+
+function showReportInPointUrl() {
+	var treeNode = $T("tree").getActiveTreeNode();
+	var treeID = treeNode.getId();
+	var url = treeNode.getAttribute("url");
+	if( url ) {	
+		if( url.split(",").length == 2 ) {
+			var showPage   = url.split(",")[0];
+			var serviceUri = url.split(",")[1]; // 如: "http://localhost:9000/dm/rs/kanban/{whId}"
+			window.open(showPage + "?service=" + serviceUri);
+		}
+		else {
+			window.open(url);
+		}
 	}
 }
 
@@ -535,9 +527,6 @@ function searchReport(treeID, download) {
 		} );
 		
 		var gridElement = $$("grid"); 
-		gridElement.onRightClickRow = function() {
-			$$("grid").contextmenu.show(event.clientX, event.clientY);
-		}   
 		gridElement.onScrollToBottom = function () {			
 			var currentPage = gridToolBar.getCurrentPage();
 			if(gridToolBar.getTotalPages() <= currentPage) return;
@@ -572,7 +561,10 @@ function showLoginForm() {
 	str[str.length] = "        </TR>";
 	str[str.length] = "        <TR>";
 	str[str.length] = "            <TD width=\"50\">&amp;nbsp;</TD>";
-	str[str.length] = "            <TD><input type=\"button\" class=\"btLogin\" id=\"btCloseLoginForm\" value=\"关闭\"/><input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/></TD>";
+	str[str.length] = "            <TD>";
+	str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btCloseLoginForm\" value=\"关闭\"/>";
+	str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/>";
+	str[str.length] = "            </TD>";
 	str[str.length] = "        </TR>";
 	str[str.length] = "    </layout>";
 	str[str.length] = "    <data><row/></data>";
@@ -605,12 +597,13 @@ function login() {
 	}
 
 	Ajax({
-		url : "rs/wms/login/" + loginName + "/" + password,
+		url : URL_RS_LOGIN,
+		params : {"domain": "800best", "loginName": loginName, "password": password},
 		method : "POST",
 		type : "json",
 		ondata : function() { 
 			var result = eval(this.getResponseText());
-			if(result == null) {
+			if(result == null || result == "LoginError") {
 				return alert("登陆失败，您输入的账号或密码有误！");
 			}
 
@@ -626,9 +619,11 @@ function login() {
 }
 
 function getWarehouseList() {
+	var userId = Cookie.getValue("token");
 	Ajax({
 		url : URL_RS_WH_LIST,
-		method : "GET",
+		params: {"userId": userId},
+		method : "POST",
 		type : "json",
 		ondata : function() { 
 			var result = eval(this.getResponseText());
@@ -640,8 +635,8 @@ function getWarehouseList() {
 						whIds += "|";
 						whNames += "|";
 					}
-					whIds   += result[i][0];
-					whNames += result[i][1];
+					whIds   += result[i].id;
+					whNames += result[i].cname;
 				}
 				
 				var paramConfig = getTreeAttribute("param");
@@ -669,7 +664,8 @@ function testRestfulReportService() {
 }
 
 window.onload = init;
-window.attachEvent("onunload", function() {
+
+Event.attachEvent(window, "onunload", function() {
 	if(10000 < window.screenTop || 10000 < window.screenLeft) {
 		logout(); // 关闭页面自动注销
 

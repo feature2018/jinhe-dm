@@ -4,7 +4,7 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
    version="1.0">
 
-	<entity class="com.best.oasis.datamining.report.Report"/>
+	<entity class="com.jinhe.dm.report.Report"/>
  
 	
 </entity-mappings>

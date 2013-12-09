@@ -29,7 +29,10 @@
 	<mvc:resources mapping="/*.xml" location="/"/>  
 	<mvc:resources mapping="/*.css" location="/"/>  
 	<mvc:resources mapping="/*.js" location="/"/>  
+	<mvc:resources mapping="/*.swf" location="/"/>  
 	
 	<mvc:resources mapping="/data/**" location="/data/"/> 
+	<mvc:resources mapping="/wms/**" location="/wms/"/> 
+	<mvc:resources mapping="/btr/**" location="/btr/"/> 
  
 </beans>

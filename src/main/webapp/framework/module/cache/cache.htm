@@ -35,11 +35,11 @@
 	XML_CACHE_STRATEGY  = "CacheStrategy";
 
 	/* XMLHTTP请求地址汇总  */
-	URL_INIT         = "/" + NO_AUTH_PATH + "cache/list";
-	URL_CACHE_DETAIL = "/" + NO_AUTH_PATH + "cache/list/";
-	URL_VIEW_ITEM    = "/" + NO_AUTH_PATH + "cache/item";
-	URL_CACHE_CLEAR  = "/" + NO_AUTH_PATH + "cache/release";
-	URL_CACHE_INIT   = "/" + NO_AUTH_PATH + "cache/init";	
+	URL_INIT         = NO_AUTH_PATH + "cache/list";
+	URL_CACHE_DETAIL = NO_AUTH_PATH + "cache/list/";
+	URL_VIEW_ITEM    = NO_AUTH_PATH + "cache/item";
+	URL_CACHE_CLEAR  = NO_AUTH_PATH + "cache/release";
+	URL_CACHE_INIT   = NO_AUTH_PATH + "cache/init";	
 	
 	if(IS_TEST) {
 		URL_INIT = "data/cache_init.xml?";
@@ -52,20 +52,15 @@
 	/*页面初始化 */
 	function init() {
 		initPaletteResize();
-		initListContainerResize();
-		initNaviBar();
+		initNaviBar("cache");
 		initMenus();
-		initBlocks();
 		initWorkSpace(false);
 		initEvents();
-		initFocus();
 
 		loadInitData();
 	}
 
-	/*
-	 *	页面初始化加载数据(包括工具条、菜单树)：
-	 */
+	/* 页面初始化加载数据(包括工具条、菜单树) */
 	function loadInitData() {
 		var onresult = function() {
 			var mainTreeXML = this.getNodeValue(XML_MAIN_TREE);
@@ -74,11 +69,10 @@
 			
 			// 添加自定义树事件
 			var treeElement = $$("tree");
-			treeElement.onTreeNodeActived = function(eventObj) {
-				onTreeNodeActived(eventObj);
-			}
 			treeElement.onTreeNodeDoubleClick = function(eventObj) {
-				onTreeNodeDoubleClick(eventObj);
+				if( !isTreeRoot() ) {
+					maintainCache();
+				}
 			}
 			treeElement.onTreeNodeRightClick = function(eventObj) {
 				onTreeNodeRightClick(eventObj);
@@ -88,26 +82,34 @@
 		Ajax({url : URL_INIT, onresult : onresult});
 	}
 
+	/* 右击树节点  */
+	function onTreeNodeRightClick(eventObj) {
+		// 延时一会，等onTreeNodeActived事件先执行完
+		setTimeout(function() {
+			var tree = $$("tree");
+			if( tree.contextmenu ) {
+				tree.contextmenu.show(eventObj.clientX, eventObj.clientY);                
+			}
+		}, 100);
+	}
+
 	function initMenus() {
 		var item1 = {
 			label:"维护",
 			callback:maintainCache,
 			icon:"images/edit.gif",
-			enable: function() {return true;},
 			visible:function() {return !isTreeRoot();}
 		}
 		var item2 = {
 			label:"初始化",
 			callback:initCache,
 			icon:"images/init.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot() && isCacheReleased();}
 		}
 		var item3 = {
 			label:"清空",
 			callback:clearCache,
 			icon:"images/clear.gif",
-			enable:function() {return true;},
 			visible:function() {return !isTreeRoot();}
 		}
 
@@ -157,55 +159,8 @@
 			});
 		}
 	}
-	
-	/* 查看缓存项信息  */
-	function showItemInfo() { 
-		var tree = $T("tree");
-		var treeNode = tree.getActiveTreeNode();
-		
-		var rowIndex = $$("page1Grid").selectRowIndex;
-		var row = $G("page1Grid").getRowByIndex(rowIndex);
-		if( row ) {
-			var key = row.getAttribute("key");
-			var code = row.getAttribute("code");
 
-			var url = URL_VIEW_ITEM + "/" + treeNode.getId() + "?key=" + key;
-			window.open(url, "查看缓存项信息", "");
-		}
-	}
-
-	/*
-	 *	点击树节点
-	 *	参数：	Object:eventObj     模拟事件对象
-	 */
-	function onTreeNodeActived(eventObj) {
-		Focus.focus($$("treeTitle").firstChild.id);
-		showTreeNodeStatus({id : "ID", name : "名称"});
-	}
-
-	/* 双击树节点  */
-	function onTreeNodeDoubleClick(eventObj) {
-		if( !isTreeRoot() ) {
-			maintainCache();
-		}
-	}
-
-	/* 右击树节点  */
-	function onTreeNodeRightClick(eventObj) {
-		showTreeNodeStatus({id:"ID", name:"名称"});
-
-		// 延时一会，等onTreeNodeActived事件先执行完
-		setTimeout(function() {
-			var tree = $$("tree");
-			if( tree.contextmenu ) {
-				tree.contextmenu.show(eventObj.clientX, eventObj.clientY);                
-			}
-		}, 100);
-	}
-
-	/*
-	 *	编辑缓存信息
-	 */
+	/* 编辑缓存信息  */
 	function maintainCache() {
 		var tree = $T("tree");
 		var treeNode = tree.getActiveTreeNode();
@@ -214,9 +169,6 @@
 			var treeName = treeNode.getName();
 
 			var callback = {};
-			callback.onTabClose = function(eventObj) {
-				delCacheData(eventObj.tab.SID);
-			};
 			callback.onTabChange = function() {
 				setTimeout(function() {
 					showCachePools(treeID);
@@ -291,53 +243,49 @@
 		var item1 = {
 			label:"查看缓存项信息",
 			callback:showItemInfo,
-			icon:"images/view.gif",
-			enable:function() {return true;},
-			visible:function() {return true;}
+			icon:"images/view.gif"
+		}
+		var item2 = {
+			label:"清除缓存项",
+			callback:removeCacheItem,
+			icon:"images/clear.gif"
 		}
 
 		var menu = new Menu();
 		menu.addItem(item1);
+		menu.addItem(item2);
 
 		var gridObj = $$("page1Grid");
 		gridObj.contextmenu = menu;
 
 		/* grid绑定事件 */
-		gridObj.onClickRow = function(eventObj) {
-			showItemStatus();
-		}
-		
 		gridObj.onRightClickRow = function(eventObj) {
 			gridObj.contextmenu.show(event.clientX, event.clientY);
 		}
 	}
 
-	/* 显示缓存项信息  */
-	function showItemStatus() {
-		var row = $G("page1Grid").getHighlightRow();
-		if( row ) {		
-			var id  = row.getAttribute("id");
-			var key = row.getAttribute("key");
-		}
+	/* 查看缓存项信息  */
+	function showItemInfo() { 
+		var itemKey = $G("page1Grid").getRowAttributeValue("key");
+		var poolCode = getTreeNodeId();
+		var url = URL_VIEW_ITEM + "/" + poolCode + "?key=" + itemKey;
+		window.open(url, "查看缓存项信息", "");
+	}
 
-		var block = Blocks.getBlock("statusContainer");
-		if( block ) {
-			block.open();
-			block.writeln("ID", id || "");
-			block.writeln("key", key || "");
-			block.close();
-		}
+	function removeCacheItem() {
+		var itemKey = $G("page1Grid").getRowAttributeValue("key");
+		var poolCode = getTreeNodeId();
+		Ajax({
+			url : URL_VIEW_ITEM + "/" + poolCode + "?key=" + itemKey,
+			method : "DELETE",
+			onsuccess : function() {
+				 $G("page1Grid").deleteSelectedRow();
+			}
+		});
 	}
 
 
 	window.onload = init;
-
-	// 关闭页面自动注销
-	window.attachEvent("onunload", function() {
-		if(10000 < window.screenTop || 10000 < window.screenLeft) {
-			logout();
-		}
-	});
 
 //-->
 </SCRIPT>
@@ -347,7 +295,7 @@
 <body>
 
 <!-- 版面 开始 -->
-<table class="panel"  border="0" cellpadding="0" cellspacing="0">
+<table class="panel">
   <tr class="header"> 
 	<td class="left"></td>
 	<td class="center"></td>
@@ -357,16 +305,13 @@
 	<td class="left"></td>
 	<td class="center">
 	  <!-- 版面内容 开始 -->
-	  <table class="full" border="0" cellpadding="0" cellspacing="0">
+	  <table class="full">
 		<tr class="hidden"> 
-		  <td height="20"><table class="hFull" border="0" cellspacing="0" cellpadding="0">
+		  <td height="20"><table class="hFull">
 			  <tr> 
 				<td> 
-				  <!-- 主菜单 开始 -->
 				  <div id="navibar"><div class="loading"></div></div>
-				  <!-- 主菜单 结束 -->
 				</td>
-				<td width="150" align="right">&nbsp;</td>
 			  </tr>
 			</table></td>
 		</tr>
@@ -375,15 +320,14 @@
 		</tr>
 		<tr> 
 		  <td valign="top">
-			<table class="full" border="0" cellpadding="0" cellspacing="0">
+			<table class="full">
 			  <tr> 
 				<td id="palette">
 				  <!-- 左栏 开始 -->
-				  <table class="full border" border="0" cellpadding="0" cellspacing="0">
+				  <table class="full border">
 					<tr id="treeTitle" class="bar"> 
 					  <td class="opened">
 						<span class="icon"></span>缓存池<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
-						<span class="button collapse" id="treeTitleBt"></span>
 					  </td>
 					</tr>
 					<tr>
@@ -391,65 +335,42 @@
 						<Tree:Box id="tree" treeType="menu" baseurl="../../tree/"><div class="loading"></div></Tree:Box>
 					  </td>
 					</tr>
-					<tr id="statusTitle" class="bar">
-					  <td class="opened">
-						<span class="icon"></span>状态信息<span class="button collapse" id="statusTitleBt"></span>
-					  </td>
-					</tr>
-					<tr style="display:none">
-					  <td id="statusContainer"></td>
-					</tr>
 				  </table>                        
 				  <!-- 左栏 结束 -->
 				</td>
-				<td>
-				  <table class="full" border="0" cellpadding="0" cellspacing="0">
-					<tr valign="top">
-					  <!-- 主内容区域 开始 -->
-					  <td class="groove">
-						<div class="groove">
-						  <table class="full" border="0" cellspacing="2" cellpadding="0">
-							<tr>
-							  <td>
-								<!-- 标签区域 开始 -->
-								<WorkSpace:Box id="ws" baseurl="../../workspace/">
-								  <!-- page1 开始 -->
-								  <WorkSpace:Page id=page1 class="tight">
-									<table class="full" border="0" cellspacing="0" cellpadding="0">
-									  <tr>
-										<td id="listContainer" class="r b" style="width:50%">
-										  <table class="full" border="0" cellspacing="0" cellpadding="0">
-											<tr class="tf" height="20">
-											  <td class="b label" id="gridTitle" style="font-weight:normal">※缓存项
-												<span id="page1HitRate" class="buttonBox" style="left:60px;top:4px;font-weight:bold;"></span>
-												<span class="buttonBox" id="gridToolBar"></span></td>
-											</tr>
-											<tr>
-											  <td class="">
-												<Grid:Box id="page1Grid" baseurl="../../grid/"><div class="loading"></div></Grid:Box>
-											  </td>
-											</tr>
-										  </table>
-										</td>
-										<td class="" valign="top">
-										  <div style="width:100%;height:100%;overflow:auto;padding:10px;">
-											<XForm:Box id="page1Form" baseurl="../../xform/" editable="true"><div class="loading"></div></XForm:Box>
-										  </div>
-										</td>
-									  </tr>
-									</table>
-								  </WorkSpace:Page>
-								  <!-- page1 结束 -->
-								</WorkSpace:Box>
-								<!-- 标签区域 结束 -->
-							  </td>
-							</tr>
-						  </table>                                
-						</div>
-					  </td>
-					  <!-- 主要内容区域 结束 -->
-					</tr>
-				  </table></td>
+				<td class="groove">
+					<!-- 标签区域 开始 -->
+					<WorkSpace:Box id="ws" baseurl="../../workspace/">
+					  <!-- page1 开始 -->
+					  <WorkSpace:Page id=page1 class="tight">
+						<table class="full">
+						  <tr>
+							<td id="listContainer" class="r b" style="width:50%">
+							  <table class="full">
+								<tr class="tf" height="20">
+								  <td class="b label" id="gridTitle" style="font-weight:normal">※缓存项
+									<span id="page1HitRate" class="buttonBox" style="left:60px;top:4px;font-weight:bold;"></span>
+									<span class="buttonBox" id="gridToolBar"></span></td>
+								</tr>
+								<tr>
+								  <td>
+									<Grid:Box id="page1Grid" baseurl="../../grid/"></Grid:Box>
+								  </td>
+								</tr>
+							  </table>
+							</td>
+							<td valign="top">
+							  <div style="padding:10px;">
+								<XForm:Box id="page1Form" baseurl="../../xform/" editable="true"></XForm:Box>
+							  </div>
+							</td>
+						  </tr>
+						</table>
+					  </WorkSpace:Page>
+					  <!-- page1 结束 -->
+					</WorkSpace:Box>
+					<!-- 标签区域 结束 -->                              
+				</td>
 			  </tr>
 			</table></td>
 		</tr>

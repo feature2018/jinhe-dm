@@ -2,24 +2,18 @@
 <Response>
 	<NaviInfo>
 		<Menus>
-            <MenuItem id="dm.1" name="数据挖掘" href="report.html"/>
+            <MenuItem id="dm.1" name="数据报表" href="report.html"/>
 			
 			<!--
             <MenuItem id="dm.2" name="对外接口" href="webservice.html"/>
             <MenuItem id="dm.3" name="量能监控" href="monitor.html"/>
 			
 			<MenuItem id="none" name="|"/>
-
-			<MenuItem id="dm.4" name="用户管理" href="user.html"/>
-			<MenuItem id="dm.5" name="角色管理" href="role.html"/>
-			<MenuItem id="dm.6" name="资源管理" href="resource.html"/>
-
-			<MenuItem id="none" name="|"/>
 			-->
 
-			<MenuItem id="dm.7" name="缓存管理" href="framework/module/cache/cache.htm"/>
-			<MenuItem id="dm.8" name="参数管理" href="framework/module/param/param.htm"/>
-			<MenuItem id="dm.9" name="日志查询" href="framework/module/log/log.htm"/>
+			<MenuItem id="cache" name="缓存管理" href="framework/module/cache/cache.htm"/>
+			<MenuItem id="param" name="参数管理" href="framework/module/param/param.htm"/>
+			<MenuItem id="log"   name="日志查询" href="framework/module/log/log.htm"/>
 		</Menus>
 	</NaviInfo>
 </Response>

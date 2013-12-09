@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>货量趋势图</title>
+
+	<script type="text/javascript" src="../framework/core.js"></script>
+	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl = Query.get("service") || "../display/json/207";
+	
+	function query() {
+
+		var fromDate = $$("fromDate").value;
+		var toDate = $$("toDate").value;
+		var whichCenter = $$("whichCenter").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate, "param3": fromDate, "param4": toDate, "param5": whichCenter},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+				/*if( result == null ) {	 
+					return ;
+				}*/
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var totalIn = 0;
+		var totalOut = 0;
+		var dataW = [];
+		var dataO = [];
+		var dataDay = [];
+		var showDay = [];
+		var maxdataIn = 0;
+		var maxdataOut = 0;
+		var maxDayIn = 0;
+		var maxDayOut = 0;
+		var scaledata = 0;
+		var spaceData = 0;
+		var maxw = 0;
+		
+		for(var i = 0; i < originData.length; i++) {
+			var weightIn = originData[i]["入网重量"];
+			var weightOut = originData[i]["出网重量"];
+			var dateIn = originData[i]["日期"];
+			if (maxdataIn<weightIn) {
+				maxdataIn = weightIn;
+				maxDayIn = dateIn
+			}
+			if (maxdataOut<weightOut) {
+				maxdataOut = weightOut;				
+			}
+			maxw = maxdataOut;
+
+			if (maxdataOut<maxdataIn) {maxw = maxdataIn}
+			
+			if (maxw/100<1) {scaledata=Math.ceil(maxw/10) * 10;}
+			scaledata=Math.ceil(maxw/100) * 100;
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = dateIn;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			totalIn += weightIn;
+			totalOut += weightOut;
+			dataW[i] = weightIn;
+			dataO[i] = weightOut;
+			dataDay[i] = dateIn;
+		}
+
+		spaceData=scaledata/5;
+				
+		$(function() {
+		    var data = [{
+		        name: '派件货量',
+		        value: dataO,
+		        color: '#aad0db',
+		        line_width: 2
+		    },
+		    {
+		        name: '入网货量',
+		        value: dataW,
+		        color: '#f68f70',
+		        line_width: 2
+		    }];
+		    var labels = dataDay;
+		    var chart = new iChart.Area2D({
+		        render: 'canvasDiv',
+		        data: data,
+		        title: '出入货量走势曲线',
+		        width: 1900,
+		        height: 900,
+		        legend: {
+		            enable: true,
+		            row: 1,
+		            //设置在一行上显示，与column配合使用
+		            column: 'max',
+		            valign: 'top',
+		            background_color: null,
+		            //设置透明背景
+		            offsetx: -30,
+		            //设置x轴偏移，满足位置需要
+		            border: false
+		        },
+		        tip: {
+		            enable: true,
+		            listeners: {
+		                //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+		                parseText: function(tip, name, value, text, i) {
+		                    return labels[i] + ":<br/>" + name + ":" + value + "T";
+		                }
+		            }
+		        },
+		        crosshair: {
+		            enable: true,
+		            line_color: '#62bce9',
+		            line_width: 2
+		        },
+		        sub_option: {
+		            label: false,
+		            point_size: 20
+		        },
+		        background_color: '#f2f2f2',
+		        coordinate: {
+		            axis: {
+		                width: [0, 0, 2, 0]
+		            },
+		            background_color: '#ffffff',
+		            height: '90%',
+		            scale: [{
+		                position: 'left',
+		                scale_space: spaceData,
+		                scale_enable: false,
+		                //禁用小横线
+		                listeners: {
+		                    parseText: function(t, x, y) {
+		                        return {
+		                            text: t + "T"
+		                        }
+		                    }
+		                }
+		            },
+		            {
+		                position: 'bottom',
+		                start_scale: 1,
+		                end_scale: scaledata,
+		                parseText: function(t, x, y) {
+		                    return {
+		                        textY: y + 10
+		                    }
+		                },
+		                labels: showDay
+		            }]
+		        }
+		    });
+		    chart.draw();
+		});
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+		分拨(城市名): <input type="text" id="whichCenter"/>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

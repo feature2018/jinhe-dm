@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>看板</title>
+
+	<script type="text/javascript" src="../framework/core.js"></script>
+	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var data;
+	var warehouseId;
+	
+/* 	
+	 data = [
+			{name : '新建订单数',value : 7000, color:'red'},
+			{name : '分配订单数',value : 3000, color:'#3883bd'},
+			{name : '拣货订单数',value : 2600, color:'#3F5C71'},
+			{name : '验货订单数',value : 1000, color:'#a6bfd2'},
+			{name : '发运订单数',value : 3400, color:'#d6ffd2'}
+		];
+	show();
+*/		
+
+/* */
+	
+	var serviceUrl = Query.get("service") || "../wms/kanban/2/";
+	
+	window.onload = function() {
+		var userId = Cookie.getValue("token");
+		Ajax({
+			url : "../wms/whList",
+			params: {"userId": userId},
+			method : "POST",
+			type : "json",
+			ondata : function() {
+				var result = eval(this.getResponseText()); 
+				if( result == null ) {	 
+					return;
+				}				
+				for(var i = 0; i < result.length; i++) {
+					var option = new Option(result[i].cname, result[i].id);
+					$$("warehouse").options.add(option); 
+				}
+
+				query();
+			}
+		});
+	}
+	
+	function query() {
+		warehouseId = $$("warehouse").value;
+		Ajax({
+			url : serviceUrl + warehouseId,
+			method : "GET",
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				data = eval(this.getResponseText());
+				show();
+			}
+		});	  
+	}
+	
+	window.setInterval(function() {
+		if(warehouseId) {
+			query();
+		}
+	  }, 1000*30);
+	
+
+	function show() {
+		var total = 100;
+		for(var i = 0; i < data.length; i++) {
+			total = Math.max(total, data[i].value)
+		}
+		total = Math.round(total/1000) * 1000 + 1000;
+				
+	    $(function(){
+			new iChart.Column2D({
+				render : 'canvasDiv',
+				data: data,
+				title : '仓库当天实时作业进度情况',
+				// showpercent:true,
+				decimalsnum:2,
+				width : 1200,
+				height : 700,
+				sub_option : {
+					label : {
+						fontsize:11,
+						fontweight:600,
+						color : '#4572a7'
+					},
+					border : {
+						width : 2,
+						radius : '5 5 0 0', //上圆角设置
+						color : '#ffffff'
+					}
+				},
+				coordinate:{
+					background_color:'#fefefe',
+					scale:[{
+						 position:'left',	
+						 start_scale:0,
+						 end_scale:total,
+						 scale_space:total/4
+					}]
+				}
+			}).draw();
+		});
+	}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		仓库: 
+		<select id="warehouse">
+			<!--
+			<option value="1" selected>仓库一</option>
+			<option value="2">仓库二</option>
+			<option value="3">仓库三</option>
+			-->
+		</select>
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

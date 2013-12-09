@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <strategies> 
-  <strategy code="connectionpool" name="数据库连接池"> 
+  <strategy code="connectionpool" name="DB连接池-MySQL"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
@@ -11,28 +11,43 @@
 	<visible>1</visible>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
   </strategy>
-  <strategy code="connectionpool-1" name="数据库连接池-1"> 
+  <strategy code="connectionpool-0" name="DB连接池-WMS生产库"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
     <interruptTime>1000</interruptTime>  
-    <initNum>5</initNum>  
-    <disabled>0</disabled>
-	<visible>1</visible>  
+    <initNum>0</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
-	<paramFile>oracle1.properties</paramFile>
+	<paramFile>oracle-wms-prod.properties</paramFile>
   </strategy>
-  <strategy code="connectionpool-2" name="数据库连接池-2"> 
+  <strategy code="connectionpool-1" name="DB连接池-WMS只读库"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
     <interruptTime>1000</interruptTime>  
-    <initNum>5</initNum>  
-    <disabled>0</disabled>
-	<visible>1</visible>  
+    <initNum>1</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
-	<paramFile>oracle2.properties</paramFile>
-  </strategy>    
+	<paramFile>oracle-wms-adg.properties</paramFile>
+  </strategy>
+  <strategy code="connpool-vf-oracle" name="DB连接池-VF只读库"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>1</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>oracle-vf.properties</paramFile>
+  </strategy>
+  <strategy code="connpool-btr-mysql" name="DB连接池-BTR-MySQL"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>3</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>mysql-btr.properties</paramFile>
+  </strategy>
+    
   <strategy code="threadpool" name="线程池"> 
     <poolClass>com.jinhe.tss.cache.extension.threadpool.ThreadPool</poolClass>  
 	<poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>  
@@ -47,12 +62,29 @@
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>    
     <poolSize>100</poolSize>  
-    <cyclelife>18000000</cyclelife>  
+    <cyclelife>0</cyclelife>  
     <interruptTime>100</interruptTime>  
     <initNum>10</initNum>  
     <disabled>0</disabled>  
     <customizerClass>com.jinhe.tss.framework.component.log.LogOutputTaskPoolCustomizer</customizerClass>  
     <accessMethod>3</accessMethod>  
-  </strategy> 
-  <strategy code="SQLParser" name="SQL解析池"/>  
+  </strategy>   
+  <strategy code="SHORT" name="数据缓存（短期）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>1000</poolSize>  
+    <cyclelife>180000</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>
+  <strategy code="LONG" name="数据缓存（长期）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>300</poolSize>  
+    <cyclelife>43200000</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>  
+  <strategy code="NODEAD" name="数据缓存（不死）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>1000</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>      
 </strategies>
