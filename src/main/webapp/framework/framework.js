@@ -199,12 +199,9 @@ function onClickGridTitle() {
 
 function onTreeNodeActived(eventObj){
 	 Focus.focus( $$("treeTitle").firstChild.id );
-	 showTreeNodeInfo();
 }
 
 function onTreeNodeRightClick(eventObj, carePermission, treeName) {
-	showTreeNodeInfo();
-
 	var menu = $$(treeName || "tree").contextmenu;
 	if(menu == null) {
 		return;
@@ -454,7 +451,7 @@ function Alert(info, detail) {
 		params.detail = info;        
 	}
 	params.title = "";
-	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:278px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:yes;unadorned:yes');
 }
 
 /*
@@ -463,7 +460,7 @@ function Alert(info, detail) {
 			string:detail           详细信息
  *	返回值：boolean:returnValue     用户选择确定/取消
  */
-function Confirm(info,detail) {
+function Confirm(info, detail) {
 	info = convertToString(info);
 	detail = convertToString(detail);
 
@@ -477,31 +474,7 @@ function Confirm(info,detail) {
 		params.detail = info;        
 	}
 	params.title = "";
-	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
-	return returnValue;
-}
-
-/*
- *	带是/否/取消三个按钮的对话框
- *	参数：	string:info             简要信息
-			string:detail           详细信息
- *	返回值：boolean:returnValue     用户选择是/否/取消
- */
-function Confirm2(info,detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
-
-	var maxWords = 100;
-	var params = {};
-	params.type = "confirm2";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords < info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
-	}
-	params.title = "";
-	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:yes;unadorned:yes');
+	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:yes;unadorned:yes');
 	return returnValue;
 }
 
@@ -525,7 +498,7 @@ function Prompt(info, defaultValue, title, protect, maxBytes) {
 	params.title = title;
 	params.protect = protect;
 	params.maxBytes = maxBytes;
-	var returnValue = window.showModalDialog(URL_CORE + '_prompt.htm', params, 'dialogwidth:280px; dialogheight:150px; status:yes; help:no;resizable:no;unadorned:yes');
+	var returnValue = window.showModalDialog(URL_CORE + '_prompt.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:no;unadorned:yes');
 	return returnValue;
 }
 
@@ -541,6 +514,5 @@ window._prompt = window.prompt;
 
 window.alert = Alert;
 window.confirm = Confirm;
-window.confirm2 = Confirm2;
 window.prompt = Prompt;
 window.onerror = onError;

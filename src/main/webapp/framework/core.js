@@ -377,10 +377,10 @@ Array.prototype.push = function(item) {
 
 String.prototype.convertEntry = function() {
 	var str = this;
-	str = str.repalce(/\&/g, "&amp;");
-	str = str.repalce(/\"/g, "&quot;");
-	str = str.repalce(/\</g, "&lt;");
-	str = str.repalce(/\>/g, "&gt;");
+	str = str.replace(/\&/g, "&amp;");
+	str = str.replace(/\"/g, "&quot;");
+	str = str.replace(/\</g, "&lt;");
+	str = str.replace(/\>/g, "&gt;");
 	return str;
 }
 
@@ -1378,6 +1378,10 @@ function xml2String(element) {
 	}
 }
 
+function getNodeText(node) {
+	return node.text || node.textContent; // 取节点值时，chrome里用textContent
+}
+
 /*
  *  XML节点类型
  */
@@ -1396,7 +1400,7 @@ function XmlNode(node) {
 	this.nodeName = this.node.nodeName;
 	this.nodeType = this.node.nodeType;
 	this.nodeValue = this.node.nodeValue;
-	this.text = this.node.text || this.node.textContent; // 取CDATA节点值时，chrome里用textContent
+	this.text = getNodeText(this.node); // 取CDATA节点值时，chrome里用textContent
 	this.firstChild = this.node.firstChild;
 	this.lastChild = this.node.lastChild;
 	this.childNodes = this.node.childNodes;
@@ -1431,9 +1435,14 @@ XmlNode.prototype.removeAttribute = function(name) {
 }
 
 XmlNode.prototype.getCDATA = function(name) {
-	var node = this.selectSingleNode(name + "/node()");
-	if(node ) {
-		return node.nodeValue.revertCDATA();
+	var node = this.node.getElementsByTagName(name)[0];
+
+	if( node == null ) {
+		node = this.selectSingleNode(name + "/node()");
+	}
+	if( node ) {
+		var cdataValue = node.text || node.textContent;
+		return cdataValue.revertCDATA();
 	}
 }
 
@@ -1462,15 +1471,16 @@ XmlNode.prototype.removeCDATA = function(name) {
 }
 
 XmlNode.prototype.cloneNode = function(deep) {
+	if(this.nodeType == _XML_NODE_TYPE_TEXT || this.nodeType == _XML_NODE_TYPE_CDATA) {
+		return this;
+	}
+
 	var tempNode;
-	if( !Public.isIE() ) {
-		if(this.nodeType == _XML_NODE_TYPE_TEXT) {
-			return this;
-		}
-		tempNode = new XmlNode(new XmlReader(this.toXml()).documentElement);
+	if( Public.isIE() ) {
+		tempNode = new XmlNode(this.node.cloneNode(deep));
 	} 
 	else {
-		tempNode = new XmlNode(this.node.cloneNode(deep));
+		tempNode = new XmlNode(new XmlReader(this.toXml()).documentElement);
 	}
 	return tempNode;
 }

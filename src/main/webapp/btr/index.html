@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>V5数据门户</title>
+
+    <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+    <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+    <meta name="keyFrame" content="width=device-width, initial-scale=1.0"></meta>
+    <script src="js/index.js"></script>
+    <script type="text/javascript" src="../framework/core.js"></script>
+    <script type="text/javascript" src="../framework/ajax.js"></script>
+    <script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+    <script type="text/javascript" src="ctq.js"></script>  <!--分拨产出货量画布-->
+    <script type="text/javascript">
+
+
+    </script>
+
+</head>
+
+<body>
+
+  <span class='bckg'></span>
+<header>
+  <h1>
+    BTR数据门户
+  </h1>
+  <nav>
+    <ul>
+      <li class='mainmanu' id='daily'>
+        <a >全网日报</a>
+        <ul class='submanu'>
+            <li><a target="keyFrame" data-title='省份产出货量' href="provinceTransorder.html">省产出货量</a></li>
+            <li><a target="keyFrame" data-title='分拨产出货量' href="centerTransQ.html">分拨产出货量</a></li>
+            <li><a target="keyFrame" data-title='分拨操作货量' href="opWeight.html">分拨操作货量</a></li>
+            <li><a target="keyFrame" data-title='中转物料收入' href="#">中转物料收入</a></li>
+            <li><a target="keyFrame" data-title='物料收入' href="incomeStock.html">物料收入</a></li>
+            <li><a target="keyFrame" data-title='破损少件问题件比率' href="#">省破少问题件</a></li>
+            <li><a target="keyFrame" data-title='审核并确认投诉率占比' href="#">省投诉率比</a></li>          
+          </ul>
+      </li>
+      <li class='mainmanu' id='line'>
+        <a >指标走势</a>
+          <ul class='submanu'>
+            <li><a target="keyFrame" data-title='全网货量走势' href="#">全网货量</a></li>
+            <li><a target="keyFrame" data-title='分拨货量走势' href="#">分拨货量</a></li>
+            <li><a target="keyFrame" data-title='全网操作量走势' href="#">全网操作量</a></li>
+            <li><a target="keyFrame" data-title='分拨操作量走势' href="#">分拨操作量</a></li>
+            <li><a target="keyFrame" data-title='中转费收入走势' href="#">中转费收入</a></li>
+            <li><a target="keyFrame" data-title='物料收入走势' href="#">物料收入</a></li>
+            <li><a target="keyFrame" data-title='破损少件问题件比率' href="#">破少问题件比</a></li>
+            <li><a target="keyFrame" data-title='审核并确认投诉率占比' href="#">投诉率比</a></li>
+          </ul>
+      </li>
+      <li class='mainmanu' id='warning'>
+        <a >预警直播间</a>
+          <ul class='submanu'>
+            <li><a target="keyFrame" data-title='货量预警' href="#">货量预警</a></li>
+            <li><a target="keyFrame" data-title='经营状况预警' href="#">经营状况预警</a></li>
+            <li><a target="keyFrame" data-title='网点运能预警' href="#">分拨运能预警</a></li>
+            <li><a target="keyFrame" data-title='网点运能预警' href="#">网点运能预警</a></li>
+          </ul>
+      </li>
+     
+    </ul>
+  </nav>
+</header>
+<main>
+  <div class='title'>
+    <h2>BTR数据门户</h2>
+    <a href='#' title='用户'>
+      百世快运
+    </a>
+  </div>
+
+  <div id='canvasMap'>
+    <iframe width='100%' height='100%'  src="" name='keyFrame' style='border:none;'></iframe> <!-- style='border:none;'-->    
+    <div id='canvasDiv'></div>
+  </div>
+  
+</main>
+
+
+
+</body>
+
+</html>

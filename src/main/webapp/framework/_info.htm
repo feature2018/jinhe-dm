@@ -6,6 +6,7 @@
 <!-- 公共脚本 开始 -->
 <link href="css/css.css" rel="stylesheet" type="text/css">
 <link href="css/dialog.css" rel="stylesheet" type="text/css">
+
 <script language="javascript" src="core.js"></script>
 <script language="javascript" src="framework.js"></script>
 <!-- 公共脚本 结束 -->
@@ -17,6 +18,7 @@
       word-break:break-all;
       width:100%;
       overflow:hidden;
+      display: inline-block;
   }
   #detailBox{
       color:#666666;
@@ -32,16 +34,12 @@
       border-bottom:0px;
       border-right:0px;
   }
-  #bt_showDetail{
-      color:#666666;
-      text-decoration:none;
-      text-align:center;
-      padding:3px;
+  #bt_showDetail {
       display:none;
       position:absolute;
-      right:-5px;
+      right:3px;
       bottom:0px;
-      background-color:#FFFFFF;
+      height:20px;
   }
  .webdings{
       font-family:webdings;
@@ -83,22 +81,19 @@
 				var gif;
 						switch(params.type) {
 								case "alert":
-						gif = "icon_alert.gif";
-															
+						        gif = "icon_alert.gif";															
 										bt_cancel.style.display = "none";
 										bt_yes.style.display    = "none";
 										bt_no.style.display     = "none";
 										break;
 								case "confirm":
-						gif = "icon_confirm.gif";
-
+						        gif = "icon_confirm.gif";
 										bt_yes.style.display = "none";
 										bt_no.style.display = "none";
 										break;
 								case "confirm2":
-						gif = "icon_confirm.gif";
-
-						bt_ok.style.display = "none";
+						        gif = "icon_confirm.gif";
+						        bt_ok.style.display = "none";
 										break;
 						}
 
@@ -201,7 +196,7 @@
 </head>
 <body>
 <div class="mainBox">
-  <table class="full" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed">
+  <table class="full" style="table-layout:fixed">
     <tr>
       <td valign=top style="position:relative">
         <div id="infoBox"></div>
@@ -212,10 +207,10 @@
     <tr>
       <td align="right" height="30" class="t">
         <input type="button" id="bt_copy"   value="复 制" class="btWeak"   onclick="copy()">
-		<input type="button" id="bt_cancel" value="取 消" class="btWeak"   onclick="cancel()">
-		<input type="button" id="bt_ok"     value="确 定" class="btStrong" onclick="ok()">
-		<input type="button" id="bt_yes"    value="是"    class="btStrong" onclick="yes()">
-		<input type="button" id="bt_no"     value="否"    class="btStrong" onclick="no()">
+    		<input type="button" id="bt_cancel" value="取 消" class="btWeak"   onclick="cancel()">
+    		<input type="button" id="bt_ok"     value="确 定" class="btStrong" onclick="ok()">
+    		<input type="button" id="bt_yes"    value="是"    class="btStrong" onclick="yes()">
+    		<input type="button" id="bt_no"     value="否"    class="btStrong" onclick="no()">
       </td>
     </tr>
   </table>

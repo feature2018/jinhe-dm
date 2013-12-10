@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>分拨日出货量</title>
+
+	<script type="text/javascript" src="../framework/core.js"></script>
+	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+	
+	function getData () {
+		// body...
+		for (var i = 0; i <= 3; i++) {	
+			var serviceUrl[i] = '../display/json/20' + i;   
+		};
+	}
+
+	function query() {
+			var selectedDate = $$("selectedDate").value;
+			for (var i = 0; i <= 3; i++) {
+				Ajax({
+					url : serviceUrl[i],
+					method : "POST",
+					params : {"param1": selectedDate,"param2": selectedDate}, 
+					type : "json",
+					waiting : true,					
+					ondata : function() {						
+						var data[i]= eval(this.getResponseText};
+						if (i=3) {
+							show(data[0],data[1],data[2],data[3]);						
+						}
+				});
+
+			}
+	};
+	
+
+	function show(originData[0],originData[1],originData[2],originData[3]) {
+		var total = 0;
+		var data = [][];
+		var maxdata = 0;
+		var scaledata = 0;
+		var spacedata = 0;
+
+		for(var j = 0; j<=3;i++){
+			for(var i = 0; i < originData[j].length; i++) {
+				var leaveTransOder = originData[j][i]["总留仓数"];
+				var leaveTime = originData[j][i]["分拨"];
+				/*if (maxdata<leaveTransOder) {
+					maxdata=leaveTransOder
+				}
+
+				//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+				//spacedata = scaledata/5;
+				//total += leaveTransOder;
+				data[j][i] = {name: leaveTime, value: leaveTransOder, color: '#c52120' };
+			}
+		}
+		
+
+		
+		//total = Math.round(total/1000);
+
+//定义数据组
+		var data = {'一次留仓': data[0]'二次留仓': data[1],'三次留仓': data[2],'四次以上留仓': data[3]}
+
+		var sub = false;
+
+		function toChart(title, subtitle, d) {
+			var chart = new iChart.Column2D({
+			    render: 'canvasDiv',
+			    data: d,
+			    title: {
+			        text: title,
+			        color: '#3e576f'
+			    },
+			    subtitle: {
+			        text: subtitle,
+			        color: '#6d869f'
+			    },
+			    footnote: {
+			        text: 'ichartjs.com',
+			        color: '#909090',
+			        fontsize: 11,
+			        padding: '0 38'
+			    },
+			    width: 800,
+			    height: 400,
+			    label: {
+			        fontsize: 11,
+			        color: '#666666'
+			    },
+			    animation: true,
+			    animation_duration: 700,
+			    //700ms完成动画
+			    shadow: true,
+			    shadow_blur: 2,
+			    shadow_color: '#aaaaaa',
+			    shadow_offsetx: 1,
+			    shadow_offsety: 0,
+			    sub_option: {
+			        listeners: {
+			            parseText: function(r, t) {
+			                return t + "%";
+			            },
+			            click: function(r, e) {
+			                sub = !sub;
+			                if (sub) toChart(r.get('name') + ' market share,April,2011 from 1 to 29 Feb 2012', 'This is a sample spirit from HighCharts', data[r.get('name')]);
+			                else toChart('This is a sample spirit from HighCharts', 'Browser market share,April,2011 from 1 to 29 Feb 2012', data.All);
+			            }
+			        },
+			        label: {
+			            fontsize: 11,
+			            fontweight: 600,
+			            color: '#4572a7'
+			        },
+			        border: {
+			            width: 2,
+			            color: '#ffffff'
+			        }
+			    },
+			    tip: {
+			        enable: true,
+			        listeners: {
+			            parseText: function(tip, name, value, text) {
+			                if (sub) return name + ":" + (value / this.get('total') * 100).toFixed(2) + "%<br/>点击返回总图";
+			                else return name + ":" + (value / this.get('total') * 100).toFixed(2) + "%<br/>点击进入" + name + "详情";
+			            }
+			        }
+			    },
+			    coordinate: {
+			        background_color: null,
+			        grid_color: '#c0c0c0',
+			        width: 660,
+			        axis: {
+			            color: '#c0d0e0',
+			            width: [0, 0, 1, 0]
+			        },
+			        scale: [{
+			            position: 'left',
+			            scale_enable: false,
+			            label: {
+			                fontsize: 11,
+			                color: '#666666'
+			            }
+			        }]
+			    }
+			});
+			/**
+					*利用自定义组件构造左侧说明文本。
+					*/
+			chart.plugin(new iChart.Custom({
+			    drawFn: function() {
+			        /**
+					*计算位置
+					*/
+			        var coo = chart.getCoordinate(),
+			        x = coo.get('originx'),
+			        y = coo.get('originy'),
+			        H = coo.get('height');
+			        /**
+					*在左侧的位置，设置逆时针90度的旋转，渲染文字。
+					*/
+			        chart.target.textAlign('leaveTime').textBaseline('middle').textFont('600 13px Verdana').fillText('Total percent market share', x - 40, y + H / 2, false, '#6d869f', false, false, false, -90);
+			    }
+			}));
+
+			chart.draw();
+		}
+
+		$(function() {
+			toChart('This is a sample spirit from HighCharts', 'Browser market share,April,2011 from 1 to 29 Feb 2012', data.All);
+		});
+}
+	
+
+
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

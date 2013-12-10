@@ -1,24 +1,30 @@
-  .dialog{
-    background-color:white;
-    border:1px solid #98989C;
-    width:100%;
-    height:100%;
-	overflow:hidden;
-	padding:10px,10px;
+
+  body {
+    margin: 3px;
+    font-size: 12px;
+    background-color:#E7E7E7;
+    overflow:hidden;
   }
 
   .mainBox{
     background-color:white;
     border:1px solid #98989C;
-    width:100%;
-    height:100%;
-    padding:5px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 99%;
+   
   }
 
-  body {
-    margin: 10px;
-    font-size: 12px;
-    background-color:#E7E7E7;
+  .dialog{
+    background-color:white;
+    border:1px solid #98989C;
+    margin-left: auto;
+    margin-right: auto;
     overflow:hidden;
-    border:0px;
+    padding:10px,10px;
+  }
+
+  .dialog XForm\:Box {
+     padding-left: 10;
+     padding-top: 10;
   }

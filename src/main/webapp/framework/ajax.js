@@ -507,7 +507,7 @@ function XmlHttp() {
 	if(window.ActiveXObject) {
 		return new ActiveXObject("MSXML2.XMLHTTP"); // for IE6
 	} 
-	else if( window.XMLHttpRequest && window.DOMParser) {
+	else if( window.XMLHttpRequest ) {
 		return new XMLHttpRequest();
 	} 
 	else {
@@ -562,7 +562,7 @@ function Message_Exception(param, request) {
 
 	request.onexception(param);
 
-	//初始化默认值
+	// 初始化默认值
 	if( request.paramObj.relogin != null) {
 		param.relogin = request.paramObj.relogin;
 	}
@@ -574,7 +574,7 @@ function Message_Exception(param, request) {
 		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
 
 		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
-		if( loginObj != null) {
+		if( loginObj ) {
 			var p = request.paramObj;
 			p.setHeader("loginName", loginObj.loginName);
 			p.setHeader("password",  loginObj.password);
@@ -584,8 +584,8 @@ function Message_Exception(param, request) {
 		}
 	}
 	else if(param.relogin == "2" ) { // 单点登录应用跳转，需要输入用户在目标系统中的密码
-		var loginObj = window.showModalDialog(URL_CORE + "_relogin2.htm",{title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
-		if(loginObj != null) {
+		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
+		if( loginObj ) {
 			request.paramObj.setHeader("pwd", loginObj.password);
 			request.send();
 		}

@@ -1,13 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE> 跳转页面 </TITLE>
 </HEAD>
 
 <BODY>
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-	var Params = function(str){
+	var Params = function(str) {
 		var _params = new Object();
 
 		init(str);
@@ -28,15 +27,16 @@
 		}
 	}
 
-	var queryString = location.search.substring(1);  // location.search为URL问号后面的串（包括问号），substring(1)是去掉问号
+	var queryString = location.search.substring(1);
 	var params = new Params(queryString);
 
 	var token = params.getValue("token");
-	var url   = params.getValue("url");
-	if(token != null){
+	if(token) {
 		window.document.cookie = "token=" + token;;
 	}
-	if(url != null){
+
+	var url   = params.getValue("url");
+	if(url){
 		document.location = url;
 	}
 //-->

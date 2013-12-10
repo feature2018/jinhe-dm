@@ -56,10 +56,10 @@ var _TREE_NODE_CHECK_TYPE_STYLE = "checkType";// 节点选择状态图标样式�
  * 节点显示的行高（象素），只用于计算显示的行数，不能控制显示时行的高度
  * 如果要修改显示的行高，修改样式文件
  */
-var _TREE_NODE_HEIGHT = 20;	
+var _TREE_NODE_HEIGHT = 21;	
 var _TREE_SCROLL_BAR_WIDTH = 18; // 滚动条的宽度（象素）
-var _TREE_BOX_MIN_WIDTH = 10;    // 树控件显示区最小宽度（象素）
-var _TREE_BOX_MIN_HEIGHT = 22;   // 树控件显示区最小高度（象素）
+var _TREE_BOX_MIN_WIDTH  = 200;    // 树控件显示区最小宽度（象素）
+var _TREE_BOX_MIN_HEIGHT = 220;   // 树控件显示区最小高度（象素）
 
 var _TREE_SCROLL_DELAY_TIME = 0;          // 滚动条的滚动事件延迟时间（毫妙）
 var _TREE_SCROLL_REPEAT_DELAY_TIME = 300; // 拖动节点到最上、下行时循环滚动事件每次延迟时间（毫妙）
@@ -120,8 +120,8 @@ var Tree = function(element) {
 	this.init = function() {	
 		this.loadData(this.element._dataXML);
 	
-		this.display = new TreeDisplay(this);
-		this.searchObj  = new Search(this);		
+		this.display   = new TreeDisplay();
+		this.searchObj = new Search();		
 		
 		this.reload();
 	
@@ -380,7 +380,7 @@ var Tree = function(element) {
 		element.insertAdjacentHTML('afterBegin', vScrollStr + hScrollStr);
  
 		// 生成页面上显示节点的table对象。
-		var tableStr = '<div class="RootBox" id="' + _rootBoxName + '"><table id="' + _rootTableName + '" cellspacing="0"></table></div>';
+		var tableStr = '<div class="RootBox" id="' + _rootBoxName + '"><table id="' + _rootTableName + '"></table></div>';
 		element.insertAdjacentHTML('afterBegin', tableStr);
 
 		var _vScrollBox = $$(_vScrollBoxName);
@@ -421,6 +421,7 @@ var Tree = function(element) {
 		// 设置显示节点的table对象的大小
 		_rootBox.style.height = _windowHeight;
 		_rootBox.style.width = _windowWidth;
+		element.style.display = "inline-block";
 
 		/* 当窗口大小改变后，初始化所有相关参数，并且重新计算所要显示的节点。*/
 		element.onresize = function () {

@@ -18,7 +18,7 @@ public class Framework {
 	@ResponseBody
 	public Object[] getVersion(HttpServletRequest request, HttpServletResponse response) {
 		String packageTime = Config.getAttribute("last.package.time");
-		String environment = Config.getAttribute("xingng.environment");
+		String environment = Config.getAttribute("environment");
 		return new Object[] { packageTime, environment };
 	}
 

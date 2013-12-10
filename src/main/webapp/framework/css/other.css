@@ -34,7 +34,7 @@
   .r{
     border-right:1px solid #98989C;
   }
-  /* 文本框样式 */
+
   .txtfield{
     color:#535458;
     font-size:12px;
@@ -42,7 +42,7 @@
     border:1px solid #ABAAAF;
     background-color:#ECEFF8;
   }
-  /* 联合容器 */
+
   .comboContainer {
     height: 200px;
     background-color:#F7F8FD;
@@ -55,28 +55,24 @@
   }
 
  
-  /* 登录界面 */
-  .loginContainer {
-    text-align:center;
-    padding-top:330px;
-    background-color:#ECEFF8;
+
+  .loginBox {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 200;
+    width:400px;
+    height:300px;
     background-image:url(../images/login.gif);
     background-repeat:no-repeat;
-    background-position:center center;
+    background-position:center;
   }
-  .loginBox {
-    width:220px;
-    height:300px;
-    vertical-align:top;
-    text-align:center;
-  }
-  .loginBox td{
-    color:#ECEFF8;
+  .loginBox td {
     height:30px;
+    font-weight:bold;
   }
-  .loginBox a,.loginBox a:visited{
-    color:#ECEFF8;
+  .loginBox a, .loginBox a:visited{
     text-decoration:underline;
+    color:#FFFFFF;
   }
   .loginBox .btLogin {
     color:#ECEFF8;
@@ -87,3 +83,8 @@
     border:0px none;
     background-image:url(../images/bt_login.gif);
   } 
+
+  #loginForm {
+     padding-left: 80;
+     padding-top: 80;
+  }

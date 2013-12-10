@@ -1,7 +1,7 @@
 Tree\:Box{
 	width: 100%;
 	height: 100%;
-	display:inline-block;
+	display:block;
 	scrollbar-face-color: #BEC6EE;
     scrollbar-highlight-color: #C0C4E7;
     scrollbar-shadow-color: #C0C4E7;
@@ -11,16 +11,14 @@ Tree\:Box{
     scrollbar-darkshadow-color: #919194;
     scrollbar-face-color: #BEC6EE;
 }
-Tree\:Box a{
+Tree\:Box a {
 	color: #111;
 	font-size: 12px;
 	text-decoration: none;
 	height: 13px;
-	line-height:16px;
 	padding: 0 5 2 5;
 	position: relative;
 	left: -2px;
-
 	cursor:default;
 }
 Tree\:Box a:active, Tree\:Box a:visited{
@@ -53,14 +51,12 @@ Tree\:Box table {
 }
 Tree\:Box td {
 	border-width: 0px;
-	line-height: 16px;
 	padding: 0 2 0 2;
 }
 Tree\:Box tr.selected td{
 	background-color: #FEF7A9;
 }
-Tree\:Box nobr{
-	/* color: #7F92C5; */
+Tree\:Box nobr {
 	margin: 0px;
 	padding: 0px;
 }
@@ -112,7 +108,7 @@ Tree\:Box span.rootSpace{
 	z-index: 2;
 	position: relative;
 	width: 13px;
-	height: 20px;
+	height: 18px;
 	margin-right: -11px;
 	background-color: transparent;
 }
@@ -123,7 +119,6 @@ Tree\:Box span.space{
 	width: 20px;
 	height: 10px;
     margin-left:-4px;
-    line-height:10px;
 }
 Tree\:Box .icon {
 	margin-left: 3px;
@@ -140,7 +135,6 @@ Tree\:Box .extendCheckIcon {
 Tree\:Box .extendCheckLabel {
 	color:#111;
 	font-size:12px;
-    line-height:13px;
 	cursor:default;
 }
 Tree\:Box .extendTable {
@@ -163,10 +157,10 @@ Tree\:Box .RootBox {
 }
 
 Tree\:Box .VScrollBox {
-	position:relative;
-	display:inline;
+	position: relative;
+	display: inline;
 	overflow-y: auto;
-	heigth: 100%;
+	height: 100%;
 	width: 18px;
 	float:right;
 }

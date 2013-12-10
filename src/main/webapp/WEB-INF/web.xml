@@ -12,20 +12,6 @@
 		</param-value>
 	</context-param>
 	
-	<!-- XingNG -->
-	<servlet>
-		<servlet-name>xingng</servlet-name>
-		<display-name>xingng</display-name>
-		<description>Apache CXF Endpoint</description>
-		<servlet-class>com.best.xingng.org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>xingng</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
-	<!-- XingNG -->
-
 	<servlet>
 		<servlet-name>spring-mvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
