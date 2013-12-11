@@ -47,11 +47,16 @@ public class ServiceList {
 	public List<Object[]> getWarehouseList(String userId) {
 		return baseService.getWarehouseList(userId);
 	}
+	
+	@RequestMapping("/allWhList")
+	@ResponseBody
+	public List<Object[]> getAllWarehouseList() {
+		return baseService.getWarehouseList();
+	}
  
 	@RequestMapping("/kanban/2/{whId}")
 	@ResponseBody
 	public List<Map<String, Object>> statisticsWorkAmount(@PathVariable("whId") Long whId) {
-		
 		return kanbanService.statisticsWorkAmount(whId);
 	}
 }

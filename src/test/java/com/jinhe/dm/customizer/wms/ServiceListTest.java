@@ -19,6 +19,7 @@ public class ServiceListTest extends TxTestSupport {
 		serviceList.login(request, response);
 		
 		serviceList.getWarehouseList("106024");
+		serviceList.getAllWarehouseList();
 		
 		serviceList.logout(request, response);
 		

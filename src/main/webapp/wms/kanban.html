@@ -4,31 +4,133 @@
 	<meta charset="UTF-8" />
 	<title>看板</title>
 
+	<link href="../framework/balloon/balloon.css" rel="stylesheet" type="text/css"></link>
+	<link href="../framework/xform/xform.css" rel="stylesheet" type="text/css"></link>
+
 	<script type="text/javascript" src="../framework/core.js"></script>
 	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script language="javascript" src="../framework/balloon/balloon.js"></script>
+	<script language="javascript"  src="../framework/xform/xform.js"></script>
 	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+
+	<style>
+		  #loginFormDiv {
+			display:none;
+			background-color:#BEC6EE;
+			width:240;
+			height:100;
+			font-size: 12px;
+			padding: 10px 10px 10px 10px;
+		  }
+		  #userInfo {
+			font-size: 14px;
+			float: right;
+			top: 15px;
+			right: 30px;
+			cursor:pointer;
+		  }
+	</style>
 
 	<script type="text/javascript">
 
-	var data;
-	var warehouseId;
-	
-/* 	
-	 data = [
-			{name : '新建订单数',value : 7000, color:'red'},
-			{name : '分配订单数',value : 3000, color:'#3883bd'},
-			{name : '拣货订单数',value : 2600, color:'#3F5C71'},
-			{name : '验货订单数',value : 1000, color:'#a6bfd2'},
-			{name : '发运订单数',value : 3400, color:'#d6ffd2'}
-		];
-	show();
-*/		
-
-/* */
-	
-	var serviceUrl = Query.get("service") || "../wms/kanban/2/";
-	
+ 
 	window.onload = function() {
+		if( Cookie.getValue("token") ) {
+			preLogoutWMS();
+		}	
+		else {
+			showLoginForm();
+		}
+	}
+
+	function preLogoutWMS() {
+		var userName = Cookie.getValue("userName");
+		$$("userInfo").innerText = " 注销【" + userName + "】";
+		$$("userInfo").onclick = function() {
+			Cookie.del("userName");
+			Cookie.del("token");
+			$$("userInfo").innerText = "";
+		}	
+
+		getWarehouseList();
+	}
+
+	function showLoginForm() {
+		var str = [];
+		str[str.length] = "<xform>";
+		str[str.length] = "    <declare>";
+		str[str.length] = "        <column name=\"loginName\"  caption=\"帐    号\" mode=\"string\"/>";
+		str[str.length] = "        <column name=\"password\"   caption=\"密　　码\" mode=\"string\"/>";
+		str[str.length] = "    </declare>";
+		str[str.length] = "    <layout>";
+		str[str.length] = "        <TR>";
+		str[str.length] = "            <TD width=\"50\"><label binding=\"loginName\"/></TD>";
+		str[str.length] = "            <TD><input binding=\"loginName\" type=\"text\" style=\"width:150px\"/></TD>";
+		str[str.length] = "        </TR>";
+		str[str.length] = "        <TR>";
+		str[str.length] = "            <TD width=\"50\"><label binding=\"password\"/></TD>";
+		str[str.length] = "            <TD><input binding=\"password\" type=\"password\" style=\"width:150px\"/></TD>";
+		str[str.length] = "        </TR>";
+		str[str.length] = "        <TR>";
+		str[str.length] = "            <TD width=\"50\">&amp;nbsp;</TD>";
+		str[str.length] = "            <TD>";
+		str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btCloseLoginForm\" value=\"关闭\"/>";
+		str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/>";
+		str[str.length] = "            </TD>";
+		str[str.length] = "        </TR>";
+		str[str.length] = "    </layout>";
+		str[str.length] = "    <data><row/></data>";
+		str[str.length] = "</xform>";
+
+		var xmlReader = new XmlReader(str.join(""));
+		var loginFormXML = new XmlNode(xmlReader.documentElement);
+		Cache.XmlDatas.add("loginForm", loginFormXML);
+
+		// 初始化登录xform
+		Element.show($$("loginFormDiv"));
+		$X("loginForm", loginFormXML);
+
+		$$("btCloseLoginForm").onclick = function () {
+			Element.hide($$("loginFormDiv"));
+		}
+	}
+
+	function login() {
+		var loginXForm = $X("loginForm");
+		var loginName = loginXForm.getData("loginName") || "";
+		var password = loginXForm.getData("password") || "";
+		if( "" == loginName ) {
+			loginXForm.showCustomErrorInfo("loginName", "请输入姓名");
+			return;
+		} 
+		else if( "" == password ) {
+			loginXForm.showCustomErrorInfo("password", "请输入密码");
+			return;
+		}
+
+		Ajax({
+			url : "../wms/login",
+			params : {"domain": "800BEST", "loginName": loginName, "password": password},
+			method : "POST",
+			type : "json",
+			ondata : function() { 
+				var result = eval(this.getResponseText());
+				if(result == null || result.length == 0) {
+					return alert("登陆失败，您输入的账号或密码有误！");
+				}
+
+				Cookie.setValue("token", result[0]);
+				Cookie.setValue("userName", result[1]);
+				preLogoutWMS();
+
+				Element.hide($$("loginFormDiv"));
+
+				getWarehouseList();
+			}
+		});
+	}
+	
+	function getWarehouseList() {
 		var userId = Cookie.getValue("token");
 		Ajax({
 			url : "../wms/whList",
@@ -37,19 +139,23 @@
 			type : "json",
 			ondata : function() {
 				var result = eval(this.getResponseText()); 
-				if( result == null ) {	 
-					return;
-				}				
-				for(var i = 0; i < result.length; i++) {
-					var option = new Option(result[i].cname, result[i].id);
-					$$("warehouse").options.add(option); 
-				}
+				if( result && result.length > 0 ) {	 
+					for(var i = 0; i < result.length; i++) {
+						var option = new Option(result[i][1], result[i][0]);
+						$$("warehouse").options.add(option); 
+					}
 
-				query();
+					query();
+				}				
 			}
 		});
 	}
+
 	
+	var warehouseId;
+	
+	var serviceUrl = Query.get("service") || "../wms/kanban/2/";
+
 	function query() {
 		warehouseId = $$("warehouse").value;
 		Ajax({
@@ -58,8 +164,8 @@
 			type : "json",
 			waiting : true,
 			ondata : function() {
-				data = eval(this.getResponseText());
-				show();
+				var data = eval(this.getResponseText());
+				show(data);
 			}
 		});	  
 	}
@@ -71,7 +177,7 @@
 	  }, 1000*30);
 	
 
-	function show() {
+	function show(data) {
 		var total = 100;
 		for(var i = 0; i < data.length; i++) {
 			total = Math.max(total, data[i].value)
@@ -117,6 +223,7 @@
 
 <body>
 	
+	<div id="userInfo"></div>
 	<form method="get" target='hiddenFrame'>
 		仓库: 
 		<select id="warehouse">
@@ -131,6 +238,10 @@
 	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
+
+	<div id="loginFormDiv">
+		<XForm:Box id="loginForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+	</div>
 
 </body>
 </html>

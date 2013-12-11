@@ -23,8 +23,7 @@ URL_SORT_SOURCE    = "rp/sort/";
 URL_COPY_SOURCE    = "rp/copy/";
 URL_MOVE_SOURCE    = "rp/move/";
 
-URL_RS_LOGIN       = "wms/login";
-URL_RS_WH_LIST     = "wms/whList";
+URL_RS_WH_LIST     = "wms/allWhList";
 
 if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/SOURCE_TREE.xml?";
@@ -45,28 +44,11 @@ if(IS_TEST) {
 
 /* 页面初始化 */
 function init() {
-	initPaletteResize();
-
 	initNaviBar("dm.1", " ");
 	initMenus();
 	initEvents();
 
-	if( Cookie.getValue("token") ) {
-		preLogoutWMS();
-	}	
-
 	loadInitData();
-}
-
-function preLogoutWMS() {
-	var userName = Cookie.getValue("userName");
-	$$("userInfo").innerText = "  |  注销【" + userName + "】";
-	$$("userInfo").style.cursor = "hand";
-	$$("userInfo").onclick = function() {
-		Cookie.del("userName");
-		Cookie.del("token");
-		$$("userInfo").innerText = "";
-	}	
 }
 
 /* 菜单初始化 */
@@ -355,13 +337,8 @@ function showReport() {
 	var paramConfig = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
 	if( paramConfig && paramConfig.length > 0) {
 		if( paramConfig.indexOf("仓库") >= 0 ) {
-			if( Cookie.getValue("token")  ) {
-				getWarehouseList(); // 已经登录
-			}
-			else {
-				showLoginForm();
-				return;
-			}
+			getWarehouseList();
+			return;
 		}
 	}
 
@@ -543,87 +520,10 @@ function searchReport(treeID, download) {
 	request.send();
 } 
 
-function showLoginForm() {
-	var str = [];
-	str[str.length] = "<xform>";
-	str[str.length] = "    <declare>";
-	str[str.length] = "        <column name=\"loginName\"  caption=\"帐    号\" mode=\"string\"/>";
-	str[str.length] = "        <column name=\"password\"   caption=\"密　　码\" mode=\"string\"/>";
-	str[str.length] = "    </declare>";
-	str[str.length] = "    <layout>";
-	str[str.length] = "        <TR>";
-	str[str.length] = "            <TD width=\"50\"><label binding=\"loginName\"/></TD>";
-	str[str.length] = "            <TD><input binding=\"loginName\" type=\"text\" style=\"width:150px\"/></TD>";
-	str[str.length] = "        </TR>";
-	str[str.length] = "        <TR>";
-	str[str.length] = "            <TD width=\"50\"><label binding=\"password\"/></TD>";
-	str[str.length] = "            <TD><input binding=\"password\" type=\"password\" style=\"width:150px\"/></TD>";
-	str[str.length] = "        </TR>";
-	str[str.length] = "        <TR>";
-	str[str.length] = "            <TD width=\"50\">&amp;nbsp;</TD>";
-	str[str.length] = "            <TD>";
-	str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btCloseLoginForm\" value=\"关闭\"/>";
-	str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/>";
-	str[str.length] = "            </TD>";
-	str[str.length] = "        </TR>";
-	str[str.length] = "    </layout>";
-	str[str.length] = "    <data><row/></data>";
-	str[str.length] = "</xform>";
-
-	var xmlReader = new XmlReader(str.join(""));
-	var loginFormXML = new XmlNode(xmlReader.documentElement);
-	Cache.XmlDatas.add("loginForm", loginFormXML);
-
-	// 初始化登录xform
-	Element.show($$("loginFormDiv"));
-	$X("loginForm", loginFormXML);
-
-	$$("btCloseLoginForm").onclick = function () {
-		Element.hide($$("loginFormDiv"));
-	}
-}
-
-function login() {
-	var loginXForm = $X("loginForm");
-	var loginName = loginXForm.getData("loginName") || "";
-	var password = loginXForm.getData("password") || "";
-	if( "" == loginName ) {
-		loginXForm.showCustomErrorInfo("loginName", "请输入姓名");
-		return;
-	} 
-	else if( "" == password ) {
-		loginXForm.showCustomErrorInfo("password", "请输入密码");
-		return;
-	}
-
-	Ajax({
-		url : URL_RS_LOGIN,
-		params : {"domain": "800best", "loginName": loginName, "password": password},
-		method : "POST",
-		type : "json",
-		ondata : function() { 
-			var result = eval(this.getResponseText());
-			if(result == null || result == "LoginError") {
-				return alert("登陆失败，您输入的账号或密码有误！");
-			}
-
-			Cookie.setValue("token", result[0]);
-			Cookie.setValue("userName", result[1]);
-			preLogoutWMS();
-
-			Element.hide($$("loginFormDiv"));
-
-			getWarehouseList();
-		}
-	});
-}
-
 function getWarehouseList() {
-	var userId = Cookie.getValue("token");
 	Ajax({
 		url : URL_RS_WH_LIST,
-		params: {"userId": userId},
-		method : "POST",
+		method: "GET",
 		type : "json",
 		ondata : function() { 
 			var result = eval(this.getResponseText());
@@ -635,8 +535,8 @@ function getWarehouseList() {
 						whIds += "|";
 						whNames += "|";
 					}
-					whIds   += result[i].id;
-					whNames += result[i].cname;
+					whIds   += result[i][0];
+					whNames += result[i][1];
 				}
 				
 				var paramConfig = getTreeAttribute("param");
@@ -668,8 +568,5 @@ window.onload = init;
 Event.attachEvent(window, "onunload", function() {
 	if(10000 < window.screenTop || 10000 < window.screenLeft) {
 		logout(); // 关闭页面自动注销
-
-		Cookie.del("userName");
-		Cookie.del("token");
 	}
 });

@@ -2,7 +2,7 @@
 <reports>
 	<report id="login" name="登录">
 		<sql index="1"><![CDATA[
-			select t.id, t.username from GV_SYS_ACCOUNT t, gv_sys_domain d
+			select t.id as id, t.username as userName from GV_SYS_ACCOUNT t, gv_sys_domain d
                where t.domain_id = d.id
                	 and t.status_id = 3
                  and t.loginName = ?
@@ -16,8 +16,8 @@
 		]]></sql>
 		<sql index="2" name="仓库列表（授权）"><![CDATA[
 			select w.id as id, w.descr as name 
-				from gv_bas_warehouse w, GV_SYS_USEROFWH wu 
-				where w.status_id = 3 and w.id = wu.warehouse_id and wu.user_id = ?
+				from gv_bas_warehouse w, GV_SYS_USEROFWH wu, gv_sys_userinfo u 
+        		where w.status_id = 3 and w.id = wu.warehouse_id and wu.user_id = u.id and u.accountid = ?
 		]]></sql>
 	</report>
 </reports>

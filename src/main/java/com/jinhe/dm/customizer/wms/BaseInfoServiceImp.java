@@ -46,11 +46,11 @@ public class BaseInfoServiceImp implements BaseInfoService {
 
 	public List<Object[]> getWarehouseList(String userId) {
 		HttpSession session = Context.getRequestContext().getRequest().getSession();
-		Long userIdInSession = (Long) session.getAttribute("LoginUserId");
+		Long userIdInSession = (Long) session.getAttribute("WMS-userId");
 		if (userId == null || userIdInSession == null || !userIdInSession.equals(Long.parseLong(userId)))
 			return null;
 
-		String script = SqlConfig.getWMSSQL("whList", 1);
+		String script = SqlConfig.getWMSSQL("whList", 2);
 
 		Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
 		paramsMap.put(1, userId);

@@ -68,10 +68,10 @@ public class SOUtil {
 			return null;
 		}
 		if(param.contains(",")){
-			return "\'"+param.replaceAll(",", "\',\'")+ "\'";
-			
-		}else{
-			return "\'"+param+ "\'";
+			return "\'" + param.replaceAll(",", "\',\'") + "\'";
+		}
+		else {
+			return "\'" + param + "\'";
 		}
 	}
 	

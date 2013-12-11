@@ -53,7 +53,6 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
         if(paramService.getParam(Constants.DATASOURCE_LIST) == null) {
         	Param dlParam = addParamGroup(ParamConstants.DEFAULT_PARENT_ID, Constants.DATASOURCE_LIST, "数据源列表");
             addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);
-            addParamItem(dlParam.getId(), "connectionpool-2", "数据源2", ParamConstants.COMBO_PARAM_MODE);
         }
         if(paramService.getParam(Constants.DEFAULT_CONN_POOL) == null) {
             addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");

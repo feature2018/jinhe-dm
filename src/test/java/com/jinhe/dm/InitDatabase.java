@@ -89,7 +89,6 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
         
         Param dlParam = addParamGroup(group.getId(), Constants.DATASOURCE_LIST, "数据源列表");
         addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);
-        addParamItem(dlParam.getId(), "connectionpool-2", "数据源2", ParamConstants.COMBO_PARAM_MODE);
     }
 
     /** 建参数组 */
