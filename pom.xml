@@ -13,13 +13,14 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tss.version>1.0.3</tss.version>
+		<tss.version>1.0.4</tss.version>
 		<spring.version>3.2.0.RELEASE</spring.version>
 		<hibernate.version>3.5.1-Final</hibernate.version>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 	</properties>
 
 	<dependencies>
+		<!-- TSS dependency -->
 		<dependency>
 			<groupId>com.jinhe.tss</groupId>
 			<artifactId>cache</artifactId>
@@ -30,6 +31,12 @@
 			<artifactId>framework</artifactId>
 			<version>${tss.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jinhe.tss</groupId>
+			<artifactId>tss-base</artifactId>
+			<version>${tss.version}</version>
+		</dependency>
+		
 
 		<!-- BASE dependency -->
 		<dependency>

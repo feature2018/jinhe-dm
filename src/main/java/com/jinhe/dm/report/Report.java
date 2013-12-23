@@ -30,6 +30,15 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     static final int TYPE1 = 1;  // 业务报表
     
     static final Long DEFAULT_PARENT_ID = 0L;
+    
+    // 资源类型： 报表
+    public static final String RESOURCE_TYPE_REPORT= "D1"; 
+    
+    // 报表资源操作ID
+    public static final String OPERATION_VIEW    = "1"; // 查看
+    public static final String OPERATION_EDIT    = "2"; // 维护
+    public static final String OPERATION_DELETE  = "3"; // 删除
+    public static final String OPERATION_DISABLE = "4"; // 停用启用
  
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "report_sequence")
@@ -147,10 +156,10 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
        
         String icon_path;
         if (TYPE0 == type) {
-            icon_path = "framework/images/folder.gif";
+            icon_path = "../framework/images/folder.gif";
         } 
         else {
-            icon_path = "framework/images/cms/article_" + disabled + ".gif";
+            icon_path = "../framework/images/cms/article_" + disabled + ".gif";
         } 
         map.put("icon", icon_path);
         map.put("parentId", parentId);

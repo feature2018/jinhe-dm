@@ -62,10 +62,10 @@ Progress.prototype.show = function() {
 
 		barObj.innerHTML = "<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0\" width=\"140\" height=\"30\" id=\"loadingbar\" align=\"middle\">"
 			 + "<param name=\"allowScriptAccess\" value=\"sameDomain\" />"
-			 + "<param name=\"movie\" value=\"../images/loadingbar.swf\" />"
+			 + "<param name=\"movie\" value=\"../framework/images/loadingbar.swf\" />"
 			 + "<param name=\"quality\" value=\"high\" />"
 			 + "<param name=\"wmode\" value=\"transparent\" />"
-			 + "<embed src=\"../images/loadingbar.swf\" quality=\"high\" wmode=\"transparent\" width=\"140\" height=\"30\" name=\"loadingbar\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />"
+			 + "<embed src=\"../framework/images/loadingbar.swf\" quality=\"high\" wmode=\"transparent\" width=\"140\" height=\"30\" name=\"loadingbar\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />"
 			 + "</object><div/>";
 	}
 	barObj.style.left = (document.body.offsetWidth - 200) / 2 + "px";

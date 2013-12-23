@@ -54,7 +54,7 @@ function initUserInfo() {
 	if( Query.get("login") != "true" ) return;
 
 	Ajax({
-		url : "/" + AUTH_PATH + "user/operatorInfo",
+		url : AUTH_PATH + "user/operatorInfo",
 		method : "POST",
 		headers : {"appCode": APP_CODE},
 		contents : {"anonymous": "true"}, 
@@ -79,7 +79,8 @@ function logout() {
 // 关闭页面时候自动注销
 function logoutOnClose() {
 	Event.attachEvent(window, "unload", function() {
-		if(10*1000 < window < screenTop || 10*1000 < window.screenLeft) {
+		if(event.clientX > document.body.clientWidth && event.clientY < 0 || event.altKey) {
+			alert("close");
 			logout();
 		}
 	});

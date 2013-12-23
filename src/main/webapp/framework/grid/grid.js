@@ -245,7 +245,7 @@ Grid.prototype.processDataRow = function(curRow) {
 		var value = curRow.getAttribute(columnName) || " "; // xsl解析后，各行的各个TD值统一记录在了TR上。
 
 		var nobrNodeInCell = cell.childNodes[0];    // nobr 节点
-		var mode = columnNode.getAttribute("mode");
+		var mode = columnNode.getAttribute("mode") || "string";
 		switch( mode ) {
 			case "string":
 				var editor = columnNode.getAttribute("editor");

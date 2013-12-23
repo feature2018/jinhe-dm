@@ -42,7 +42,7 @@ public class ReportServiceImpl implements ReportService {
     
     public Report delete(Long id) {
         Report report = getReport(id);
-        List<Report> list = reportDao.getChildrenById(id); // 一并删除子节点
+        List<Report> list = reportDao.getChildrenById(id, Report.OPERATION_DELETE); // 一并删除子节点
         for(Report entity : list) {
             entity.setDeleted(ParamConstants.TRUE); // 打上删除标记，放入回收站。
         }
@@ -52,7 +52,7 @@ public class ReportServiceImpl implements ReportService {
 
     public void startOrStop(Long reportId, Integer disabled) {
         List<Report> list = ParamConstants.TRUE.equals(disabled) ? 
-                reportDao.getChildrenById(reportId) : reportDao.getParentsById(reportId);
+                reportDao.getChildrenById(reportId, Report.OPERATION_DISABLE) : reportDao.getParentsById(reportId);
         
         for (Report report : list) {
             report.setDisabled(disabled);

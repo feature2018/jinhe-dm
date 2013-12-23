@@ -1,11 +1,14 @@
 package com.jinhe.dm;
 
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import com.jinhe.tss.framework.sso.TokenUtil;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.framework.test.TestUtil;
 import com.jinhe.tss.util.URLUtil;
+import com.jinhe.tss.util.XMLDocUtil;
 
 /**
  * 初始化数据库。
@@ -73,7 +77,7 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
     /**
      * 导入 application.properties文件
      */
-    public void importSystemProperties(){
+    public void importSystemProperties() {
         String name = "系统参数";
         Param group = addParam(ParamConstants.DEFAULT_PARENT_ID, name);
         ResourceBundle resources = ResourceBundle.getBundle("application", Locale.getDefault());
@@ -85,6 +89,18 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
             addParam(group.getId(), key, key, value);
         }
         
+        // 应用服务配置
+        Param paramGroup = addParam(ParamConstants.DEFAULT_PARENT_ID, "应用服务配置");
+        Document doc = XMLDocUtil.createDoc("appServers.xml");
+        List<?> elements = doc.getRootElement().elements();
+        for (Iterator<?> it = elements.iterator(); it.hasNext();) {
+            org.dom4j.Element element = (org.dom4j.Element) it.next();
+            String appName = element.attributeValue("name");
+            String appCode = element.attributeValue("code");
+            addParam(paramGroup.getId(), appCode, appName, element.asXML());
+        }
+        
+        // 数据源配置
         addParam(group.getId(), Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
         
         Param dlParam = addParamGroup(group.getId(), Constants.DATASOURCE_LIST, "数据源列表");

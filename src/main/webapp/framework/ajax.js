@@ -257,8 +257,7 @@ HttpRequest.prototype.getNodeValue = function(name) {
 		 var parserResult = {};
 		 parserResult.dataType = _HTTP_RESPONSE_DATA_TYPE_EXCEPTION;
 		 parserResult.type = 1;
-		 parserResult.msg = e.description;
-		 parserResult.description = e.description;
+		 parserResult.msg =  parserResult.description = e.description || e.message;
 		 parserResult.source = "";
 
 		 this.onexception(parserResult);
@@ -336,7 +335,12 @@ HttpRequest.prototype.setCustomRequestHeader = function() {
 	for(var item in this.paramObj.header) {									
 		var itemValue = String(this.paramObj.header[item]);
 		if( itemValue != "" ) {
-			this.xmlhttp.setRequestHeader(item, itemValue);
+			try {
+				this.xmlhttp.setRequestHeader(item, itemValue);
+			}
+			catch (e) {
+				// chrome往header里设置中文会报错
+			}
 		}
 	}
 
@@ -573,7 +577,7 @@ function Message_Exception(param, request) {
 	if(param.relogin == "1") {
 		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
 
-		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
+		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:150px;resizable:yes");
 		if( loginObj ) {
 			var p = request.paramObj;
 			p.setHeader("loginName", loginObj.loginName);
@@ -584,7 +588,7 @@ function Message_Exception(param, request) {
 		}
 	}
 	else if(param.relogin == "2" ) { // 单点登录应用跳转，需要输入用户在目标系统中的密码
-		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:200px;resizable:yes");
+		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:150px;resizable:yes");
 		if( loginObj ) {
 			request.paramObj.setHeader("pwd", loginObj.password);
 			request.send();
@@ -710,9 +714,13 @@ function Ajax() {
 	if( arg.onresult ) {
 		request.onresult = arg.onresult;
 	}
-	if( arg.onexception ) {
-		request.onexception = arg.onexception;
+	if( arg.onexception == null ) {
+		arg.onexception = function(errorMsg) {
+			// alert(errorMsg.description);
+		};
 	}
+	request.onexception = arg.onexception;
+
 	if( arg.onsuccess ) {
 		request.onsuccess = arg.onsuccess;
 	}

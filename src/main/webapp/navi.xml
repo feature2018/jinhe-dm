@@ -2,14 +2,11 @@
 <Response>
 	<NaviInfo>
 		<Menus>
-            <MenuItem id="dm.1" name="数据报表" href="report.html"/>
+            <MenuItem id="dm.1" name="数据报表" href="dm/report.html"/>
 			
-			<!--
-            <MenuItem id="dm.2" name="对外接口" href="webservice.html"/>
-            <MenuItem id="dm.3" name="量能监控" href="monitor.html"/>
-			
-			<MenuItem id="none" name="|"/>
-			-->
+            <MenuItem id="dm.2" name="用户组织" href="um/group.html"/>
+			<MenuItem id="dm.3" name="资源管理" href="um/group.html"/>
+            <MenuItem id="dm.4" name="角色授权" href="um/role.html"/>
 
 			<MenuItem id="cache" name="缓存管理" href="framework/module/cache/cache.htm"/>
 			<MenuItem id="param" name="参数管理" href="framework/module/param/param.htm"/>

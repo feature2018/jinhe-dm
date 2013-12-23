@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application applicationId="dm" name="报表系统">
+	<resourceType resourceTypeId="D1" name="报表" seqNo="21" description="报表类型资源" 
+		unSuppliedTable="com.jinhe.dm.report.permission.ReportPermissions" 
+		suppliedTable="com.jinhe.dm.report.permission.ReportPermissionsFull" 
+		resourceTable="com.jinhe.dm.report.permission.ReportResourceView">
+		
+		<operation operationId="1"  name="查看报表" seqNo="1" dependParent="2"  />
+		<operation operationId="2"  name="维护报表" seqNo="2" dependId="opt1" />	
+		<operation operationId="3"  name="删除权限" seqNo="3" dependId="opt1" dependParent="3"/>
+		<operation operationId="4"  name="停用启用" seqNo="4" dependId="opt1" dependParent="2,3"/>
+	
+	</resourceType>
+	
+	<resourceTypeRoot applicationId="dm" resourceTypeId="D1" rootId="0"/>
+	
+</application>

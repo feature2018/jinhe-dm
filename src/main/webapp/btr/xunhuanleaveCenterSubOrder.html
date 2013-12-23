@@ -9,35 +9,32 @@
 	<script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
 
 	<script type="text/javascript">
-	
-	function getData () {
-		// body...
-		for (var i = 0; i <= 3; i++) {	
-			var serviceUrl[i] = '../display/json/20' + i;   
-		};
-	}
+
+	var originData = [];
 
 	function query() {
-			var selectedDate = $$("selectedDate").value;
-			for (var i = 0; i <= 3; i++) {
-				Ajax({
-					url : serviceUrl[i],
-					method : "POST",
-					params : {"param1": selectedDate,"param2": selectedDate}, 
-					type : "json",
-					waiting : true,					
-					ondata : function() {						
-						var data[i]= eval(this.getResponseText};
-						if (i=3) {
-							show(data[0],data[1],data[2],data[3]);						
-						}
-				});
+		var selectedDate = $$("selectedDate").value;
+		for (var i = 1; i <= 4; i++) {
+			Ajax({
+				url : '../display/json/20' + i,
+				method : "POST",
+				params : {"param1": selectedDate, "param2": selectedDate}, 
+				type : "json",
+				waiting : true,					
+				ondata : function() {						
+					originData.push(eval(this.getResponseText));
 
-			}
+					if ( originData.length == 4 ) {
+						show(originData);						
+					}
+			});
+		}
 	};
 	
 
-	function show(originData[0],originData[1],originData[2],originData[3]) {
+	function show(originData) {
+		alert(originData.length);
+
 		var total = 0;
 		var data = [][];
 		var maxdata = 0;
@@ -58,12 +55,9 @@
 				data[j][i] = {name: leaveTime, value: leaveTransOder, color: '#c52120' };
 			}
 		}
-		
 
-		
 		//total = Math.round(total/1000);
-
-//定义数据组
+ 
 		var data = {'一次留仓': data[0]'二次留仓': data[1],'三次留仓': data[2],'四次以上留仓': data[3]}
 
 		var sub = false;

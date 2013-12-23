@@ -360,8 +360,10 @@ XForm.prototype.getData = function(name, replace) {
 XForm.prototype.getColumnValue = function(name) {
 	var rowNode = this.template.dataRows;
 	var node = rowNode.selectSingleNode(name);
-	var nodeValue = (node ? node.text.convertEntry() : null);
-	return nodeValue;
+	if(node && node.text) {
+		return node.text.convertEntry();
+	}
+	return null;
 }
 
 /*

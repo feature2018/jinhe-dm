@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>日志搜索</title>
 
-<link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
+<link href="../../css/dialog.css" rel="stylesheet" type="text/css"></link>
 <link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
 <link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
 
@@ -73,18 +73,12 @@
 </head>
 
 <body>
-  <table class="full" border="1" cellspacing="3" cellpadding="6">
-    <tr>
-      <td valign="top">
-		<XForm:Box id="searchForm" baseurl="../../xform/"><div class="loading"></div></XForm:Box>
-      </td>
-    </tr>
-    <tr>
-      <td class="t" height="30" align="right">       
-		<input type="button" value="确定" class="btStrong" onclick="getCondition()"/>
-		<input type="button" value="关闭" class="btWeak" onclick="window.close()"/> 
-      </td>
-    </tr>
-  </table>
+    <div class="dialog">
+		<XForm:Box id="searchForm" baseurl="../../xform/"><div class="loading"></div></XForm:Box>  
+        <div class="bt">
+    		<input type="button" value="确定" class="btStrong" onclick="getCondition()"/>
+    		<input type="button" value="关闭" class="btWeak" onclick="window.close()"/> 
+        </div>
+    </div>
 </body>
 </html>

@@ -23,7 +23,7 @@ import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
 import com.jinhe.tss.util.EasyUtils;
 
 @Controller
-@RequestMapping("rp")
+@RequestMapping("/auth/rp")
 public class ReportAction extends BaseActionSupport {
     
     @Autowired private ReportService reportService;

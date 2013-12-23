@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:XForm>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>用户注册</title>
+
+<link href="framework/css/css.css" rel="stylesheet" type="text/css">
+<link href="framework/css/dialog.css" rel="stylesheet" type="text/css">
+<link href="framework/xform/xform.css" rel="stylesheet" type="text/css">
+<link href="framework/balloon/balloon.css" rel="stylesheet" type="text/css">
+
+<script language="javascript" src="framework/core.js"></script>
+<script language="javascript" src="framework/ajax.js"></script>
+<script language="javascript" src="framework/framework.js"></script>
+<script language="javascript" src="framework/balloon/balloon.js"></script>
+<script language="javascript" src="framework/xform/xform.js"></script>
+
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+URL_CORE = "framework/"
+	/*
+     *	后台响应数据节点名称
+     */
+    XML_REGISTER_INFO  = "UserInfo";
+	XML_SECURITY_LEVEL = "SecurityLevel";
+
+    /*
+     *	XMLHTTP请求地址汇总
+     */
+    URL_INIT = AUTH_PATH + "user/self/detail";
+    URL_REGISTER = "register.in";
+    URL_CHECK_PASSWORD = "getPasswordStrength.in";
+
+	if( IS_TEST ) {
+		URL_INIT = "mockdata/register_init.xml";
+		URL_REGISTER = "mockdata/_success.xml";
+		URL_CHECK_PASSWORD = "mockdata/password_check.xml";
+	}
+
+	var registerForm;
+
+    function init() {
+		Ajax({
+			url : URL_INIT,
+			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			onresult : function() { 
+				var registerXML = this.getNodeValue(XML_REGISTER_INFO);
+				Cache.XmlDatas.add(XML_REGISTER_INFO, registerXML);
+				registerForm = $X("registerForm", registerXML);
+
+				$$("password1").onblur = function() { 
+					var password = this.value;
+					if(password == null || password == "") return;
+					
+					var loginName = registerForm.getData("loginName");
+					checkPasswordSecurityLevel(registerForm, URL_CHECK_PASSWORD, password, loginName);
+				}
+			}
+		});
+    }
+ 
+    /* 注册新用户 */
+    function register(){
+		Ajax({
+			url : URL_REGISTER,
+			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			xformNode : Cache.XmlDatas.get(XML_REGISTER_INFO),
+			onsuccess : function() { 
+				if( opener ) {  // opener返回对创建该窗口的Window 对象的引用
+					var loginName = registerForm.getData("loginName");
+					opener.$X("loginForm").updateDataExternal("userName", loginName); 
+				}
+				window.close();
+			}
+		});
+    }
+
+    /* 检测注册表单是否填写正确 */
+    function checkRegisterForm(){
+        var flag = true;
+
+        var password1 = $$("password1").value; 
+        var password2 = $$("password2").value; 
+		if(password1 != password2) {
+			flag = false;
+			alert("两次密码输入不一致，请重新输入");
+		}
+        return flag;
+    }
+
+    function resetForm() {
+        registerForm.resetForm();
+        registerForm.setFocus();
+    }
+
+    window.onload = init;
+
+//-->
+</SCRIPT>
+</head>
+
+<body>
+	<div class="dialog">
+		<XForm:Box id="registerForm" baseurl="framework/xform/"><div class="loading"></div></XForm:Box>
+		<div class="bt">
+			<input type="button" class="btStrong" value="提交" onclick="if( checkRegisterForm() ) { register() }"/>
+			<input type="button" class="btWeak"   value="重置" onclick="resetForm()"/>
+			<input type="button" class="btWeak"   value="关闭" onclick="window.close()"/>
+		</div>
+	</div>
+</body>
+</html>

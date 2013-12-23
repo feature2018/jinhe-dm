@@ -1,9 +1,11 @@
 package com.jinhe.dm;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,13 @@ import com.jinhe.tss.framework.sso.IdentityCard;
 import com.jinhe.tss.framework.sso.TokenUtil;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.framework.test.IH2DBServer;
+import com.jinhe.tss.framework.test.TestUtil;
+import com.jinhe.tss.um.UMConstants;
+import com.jinhe.tss.um.helper.dto.OperatorDTO;
+import com.jinhe.tss.um.permission.PermissionHelper;
+import com.jinhe.tss.um.permission.PermissionService;
+import com.jinhe.tss.um.service.ILoginService;
+import com.jinhe.tss.util.XMLDocUtil;
 
 @ContextConfiguration(
 	  locations={
@@ -36,6 +45,10 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
     
     @Autowired protected IH2DBServer dbserver;
     @Autowired protected ParamService paramService;
+    
+    @Autowired protected ILoginService loginSerivce;
+    @Autowired protected PermissionService permissionService;
+    @Autowired protected PermissionHelper permissionHelper;
     
     protected MockHttpServletRequest request;
     protected MockHttpServletResponse response;
@@ -63,37 +76,43 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
             addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.Log_DIR, "反馈日志目录", tmpDir);
         }
     }
+    
+    /**
+     * 初始化CMS的动态属性相关模板
+     */
+    protected void init() {
+    	// 初始化数据库脚本
+    	String sqlpath = TestUtil.getInitSQLDir();
+    	log.info( " sql path : " + sqlpath);
+        TestUtil.excuteSQL(sqlpath + "/framework");
+        TestUtil.excuteSQL(sqlpath + "/um");
+    	TestUtil.excuteSQL(sqlpath + "/cms");
+    	
+    	// 初始化虚拟登录用户信息
+        login(UMConstants.ADMIN_USER_ID, UMConstants.ADMIN_USER_NAME);
+        
+        /* 初始化应用系统、资源、权限项 */
+        Document doc = XMLDocUtil.createDocByAbsolutePath(TestUtil.getSQLDir() + "/cms-resource-config.xml");
+        resourceService.setInitial(true);
+        resourceService.applicationResourceRegister(doc, UMConstants.PLATFORM_SYSTEM_APP);
+        resourceService.setInitial(false);
+    }
  
     @After
     public void tearDown() throws Exception {
         dbserver.stopServer();
     }
     
-    static class TempOperator implements IOperator {
-        private static final long serialVersionUID = 1L;
+    protected void login(Long userId, String loginName) {
+    	OperatorDTO loginUser = new OperatorDTO(userId, loginName);
+    	String token = TokenUtil.createToken("1234567890", userId); 
+        IdentityCard card = new IdentityCard(token, loginUser);
+        Context.initIdentityInfo(card);
         
-        public Long getId() {
-            return 12L;
-        }
-        public String getLoginName() {
-            return "Jon.King";
-        }
-        public String getUserName() {
-            return "Jon.King";
-        }
-        public boolean isAnonymous() {
-            return true;
-        }
-        public Object getAttribute(String name) {
-            return null;
-        }
-        public Map<String, Object> getAttributesMap() {
-            return null;
-        }
-        public String getAuthenticateMethod() {
-            return null;
-        }
-    } 
+        // 获取登陆用户的权限（拥有的角色）并保存到用户权限（拥有的角色）对应表
+        List<Object[]> userRoles = loginSerivce.getUserRolesAfterLogin(userId);
+        permissionService.saveUserRolesAfterLogin(userRoles, userId);
+    }
     
     /** 简单参数 */
     protected Param addParam(Long parentId, String code, String name, String value) {

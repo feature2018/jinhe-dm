@@ -10,18 +10,18 @@ PAGESIZE = 100;
 /*
  *	XMLHTTP请求地址汇总
  */
-URL_SOURCE_TREE    = "rp/all";
-URL_GROUPS_TREE    = "rp/groups";
+URL_SOURCE_TREE    = AUTH_PATH + "rp/all";
+URL_GROUPS_TREE    = AUTH_PATH + "rp/groups";
 URL_REPORT_DATA    = "display/";
 URL_REPORT_JSON    = "display/json/";
 URL_REPORT_EXPORT  = "display/export/";
-URL_SOURCE_DETAIL  = "rp/detail";
-URL_SAVE_SOURCE    = "rp";
-URL_DELETE_SOURCE  = "rp/";
-URL_DISABLE_SOURCE = "rp/disable/";
-URL_SORT_SOURCE    = "rp/sort/";
-URL_COPY_SOURCE    = "rp/copy/";
-URL_MOVE_SOURCE    = "rp/move/";
+URL_SOURCE_DETAIL  = AUTH_PATH + "rp/detail";
+URL_SAVE_SOURCE    = AUTH_PATH + "rp";
+URL_DELETE_SOURCE  = AUTH_PATH + "rp/";
+URL_DISABLE_SOURCE = AUTH_PATH + "rp/disable/";
+URL_SORT_SOURCE    = AUTH_PATH + "rp/sort/";
+URL_COPY_SOURCE    = AUTH_PATH + "rp/copy/";
+URL_MOVE_SOURCE    = AUTH_PATH + "rp/move/";
 
 URL_RS_WH_LIST     = "wms/allWhList";
 

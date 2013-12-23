@@ -43,6 +43,9 @@ public class SQLExcutor {
     
     public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize, String datasource) {
         Pool connpool = JCache.getInstance().getPool(datasource);
+        if(connpool == null) {
+        	throw new BusinessException("数据源【" + datasource + "】无法获取到连接池");
+        }
         Cacheable connItem = connpool.checkOut(0);
         Connection conn = (Connection) connItem.getValue();
         
@@ -51,8 +54,15 @@ public class SQLExcutor {
         ResultSet rs = null;
         try {
         	if(page > 0 && pagesize > 0) {
-        	    String queryCountSql = " select count(*) " + sql.substring(sql.indexOf("from"));
+        		int fromIndex = sql.indexOf("from");
+        		if(fromIndex < 0) {
+        			fromIndex = sql.indexOf("FROM");
+        		}
+        	    String queryCountSql = " select count(*) " + sql.substring(fromIndex);
         	    int orderbyIndex = queryCountSql.lastIndexOf("order by");
+        	    if(orderbyIndex < 0) {
+        	    	orderbyIndex = queryCountSql.lastIndexOf("ORDER BY");
+        	    }
         	    if(orderbyIndex > 0) {
         	        queryCountSql = queryCountSql.substring(0, orderbyIndex);
         	    }
