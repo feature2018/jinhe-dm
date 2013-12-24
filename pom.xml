@@ -436,7 +436,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
-				<db.url>172.18.48.160:3306</db.url>
+				<db.url>127.0.0.1:3306</db.url>
 				<environment>dev</environment>
 			</properties>
 		</profile>

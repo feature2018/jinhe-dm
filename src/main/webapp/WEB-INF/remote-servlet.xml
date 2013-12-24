@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- Remote  -->
+	<bean name="/PermissionService" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service">
+			<ref bean="PermissionService"/>
+		</property>
+		<property name="serviceInterface">
+			<value>cn.com.gsoft.ums.permission.IPermissionService</value>
+		</property>
+	</bean>
+	<bean name="/ResourcePermission" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service">
+			<ref bean="ResourcePermission"/>
+		</property>
+		<property name="serviceInterface">
+			<value>cn.com.gsoft.ums.permission.IResourcePermission</value>
+		</property>
+	</bean>	
+</beans>

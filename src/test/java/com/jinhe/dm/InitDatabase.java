@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -24,6 +23,8 @@ import com.jinhe.tss.framework.sso.IdentityCard;
 import com.jinhe.tss.framework.sso.TokenUtil;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.framework.test.TestUtil;
+import com.jinhe.tss.um.UMConstants;
+import com.jinhe.tss.um.helper.dto.OperatorDTO;
 import com.jinhe.tss.util.URLUtil;
 import com.jinhe.tss.util.XMLDocUtil;
 
@@ -36,6 +37,7 @@ import com.jinhe.tss.util.XMLDocUtil;
  */
 @ContextConfiguration(
         locations={
+        		"classpath:META-INF/remote/um-remote-spring.xml",
         		"classpath:META-INF/spring-mvc.xml",
     		    "classpath:META-INF/spring-test.xml"
         } 
@@ -56,8 +58,9 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
  
         TestUtil.excuteSQL(getInitSQLDir());
  
-        String token = TokenUtil.createToken(new Random().toString(), 12L); 
-        IdentityCard card = new IdentityCard(token, new TxTestSupport.TempOperator());
+        OperatorDTO loginUser = new OperatorDTO(UMConstants.ADMIN_USER_ID, UMConstants.ADMIN_USER_NAME);
+    	String token = TokenUtil.createToken("1234567890", UMConstants.ADMIN_USER_ID); 
+        IdentityCard card = new IdentityCard(token, loginUser);
         Context.initIdentityInfo(card);
         
         importSystemProperties();
@@ -66,8 +69,9 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
     }
     
     static String PROJECT_NAME = "DM";
+    static String PACKAGE = "com/jinhe/dm";
     static String getInitSQLDir() {
-        String path = URLUtil.getResourceFileUrl("com/best/oasis").getPath();
+        String path = URLUtil.getResourceFileUrl(PACKAGE).getPath();
         String projectDir = path.substring(1, path.indexOf(PROJECT_NAME) + PROJECT_NAME.length());
         return projectDir + "/webapp/sql/mysql";
     }

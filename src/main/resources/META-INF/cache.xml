@@ -4,7 +4,7 @@
   <strategy code="connectionpool" name="DB连接池-MySQL"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
-    <cyclelife>0</cyclelife>  
+    <cyclelife>28000000</cyclelife>  
     <interruptTime>1000</interruptTime>  
     <initNum>5</initNum>  
     <disabled>0</disabled>
@@ -41,7 +41,7 @@
   <strategy code="connpool-btr-mysql" name="DB连接池-BTR-MySQL"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  
-    <cyclelife>0</cyclelife>  
+    <cyclelife>28000000</cyclelife>  
     <interruptTime>1000</interruptTime>  
     <initNum>3</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
