@@ -12,6 +12,16 @@
 		</param-value>
 	</context-param>
 	
+	<servlet> 
+		<servlet-name>remote</servlet-name> 
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class> 
+		<load-on-startup>1</load-on-startup> 
+	</servlet> 
+	<servlet-mapping> 
+		<servlet-name>remote</servlet-name> 
+		<url-pattern>/remote/*</url-pattern> 
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>spring-mvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -25,12 +35,15 @@
 		<servlet-name>spring-mvc</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath*:META-INF/*spring*.xml</param-value>
+		<param-value>
+			classpath*:META-INF/*spring*.xml,
+			classpath*:META-INF/remote/um-remote-spring.xml
+		</param-value>
 	</context-param>
 </web-app>

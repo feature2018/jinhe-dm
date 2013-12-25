@@ -31,6 +31,8 @@ import com.jinhe.tss.util.XMLDocUtil;
 /**
  * 初始化数据库。
  * 
+ * 执行前先把test/resources/application.properties改名。
+ * 
  * 需使用 src/main/resources目录下的配置文件，比如persistence.xml, application.properties等。
  * 另外，初始化时需要把applicationContext.xml的<property name="generateDdl" value="true" /> 设置为true
  * persistence.xml 的 hibernate.dialect 设置为 org.hibernate.dialect.MySQLDialect
@@ -56,7 +58,7 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
     public void initDatabase() {
         log.info("create dm databse schema starting......");
  
-        TestUtil.excuteSQL(getInitSQLDir());
+        TestUtil.excuteSQL(getInitSQLDir(), false);
  
         OperatorDTO loginUser = new OperatorDTO(UMConstants.ADMIN_USER_ID, UMConstants.ADMIN_USER_NAME);
     	String token = TokenUtil.createToken("1234567890", UMConstants.ADMIN_USER_ID); 
@@ -73,7 +75,7 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
     static String getInitSQLDir() {
         String path = URLUtil.getResourceFileUrl(PACKAGE).getPath();
         String projectDir = path.substring(1, path.indexOf(PROJECT_NAME) + PROJECT_NAME.length());
-        return projectDir + "/webapp/sql/mysql";
+        return projectDir + "/sql/mysql";
     }
     
     @Autowired private ParamService paramService;

@@ -8,7 +8,7 @@
 			<ref bean="PermissionService"/>
 		</property>
 		<property name="serviceInterface">
-			<value>cn.com.gsoft.ums.permission.IPermissionService</value>
+			<value>com.jinhe.tss.um.permission.PermissionService</value>
 		</property>
 	</bean>
 	<bean name="/ResourcePermission" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
@@ -16,7 +16,7 @@
 			<ref bean="ResourcePermission"/>
 		</property>
 		<property name="serviceInterface">
-			<value>cn.com.gsoft.ums.permission.IResourcePermission</value>
+			<value>com.jinhe.tss.um.permission.ResourcePermission</value>
 		</property>
 	</bean>	
 </beans>
