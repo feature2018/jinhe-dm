@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean name="PermissionServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="PermissionService"/>
+	    <property name="serviceInterface" value="com.jinhe.tss.um.permission.PermissionService"/>
+	</bean>
+	
+	<bean name="ResourcePermissionExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="ResourcePermission"/>
+	    <property name="serviceInterface" value="com.jinhe.tss.um.permission.ResourcePermission"/>
+	</bean>	
+</beans>

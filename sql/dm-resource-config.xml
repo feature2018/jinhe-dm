@@ -7,7 +7,7 @@
 		
 		<operation operationId="1"  name="查看报表" seqNo="1" dependParent="2"  />
 		<operation operationId="2"  name="维护报表" seqNo="2" dependId="opt1" />	
-		<operation operationId="3"  name="删除权限" seqNo="3" dependId="opt1" dependParent="3"/>
+		<operation operationId="3"  name="删除报表" seqNo="3" dependId="opt1" dependParent="3"/>
 		<operation operationId="4"  name="停用启用" seqNo="4" dependId="opt1" dependParent="2,3"/>
 	
 	</resourceType>

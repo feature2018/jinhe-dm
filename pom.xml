@@ -425,7 +425,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
-				<db.url>172.18.48.160:3306</db.url>
+				<db.url>10.45.9.160:3306</db.url>
 				<environment>uat</environment>
 			</properties>
 		</profile>
