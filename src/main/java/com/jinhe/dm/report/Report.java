@@ -19,12 +19,13 @@ import com.jinhe.tss.framework.persistence.entityaop.OperateInfo;
 import com.jinhe.tss.framework.web.dispaly.tree.ILevelTreeNode;
 import com.jinhe.tss.framework.web.dispaly.tree.TreeAttributesMap;
 import com.jinhe.tss.framework.web.dispaly.xform.IXForm;
+import com.jinhe.tss.um.permission.IResource;
 import com.jinhe.tss.util.BeanUtil;
 
 @Entity
 @Table(name = "dm_report")
 @SequenceGenerator(name = "report_sequence", sequenceName = "report_sequence", initialValue = 1, allocationSize = 10)
-public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDecodable {
+public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDecodable, IResource {
     
     static final int TYPE0 = 0;  // 报表分组
     static final int TYPE1 = 1;  // 业务报表
@@ -32,7 +33,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     static final Long DEFAULT_PARENT_ID = 0L;
     
     // 资源类型： 报表
-    public static final String RESOURCE_TYPE_REPORT= "D1"; 
+    public static final String RESOURCE_TYPE_REPORT = "D1"; 
     
     // 报表资源操作ID
     public static final String OPERATION_VIEW    = "1"; // 查看
@@ -185,4 +186,8 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     public Class<?> getParentClass() {
         return this.getClass();
     }
+
+	public String getResourceType() {
+		return RESOURCE_TYPE_REPORT;
+	}
 }

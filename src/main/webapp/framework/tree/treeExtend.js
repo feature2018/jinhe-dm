@@ -84,7 +84,8 @@ var ExtendTree = function(element) {
 			for(var i=0; i < this._options.length; i++) {
 				var curOption = this._options[i];
 				var operationId = getNodeText(curOption.selectSingleNode("./operationId"));
-				var dependIds = getNodeText(curOption.selectSingleNode("./dependId")).replace(/^\s*|\s*$/g, "");
+				var dependIds = getNodeText(curOption.selectSingleNode("./dependId")) || "";
+				dependIds = dependIds.replace(/^\s*|\s*$/g, "");
 				
 				if(dependIds == null || dependIds == "") continue;
 
@@ -187,8 +188,7 @@ var ExtendTree = function(element) {
 	    this.row = tr;
 	    this.row.style.height = _TREE_NODE_HEIGHT;
 	    this.node = node;
-	    node.optionMap = {};
-	    node.baseUrl = treeThis._baseUrl + _EXTEND_NODE_ICON;
+	    this.node.setAttribute("baseUrl", treeThis._baseUrl + _EXTEND_NODE_ICON);
 		
 	    /* 创建扩展内容的所有列内容  */
 	    var _options = treeThis.getOptions();
@@ -205,12 +205,12 @@ var ExtendTree = function(element) {
 			var cell = this.row.insertCell(i);
             cell.appendChild(getCloneCellCheckbox());
             cell.align = "center";
+            cell.id = this.row.id + "-" + curOptionID;
 			
-			var nobr = cell.firstChild;
-	        var checkType = nobr.firstChild;
+	        var checkType = cell.firstChild.firstChild;
 	        checkType.id  = curOptionID;
 
-	        node.optionMap[curOptionID] = checkType;
+	        this.node.setAttribute(curOptionID + "-img", cell.id);
 			setCellCheckType(node, curOptionID, value);
         }
 	 
@@ -304,6 +304,7 @@ var ExtendTree = function(element) {
 
 				var etr = _extendTable.lastChild.insertRow(i);
 				etr.insertCell();
+				etr.id = i;
 				_ExtendRows[i] = new ExtendRow(etr, newNode);
 			}
 
@@ -336,6 +337,12 @@ ExtendTree.prototype.getTreeNodeById = function(id) {
 
 TreeNode.prototype.open = function() {
 	this.node.setAttribute("_open", "true");	// 标记当前节点为打开状态
+
+	var nodes = this.node.selectNodes(".//treeNode[@_closeBy = '" + this.node.getAttribute(_TREE_NODE_ID) + "']");
+	for(var i = 0; i < nodes.length; i++) {
+		nodes[i].setAttribute("_open", "true");
+		nodes[i].removeAttribute("_closeBy");	//去除因父节点关闭而不显示的标记
+	}
 }
 
 TreeNode.prototype.close = function() {
@@ -345,6 +352,7 @@ TreeNode.prototype.close = function() {
 	var nodes = this.node.selectNodes(".//treeNode[@_open = 'true']");
 	for(var i = 0; i < nodes.length; i++) {
 		nodes[i].setAttribute("_open", "false");
+		nodes[i].setAttribute("_closeBy", this.node.getAttribute(_TREE_NODE_ID));	// 因此节点关闭而不显示
 	}
 }
 
@@ -356,8 +364,8 @@ TreeNode.prototype.close = function() {
  * 返回：	nextState                   click后的状态，不能超过pState
  */
 TreeNode.prototype.changeExtendSelectedState = function(optionId, shiftKey, nextState) {
-	var curState = this.getAttribute(optionId);
-	var pState   = this.getAttribute("pstate");
+	var curState = this.node.getAttribute(optionId);
+	var pState   = this.node.getAttribute("pstate");
 	
 	// nextState 不能超过pState
 	if("2" == nextState && "2" != pState) {
@@ -404,7 +412,7 @@ TreeNode.prototype.changeExtendSelectedState = function(optionId, shiftKey, next
 	}
 	else {
 		if(nextState != curState) {
-			this.setAttribute(optionId, nextState);
+			this.node.setAttribute(optionId, nextState);
 		}
 	}
 
@@ -437,9 +445,10 @@ function getExtendRow(display, obj) {
  *			 4 选中禁用
  */
 function setCellCheckType (node, optionId, value) {
-	if(node.optionMap == null) return;
+	var cellIndex = node.getAttribute(optionId + "-img");
+	if (cellIndex == null) return;
 
-	var checkType = node.optionMap[optionId];
+	var checkType = $$(cellIndex).firstChild.firstChild;
     checkType.state = value;
 
     value = value || "0";
@@ -449,5 +458,5 @@ function setCellCheckType (node, optionId, value) {
             value = "0_2";
         }
     }
-    checkType.src = node.baseUrl + value + ".gif"; // 设定扩展内容checkbox图片地址
+    checkType.src = node.getAttribute("baseUrl") + value + ".gif"; // 设定扩展内容checkbox图片地址
 }

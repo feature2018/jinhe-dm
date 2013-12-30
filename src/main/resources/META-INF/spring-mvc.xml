@@ -32,6 +32,7 @@
 	<mvc:resources mapping="/*.swf" location="/"/>  
 	
 	<mvc:resources mapping="/data/**" location="/data/"/> 
+	<mvc:resources mapping="/dm/**" location="/dm/"/> 
 	<mvc:resources mapping="/wms/**" location="/wms/"/> 
 	<mvc:resources mapping="/btr/**" location="/btr/"/> 
  

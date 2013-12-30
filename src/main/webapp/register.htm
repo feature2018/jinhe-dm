@@ -44,7 +44,7 @@ URL_CORE = "framework/"
     function init() {
 		Ajax({
 			url : URL_INIT,
-			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
 			onresult : function() { 
 				var registerXML = this.getNodeValue(XML_REGISTER_INFO);
 				Cache.XmlDatas.add(XML_REGISTER_INFO, registerXML);
@@ -65,7 +65,7 @@ URL_CORE = "framework/"
     function register(){
 		Ajax({
 			url : URL_REGISTER,
-			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
 			xformNode : Cache.XmlDatas.get(XML_REGISTER_INFO),
 			onsuccess : function() { 
 				if( opener ) {  // opener返回对创建该窗口的Window 对象的引用

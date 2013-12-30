@@ -7,7 +7,6 @@
 <link href="../../css/css.css" rel="stylesheet" type="text/css"></link>
 <link href="../../menu/menu.css" rel="stylesheet" type="text/css"></link>
 <link href="../../balloon/balloon.css" rel="stylesheet" type="text/css"></link>
-<link href="../../workspace/workspace.css" rel="stylesheet" type="text/css"></link>
 <link href="../../tree/tree.css" rel="stylesheet" type="text/css"></link>
 <link href="../../grid/grid.css" rel="stylesheet" type="text/css"></link>
 <link href="../../xform/xform.css" rel="stylesheet" type="text/css"></link>
@@ -17,10 +16,23 @@
 <script language="javascript" src="../../framework.js"></script>
 <script language="javascript" src="../../menu/menu.js"></script>
 <script language="javascript" src="../../balloon/balloon.js"></script>
-<script language="javascript" src="../../workspace/workspace.js"></script>
 <script language="javascript" src="../../tree/tree.js"></script>
 <script language="javascript" src="../../grid/grid.js"></script>
 <script language="javascript" src="../../xform/xform.js"></script>
+
+<style>
+  #page1FormDiv {
+    display:none;
+    background-color: #BEC6EE;
+    border:1px solid #416371;
+    position: absolute;
+    width: 600;    
+    height: 320;  
+    margin-left: 200;
+    margin-top: 200;
+    padding: 10px 10px 10px 10px;
+  }
+</style>
 
 <SCRIPT type="text/javascript">
 <!--
@@ -30,23 +42,26 @@
 
 	/* 后台响应数据节点名称  */
 	XML_MAIN_TREE = "CacheTree";
+	XML_MAIN_GRID = "PoolGrid";
 	XML_HIT_RATE  = "HitRate";
 	XML_CACHE_ITEMS = "CacheItemList";
 	XML_CACHE_STRATEGY  = "CacheStrategy";
 
 	/* XMLHTTP请求地址汇总  */
-	URL_INIT         = NO_AUTH_PATH + "cache/list";
+	URL_INIT_TREE    = NO_AUTH_PATH + "cache/list";
+	URL_INIT_GRID    = NO_AUTH_PATH + "cache/grid";
 	URL_CACHE_DETAIL = NO_AUTH_PATH + "cache/list/";
 	URL_VIEW_ITEM    = NO_AUTH_PATH + "cache/item";
 	URL_CACHE_CLEAR  = NO_AUTH_PATH + "cache/release";
 	URL_CACHE_INIT   = NO_AUTH_PATH + "cache/init";	
 	
 	if(IS_TEST) {
-		URL_INIT = "data/cache_init.xml?";
+		URL_INIT_TREE    = "data/cache_tree.xml?";
+		URL_INIT_GRID    = "data/cache_grid.xml?";
 		URL_CACHE_DETAIL = "data/cache1.xml?";
-		URL_CACHE_CLEAR = "data/_success.xml?";
-		URL_CACHE_INIT = "data/_success.xml?";
-		URL_VIEW_ITEM = "data/option1.xml?";
+		URL_CACHE_CLEAR  = "data/_success.xml?";
+		URL_CACHE_INIT   = "data/_success.xml?";
+		URL_VIEW_ITEM    = "data/item.xml?";
 	}	
 	 
 	/*页面初始化 */
@@ -54,10 +69,20 @@
 		initPaletteResize();
 		initNaviBar("cache");
 		initMenus();
-		initWorkSpace(false);
 		initEvents();
 
+		Element.moveable($$("page1FormDiv"));
+
 		loadInitData();
+		loadInitGrid();
+	}
+
+	/* 点击树刷新按钮 */
+	function onClickTreeBtRefresh() {
+		loadInitData();
+		loadInitGrid();
+
+		$$("page1HitRate").innerHTML = "";
 	}
 
 	/* 页面初始化加载数据(包括工具条、菜单树) */
@@ -71,7 +96,7 @@
 			var treeElement = $$("tree");
 			treeElement.onTreeNodeDoubleClick = function(eventObj) {
 				if( !isTreeRoot() ) {
-					maintainCache();
+					showCachePools();
 				}
 			}
 			treeElement.onTreeNodeRightClick = function(eventObj) {
@@ -79,7 +104,21 @@
 			}
 		}
 
-		Ajax({url : URL_INIT, onresult : onresult});
+		// 初始化左边树
+		Ajax({url : URL_INIT_TREE, onresult : onresult});
+	}
+
+	// 初始化右边Grid
+	function loadInitGrid() {
+		Ajax({
+			url : URL_INIT_GRID, 
+			onresult : function() {
+				var gridDataXML = this.getNodeValue(XML_MAIN_GRID);
+				if( gridDataXML ) {
+					var grid = $G("page1Grid", gridDataXML);    
+				}		
+			}
+		});
 	}
 
 	/* 右击树节点  */
@@ -96,7 +135,7 @@
 	function initMenus() {
 		var item1 = {
 			label:"维护",
-			callback:maintainCache,
+			callback:showCachePools,
 			icon:"images/edit.gif",
 			visible:function() {return !isTreeRoot();}
 		}
@@ -137,7 +176,7 @@
 				onsuccess : function() {
 					treeNode.setAttribute("released", "0");
 					tree.reload();
-					maintainCache();
+					showCachePools();
 				}
 			});
 		}
@@ -154,68 +193,48 @@
 				onsuccess : function() {
 					treeNode.setAttribute("released", "1");   
 					tree.reload();
-					maintainCache();
+					showCachePools();
 				}
 			});
 		}
 	}
 
-	/* 编辑缓存信息  */
-	function maintainCache() {
-		var tree = $T("tree");
-		var treeNode = tree.getActiveTreeNode();
-		if( treeNode ) {
-			var treeID = treeNode.getId();
-			var treeName = treeNode.getName();
-
-			var callback = {};
-			callback.onTabChange = function() {
-				setTimeout(function() {
-					showCachePools(treeID);
-				}, TIMEOUT_TAB_CHANGE);
-			};
-
-			var inf = {};
-			inf.defaultPage = "page1";
-			inf.label = OPERATION_EDIT.replace(/\$label/i, treeName);
-			inf.callback = callback;
-			inf.SID = CACHE_TREE_NODE + treeID;
-			var tab = ws.open(inf);
-		}
-	}
-
 	/*
-	 *	树节点数据详细信息加载数据 
-	 *	参数：	string:treeID               树节点id
-				string:page                 页码
+	 *	缓存池详细信息 
+	 *	参数：	string:page                 页码
 				boolean:showStrategy        false的话只刷新grid列表
 	 */
-	function showCachePools(treeID, page, justRefreshGrid) {
+	function showCachePools(page, justRefreshGrid) {
+		var tree = $T("tree");
+		var treeNode = tree.getActiveTreeNode();
+		var treeID = treeNode.getId();
+		var treeName = treeNode.getName();
+
 		var onresult = function() {
-			var cacheID = CACHE_TREE_NODE + treeID + ".";	
-			Cache.XmlDatas.add(cacheID + XML_CACHE_STRATEGY, this.getNodeValue(XML_CACHE_STRATEGY));
-			Cache.XmlDatas.add(cacheID + XML_CACHE_ITEMS,    this.getNodeValue(XML_CACHE_ITEMS));
-			Cache.XmlDatas.add(cacheID + XML_PAGE_INFO,      this.getNodeValue(XML_PAGE_INFO));
-			Cache.XmlDatas.add(cacheID + XML_HIT_RATE,       this.getNodeValue(XML_HIT_RATE));
-			Cache.Variables.add(cacheID, treeID); // 缓存cacheId
-				
-			var strategyXML = Cache.XmlDatas.get(cacheID + XML_CACHE_STRATEGY);
+			var strategyXML = this.getNodeValue(XML_CACHE_STRATEGY);
 			if( strategyXML && !justRefreshGrid) {
 				$X("page1Form", strategyXML);
-				attachReminder(cacheID, $$("page1Form"));
 			}
 
-			createGridToolBar(cacheID); // 重新创建grid工具条
-			var gridDataXML = Cache.XmlDatas.get(cacheID + XML_CACHE_ITEMS);
+			createGridToolBar(this.getNodeValue(XML_PAGE_INFO)); // 重新创建grid工具条
+
+			var gridDataXML = this.getNodeValue(XML_CACHE_ITEMS);
 			if( gridDataXML ) {
 				var grid = $G("page1Grid", gridDataXML);    
 				initGridMenuAndEvents();
 			}		
 			
 			//设置点击率
-			var hitRateData = Cache.XmlDatas.get(cacheID + XML_HIT_RATE);
+			var hitRateData = this.getNodeValue(XML_HIT_RATE);
 			if( hitRateData ) {
-				$$("page1HitRate").innerHTML = "『 池命中率：" + hitRateData + " 』";
+				$$("page1HitRate").innerHTML = "『 " + treeName + "-命中率：" + hitRateData + " 』";
+				$$("page1HitRate").onclick = function() {
+					var formObj = $$("page1FormDiv");
+			        Element.show(formObj);
+			        $$("page1FormClose").onclick = function() {
+			            Element.hide(formObj);
+			        }
+				}
 			}
 		}
 		
@@ -226,14 +245,12 @@
 	}
 	 
 	/* 创建grid工具条 */
-	function createGridToolBar(cacheID) {
-		var xmlData = Cache.XmlDatas.get(cacheID + XML_PAGE_INFO);
+	function createGridToolBar(xmlData) {
 		if( xmlData ) {
 			initGridToolBar($$("gridToolBar"), xmlData, refreshGrid);
 
 			function refreshGrid(page) {
-				var treeId =  $T("tree").getActiveTreeNode().getId();
-				showCachePools(treeId, page, true);
+				showCachePools(page, true);
 			}
 		}
 	}
@@ -339,37 +356,18 @@
 				  <!-- 左栏 结束 -->
 				</td>
 				<td class="groove">
-					<!-- 标签区域 开始 -->
-					<WorkSpace:Box id="ws" baseurl="../../workspace/">
-					  <!-- page1 开始 -->
-					  <WorkSpace:Page id=page1 class="tight">
-						<table class="full">
-						  <tr>
-							<td id="listContainer" class="r b" style="width:50%">
-							  <table class="full">
-								<tr class="tf" height="20">
-								  <td class="b label" id="gridTitle" style="font-weight:normal">※缓存项
-									<span id="page1HitRate" class="buttonBox" style="left:60px;top:4px;font-weight:bold;"></span>
-									<span class="buttonBox" id="gridToolBar"></span></td>
-								</tr>
-								<tr>
-								  <td>
-									<Grid:Box id="page1Grid" baseurl="../../grid/"></Grid:Box>
-								  </td>
-								</tr>
-							  </table>
-							</td>
-							<td valign="top">
-							  <div style="padding:10px;">
-								<XForm:Box id="page1Form" baseurl="../../xform/" editable="true"></XForm:Box>
-							  </div>
-							</td>
-						  </tr>
-						</table>
-					  </WorkSpace:Page>
-					  <!-- page1 结束 -->
-					</WorkSpace:Box>
-					<!-- 标签区域 结束 -->                              
+					<table class="full">
+						<tr class="tf" height="20">
+						  <td id="gridTitle" style="font-weight:normal">※缓存池明细
+							<span id="page1HitRate" style="left:60px;top:4px;font-weight:bold;"></span>
+							<span class="buttonBox" id="gridToolBar"></span></td>
+						</tr>
+						<tr>
+						  <td>
+							<Grid:Box id="page1Grid" baseurl="../../grid/"></Grid:Box>
+						  </td>
+						</tr>
+					</table>                            
 				</td>
 			  </tr>
 			</table></td>
@@ -386,6 +384,13 @@
   </tr>
 </table>
 <!-- 版面 结束 -->
+ 
+  <div id="page1FormDiv">
+    <XForm:Box id="page1Form" baseurl="../../xform/" editable="true"></XForm:Box>    
+    <div class="bt">
+    	<input type="button" class="btStrong" value="隐藏" id="page1FormClose"/>
+     </div>
+  </div>
 
 </body>
 </html>

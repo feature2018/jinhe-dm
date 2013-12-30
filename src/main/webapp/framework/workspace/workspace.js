@@ -202,7 +202,6 @@ Tab.prototype.toString = function() {
 /*
  *	切换到指定Tab页
  *	参数：Phase:phase       Phase实例
-		  或者string:pageId     Page实例id
  */
 Tab.prototype.switchToPhase = function(phase) {
 	if( phase ) {
@@ -695,6 +694,11 @@ WorkSpace.prototype.nextPhase = function() {
 	if( tab ) {
 		return tab.nextPhase();
 	}
+}
+
+WorkSpace.prototype.switchToPhase = function(pageId) {
+	var page = _display.getPage(pageId);
+	_display.showPage(page);
 }
 
 WorkSpace.prototype.noTabOpend = function() {

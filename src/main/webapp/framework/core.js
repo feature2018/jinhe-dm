@@ -370,11 +370,16 @@ Log.read = function(index) {
 	}
 }
 
-// 扩展数组，增加数组项
-Array.prototype.push = function(item) {
-	this[this.length] = item;
+Array.prototype.contains = function(obj) {  
+    var i = this.length;  
+    while (i--) {  
+        if (this[i] === obj) {  
+            return true;  
+        }  
+    }  
+    return false;  
 }
-
+ 
 String.prototype.convertEntry = function() {
 	var str = this;
 	str = str.replace(/\&/g, "&amp;");
@@ -1024,8 +1029,8 @@ Element.attachColResizeII = function(element) {
  * 拖动对象，改变其位置
  * 参数：	Object:element   要拖动的HTML对象
  */
-Element.moveable = function(element) {
-	var handle = element.getElementsByTagName("h2")[0]; // 拖动条
+Element.moveable = function(element, handle) {
+	handle = handle || element.getElementsByTagName("h2")[0] || element; // 拖动条
 	if(handle == null) return;
 
 	var mouseStart  = {x:0, y:0};  // 鼠标起始位置
@@ -1379,7 +1384,7 @@ function xml2String(element) {
 }
 
 function getNodeText(node) {
-	return node.text || node.textContent; // 取节点值时，chrome里用textContent
+	return node.text || node.textContent || ""; // 取节点值时，chrome里用textContent
 }
 
 /*

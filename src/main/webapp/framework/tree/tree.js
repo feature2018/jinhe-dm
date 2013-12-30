@@ -57,9 +57,9 @@ var _TREE_NODE_CHECK_TYPE_STYLE = "checkType";// 节点选择状态图标样式�
  * 如果要修改显示的行高，修改样式文件
  */
 var _TREE_NODE_HEIGHT = 21;	
-var _TREE_SCROLL_BAR_WIDTH = 18; // 滚动条的宽度（象素）
-var _TREE_BOX_MIN_WIDTH  = 200;    // 树控件显示区最小宽度（象素）
-var _TREE_BOX_MIN_HEIGHT = 220;   // 树控件显示区最小高度（象素）
+var _TREE_SCROLL_BAR_WIDTH = 18;  // 滚动条的宽度（象素）
+var _TREE_BOX_MIN_WIDTH  = 200;   // 树控件显示区最小宽度（象素）
+var _TREE_BOX_MIN_HEIGHT = 400;   // 树控件显示区最小高度（象素）
 
 var _TREE_SCROLL_DELAY_TIME = 0;          // 滚动条的滚动事件延迟时间（毫妙）
 var _TREE_SCROLL_REPEAT_DELAY_TIME = 300; // 拖动节点到最上、下行时循环滚动事件每次延迟时间（毫妙）

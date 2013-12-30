@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?><Response><PoolGrid>
+<grid>
+    <declare>
+        <column name="code" caption="键值 " align="center" mode="string" width="150px"/>
+        <column name="name" caption="名称 " align="center" mode="string" width="150px"/>
+        <column name="accessMethod" caption="存取方式" align="center" mode="string" editor="comboedit" editorvalue="1|2|3|4|5" editortext="FIFO|LIFO|RANDOM|LRU|LFU"/>
+        <column name="disabled" caption="状态 " align="center" mode="string" editor="comboedit" editorvalue="0|1" editortext="启用|停用"/>
+        <column name="cyclelife" caption="生命周期(ms)" align="center" mode="string"/>
+        <column name="interruptTime" caption="等待时间(ms)" align="center" mode="string"/>
+        <column name="poolSize" caption="池容量 " align="center" mode="string"/>
+        <column name="initNum" caption="初始化数" align="center" mode="string"/>
+        <column name="requests" caption="总请求数" align="center" mode="string"/>
+        <column name="hitrate" caption="命中率 " align="center" mode="string"/>
+        <column name="freeItemNum" caption="空闲中 " align="center" mode="string"/>
+        <column name="busyItemNum" caption="忙碌中 " align="center" mode="string"/>
+    </declare>          
+    <data>
+    <row code="connectionpool" name="数据库连接池" accessMethod="3" disabled="0" cyclelife="0" interruptTime="1000" poolSize="10" initNum="5" requests="0" hitrate="0.0" freeItemNum="5" busyItemNum="0"/><row code="taskpool" name="日志输出任务池" accessMethod="3" disabled="0" cyclelife="18000000" interruptTime="100" poolSize="100" initNum="10" requests="0" hitrate="0.0" freeItemNum="10" busyItemNum="0"/><row code="threadpool" name="线程池" accessMethod="3" disabled="0" cyclelife="0" interruptTime="1000" poolSize="10" initNum="5" requests="0" hitrate="0.0" freeItemNum="5" busyItemNum="0"/><row code="SHORT" name="服务数据缓存（短期）" accessMethod="5" disabled="0" cyclelife="180000" interruptTime="0" poolSize="1000" initNum="0" requests="0" hitrate="0.0" freeItemNum="0" busyItemNum="0"/><row code="LONG" name="服务数据缓存（长期）" accessMethod="5" disabled="0" cyclelife="43200000" interruptTime="0" poolSize="300" initNum="0" requests="0" hitrate="0.0" freeItemNum="0" busyItemNum="0"/><row code="NODEAD" name="服务数据缓存（不死）" accessMethod="5" disabled="0" cyclelife="0" interruptTime="0" poolSize="1000" initNum="0" requests="0" hitrate="0.0" freeItemNum="0" busyItemNum="0"/>
+    </data>
+</grid></PoolGrid></Response>

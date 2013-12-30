@@ -57,6 +57,10 @@
 		initEvents();
 
 		loadInitData();
+
+		var p = new HttpRequestParams();
+		p.setContent("appCode", APP_CODE);
+		loadGridData(p, "1"); 
     }
  
     /* 菜单初始化 */

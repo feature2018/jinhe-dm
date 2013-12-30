@@ -1,8 +1,8 @@
 IS_TEST = false;
 
-/* 
- * 当前应用名 
- */
+FROMEWORK_CODE = "TSS";
+
+/*  当前应用名  */
 APP_CODE    = "DM";
 APPLICATION = APP_CODE.toLowerCase();
 CONTEXTPATH = APPLICATION + "/";
@@ -19,9 +19,7 @@ if( IS_TEST ) {
 
 ICON = URL_CORE + "images/";
 
-/* 
- * 常量定义
- */
+/*  常量定义 */
 XML_OPERATION = "Operation";
 XML_PAGE_INFO = "PageInfo";
 
@@ -32,6 +30,7 @@ OPERATION_VIEW = "查看\"$label\"";
 OPERATION_DEL  = "删除\"$label\"";
 OPERATION_EDIT = "编辑\"$label\"";
 OPERATION_SEARCH = "查询\"$label\"";
+OPERATION_IMPORT = "导入\"$label\"";
 OPERATION_SETTING = "设置\"$label\"";
 OPERATION_PERMISSION = "设置\"$label\"权限";
 
@@ -341,18 +340,22 @@ function initNaviBar(curId, relativePath) {
 				var id   = menuItem.getAttribute("id");
 				var href = menuItem.getAttribute("href");
 				var name = menuItem.getAttribute("name");
-
-				if(href == null) {
+				var onclick = menuItem.getAttribute("onclick");
+				
+				if(href == null && onclick == null) {
 					str[str.length] = name;
 					continue;
 				}
 
-				if( false == /^javascript\:/.test(href) ) {
+				if( href && false == /^javascript\:/.test(href) ) {
 					href = relativePath + href;
 				}
+
+				href = " href='" + (href || "#") + "'";
+				onclick = onclick ? " onclick='" + onclick + "'" : "";
 				
 				var cssStyle = (curId == id) ? "naviActive" : "navi";
-				str[str.length] = "<a href=\"" + href + "\" class=\"" + cssStyle + "\">" + name + "</a>";
+				str[str.length] = "<a " + href + " " + onclick + " class='" + cssStyle + "'>" + name + "</a>";
 			}
 			$$("navibar").innerHTML = str.join(" ");
 			$$("navibar").style.display = "inline";

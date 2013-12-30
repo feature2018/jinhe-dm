@@ -44,7 +44,7 @@ URL_CORE = "framework/"
     function init() {
 		Ajax({
 			url : URL_INIT,
-			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
 			onresult : function() { 
 				var forgetXML = this.getNodeValue(XML_FORGET_INFO);
 				Cache.XmlDatas.add(CACHE_FORGET_INFO, forgetXML);
@@ -61,7 +61,7 @@ URL_CORE = "framework/"
     function getPassword() {
 		Ajax({
 			url : URL_FORGET,
-			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
 			xformNode : Cache.XmlDatas.get(CACHE_FORGET_INFO),
 			onresult : function() { 
 				var userID = this.getNodeValue(XML_USER_ID);
@@ -117,7 +117,7 @@ URL_CORE = "framework/"
     function setNewPassword() {
 		Ajax({
 			url : URL_SET_NEW_PASSWORD,
-			headers : {"appCode": APP_CODE, "anonymous": "true"},
+			headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
 			params : {"type": "reset"},
 			xformNode : Cache.XmlDatas.get(CACHE_FORGET_INFO),
 			onsuccess : function() { 

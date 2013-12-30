@@ -92,7 +92,7 @@ XForm.prototype.parseTempalte = function() {
 
 	 htmls.push("<form class='xform' method='post' name='actionForm'>");
 	 htmls.push("<div class='contentBox'>");
-	 htmls.push('<table border="0" bordercolor="#D5E1F0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;">');
+	 htmls.push('<table width="100%">');
 
 	 for(var name in this.template.columnsMap) {
 		var column = this.template.columnsMap[name];

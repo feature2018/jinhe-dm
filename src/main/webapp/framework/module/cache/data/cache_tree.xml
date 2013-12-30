@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response><CacheTree><actionSet>
+    <treeNode id="connectionpool" icon="images/cache.gif" name="数据库连接池" display="1"></treeNode>
+    <treeNode id="taskpool" icon="images/cache.gif" name="日志输出任务池" display="1"></treeNode>
+    <treeNode id="threadpool" icon="images/cache.gif" name="线程池" display="1"></treeNode>
+    <treeNode id="SHORT" icon="images/cache.gif" name="服务数据缓存（短期）" display="1"></treeNode>
+    <treeNode id="LONG" icon="images/cache.gif" name="服务数据缓存（长期）" display="1"></treeNode>
+    <treeNode id="NODEAD" icon="images/cache.gif" name="服务数据缓存（不死）" display="1"></treeNode>
+</actionSet></CacheTree></Response>

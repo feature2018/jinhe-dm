@@ -52,6 +52,8 @@
 
   /* 右栏凹陷区域 */
   td.groove {
+    width: 100%;
+    height: 100%;
     border-left: 1px solid #9B9B9B;
     border-top: 1px solid #9B9B9B;
     border-right: 1px solid #FFFFFF;
@@ -67,7 +69,7 @@
 
   a {
     text-decoration: none;
-	font-family: "宋体";
+	  font-family: "宋体";
   }
   a:link {
     color: #000000;

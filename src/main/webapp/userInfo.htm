@@ -110,7 +110,7 @@ URL_CORE = "framework/";
 
 		Ajax({
 			url : URL_INIT,
-			headers: {"appCode": APP_CODE},
+			headers: {"appCode": FROMEWORK_CODE},
 			onresult : function() { 
 				var registerXML = this.getNodeValue(XML_REGISTER_INFO); 
 				Cache.XmlDatas.add(XML_REGISTER_INFO, registerXML);

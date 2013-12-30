@@ -9,7 +9,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath*:META-INF/*spring*.xml,
-			classpath*:META-INF/remote/um-remote-spring.xml,
+			classpath*:META-INF/remote/um-*.xml,
 			/WEB-INF/remote-service.xml
 		</param-value>
 	</context-param>

@@ -135,7 +135,7 @@ URL_CORE = "framework/"
     function getUserName(loginName, callback) {	
 		Ajax({
 			url: URL_GET_USER_NAME,
-			headers: {"appCode": APP_CODE},
+			headers: {"appCode": FROMEWORK_CODE},
 			contents: {"loginName":loginName},
 			onexcption: function() {
 				loginXForm.setFocus();
@@ -165,6 +165,7 @@ URL_CORE = "framework/"
 		// 登录信息
 		Ajax({
 			url: URL_LOGIN,
+            headers : {"appCode": FROMEWORK_CODE},
 			xformNode: Cache.XmlDatas.get(CACHE_LOGIN_FORM),
 			add2Header: true,
 			onexception: function(errorMsg) {
@@ -172,7 +173,7 @@ URL_CORE = "framework/"
                 alert(errorMsg.description);
 			},
 			onsuccess: function() {
-				location.href = "index.html?login=true";
+				location.href = "dm/report.html";
 			}
 		});
     }

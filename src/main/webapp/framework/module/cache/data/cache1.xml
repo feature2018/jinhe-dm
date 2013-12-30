@@ -1,46 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-<HitRate>0.0%</HitRate>
-<CacheStrategy>
+<?xml version="1.0" encoding="UTF-8"?><Response><HitRate>0%</HitRate><CacheStrategy>
 <xform>
 	<declare prefix="cacheStrategy">
 		<column name="code" caption="键值" mode="string" editable="false"/>
 		<column name="name" caption="名称" mode="string" editable="false"/>
-		<column name="accessMethod" caption="池访问方式" mode="string" editor="comboedit" editorvalue="1|2|3|4|5" editortext="FIFO|LIFO|RANDOM|LRU|LFU"/>
+		<column name="accessMethod" caption="存取方式" mode="string" editor="comboedit" editorvalue="1|2|3|4|5" editortext="FIFO|LIFO|RANDOM|LRU|LFU"/>
 		<column name="disabled" caption="状态" mode="string" editor="comboedit" editorvalue="0|1" editortext="启用|停用"/>
-		<column name="interruptTime" caption="中断时间" mode="number" inputReg="/^\d*$/g" pattern="#"/>
-		<column name="arithmeticClass" caption="算法类" mode="string"/>
-		<column name="cacheLoaderClass" caption="缓存项载入类" mode="string"/>
-		<column name="cyclelife" caption="生命周期" mode="number" inputReg="/^\d*$/g" pattern="#"/>
-		<column name="initNum" caption="初始化个数" mode="number" inputReg="/^\d*$/g" pattern="#"/>
-		<column name="poolSize" caption="池容量" mode="number" inputReg="/^\d*$/g" pattern="#"/>
+		<column name="interruptTime" caption="等待时间" mode="number" inputReg="/^\d*$/g"/>	
+		<column name="cyclelife" caption="生命周期" mode="number" inputReg="/^\d*$/g"/>
+		<column name="initNum" caption="初始化数" mode="number" inputReg="/^\d*$/g"/>
+		<column name="poolSize" caption="池容量" mode="number" inputReg="/^\d*$/g"/>
 		<column name="poolClass" caption="缓存池类" mode="string"/>
-		<column name="poolCollectionClass" caption="缓存池容器类" mode="string"/>
+		<column name="poolContainerClass" caption="池容器类" mode="string"/>
+		<column name="customizerClass" caption="自定义类" mode="string"/>
+		<column name="paramFile" caption="参数文件" mode="string"/>
 		<column name="remark" caption="备注" mode="string"/>
 	</declare>
 	<layout>
 		<TR>
-			<TD width="60"><label binding="name"/></TD>
+			<TD width="80"><label binding="name"/></TD>
 			<TD><input binding="name" type="text"/></TD>
-			<TD width="60"><label binding="code"/></TD>
+			<TD width="80"><label binding="code"/></TD>
 			<TD><input binding="code" type="text"/></TD>
 		</TR>
 		<TR>
-			<TD width="60"><label binding="disabled"/></TD>
+			<TD width="80"><label binding="disabled"/></TD>
 			<TD><input binding="disabled" type="text"/></TD>
-			<TD width="60"><label binding="accessMethod"/></TD>
+			<TD width="80"><label binding="accessMethod"/></TD>
 			<TD><input binding="accessMethod" type="text"/></TD>
 		</TR>
 		<TR>
-			<TD width="60"><label binding="poolSize"/></TD>
+			<TD width="80"><label binding="poolSize"/></TD>
 			<TD><input binding="poolSize" type="text" style="width:100;"/></TD>
-			<TD width="60"><label binding="initNum"/></TD>
+			<TD width="80"><label binding="initNum"/></TD>
 			<TD><input binding="initNum" type="text" style="width:100;"/></TD>
 		</TR>
 		<TR>
-			<TD width="60"><label binding="cyclelife"/></TD>
+			<TD width="80"><label binding="cyclelife"/></TD>
 			<TD><input binding="cyclelife" type="text" style="width:100;"/>ms</TD>
-			<TD width="60"><label binding="interruptTime"/></TD>
+			<TD width="80"><label binding="interruptTime"/></TD>
 			<TD><input binding="interruptTime" type="text" style="width:100;"/>ms</TD>
 		</TR>
 		<TR>
@@ -50,32 +47,26 @@
             <TD colspan="4"><hr class="b" noshade="true" size="1"/></TD>
         </TR>
 		<TR>
-			<TD width="60"><label binding="poolClass"/></TD>
-			<TD colspan="3"><input binding="poolClass" type="text" style="width:320;"/></TD>
+			<TD width="80"><label binding="poolClass"/></TD>
+			<TD colspan="3"><input binding="poolClass" type="text" style="width:88%;"/></TD>
 		</TR>
 		<TR>
-			<TD width="60"><label binding="poolCollectionClass"/></TD>
-			<TD colspan="3"><input binding="poolCollectionClass" type="text" style="width:320;"/></TD>
-		</TR>
-
-		<TR>
-			<TD width="60"><label binding="arithmeticClass"/></TD>
-			<TD colspan="3"><input binding="arithmeticClass" type="text" style="width:320;"/></TD>
+			<TD width="80"><label binding="poolContainerClass"/></TD>
+			<TD colspan="3"><input binding="poolContainerClass" type="text" style="width:88%;"/></TD>
 		</TR>
 		<TR>
-			<TD width="60"><label binding="cacheLoaderClass"/></TD>
-			<TD colspan="3"><input binding="cacheLoaderClass" type="text" style="width:320;"/></TD>
+			<TD width="80"><label binding="customizerClass"/></TD>
+			<TD colspan="3"><input binding="customizerClass" type="text" style="width:88%;"/></TD>
 		</TR>
-
 		<TR>
-			<TD width="60" valign="top"><label binding="remark"/></TD>
-			<TD colspan="3"><textarea binding="remark" style="width:100%;height:100"/></TD>
+			<TD width="80"><label binding="paramFile"/></TD>
+			<TD colspan="3"><input binding="paramFile" type="text" style="width:88%;"/></TD>
+		</TR>
+		<TR>
+			<TD width="80" valign="top"><label binding="remark"/></TD>
+			<TD colspan="3"><textarea binding="remark" style="width:88%;height:100"/></TD>
 		</TR>
 	</layout>
 	<data><row><visible><![CDATA[1]]></visible><remark><![CDATA[上次修改时间2007-01-17 23:46:08, 修改人JK]]></remark><customizerClass><![CDATA[com.jinhe.tss.cache.extension.threadpool.ThreadPoolCustomizer]]></customizerClass><initNum><![CDATA[5]]></initNum><poolContainerClass><![CDATA[com.jinhe.tss.cache.extension.MapContainer]]></poolContainerClass><code><![CDATA[threadpool]]></code><cyclelife><![CDATA[0]]></cyclelife><accessMethod><![CDATA[3]]></accessMethod><poolClass><![CDATA[com.jinhe.tss.cache.extension.threadpool.ThreadPool]]></poolClass><name><![CDATA[线程池]]></name><interruptTime><![CDATA[1000]]></interruptTime><poolSize><![CDATA[10]]></poolSize><disabled><![CDATA[0]]></disabled></row></data>
-</xform></CacheStrategy>
-<PageInfo><pagelist totalpages="1" totalrecords="5" currentpage="1" pagesize="6" currentpagerows="5" /></PageInfo>
-<CacheItemList>
-<grid><declare sequence="true"><column name="id" mode="string" caption="项Id" display="none"/><column name="code" mode="string" caption="池code" display="none"/><column name="key" caption="键值" mode="string"/><column name="name" caption="名称" mode="string" align="center"/><column name="hit" caption="点击次数" mode="string" align="center"/><column name="hitRate" caption="点击率" mode="string" align="center"/><column name="remark" caption="说明" mode="string" align="center"/></declare><data><row id="WorkThread_4" code="threadpool" key="WorkThread_4" name="WorkThread_4" hit="0" hitRate="0.0%" remark="" _depth="1"></row><row id="WorkThread_5" code="threadpool" key="WorkThread_5" name="WorkThread_5" hit="0" hitRate="0.0%" remark="" _depth="1"></row><row id="WorkThread_1" code="threadpool" key="WorkThread_1" name="WorkThread_1" hit="0" hitRate="0.0%" remark="" _depth="1"></row><row id="WorkThread_3" code="threadpool" key="WorkThread_3" name="WorkThread_3" hit="0" hitRate="0.0%" remark="" _depth="1"></row><row id="WorkThread_2" code="threadpool" key="WorkThread_2" name="WorkThread_2" hit="0" hitRate="0.0%" remark="" _depth="1"></row></data></grid>
-</CacheItemList>
-</Response>
+</xform></CacheStrategy><PageInfo><PageList totalpages="1" totalrecords="5" currentpage="1" pagesize="6" currentpagerows="5" /></PageInfo><CacheItemList>
+<grid><declare sequence="true"><column name="id" mode="string" display="none"/><column name="code" mode="string" display="none"/><column name="key" caption="键值" mode="string" width="240px"/><column name="hit" caption="点击次数" mode="string" width="60px" align="center"/><column name="hitRate" caption="点击率" mode="string" width="50px" align="center"/><column name="state" caption="状态 " align="center" mode="string" editor="comboedit" editorvalue="0|1" editortext="空闲|忙碌"/><column name="remark" caption="说明" mode="string" align="center"/></declare><data><row id="WorkThread_4" code="threadpool" key="WorkThread_4" hit="0" hitRate="0%" state="0" remark="WorkThread_4"/><row id="WorkThread_5" code="threadpool" key="WorkThread_5" hit="0" hitRate="0%" state="0" remark="WorkThread_5"/><row id="WorkThread_1" code="threadpool" key="WorkThread_1" hit="0" hitRate="0%" state="0" remark="WorkThread_1"/><row id="WorkThread_3" code="threadpool" key="WorkThread_3" hit="0" hitRate="0%" state="0" remark="WorkThread_3"/><row id="WorkThread_2" code="threadpool" key="WorkThread_2" hit="0" hitRate="0%" state="0" remark="WorkThread_2"/></data></grid></CacheItemList></Response>

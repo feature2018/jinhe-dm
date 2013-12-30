@@ -39,7 +39,8 @@ import com.jinhe.tss.util.XMLDocUtil;
  */
 @ContextConfiguration(
         locations={
-        		"classpath:META-INF/remote/um-remote-spring.xml",
+        		"classpath:META-INF/remote/um-remote.xml",
+        		"classpath:META-INF/remote/um-interceptor.xml",
         		"classpath:META-INF/spring-mvc.xml",
     		    "classpath:META-INF/spring-test.xml"
         } 

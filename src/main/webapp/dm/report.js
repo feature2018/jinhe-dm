@@ -12,9 +12,6 @@ PAGESIZE = 100;
  */
 URL_SOURCE_TREE    = AUTH_PATH + "rp/all";
 URL_GROUPS_TREE    = AUTH_PATH + "rp/groups";
-URL_REPORT_DATA    = "display/";
-URL_REPORT_JSON    = "display/json/";
-URL_REPORT_EXPORT  = "display/export/";
 URL_SOURCE_DETAIL  = AUTH_PATH + "rp/detail";
 URL_SAVE_SOURCE    = AUTH_PATH + "rp";
 URL_DELETE_SOURCE  = AUTH_PATH + "rp/";
@@ -23,14 +20,15 @@ URL_SORT_SOURCE    = AUTH_PATH + "rp/sort/";
 URL_COPY_SOURCE    = AUTH_PATH + "rp/copy/";
 URL_MOVE_SOURCE    = AUTH_PATH + "rp/move/";
 
+URL_REPORT_DATA    = NO_AUTH_PATH + "display/";
+URL_REPORT_JSON    = NO_AUTH_PATH + "display/json/";
+URL_REPORT_EXPORT  = NO_AUTH_PATH + "display/export/";
+
 URL_RS_WH_LIST     = "wms/allWhList";
 
 if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/SOURCE_TREE.xml?";
 	URL_GROUPS_TREE    = "data/GROUPS_TREE.xml?";
-	URL_REPORT_DATA    = "data/REPORT_DATA.xml?";
-	URL_REPORT_JSON    = "data/REPORT_JSON.txt?";
-	URL_REPORT_EXPORT  = "data/_success.xml?";
 	URL_SOURCE_DETAIL  = "data/SOURCE_DETAIL.xml?";
 	URL_SAVE_SOURCE    = "data/_success.xml?";
 	URL_DELETE_SOURCE  = "data/_success.xml?";
@@ -39,12 +37,16 @@ if(IS_TEST) {
 	URL_COPY_SOURCE    = "data/_success.xml?";
 	URL_MOVE_SOURCE    = "data/_success.xml?";
 
+	URL_REPORT_DATA    = "data/REPORT_DATA.xml?";
+	URL_REPORT_JSON    = "data/REPORT_JSON.txt?";
+	URL_REPORT_EXPORT  = "data/_success.xml?";
+
 	URL_CORE = "framework/";
 }
 
 /* 页面初始化 */
 function init() {
-	initNaviBar("dm.1", " ");
+	initNaviBar("dm.1");
 	initMenus();
 	initEvents();
 
@@ -57,7 +59,7 @@ function initMenus() {
 	var item1 = {
 		label:"报表查询",
 		callback:showReport,
-		icon:"framework/images/search.gif",
+		icon: ICON + "search.gif",
 		visible:function() {return isReport() && !isTreeNodeDisabled();}
 	}
 	var item10 = {
@@ -65,7 +67,7 @@ function initMenus() {
 		callback: function() {
 			loadReportDetail(false, true);
 		},
-		icon:"framework/images/view.gif",
+		icon: ICON + "view.gif",
 		visible:function() {return !isTreeRoot()}
 	}
 	var item2 = {
@@ -73,7 +75,7 @@ function initMenus() {
 		callback: function() {
 			loadReportDetail(false, false);
 		},
-		icon:"framework/images/icon_edit.gif",
+		icon: ICON + "icon_edit.gif",
 		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled(); }
 	}
 	var item3 = {
@@ -81,7 +83,7 @@ function initMenus() {
 		callback: function() {
 			loadReportDetail(true, false, "1");
 		},
-		icon:"framework/images/cms/new_article.gif",
+		icon: ICON + "cms/new_article.gif",
 		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
 	}
 	var item4 = {
@@ -89,43 +91,43 @@ function initMenus() {
 		callback: function() {
 			loadReportDetail(true, false, "0");
 		},
-		icon:"framework/images/new_folder.gif",
+		icon: ICON + "new_folder.gif",
 		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
 	}
 	var item5 = {
 		label:"删除",
 		callback:deleteReport,
-		icon:"framework/images/icon_del.gif",
+		icon: ICON + "icon_del.gif",
 		visible:function() {return !isTreeRoot();}
 	}
 	var item6 = {
 		label:"复制到",
 		callback:copyReportTo,
-		icon:"framework/images/icon_copy.gif",
+		icon: ICON + "icon_copy.gif",
 		visible:function() {return isReport();}
 	}
 	var item7 = {
 		label:"移动到",
 		callback:moveReport,
-		icon:"framework/images/icon_move.gif",
+		icon: ICON + "icon_move.gif",
 		visible:function() {return !isTreeRoot();}
 	}
 	var item8 = {
 		label:"停用",
 		callback:disableReport,
-		icon:"framework/images/stop.gif",
+		icon: ICON + "stop.gif",
 		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled();}
 	}
 	var item9 = {
 		label:"启用",
 		callback:enableReport,
-		icon:"framework/images/start.gif",
+		icon: ICON + "start.gif",
 		visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
 	}
 	var item11 = {
 		label:"测试报表服务JSON",
 		callback:testRestfulReportService,
-		icon:"framework/images/other/entity_0.gif",
+		icon: ICON + "other/entity_0.gif",
 		visible:function() {return isReport() && !isTreeNodeDisabled();}
 	}
 

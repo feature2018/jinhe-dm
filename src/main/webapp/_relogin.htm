@@ -75,7 +75,7 @@ URL_CORE = "framework/";
 			// 根据用户输入登录帐号loginName返回用户姓名userName
 			Ajax({
 				url : URL_GET_USER_NAME,
-				headers: {"appCode": APP_CODE},
+				headers: {"appCode": FROMEWORK_CODE},
 				params : {"loginName": loginName},
 				onresult : function() { 
 					var userName = this.getNodeValue(XML_USER_NAME);

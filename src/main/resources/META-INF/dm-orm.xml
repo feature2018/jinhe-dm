@@ -5,6 +5,11 @@
    version="1.0">
 
 	<entity class="com.jinhe.dm.report.Report"/>
+	<entity class="com.jinhe.dm.report.permission.ReportPermissions"/>
+	<entity class="com.jinhe.dm.report.permission.ReportPermissionsFull"/>
+	<entity class="com.jinhe.dm.report.permission.ReportResourceView"/>
+	
+	<entity class="com.jinhe.tss.um.entity.permission.RoleUserMapping"/>
  
 	
 </entity-mappings>
