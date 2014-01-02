@@ -278,6 +278,8 @@ function saveReport(treeID) {
 			if( !isNullOrEmpty(name) ) {
 				modifyTreeNode(treeID, "name", name, true);
 			}
+			modifyTreeNode(treeID, "param",  xform.getData("param"), true);
+			modifyTreeNode(treeID, "displayUri",  xform.getData("displayUri"), true);
 			
 			Element.hide($$("reportFormDiv"));
 		}
@@ -332,9 +334,30 @@ function moveReport() {
 	}
 }		
 
+function showReportInPointUrl(treeID, displayUri) {
+	var url = displayUri;
+	if( displayUri.indexOf("?service") > 0 ) {
+		url = url + "&id=" + treeID;
+	}
+	else {
+		url = url + "?service=display/json/" + treeID;
+	}
+
+	window.open(url);
+	//var chatFrameDiv = $$("chatFrameDiv");
+	//chatFrameDiv.style.display = "";
+	//$$("chatFrame").setAttribute("src", url);
+}
+
 function showReport() {
 	var treeNode = $T("tree").getActiveTreeNode();
 	var treeID = treeNode.getId();
+
+	var displayUri = treeNode.getAttribute("displayUri"); 
+	if(displayUri && displayUri.length > 0) {
+		showReportInPointUrl(treeID, displayUri);
+		return;
+	}
 	
 	var paramConfig = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
 	if( paramConfig && paramConfig.length > 0) {
@@ -348,11 +371,6 @@ function showReport() {
 }
 
 function showSearchForm(paramConfig, whIds, whNames) {	
-	if( paramConfig.indexOf("customizeReport") >= 0 ) {
-		showReportInPointUrl();
-		return;
-	}
-
 	var columns = [];
 	var layouts = [];
 	var paramArray = paramConfig.split(",");
@@ -434,22 +452,6 @@ function showSearchForm(paramConfig, whIds, whNames) {
 	}
 	$$("btCloseSearchForm").onclick = function () {
 		Element.hide($$("searchFormDiv"));
-	}
-}
-
-function showReportInPointUrl() {
-	var treeNode = $T("tree").getActiveTreeNode();
-	var treeID = treeNode.getId();
-	var url = treeNode.getAttribute("url");
-	if( url ) {	
-		if( url.split(",").length == 2 ) {
-			var showPage   = url.split(",")[0];
-			var serviceUri = url.split(",")[1]; // 如: "http://localhost:9000/dm/rs/kanban/{whId}"
-			window.open(showPage + "?service=" + serviceUri);
-		}
-		else {
-			window.open(url);
-		}
 	}
 }
 
@@ -551,12 +553,8 @@ function getWarehouseList() {
 function testRestfulReportService() {
 	var treeNode = $T("tree").getActiveTreeNode();
 	var treeID = treeNode.getId();
-	var url = treeNode.getAttribute("url");
-	if( url == null ) {
-		url = URL_REPORT_JSON + treeID;
-	}
 	Ajax({
-		url : url,
+		url : URL_REPORT_JSON + treeID,
 		method : "GET",
 		type : "json",
 		ondata : function() { 

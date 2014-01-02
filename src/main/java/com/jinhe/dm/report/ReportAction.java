@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.jinhe.dm.Constants;
+import com.jinhe.dm.report.permission.ReportPermissionsFull;
+import com.jinhe.dm.report.permission.ReportResourceView;
 import com.jinhe.tss.framework.component.param.Param;
 import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.web.dispaly.tree.LevelTreeParser;
 import com.jinhe.tss.framework.web.dispaly.tree.TreeEncoder;
 import com.jinhe.tss.framework.web.dispaly.xform.XFormEncoder;
 import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
+import com.jinhe.tss.um.permission.PermissionHelper;
 import com.jinhe.tss.util.EasyUtils;
 
 @Controller
@@ -134,6 +137,14 @@ public class ReportAction extends BaseActionSupport {
         
         reportService.move(reportId, groupId);
         printSuccessMessage();
+    }
+    
+	@RequestMapping("/operations/{resourceId}")
+    public void getOperations(HttpServletResponse response, @PathVariable("resourceId") Long resourceId) {
+        List<String> list = PermissionHelper.getInstance().getOperationsByResource(resourceId,
+                        ReportPermissionsFull.class.getName(), ReportResourceView.class);
+
+        print("Operation", EasyUtils.list2Str(list));
     }
 
 }

@@ -25,7 +25,7 @@
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
     <interruptTime>1000</interruptTime>  
-    <initNum>1</initNum>  
+    <initNum>0</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>oracle-wms-adg.properties</paramFile>
   </strategy>
@@ -34,7 +34,7 @@
     <poolSize>10</poolSize>  
     <cyclelife>0</cyclelife>  
     <interruptTime>1000</interruptTime>  
-    <initNum>1</initNum>  
+    <initNum>0</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>oracle-vf.properties</paramFile>
   </strategy>
@@ -43,7 +43,7 @@
     <poolSize>10</poolSize>  
     <cyclelife>28000000</cyclelife>  
     <interruptTime>1000</interruptTime>  
-    <initNum>3</initNum>  
+    <initNum>0</initNum>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>mysql-btr.properties</paramFile>
   </strategy>

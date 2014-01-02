@@ -51,6 +51,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private String  script;     // SQL
     private String  param;      // 参数值
     private String  datasource; // 单独为报表指定数据源
+    private String  displayUri; // 用来展示当前报表的模板页面的路径
     
     private Integer type;       // 种类  0：报表分组 1: 业务报表
     private String  remark; 
@@ -168,9 +169,7 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
         map.put("type", type);
         if(TYPE1 == type) {
             map.put("param", param);
-            if(script != null && script.trim().startsWith("url:")) {
-                map.put("url", script.trim().substring(4));
-            }
+            map.put("displayUri", displayUri);
         }
  
         super.putOperateInfo2Map(map);
@@ -189,5 +188,13 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
 
 	public String getResourceType() {
 		return RESOURCE_TYPE_REPORT;
+	}
+
+	public String getDisplayUri() {
+		return displayUri;
+	}
+
+	public void setDisplayUri(String displayUri) {
+		this.displayUri = displayUri;
 	}
 }

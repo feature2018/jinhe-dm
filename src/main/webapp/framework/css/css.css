@@ -52,16 +52,12 @@
 
   /* 右栏凹陷区域 */
   td.groove {
-    width: 100%;
-    height: 100%;
     border-left: 1px solid #9B9B9B;
     border-top: 1px solid #9B9B9B;
     border-right: 1px solid #FFFFFF;
     border-bottom: 1px solid #FFFFFF;
   }
   div.groove {
-    width: 100%;
-    height: 100%;
     border-left: 1px solid #D1D1D1;
     border-top: 1px solid #D1D1D1;
     padding: 3px;
