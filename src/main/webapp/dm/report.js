@@ -552,9 +552,9 @@ function getWarehouseList() {
 
 function testRestfulReportService() {
 	var treeNode = $T("tree").getActiveTreeNode();
-	var treeID = treeNode.getId();
+	var url = URL_REPORT_JSON + treeNode.getId();
 	Ajax({
-		url : URL_REPORT_JSON + treeID,
+		url : url,
 		method : "GET",
 		type : "json",
 		ondata : function() { 
