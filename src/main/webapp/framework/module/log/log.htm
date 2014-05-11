@@ -31,14 +31,14 @@
     /*
      *	后台响应数据节点名称
      */
-    XML_MAIN_TREE = "AppTree";
+    XML_MAIN_TREE = "ObjectTree";
     XML_LOG_LIST = "LogList";
     XML_LOG_INFO = "LogInfo";
  
     /*
      *	XMLHTTP请求地址汇总
      */
-	URL_INIT       = NO_AUTH_PATH + "log/apps";
+	URL_INIT       = NO_AUTH_PATH + "log/objects";
     URL_LOG_LIST   = NO_AUTH_PATH + "log/";
     URL_LOG_DETAIL = NO_AUTH_PATH + "log/item/";
 
@@ -59,7 +59,6 @@
 		loadInitData();
 
 		var p = new HttpRequestParams();
-		p.setContent("appCode", APP_CODE);
 		loadGridData(p, "1"); 
     }
  
@@ -127,9 +126,9 @@
     }
 	
 	function showLogList() {		
-	    var appCode = getTreeNodeId();
+	    var treeID = getTreeNodeId();
 		var p = new HttpRequestParams();
-		p.setContent("appCode", appCode);
+		p.setContent("operateTable", treeID);
 		loadGridData(p, "1"); 
     }
 
@@ -239,8 +238,8 @@
 				  <table class="full border">
 					<tr id="treeTitle" class="bar"> 
 					  <td class="opened">
-						<span class="icon"></span>系统<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
-						<span id="paletteBt"></span>
+						<span class="icon"></span>操作对象<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
+						<span id="closeLeftBarIcon"></span>
 					  </td>
 					</tr>
 					<tr>
@@ -255,6 +254,7 @@
 				  <table class="full">
 					<tr>
 						<td id="gridTitle">
+						  <span id="openLeftBarIcon"></span>
 						  <span class="icon"></span>日志列表<span class="buttonBox" id="gridToolBar"></span>
 						</td>
 					</tr>

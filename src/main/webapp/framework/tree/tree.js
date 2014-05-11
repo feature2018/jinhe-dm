@@ -420,8 +420,8 @@ var Tree = function(element) {
 		
 		// 设置显示节点的table对象的大小
 		_rootBox.style.height = _windowHeight;
-		_rootBox.style.width = _windowWidth;
-		element.style.display = "inline-block";
+		_rootBox.style.width  = _windowWidth;
+		element.style.display = "inline-block"; // TODO 
 
 		/* 当窗口大小改变后，初始化所有相关参数，并且重新计算所要显示的节点。*/
 		element.onresize = function () {

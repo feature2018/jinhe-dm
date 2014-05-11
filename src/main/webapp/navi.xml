@@ -2,13 +2,15 @@
 <Response>
 	<NaviInfo>
 		<Menus>
-            <MenuItem id="dm.1" name="数据报表" href="dm/report.html"/>
+            <MenuItem id="dm.1" name="数据挖掘" href="dm/report.html"/>
 
 			<MenuItem id="cache" name="缓存管理" href="framework/module/cache/cache.htm"/>
 			<MenuItem id="param" name="参数管理" href="framework/module/param/param.htm"/>
 			<MenuItem id="log"   name="日志查询" href="framework/module/log/log.htm"/>
 
-			<MenuItem id="logout"   name="注销" onclick="logout()"/>
+			<MenuItem id="um.4" name="用户信息" onclick="showUserInfo()"/>
+			<MenuItem id="um.5" name="修改密码" onclick="modifyPassword()"/>
+			<MenuItem id="logout" name="注销"   onclick="logout()"/>
 		</Menus>
 	</NaviInfo>
 </Response>

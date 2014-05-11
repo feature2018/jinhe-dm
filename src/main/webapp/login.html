@@ -1,224 +1,196 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML xmlns:XForm>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>DMS--登陆</title>
+        
+        <link href="framework/css/css.css" rel="stylesheet" type="text/css">
 
-<title>它山石--登陆</title>
+        <script language="javascript" src="framework/core.js"></script>
+        <script language="javascript" src="framework/ajax.js"></script>
+        <script language="javascript" src="framework/framework.js"></script>
 
-<link href="framework/xform/xform.css" rel="stylesheet" type="text/css">
-<link href="framework/balloon/balloon.css" rel="stylesheet" type="text/css">
+        <style type="text/css">
+html {
+    height:100%;
+}
 
-<script language="javascript" src="framework/core.js"></script>
-<script language="javascript" src="framework/ajax.js"></script>
-<script language="javascript" src="framework/framework.js"></script>
-<script language="javascript" src="framework/balloon/balloon.js"></script>
-<script language="javascript" src="framework/xform/xform.js"></script>
-
-<style type="text/css">
-  body{
+body {
+    width:100%;
+    height:100%;
+    margin: 0 0 0 0;
     overflow: hidden;
-  }
-  .loginBox {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 200;
-    width:400px;
-    height:300px;
-    background-image:url(framework/images/login.gif);
-    background-repeat:no-repeat;
-    background-position:center;
-  }
-  .loginBox td {
-    height:30px;
-    font-weight:bold;
-  }
-  .loginBox a, .loginBox a:visited{
-    text-decoration:underline;
-    color:#FFFFFF;
-  }
-  .loginBox .btLogin {
-    color:#ECEFF8;
-    width:60px;
-    height:22px;
-    padding-bottom:4px;
-    padding-right:4px;
-    border:0px none;
-    background-image:url(framework/images/bt_login.gif);
-  } 
-  #loginForm {
-     padding-left: 80;
-     padding-top: 80;
-  }
-</style>
+    background-image:url(framework/images/login_bg.png);
+}
+ 
+#login_box {
+    position:relative;
+    top:220px;
+    width:352px;
+    margin:0px auto;
+    font-family:"微软雅黑";
+}
+ 
+#login_box form {
+    padding:10px;
+}
+#login_box h1 {
+    line-height:30px;
+    font-size:15px;
+    margin:0px;
+    padding:0px 5px;
+    color: #FFFFFF;
+    border-bottom:1px solid #009999;
+}
+#login_box span {
+    display:block;
+    margin:20px 0px;
+    padding:0px 5px;
+}
+
+#loginName, #password{
+    width: 320px;
+    height: 25px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    line-height: 15px;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+#login_box span.bottonBox {
+    margin:10px 0px;
+}
+ 
+#bt_login {
+    width: 320px;
+    height: 30px;
+    border: 1px solid #88D0E7;
+    background: #0C6F73;
+    box-shadow: #3a3c42 0 1px 0 inset;
+    border-radius: 3px;
+    
+    font-size: 16px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+#bt_login:hover {
+    font-weight: bold;
+}
+
+ 
+    </style>
 
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 
-URL_CORE = "framework/"
-
-    /* 后台响应数据节点名称 */
-    XML_USER_NAME = "UserName";
-    XML_CLASS_NAME = "ClassName";
-	
-	CACHE_LOGIN_FORM = "login__id";
-
-    /* XMLHTTP请求地址汇总 */
-	URL_GET_USER_NAME = "getLoginInfo.in";
+    URL_GET_USER_NAME = "getLoginInfo.in";
     URL_LOGIN = AUTH_PATH + "login.do";
 
-	if( IS_TEST ) {
-		URL_GET_USER_NAME = "mockdata/username.xml";
-		URL_LOGIN = "mockdata/_success.xml";
-	}    
+    window.alert = _alert;
+    
+    window.onload = function() {
 
+        $$("loginName").onfocus = $$("password").onfocus = function() {
+             this.style.backgroundColor = "white";
+        }
+
+        $$("loginName").focus();
+
+        var loginButton = $$("bt_login");
+
+        loginButton.onclick = doLogin;
  
-	var loginXForm;
 
-	function init() {
-        var str = [];
-        str[str.length] = "<xform>";
-        str[str.length] = "    <declare>";
-        str[str.length] = "        <column name=\"userName\"   caption=\"账　　号\" mode=\"string\"/>";
-        str[str.length] = "        <column name=\"loginName\"  caption=\"登录帐号\" mode=\"string\"/>";
-        str[str.length] = "        <column name=\"password\"   caption=\"密　　码\" mode=\"string\"/>";
-        str[str.length] = "        <column name=\"identifier\" caption=\"认证方式\" mode=\"string\"/>";
-        str[str.length] = "    </declare>";
-        str[str.length] = "    <layout>";
-        str[str.length] = "        <TR>";
-        str[str.length] = "            <TD width=\"60\"><label binding=\"userName\"/></TD>";
-        str[str.length] = "            <TD><input binding=\"userName\" type=\"text\" style=\"width:150px\"/></TD>";
-        str[str.length] = "        </TR>";
-        str[str.length] = "        <TR>";
-        str[str.length] = "            <TD width=\"60\"><label binding=\"password\"/></TD>";
-        str[str.length] = "            <TD><input binding=\"password\" type=\"password\" style=\"width:150px\" onkeydown=\"autoLogin()\"/></TD>";
-        str[str.length] = "        </TR>";
-        str[str.length] = "        <TR>";
-        str[str.length] = "            <TD width=\"60\">&amp;nbsp;</TD>";
-        str[str.length] = "            <TD><a href=\"#\" onclick=\"register()\">新用户注册</a> | <a href=\"#\" onclick=\"forget()\">忘记密码</a></TD>";
-        str[str.length] = "        </TR>";
-        str[str.length] = "        <TR>";
-        str[str.length] = "            <TD width=\"60\">&amp;nbsp;</TD>";
-        str[str.length] = "            <TD><input type=\"button\" class=\"btLogin\" id=\"btLogin\" value=\"登录\" onclick=\"login()\"/> - ";
-        str[str.length] = "                <input type=\"button\" class=\"btLogin\" id=\"btCancel\" value=\"重置\" onclick=\"resetForm()\"/></TD>";
-        str[str.length] = "        </TR>";
-        str[str.length] = "    </layout>";
-        str[str.length] = "    <data>";
-        str[str.length] = "        <row/>";
-        str[str.length] = "    </data>";
-        str[str.length] = "</xform>";
+        Event.attachEvent(document, "keydown", function(eventObj) {
+            if(13 == eventObj.keyCode) { // enter
+                event.returnValue = false;
+                $$("bt_login").focus();
 
-        var xmlReader = new XmlReader(str.join(""));
-        var loginFormXML = new XmlNode(xmlReader.documentElement);
-        Cache.XmlDatas.add(CACHE_LOGIN_FORM, loginFormXML);
+                setTimeout(function() {
+                    doLogin();
+                }, 10);
+            }
+        });
 
-		// 初始化登录xform
-		loginXForm = $X("loginForm", loginFormXML);
-		
-		$$("userName").onblur = function() { 
-			var value = this.value;
-			if(value == null || value == "") return;
-			
-			getUserName(value, function(userName, identifier) {
-				loginXForm.updateDataExternal("userName", userName);
-				loginXForm.updateDataExternal("identifier", identifier);
-				loginXForm.updateDataExternal("loginName", value);
-				loginXForm.setFocus("password");
-			});
-		}
-  }
+        $$("password").onblur = function() { 
+            this.style.backgroundColor = "#f0f0f0";
+        }
 
-	/*
-     *	根据用户输入登录帐号返回用户姓名
-     *	参数：	string:loginName      登录帐号
-                function:callback     回调方法
-     */
-    function getUserName(loginName, callback) {	
-		Ajax({
-			url: URL_GET_USER_NAME,
-			headers: {"appCode": FROMEWORK_CODE},
-			contents: {"loginName":loginName},
-			onexcption: function() {
-				loginXForm.setFocus();
-			},
-			onresult: function(){
-				var userName   = this.getNodeValue(XML_USER_NAME);
-				var identifier = this.getNodeValue(XML_CLASS_NAME);
+        $$("loginName").onblur = function() { 
+            this.style.backgroundColor = "#f0f0f0";
 
-				callback(userName, identifier);
-			}
-		});
+            var value = this.value;
+            if(value == null || value == "") return;
+ 
+            Ajax({
+                url: URL_GET_USER_NAME,
+                headers: {"appCode": FROMEWORK_CODE},
+                contents: {"loginName": value},
+                onexcption: function() {
+                    $$("loginName").focus();
+                },
+                onresult: function(){
+                    var identifier = this.getNodeValue("ClassName");
+
+                    DEFAULT_IDENTIFIER = identifier;
+                    $$("password").focus();
+                }
+            });
+        }
     }
 
-    function login() {
-        // 校验loginForm数据有效性
-        var userName = loginXForm.getData("userName") || "";
-        var password = loginXForm.getData("password") || "";
-        if( "" == userName ) {
-            loginXForm.showCustomErrorInfo("userName", "请输入姓名");
+    var doLogin = function() {
+        var loginName = $$("loginName").value;
+        var password = $$("password").value;
+        if( "" == loginName ) {
+            _alert("请输入账号");
+            $$("loginName").focus();
             return;
         } 
-		else if( "" == password ) {
-            loginXForm.showCustomErrorInfo("password", "请输入密码");
+        else if( "" == password ) {
+            _alert("请输入密码");
+            $$("password").focus();
             return;
         }
 
-		// 登录信息
-		Ajax({
-			url: URL_LOGIN,
-            headers : {"appCode": FROMEWORK_CODE},
-			xformNode: Cache.XmlDatas.get(CACHE_LOGIN_FORM),
-			add2Header: true,
-			onexception: function(errorMsg) {
-				loginXForm.setFocus("password");
-                alert(errorMsg.description);
-			},
-			onsuccess: function() {
-				location.href = "dm/report.html";
-			}
-		});
+        Ajax({
+            url: URL_LOGIN,
+            headers : {"appCode": FROMEWORK_CODE, "loginName": loginName, "password": password, "identifier": DEFAULT_IDENTIFIER},
+            onexception: function(errorMsg) {
+                $$("password").focus();
+            },
+            onsuccess: function() {
+                location.href = "dm/report.html";
+            }
+        });
     }
-
-    /* 回车自动提交 */
-    function autoLogin() {
-        if( 13 == event.keyCode ){
-            event.returnValue = false;
-
-            var btLogin = $$("btLogin");
-            btLogin.focus();
-
-            setTimeout(function() {
-                login();
-            }, 10);
-        }
-    }
-
-    /* 找回密码  */
-    function forget() {
-        window.open("forget.html", "", "width=400, height=250");
-    }
-
-    /* 注册 */
-    function register() {
-        window.open("register.htm", "", "width=400, height=250");
-    }
-
-    /* 取消 */
-    function resetForm() {
-        loginXForm.resetForm();
-        loginXForm.setFocus();
-    }
-
-    window.onload = init;
 
 //-->
 </SCRIPT>
-</head>
+ 
+    </head>
+    
+    <body>
+ 
+        <div id="login_box">
+            <form>
+                <h1>
+                    百世快运BI2.0
+                </h1>
+                <span>
+                    <input type="text" id="loginName" placeholder="请输入您的账号" />
+                </span>
+                <span>
+                    <input type="password" id="password" placeholder="请输入您的密码"/>
+                </span>
+                <span class='bottonBox'>
+                    <input type='button' class='btLogin' id='bt_login' value='登 陆 系 统'/>
+                </span>
+            </form>
+        </div>
+ 
+    </body>
 
-<body>
-
-	<div class="loginBox">
-		<XForm:Box id="loginForm" baseurl="framework/xform/" caption="用户登录"></XForm:Box>
-	</div>
-
-</body>
 </html>

@@ -20,25 +20,13 @@
 <!-- 当前页相关脚本 开始 -->
 <style>
  
-#userInfo #passwordInfo {
+#userInfo {
 	padding:5px;
 	border:1px solid #3399ff;
 	z-index:12;
 	position:relative;
 }
-.hidden {
-	cursor:pointer;
-	cursor:hand;
-	background-color:#6FB7FF;
-	border-bottom:1px solid #3399ff;
-	color:#FFFFFF;
-}
-.display {
-	background-color:#FFFFFF;
-	font-weight:bold;
-	cursor:pointer;
-	cursor:hand;
-}
+
 </style>
 <!-- 当前页相关脚本 结束 -->
 
@@ -51,63 +39,21 @@ URL_CORE = "framework/";
      *	后台响应数据节点名称
      */
     XML_REGISTER_INFO = "UserInfo";
-	XML_PASSWORD_INFO = "PasswordInfo";
-	XML_SECURITY_LEVEL = "SecurityLevel";
-    /*
-     *	默认唯一编号名前缀
-     */
-    CACHE_REGISTER_INFO = "register__id";
 
     /*
      *	XMLHTTP请求地址汇总
      */
     URL_INIT        = AUTH_PATH + "user/self/detail";
     URL_MODIFY_USER = AUTH_PATH + "user/self";
-    URL_CHECK_PWD   = "getPasswordStrength.in";
-	URL_CHANGE_PWD  = "resetPassword.in";
 
 	if( IS_TEST ) {
 		URL_INIT        = "mockdata/register_init.xml";
 		URL_MODIFY_USER = "mockdata/_success.xml";
-		URL_CHECK_PWD   = "mockdata/password_check.xml";
-		URL_CHANGE_PWD  = "mockdata/_success.xml";
 	}
 
 	var registerForm;
-	var passwordForm;
 
     function init() {
-	    var userInfoTab = $$("userInfoTab");
-		var passwordTab = $$("passwordInfoTab");
-		var userInfoDiv = $$("userInfo");
-		var passwordDiv = $$("passwordInfo");
-
-		var saveUIButton  = $$("saveUIButton");
-		var savePWDButton = $$("savePWDButton");
-
-		passwordTab.className = "hidden";
-		userInfoTab.className = "display";
-
-		passwordDiv.style.display = "none";
-		savePWDButton.style.display = "none";
-
-		userInfoTab.onclick = function() {
-			userInfoDiv.style.display = "block";
-			passwordDiv.style.display = "none";
-			saveUIButton.style.display = "";
-			savePWDButton.style.display = "none";
-			userInfoTab.className = "display";
-			passwordTab.className = "hidden";
-		};
-		passwordTab.onclick = function() {
-			userInfoDiv.style.display = "none";
-			passwordDiv.style.display = "block";
-			saveUIButton.style.display = "none";
-			savePWDButton.style.display = "";
-			userInfoTab.className = "hidden";
-			passwordTab.className = "display";
-		};
-
 		Ajax({
 			url : URL_INIT,
 			headers: {"appCode": FROMEWORK_CODE},
@@ -115,20 +61,6 @@ URL_CORE = "framework/";
 				var registerXML = this.getNodeValue(XML_REGISTER_INFO); 
 				Cache.XmlDatas.add(XML_REGISTER_INFO, registerXML);
 				registerForm = $X("registerForm", registerXML);
-
-				var passwordXML = this.getNodeValue(XML_PASSWORD_INFO); 
-				Cache.XmlDatas.add(XML_PASSWORD_INFO, passwordXML);
-				passwordForm = $X("passwordForm", passwordXML);
-
-				if ( $$("newPassword") == null) { return; }
-
-				$$("newPassword").onblur = function() { 
-					var password = this.value;
-					if(password == null || password == "") return;
-					
-					var loginName = passwordForm.getData("loginName");
-					checkPasswordSecurityLevel(passwordForm, URL_CHECK_PWD, password, loginName);
-				}
 			}
 		});
     }
@@ -137,29 +69,7 @@ URL_CORE = "framework/";
 		Ajax({
 			url : URL_MODIFY_USER,
 			method : "PUT",
-			xformNode : Cache.XmlDatas.get(CACHE_REGISTER_INFO),
-			onsuccess : function() { 
-				window.close();
-			}
-		});
-    }
-
-    function changePassword() {
-		var oldpassword = passwordForm.getData("password");
-        var password    = passwordForm.getData("newPassword");
-        var repassword  = passwordForm.getData("newPassword2");
-		var userId = passwordForm.getData("userId");
-
-        if(password != repassword) {
-            return alert("两次密码输入不一致，请重新确认");
-        }
-		else if(null == password || "" == password) {
-            return alert("原密码不能为空");
-        }
-		
-		Ajax({
-			url : URL_CHANGE_PWD,
-			params : {"password": oldpassword, "newPassword": password, "userId": userId},
+			xformNode : Cache.XmlDatas.get(XML_REGISTER_INFO),
 			onsuccess : function() { 
 				window.close();
 			}
@@ -174,22 +84,12 @@ URL_CORE = "framework/";
 
 <body>
 <div class="dialog">
-    <div align="left">
-		<span style="width:8px"></span> <span id="userInfoTab">基本信息</span>
-		<span style="width:10px"></span> <span id="passwordInfoTab">修改密码</span>
-	</div>
-
 	<div id="userInfo">
 		<XForm:Box id="registerForm" baseurl="framework/xform/"></XForm:Box>
 	</div>
 
-	<div id="passwordInfo">
-		<XForm:Box id="passwordForm" baseurl="framework/xform/"></XForm:Box>
-	</div>
-	
 	<div class="bt">
 		<input type="button" class="btStrong" value="保存" onclick="modifyUserInfo()" id="saveUIButton"/> 
-		<input type="button" class="btStrong" value="修改" onclick="changePassword()" id="savePWDButton"/> 
 		<input type="button" class="btWeak"   value="关闭" onclick="window.close()"/>
 	</div>
 </div>

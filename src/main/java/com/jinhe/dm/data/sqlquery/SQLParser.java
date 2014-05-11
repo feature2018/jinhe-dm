@@ -13,9 +13,9 @@ public class SQLParser {
     
     String sql;
     
-    List<String> selectFields = new ArrayList<String>();
+    public List<String> selectFields = new ArrayList<String>();
     
-    String gridTempalte;
+    public String gridTempalte;
     
     private SQLParser(String sql) {
         this.sql = sql;
@@ -43,6 +43,10 @@ public class SQLParser {
         sql = sql.trim();
         int selectIndex = sql.indexOf("select ");
         int fromIndex   = sql.indexOf("from ");
+        if(fromIndex < 0) {
+			fromIndex = sql.indexOf("FROM ");
+		}
+        
         String fieldsStr = sql.substring(selectIndex + 7, fromIndex);
         String[] fileds = fieldsStr.split(",");
         for(String filed : fileds) {

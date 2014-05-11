@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jinhe.tss.framework.component.param.ParamConstants;
+import com.jinhe.tss.framework.exception.BusinessException;
 
 @Service("ReportService")
 public class ReportServiceImpl implements ReportService {
@@ -21,12 +22,12 @@ public class ReportServiceImpl implements ReportService {
     
     @SuppressWarnings("unchecked")
     public List<Report> getAllReport() {
-        return (List<Report>) reportDao.getEntities("from Report o where o.deleted <> 1 order by o.decode");
+        return (List<Report>) reportDao.getEntities("from Report o order by o.decode");
     }
     
     @SuppressWarnings("unchecked")
     public List<Report> getAllReportGroups() {
-        return (List<Report>) reportDao.getEntities("from Report o where o.type = ? and o.deleted <> 1 order by o.decode", Report.TYPE0);
+        return (List<Report>) reportDao.getEntities("from Report o where o.type = ? order by o.decode", Report.TYPE0);
     }
 
     public Report saveReport(Report report) {
@@ -35,19 +36,20 @@ public class ReportServiceImpl implements ReportService {
             reportDao.create(report);
         }
         else {
-            reportDao.update(report);
+        	reportDao.refreshReport(report);
         }
         return report;
     }
     
     public Report delete(Long id) {
-        Report report = getReport(id);
-        List<Report> list = reportDao.getChildrenById(id, Report.OPERATION_DELETE); // 一并删除子节点
-        for(Report entity : list) {
-            entity.setDeleted(ParamConstants.TRUE); // 打上删除标记，放入回收站。
-        }
-        reportDao.flush();
-        return report;
+    	 Report report = getReport(id);
+         List<Report> list1 = reportDao.getChildrenById(id, Report.OPERATION_DELETE); // 一并删除子节点
+         List<Report> list2 = reportDao.getChildrenById(id);
+         
+         if(list1.size() < list2.size()) {
+         	throw new BusinessException("你的权限不足，无法删除整个枝。");
+         }
+         return reportDao.deleteReport(report);
     }
 
     public void startOrStop(Long reportId, Integer disabled) {

@@ -44,6 +44,20 @@ CACHE_MAIN_TREE = "_tree_";
 
 DEFAULT_NEW_ID = "-10";
 
+DEFAULT_IDENTIFIER = "com.jinhe.tss.um.sso.UMPasswordIdentifier";
+
+function showOnlineUser() {
+	Ajax({
+		url : AUTH_PATH + "user/online",
+		method : "GET",
+		headers : {"appCode": FROMEWORK_CODE, "anonymous": "true"},
+		onresult : function() { 
+			var size  = this.getNodeValue("size");
+			var users = this.getNodeValue("users");
+			alert("当前共有" + size + "个用户在线：" + users);
+		}
+	});
+}
 
 
 /* 用户信息初始化  */
@@ -166,6 +180,20 @@ function initListContainerResize() {
 	var listContainer = $$("listContainer");
 	// Element.attachRowResize(listContainer);
 }
+
+/* 事件绑定初始化 */
+function initEvents() {
+	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
+	Event.attachEvent($$("treeTitle"),     "click", onClickTreeTitle);
+
+	Focus.register( $$("treeTitle").firstChild );
+
+	if($$("openLeftBarIcon")) {
+		onClickPaletteBt();
+	}
+
+	logoutOnClose(); // 关闭页面自动注销
+}
  
 /* 点击树刷新按钮 */
 function onClickTreeBtRefresh() {
@@ -174,12 +202,17 @@ function onClickTreeBtRefresh() {
 
 /* 点击左栏控制按钮 */
 function onClickPaletteBt() {
-	var block = Blocks.getBlock("palette");
-	if( block ) {
-		block.switchTo();
-	}
+	$$("openLeftBarIcon").style.display = "none";
 	
-	$$("paletteBt").className = block.visible ? "icon" : "iconClosed";
+	$$("closeLeftBarIcon").onclick = function() {
+		$$("palette").style.display = "none";
+		$$("openLeftBarIcon").style.display = "";
+	}	
+
+	$$("openLeftBarIcon").onclick = function() {
+		$$("palette").style.display = "";
+		$$("openLeftBarIcon").style.display = "none";
+	}
 }
 
 /* 点击树标题  */
@@ -363,16 +396,6 @@ function initNaviBar(curId, relativePath) {
 	});
 }
 
-/* 事件绑定初始化 */
-function initEvents() {
-	Event.attachEvent($$("treeBtRefresh"), "click", onClickTreeBtRefresh);
-	Event.attachEvent($$("treeTitle"),     "click", onClickTreeTitle);
-
-	Focus.register( $$("treeTitle").firstChild );
-
-	logoutOnClose(); // 关闭页面自动注销
-}
-
 /* 创建导入Div */
 function createImportDiv(remark, checkFileWrong, importUrl) {
 	var importDiv = $$("importDiv");
@@ -427,10 +450,12 @@ function createImportDiv(remark, checkFileWrong, importUrl) {
  /* 创建导出用iframe */
 function createExportFrame() {
 	var frameName = "exportFrame";
-	var frameObj = $$(frameName);
-	if( frameObj == null ) {
-		frameObj = document.createElement("<iframe name='" + frameName + "' id='" + frameName + "' src='about:blank' style='display:none'></iframe>");
-		document.body.appendChild(frameObj);
+	if( $$(frameName) == null ) {
+		var exportDiv = document.createElement("div"); 
+		exportDiv.style.display = "none";
+		document.body.appendChild(exportDiv);
+
+		exportDiv.innerHTML = "<iframe name='" + frameName + "' id='" + frameName + "' src='about:blank' style='display:none'></iframe>";
 	}
 	return frameName;
 }
@@ -441,82 +466,75 @@ function createExportFrame() {
  *	参数：	string:info     简要信息
 			string:detail   详细信息
  */
-function Alert(info, detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
+function myAlert(info, detail) {
+	if(info == null) {
+		return;
+	}	
 
-	var maxWords = 100;
-	var params = {};
-	params.type = "alert";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords < info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
+	var messageBox = $$("X-messageBox");
+	if(messageBox == null) {
+		var boxHtml = [];
+		boxHtml[boxHtml.length] = "  <table class='full' style='table-layout:fixed'>";
+		boxHtml[boxHtml.length] = "    <tr>";
+		boxHtml[boxHtml.length] = "      <td valign='top' style='position:relative'>";
+		boxHtml[boxHtml.length] = "        <div id='infoBox'></div>";
+		boxHtml[boxHtml.length] = "        <textarea id='detailBox' class='t' readOnly></textarea>";
+		boxHtml[boxHtml.length] = "      </td>";
+		boxHtml[boxHtml.length] = "    </tr>";
+		boxHtml[boxHtml.length] = "    <tr>";
+		boxHtml[boxHtml.length] = "      <td align='center' height='30' class='t'>";
+		boxHtml[boxHtml.length] = "    		<input type='button' id='bt_ok' value='确 定' class='btStrong' onclick='closeMessage()'>";
+		boxHtml[boxHtml.length] = "      </td>";
+		boxHtml[boxHtml.length] = "    </tr>";
+		boxHtml[boxHtml.length] = "  </table>";
+
+		messageBox = document.createElement("div");    
+		messageBox.id = "X-messageBox";    
+		messageBox.className = "popupBox";
+ 		messageBox.innerHTML = boxHtml.join("");
+		document.body.appendChild(messageBox);
 	}
-	params.title = "";
-	window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:yes;unadorned:yes');
-}
+	messageBox.style.display = "block";
+   
+	var infoBox       = $$("infoBox");
+	var detailBox     = $$("detailBox");
+	var bt_ok         = $$("bt_ok");
 
-/*
- *	重新封装confirm
- *	参数：	string:info             简要信息
-			string:detail           详细信息
- *	返回值：boolean:returnValue     用户选择确定/取消
- */
-function Confirm(info, detail) {
-	info = convertToString(info);
-	detail = convertToString(detail);
+	bt_ok.focus(); 
+	detailBox.style.display = "none";
 
-	var maxWords = 100;
-	var params = {};
-	params.type = "confirm";
-	params.info = info;
-	params.detail = detail;
-	if("" == detail && maxWords<info.length) {
-		params.info = info.substring(0, maxWords) + "...";
-		params.detail = info;        
+	var gif = "icon_alert.gif";
+	infoBox.innerText = info.replace(/[\r\n]/g,"");
+	infoBox.insertAdjacentHTML("afterBegin", "<img src='" + ICON + gif + "' hspace='5' align='left'>");
+
+	if(detail) detail = convertToString(detail);
+	if(detail && detail != "") {
+		detailBox.value = detail;
+		detailBox.style.display = "block";
+
+		messageBox.style.height = "200px";
 	}
-	params.title = "";
-	var returnValue = window.showModalDialog(URL_CORE + '_info.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:yes;unadorned:yes');
-	return returnValue;
-}
 
-/*
- *	重新封装prompt
- *	参数：	string:info             简要信息
-			string:defaultValue     默认值
-			string:title            标题
-			boolean:protect         是否保护
-			number:maxBytes         最大字节数
- *	返回值：string:returnValue      用户输入的文字
- */
-function Prompt(info, defaultValue, title, protect, maxBytes) {
-	info = convertToString(info);
-	defaultValue = convertToString(defaultValue);
-	title = convertToString(title);
+	bt_ok.onclick = closeMessage;
 
-	var params = {};
-	params.info = info;
-	params.defaultValue = defaultValue;
-	params.title = title;
-	params.protect = protect;
-	params.maxBytes = maxBytes;
-	var returnValue = window.showModalDialog(URL_CORE + '_prompt.htm', params, 'dialogwidth:320px; dialogheight:200px; status:yes; help:no;resizable:no;unadorned:yes');
-	return returnValue;
+	Event.attachEvent(document, "keydown", function(eventObj) {
+        if(27 == eventObj.keyCode) { // ESC 退出
+           closeMessage();
+        }
+    });
+
+    function closeMessage() {
+	    messageBox.style.display = "none";
+	}
 }
+ 
+window._alert = window.alert;
+
+window.alert = myAlert;
+
 
 /* 捕获页面js报错 */
-function onError(msg, url, line) {
+window.onerror = function(msg, url, line) {
 	alert(msg, "错误:" + msg + "\r\n行:" + line + "\r\n地址:" + url);
 	event.returnValue = true;
-}
-
-window._alert = window.alert;
-window._confirm = window.confirm;
-window._prompt = window.prompt;
-
-window.alert = Alert;
-window.confirm = Confirm;
-window.prompt = Prompt;
-window.onerror = onError;
+};

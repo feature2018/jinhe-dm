@@ -57,10 +57,15 @@ public class ReportAction extends BaseActionSupport {
         
         XFormEncoder xformEncoder;
         String reportIdValue = request.getParameter("reportId");
-        if( reportIdValue == null ){
+        
+        if( reportIdValue == null) {
             Map<String, Object> map = new HashMap<String, Object>();
             
             String parentIdValue = request.getParameter("parentId"); 
+            if("_rootId".equals(parentIdValue)) {
+            	parentIdValue = null;
+            }
+            
             Long parentId = parentIdValue == null ? Report.DEFAULT_PARENT_ID : EasyUtils.convertObject2Long(parentIdValue);
             map.put("parentId", parentId);
             map.put("type", type);

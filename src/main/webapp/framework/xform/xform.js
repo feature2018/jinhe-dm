@@ -725,7 +725,8 @@ Mode_ComboEdit.prototype.validate = function() {
 	var empty = this.obj.getAttribute("empty");
 	var value = this.obj.value;
 	if(value == "" && empty == "false") {
-		showErrorInfo("[" + this.obj.caption.replace(/\s/g, "") + "] 不允许为空，请选择。", this.obj);
+		var caption = this.obj.caption || this.obj.getAttribute("caption");
+		showErrorInfo("[" + caption.replace(/\s/g, "") + "] 不允许为空，请选择。", this.obj);
 		return false;
 	}
 	return true;
@@ -780,7 +781,7 @@ function validate() {
 	
 	var value = this.obj.value;
 	if(value == "" && empty == "false") {
-		errorInfo = "[" + caption.replace(/\s/g, "") + "] 不允许为空，请选择。";
+		errorInfo = "[" + caption.replace(/\s/g, "") + "] 不允许为空，请输入。";
 	}
 
 	if(this.inputReg && !eval(this.inputReg).test(value)) {

@@ -22,7 +22,7 @@
     <mvc:resources mapping="/images/**" location="/img/"/>  
     <mvc:resources mapping="/css/**"    location="/css/"/>  
 	<mvc:resources mapping="/framework/**" location="/framework/"/>  
-	<mvc:resources mapping="/ichartjs/**" location="/ichartjs/"/>  
+	<mvc:resources mapping="/tools/**" location="/tools/"/>  
 	
 	<mvc:resources mapping="/*.html" location="/"/>  
 	<mvc:resources mapping="/*.htm" location="/"/>  

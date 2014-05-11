@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.jinhe.dm.TxTestSupport;
 import com.jinhe.tss.framework.component.log.LogQueryCondition;
 import com.jinhe.tss.framework.component.log.LogService;
+import com.jinhe.tss.framework.persistence.pagequery.PageInfo;
 import com.jinhe.tss.framework.sso.context.Context;
 
 public class ReportTest extends TxTestSupport {
@@ -74,8 +75,8 @@ public class ReportTest extends TxTestSupport {
         
         LogQueryCondition condition = new LogQueryCondition();
         condition.setOperateTimeFrom(new Date(System.currentTimeMillis() - 1000*3600*3));
-        Object[] logsInfo = logService.getLogsByCondition(condition);
-        List<?> logs = (List<?>)logsInfo[0];
+        PageInfo logsInfo = logService.getLogsByCondition(condition);
+        List<?> logs = logsInfo.getItems();
         for(Object temp : logs) {
             log.debug(temp);
         }

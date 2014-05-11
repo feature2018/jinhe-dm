@@ -255,7 +255,7 @@ var ExtendTree = function(element) {
 		var _extendTable = $$("treeExtendTable");
 
 		// 设置显示节点的table对象的大小
-		_rootBox.style.width  = 200;
+		_rootBox.style.width  = 240;
 
 		var _Rows, _ExtendRows;
 
@@ -446,7 +446,7 @@ function getExtendRow(display, obj) {
  */
 function setCellCheckType (node, optionId, value) {
 	var cellIndex = node.getAttribute(optionId + "-img");
-	if (cellIndex == null) return;
+	if (cellIndex == null || $$(cellIndex) == null) return;
 
 	var checkType = $$(cellIndex).firstChild.firstChild;
     checkType.state = value;

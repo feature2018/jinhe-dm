@@ -20,11 +20,11 @@ URL_SORT_SOURCE    = AUTH_PATH + "rp/sort/";
 URL_COPY_SOURCE    = AUTH_PATH + "rp/copy/";
 URL_MOVE_SOURCE    = AUTH_PATH + "rp/move/";
 
+URL_GET_OPERATION  = AUTH_PATH + "rp/operations/";  // {id}
+
 URL_REPORT_DATA    = NO_AUTH_PATH + "display/";
 URL_REPORT_JSON    = NO_AUTH_PATH + "display/json/";
 URL_REPORT_EXPORT  = NO_AUTH_PATH + "display/export/";
-
-URL_RS_WH_LIST     = "wms/allWhList";
 
 if(IS_TEST) {
 	URL_SOURCE_TREE    = "data/SOURCE_TREE.xml?";
@@ -37,6 +37,8 @@ if(IS_TEST) {
 	URL_COPY_SOURCE    = "data/_success.xml?";
 	URL_MOVE_SOURCE    = "data/_success.xml?";
 
+	URL_GET_OPERATION  = "data/operation.xml?";
+
 	URL_REPORT_DATA    = "data/REPORT_DATA.xml?";
 	URL_REPORT_JSON    = "data/REPORT_JSON.txt?";
 	URL_REPORT_EXPORT  = "data/_success.xml?";
@@ -46,6 +48,10 @@ if(IS_TEST) {
 
 /* 页面初始化 */
 function init() {
+	if( !Public.isChrome() ) {
+		alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
+	}	
+
 	initNaviBar("dm.1");
 	initMenus();
 	initEvents();
@@ -60,7 +66,7 @@ function initMenus() {
 		label:"报表查询",
 		callback:showReport,
 		icon: ICON + "search.gif",
-		visible:function() {return isReport() && !isTreeNodeDisabled();}
+		visible:function() {return isReport() && !isTreeNodeDisabled() && getOperation("1");}
 	}
 	var item10 = {
 		label:"查看",
@@ -68,7 +74,7 @@ function initMenus() {
 			loadReportDetail(false, true);
 		},
 		icon: ICON + "view.gif",
-		visible:function() {return !isTreeRoot()}
+		visible:function() {return !isTreeRoot() && getOperation("1"); }
 	}
 	var item2 = {
 		label:"修改",
@@ -76,7 +82,7 @@ function initMenus() {
 			loadReportDetail(false, false);
 		},
 		icon: ICON + "icon_edit.gif",
-		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled(); }
+		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled() && getOperation("2"); }
 	}
 	var item3 = {
 		label:"新增报表",
@@ -84,7 +90,7 @@ function initMenus() {
 			loadReportDetail(true, false, "1");
 		},
 		icon: ICON + "cms/new_article.gif",
-		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
+		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled() && getOperation("2");}
 	}
 	var item4 = {
 		label:"新增分组",
@@ -92,43 +98,43 @@ function initMenus() {
 			loadReportDetail(true, false, "0");
 		},
 		icon: ICON + "new_folder.gif",
-		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled();}
+		visible:function() {return (isReportGroup() || isTreeRoot()) && !isTreeNodeDisabled() && getOperation("2");}
 	}
 	var item5 = {
 		label:"删除",
 		callback:deleteReport,
 		icon: ICON + "icon_del.gif",
-		visible:function() {return !isTreeRoot();}
+		visible:function() {return !isTreeRoot() && getOperation("3");}
 	}
 	var item6 = {
 		label:"复制到",
 		callback:copyReportTo,
 		icon: ICON + "icon_copy.gif",
-		visible:function() {return isReport();}
+		visible:function() {return isReport() && getOperation("2");}
 	}
 	var item7 = {
 		label:"移动到",
 		callback:moveReport,
 		icon: ICON + "icon_move.gif",
-		visible:function() {return !isTreeRoot();}
+		visible:function() {return !isTreeRoot() && getOperation("2");}
 	}
 	var item8 = {
 		label:"停用",
 		callback:disableReport,
 		icon: ICON + "stop.gif",
-		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled();}
+		visible:function() {return !isTreeRoot() && !isTreeNodeDisabled() && getOperation("4");}
 	}
 	var item9 = {
 		label:"启用",
 		callback:enableReport,
 		icon: ICON + "start.gif",
-		visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
+		visible:function() {return !isTreeRoot() && isTreeNodeDisabled() && getOperation("4");}
 	}
 	var item11 = {
 		label:"测试报表服务JSON",
 		callback:testRestfulReportService,
 		icon: ICON + "other/entity_0.gif",
-		visible:function() {return isReport() && !isTreeNodeDisabled();}
+		visible:function() {return isReport() && !isTreeNodeDisabled() && getOperation("2");}
 	}
 
 	var treeObj = $$("tree");
@@ -136,7 +142,7 @@ function initMenus() {
 	var menu = new Menu();
 	menu.addItem(item1);
 	menu.addSeparator();
-	menu.addItem(item10);
+	// menu.addItem(item10);
 	menu.addItem(item2);
 	menu.addItem(item3);
 	menu.addItem(item4);
@@ -179,17 +185,18 @@ function loadInitData() {
 			Focus.focus($$("treeTitle").firstChild.id);
 		}
 		treeElement.onTreeNodeDoubleClick = function(eventObj) {
-		   if( isReport() ) {
-				showReport();
-			}
-			if( isReportGroup() ) {
-				loadReportDetail(false, false);
-			}
+		        var treeNode = eventObj.treeNode;
+			getTreeOperation(treeNode, function(_operation) {            
+				if( isReport() ) {
+					showReport();
+				}
+				if( isReportGroup() ) {
+					loadReportDetail(false, false);
+				}
+			});
 		}
 		treeElement.onTreeNodeRightClick = function(eventObj) {
-			if($$("tree").contextmenu) {
-				$$("tree").contextmenu.show(eventObj.clientX, eventObj.clientY);                
-			}
+			onTreeNodeRightClick(eventObj, true);
 		}
 		treeElement.onTreeNodeMoved = function(eventObj) {
 			sort(eventObj);
@@ -213,6 +220,8 @@ function loadReportDetail(isCreate, readonly, type) {
 	} else {
 		params["reportId"] = treeID; // 修改					
 	}
+
+	$$("sourceSave").disabled = readonly ? "true" : "";
 
 	Ajax({
 		url : URL_SOURCE_DETAIL + "/" + type,
@@ -340,13 +349,18 @@ function showReportInPointUrl(treeID, displayUri) {
 		url = url + "&id=" + treeID;
 	}
 	else {
-		url = url + "?service=display/json/" + treeID;
+		url = url + "?service=display/json/" + treeID; // 可用于既配置了定制页面，又写了script脚本的report
 	}
 
-	window.open(url);
-	//var chatFrameDiv = $$("chatFrameDiv");
-	//chatFrameDiv.style.display = "";
-	//$$("chatFrame").setAttribute("src", url);
+	// 关闭左栏
+	$$("palette").style.display = "none";
+	$$("openLeftBarIcon").style.display = "";
+ 
+	$$("grid").style.display = "none";
+	$$("chatFrame").style.display = "";
+	$$("chatFrame").style.width = "100%";
+	$$("chatFrame").style.height = "100%";
+	$$("chatFrame").setAttribute("src", url);
 }
 
 function showReport() {
@@ -358,19 +372,12 @@ function showReport() {
 		showReportInPointUrl(treeID, displayUri);
 		return;
 	}
-	
-	var paramConfig = treeNode.getAttribute("param");  // "仓库ID:Number,客户ID:Number"; 	
-	if( paramConfig && paramConfig.length > 0) {
-		if( paramConfig.indexOf("仓库") >= 0 ) {
-			getWarehouseList();
-			return;
-		}
-	}
 
+	var paramConfig = treeNode.getAttribute("param");  // eg: 仓库ID:Number,客户ID:Number 
 	showSearchForm(paramConfig || "");
 }
 
-function showSearchForm(paramConfig, whIds, whNames) {	
+function showSearchForm(paramConfig) {	
 	var columns = [];
 	var layouts = [];
 	var paramArray = paramConfig.split(",");
@@ -402,12 +409,9 @@ function showSearchForm(paramConfig, whIds, whNames) {
 			if(tempArray.length == 3) {
 				var empty = tempArray[2];
 			}
-			if( paramCaption.indexOf("仓库") >= 0) {
-				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='string' editor='comboedit' editorvalue='" + whIds + "' editortext='" + whNames + "' empty='false'/>";	
-			}
-			else {
-				columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "' empty='" +empty+ "'/>";
-			}
+
+			columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "' empty='" +empty+ "'/>";
+
 			layouts[layouts.length] = " <TR>";
 			layouts[layouts.length] = "    <TD width='50'><label binding='" + columnName + "'/></TD>";
 			layouts[layouts.length] = "    <TD><input binding='" + columnName + "' type='text' style='width:250px'/></TD>";
@@ -495,6 +499,9 @@ function searchReport(treeID, download) {
 	p.url = URL_REPORT_DATA + treeID + "/1/" + PAGESIZE;
 	var request = new HttpRequest(p);
 	request.onresult = function() {
+		$$("grid").style.display = "";
+		$$("chatFrame").style.display = "none";
+
 		$G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 		var gridToolBar = $$("gridToolBar");
 
@@ -523,32 +530,6 @@ function searchReport(treeID, download) {
 	}
 	request.send();
 } 
-
-function getWarehouseList() {
-	Ajax({
-		url : URL_RS_WH_LIST,
-		method: "GET",
-		type : "json",
-		ondata : function() { 
-			var result = eval(this.getResponseText());
-			if( result ) {
-				var whIds = "";
-				var whNames = "";
-				for(var i = 0; i < result.length; i++) {
-					if(whIds.length > 0){
-						whIds += "|";
-						whNames += "|";
-					}
-					whIds   += result[i][0];
-					whNames += result[i][1];
-				}
-				
-				var paramConfig = getTreeAttribute("param");
-				showSearchForm(paramConfig, whIds, whNames);
-			}				
-		}
-	});
-}
 
 function testRestfulReportService() {
 	var treeNode = $T("tree").getActiveTreeNode();

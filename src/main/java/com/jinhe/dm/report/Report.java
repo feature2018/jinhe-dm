@@ -1,5 +1,6 @@
 package com.jinhe.dm.report;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private Integer levelNo;// 层次值
     
     private Integer disabled = ParamConstants.FALSE; // 停用/启用标记
-    private Integer deleted  = ParamConstants.FALSE; // 删除标记
     
     public String toString() {
         return "报表【id = " + this.id + ", name = " + this.name + "】";
@@ -121,12 +121,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     }
     public void setDisabled(Integer disabled) {
         this.disabled = disabled;
-    }
-    public Integer getDeleted() {
-        return deleted;
-    }
-    public void setDeleted(Integer deleted) {
-        this.deleted = deleted;
     }
     public String getRemark() {
         return remark;
@@ -196,5 +190,9 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
 
 	public void setDisplayUri(String displayUri) {
 		this.displayUri = displayUri;
+	}
+	
+	public Serializable getPK() {
+		return this.id;
 	}
 }

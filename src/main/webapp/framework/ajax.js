@@ -1,9 +1,3 @@
-
-/* 错误类型 */
-_ERROR_TYPE_OPERATION_EXCEPTION = 0;
-_ERROR_TYPE_KNOWN_EXCEPTION = 1;
-_ERROR_TYPE_UNKNOWN_EXCEPTION = 2;
-
 /* 通讯用XML节点名 */
 _XML_NODE_RESPONSE_ROOT    = "Response";
 _XML_NODE_REQUEST_ROOT     = "Request";
@@ -22,8 +16,8 @@ _HTTP_RESPONSE_DATA_TYPE_EXCEPTION = "exception";
 _HTTP_RESPONSE_DATA_TYPE_SUCCESS = "success";
 _HTTP_RESPONSE_DATA_TYPE_DATA = "data";
 
-/* HTTP超时(1分钟) */
-_HTTP_TIMEOUT = 60*1000;
+/* HTTP超时(3分钟) */
+_HTTP_TIMEOUT = 3*60*1000;
 
 /*
  *  XMLHTTP请求参数对象，负责配置XMLHTTP请求参数
@@ -549,6 +543,11 @@ function Message_Success(param, request) {
  *  request依然还是上一次发送返回异常信息的request，将登陆信息加入后（loginName/pwd等，通过_relogin.htm页面获得），
  *  再一次发送该request请求，从而通过AutoLoginFilter的验证，取回业务数据。  
  *  这样做的好处是，当session过期需要重新登陆时，无需离开当前页面回到登陆页登陆，保证了用户操作的连贯性。
+ * 
+ * param.type： 参考 ErrorMessageEncoder
+ * <li>1－普通业务逻辑错误信息，没有异常发生的
+ * <li>2－有异常发生，同时被系统捕获后添加友好错误消息的
+ * <li>3－其他系统没有预见的异常信息
  */
 function Message_Exception(param, request) {
 	request.ondata();
@@ -560,40 +559,93 @@ function Message_Exception(param, request) {
 	str[str.length] = "description=\"" + param.description + "\"";
 	str[str.length] = "source=\"" + param.source + "\"";
 
-	if(param.type != "0" && request.paramObj.type != "0") {
+	if(param.type != "0" && param.relogin != "1") {
 		alert(param.msg, str.join("\r\n"));
 	}
 
 	request.onexception(param);
 
-	// 初始化默认值
-	if( request.paramObj.relogin != null) {
-		param.relogin = request.paramObj.relogin;
-	}
-	else if( param.relogin == null ) { // 默认不重新登录
-		param.relogin = "0";
-	}
-
+	// 是否需要重新登录
 	if(param.relogin == "1") {
 		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
 
-		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新登录"},"dialogWidth:250px;dialogHeight:150px;resizable:yes");
-		if( loginObj ) {
-			var p = request.paramObj;
-			p.setHeader("loginName", loginObj.loginName);
-			p.setHeader("password",  loginObj.password);
-			p.setHeader("identifier", loginObj.identifier);
+		_alert(param.msg);
 
-			request.send();
-		}
+		relogin(request);
 	}
-	else if(param.relogin == "2" ) { // 单点登录应用跳转，需要输入用户在目标系统中的密码
-		var loginObj = window.showModalDialog(URL_CORE + "../_relogin.htm", {title:"请重新输入密码"},"dialogWidth:250px;dialogHeight:150px;resizable:yes");
-		if( loginObj ) {
-			request.paramObj.setHeader("pwd", loginObj.password);
-			request.send();
-		}
+}
+
+function relogin(request) {
+	var reloginBox = $$("relogin_box");
+	if(reloginBox == null) {
+		var boxHtml = [];
+		boxHtml[boxHtml.length] = "    <form>";
+		boxHtml[boxHtml.length] = "      <h1>重新登录</h1>";
+		boxHtml[boxHtml.length] = "      <span> 用户名：<input type='text' id='loginName' placeholder='请输入您的账号'/> </span>";
+		boxHtml[boxHtml.length] = "      <span> 密&nbsp; 码：<input type='password' id='password' placeholder='请输入您的密码' /> </span>";
+		boxHtml[boxHtml.length] = "      <span class='bottonBox'>";
+		boxHtml[boxHtml.length] = "      	<input type='button' class='btLogin' id='bt_login' value='确 定'/>&nbsp;&nbsp;";
+		boxHtml[boxHtml.length] = "      	<input type='button' id='bt_cancel' value='取 消'/>";
+		boxHtml[boxHtml.length] = "      </span>";
+		boxHtml[boxHtml.length] = "    </form>";
+
+		reloginBox = document.createElement("div");    
+		reloginBox.id = "relogin_box";    
+		reloginBox.className = "popupBox";
+
+ 		reloginBox.innerHTML = boxHtml.join("");
+
+		document.body.appendChild(reloginBox);
 	}
+
+	// 显示登录框
+	reloginBox.style.display = "block";
+	$$("loginName").focus();
+	$$("password").value = ""; // 清空上次输入的密码，以防泄密
+
+	var loginButton = $$("bt_login");
+	var cancelButton = $$("bt_cancel");
+
+	cancelButton.onclick = function() {
+		reloginBox.style.display = "none";
+	}
+	
+	var doLogin = function() {
+		var loginName = $$("loginName").value;
+        var password = $$("password").value;
+        if( "" == loginName ) {
+            _alert("请输入账号");
+            $$("loginName").focus();
+            return;
+        } 
+		else if( "" == password ) {
+            _alert("请输入密码");
+            $$("password").focus();
+            return;
+        }
+
+		var p = request.paramObj;
+		p.setHeader("loginName", loginName);
+		p.setHeader("password",  password);
+		p.setHeader("identifier", DEFAULT_IDENTIFIER);
+
+		request.send();
+
+		reloginBox.style.display = "none";
+	}
+
+	loginButton.onclick = doLogin;
+
+    Event.attachEvent(document, "keydown", function(eventObj) {
+        if(13 == eventObj.keyCode) { // enter
+            event.returnValue = false;
+            $$("bt_login").focus();
+
+            setTimeout(function() {
+                doLogin();
+            }, 10);
+        }
+    });
 }
 
 
@@ -682,9 +734,6 @@ function Ajax() {
 	if(arg.async) {
 		p.async = arg.async;
 	}
-	if(arg.relogin) {
-		p.relogin = arg.relogin;
-	}
 
 	for(var item in arg.headers) {
 		p.setHeader(item, arg.headers[item]);
@@ -714,9 +763,10 @@ function Ajax() {
 	if( arg.onresult ) {
 		request.onresult = arg.onresult;
 	}
+
 	if( arg.onexception == null ) {
 		arg.onexception = function(errorMsg) {
-			// alert(errorMsg.description);
+			// alert(errorMsg.description); // 遇到异常却看不到任何信息，可尝试放开这里的注释
 		};
 	}
 	request.onexception = arg.onexception;

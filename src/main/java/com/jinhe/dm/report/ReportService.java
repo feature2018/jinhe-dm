@@ -14,49 +14,44 @@ public interface ReportService {
     
     @PermissionTag(
     		application = Constants.APPLICATION_CODE,
-	        operation = Report.OPERATION_VIEW, 
-	        resourceType = Report.RESOURCE_TYPE_REPORT
+    		resourceType = Report.RESOURCE_TYPE_REPORT,
+	        operation = Report.OPERATION_VIEW
 	)
     List<Report> getAllReport();
 
     @PermissionTag(
     		application = Constants.APPLICATION_CODE,
-	        operation  = Report.OPERATION_VIEW, 
-	        resourceType = Report.RESOURCE_TYPE_REPORT
+    		resourceType = Report.RESOURCE_TYPE_REPORT,
+	        operation = Report.OPERATION_VIEW
 	)
     List<Report> getAllReportGroups();
 
     @PermissionTag(
     		application = Constants.APPLICATION_CODE,
-            operation = Report.OPERATION_EDIT , 
             resourceType = Report.RESOURCE_TYPE_REPORT,
+            operation = Report.OPERATION_EDIT , 
             filter = PermissionFilter4Create.class)
-    @Logable(operateTable="报表", operateType="新增/更新", operateInfo="新增/更新了：${args[0]?default(\"\")}")
+    @Logable(operateObject="报表",  operateInfo="新增/更新了：${args[0]?default(\"\")}")
     Report saveReport(Report report);
     
-    @Logable(operateTable="报表", operateType="删除", operateInfo="删除了：${returnVal?default(\"\")}")
+    @Logable(operateObject="报表", operateInfo="删除了：${returnVal?default(\"\")}")
     Report delete(Long id);
 
-    @Logable(operateTable="报表", operateType="停用/启用", 
-            operateInfo="<#if args[1]=1>停用<#else>启用</#if>了报表(ID = ${args[0]?default(\"\")}) ")
+    @Logable(operateObject="报表", operateInfo="<#if args[1]=1>停用<#else>启用</#if>了报表(ID = ${args[0]?default(\"\")}) ")
     void startOrStop(Long reportId, Integer disabled);
 
     @PermissionTag(
-    		operation = Report.OPERATION_EDIT , 
+    		application = Constants.APPLICATION_CODE,
             resourceType = Report.RESOURCE_TYPE_REPORT,
+            operation = Report.OPERATION_EDIT, 
             filter = PermissionFilter4Sort.class)
-    @Logable(operateTable="报表", operateType="排序", 
-            operateInfo="(ID: ${args[0]})节点移动到了(ID: ${args[1]})节点<#if args[2]=1>之下<#else>之上</#if>")
+    @Logable(operateObject="报表", operateInfo="(ID: ${args[0]})节点移动到了(ID: ${args[1]})节点<#if args[2]=1>之下<#else>之上</#if>")
     void sort(Long startId, Long targetId, int direction);
 
-    @Logable(operateTable="报表", operateType="复制", 
-            operateInfo="复制(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。"
-        )
+    @Logable(operateObject="报表", operateInfo="复制(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。")
     List<Report> copy(Long reportId, Long groupId);
 
-    @Logable(operateTable="报表", operateType="移动", 
-            operateInfo="移动(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。"
-        )
+    @Logable(operateObject="报表", operateInfo="移动(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。")
     void move(Long reportId, Long groupId);
 
 }

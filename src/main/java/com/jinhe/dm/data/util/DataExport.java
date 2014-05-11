@@ -1,11 +1,16 @@
 package com.jinhe.dm.data.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -15,36 +20,56 @@ import com.jinhe.tss.framework.exception.BusinessException;
 import com.jinhe.tss.util.EasyUtils;
 
 public class DataExport {
-
+ 
     public static void exportCSV(String path, List<Map<String, Object>> data, List<String> fields) {
+    	List<Object[]> list = new ArrayList<Object[]>();
+
+        for (Map<String, Object> row : data) {
+        	list.add( row.values().toArray() );
+        }
+        
+    	exportCSV(path, list, fields);
+    }
+    
+    public static void exportCSV(String path, Collection<Object[]> data, List<String> fields) {
         try {
-        	File parent = new File(path).getParentFile();
-        	if( !parent.exists() ) {
-        		parent.mkdirs();
-        	}
-        	
-            FileWriter fw = new FileWriter(path);
-            fw.write(EasyUtils.list2Str(fields)); // 表头
-            fw.write("\r\n");
+            File parent = new File(path).getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(file), "GBK" );
+            BufferedWriter fw = new BufferedWriter(write);   
+            
+            if(fields != null) {
+            	fw.write(EasyUtils.list2Str(fields)); // 表头
+            }
+            
+            fw.write("\r\n");
+
             int index = 0;
-            for (Map<String, Object> row : data) {
-                fw.write(EasyUtils.list2Str(row.values()));
+            for (Object[] row : data) {
+                fw.write(EasyUtils.list2Str(Arrays.asList(row)));
                 fw.write("\r\n");
-                
-                if( index++ % 10000 == 0 ) {
+
+                if (index++ % 10000 == 0) {
                     fw.flush(); // 每一万行输出一次
                 }
             }
-            
+
             fw.flush();
             fw.close();
-        } 
-        catch (IOException e) {
-            throw new BusinessException("export csv error", e);
+            
+        } catch (IOException e) {
+            throw new BusinessException("export csv error:" + path, e);
         }
     }
-    
+
     /**
      * 使用http请求下载附件。
      * @param sourceFilePath 导出文件路径

@@ -46,15 +46,6 @@
 	padding: 10px 10px 10px 10px;
   }
 
-  #chatFrameDiv {
-    display:none;
-	background-color: #BEC6EE;
-	border:1px solid #416371;
-	width: 90%;    
-	height: 90%;  
-	padding: 10px 10px 10px 10px;
-  }
-
 </style>
 
 </head>
@@ -72,8 +63,9 @@
 	<td class="center">
 	  <!-- 版面内容-->
 	  <table class="full">
+<!-- -->
 		<tr> 
-		  <td height="20"> <!-- 主菜单 -->
+		  <td height="20"> 
 			  <div id="navibar"><div class="loading"></div></div>
 			</td>			
 		</tr>
@@ -87,7 +79,8 @@
 			  <table class=" border full">
 				<tr id="treeTitle" class="bar"> 
 				  <td class="opened">
-					<span class="icon"></span>报表树<span class="button refresh" id="treeBtRefresh" title="刷新"></span></span>
+					<span class="icon"></span>报表树<span class="button refresh" id="treeBtRefresh" title="刷新"></span>
+					<span id="closeLeftBarIcon"></span>
 				  </td>
 				</tr>
 				<tr>
@@ -101,12 +94,14 @@
 				<table class="full border" >
 				  <tr>
 					<td id="gridTitle">
-					  <span class="icon"></span>报表查询结果<span class="buttonBox" id="gridToolBar"></span>
+					  <span id="openLeftBarIcon"></span>
+					  <span class="icon"></span><span class="buttonBox" id="gridToolBar"></span>
 					</td>
 				  </tr>
 				  <tr>
 					<td>
 					   <Grid:Box id="grid" baseurl="../framework/grid/"></Grid:Box>
+					   <iframe id="chatFrame" style="display:none" frameborder="0"></iframe>
 					</td>
 				  </tr>
 				</table>
@@ -135,10 +130,6 @@
 </div>
 
 <iframe name="downloadFrame" style="display:none"></iframe>
-
-<div id="chatFrameDiv">
-	<iframe id="chatFrame"></iframe>
-</div>
 
 </body>
 </html>

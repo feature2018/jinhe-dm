@@ -23,7 +23,7 @@ public class SQLExcutor {
     
     static Logger log = Logger.getLogger(SQLExcutor.class);
     
-    SQLParser parser;
+    public SQLParser parser;
     
     public int count;
     public List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
@@ -86,7 +86,7 @@ public class SQLExcutor {
         		
         		// 各种数据库的分页不一样
         		if(datasource.endsWith("mysql")) {
-        			queryDataSql = sql + " LIMIT " + (fromRow + 1) + ", " + pagesize;
+        			queryDataSql = sql + " LIMIT " + (fromRow) + ", " + pagesize;
         		} 
         		else { // 默认为oracle
         			queryDataSql = "SELECT * FROM " + 
