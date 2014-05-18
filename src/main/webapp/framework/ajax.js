@@ -471,7 +471,8 @@ function HTTP_Response_Parser(responseText) {
 		var hasInformation = false;
 
 		if( informationNode == null) {		
-			this.result.dataType = _HTTP_RESPONSE_DATA_TYPE_EXCEPTION; // 未找到有效节点则认为是异常信息
+			// this.result.dataType = _HTTP_RESPONSE_DATA_TYPE_EXCEPTION; // 未找到有效节点则认为是异常信息
+			this.result.dataType = _HTTP_RESPONSE_DATA_TYPE_DATA; // 未找到 Response 节点，可能直接返回了一段文本；不再认为是异常
 		}
 		else if(informationNode.nodeName == _XML_NODE_RESPONSE_ERROR) { // 只要有Error节点就认为是异常信息
 			this.result.dataType = _HTTP_RESPONSE_DATA_TYPE_EXCEPTION;
@@ -559,7 +560,7 @@ function Message_Exception(param, request) {
 	str[str.length] = "description=\"" + param.description + "\"";
 	str[str.length] = "source=\"" + param.source + "\"";
 
-	if(param.type != "0" && param.relogin != "1") {
+	if( param.msg && param.type != "0" && param.relogin != "1") {
 		alert(param.msg, str.join("\r\n"));
 	}
 

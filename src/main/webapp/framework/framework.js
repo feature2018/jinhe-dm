@@ -78,6 +78,13 @@ function initUserInfo() {
 	});
 }
 
+function showUserInfo() {
+	window.open(NO_AUTH_PATH + 'userInfo.htm', '', 'width=800,height=250');
+}
+function modifyPassword() {
+	window.open(NO_AUTH_PATH + 'password.htm', '', 'width=400,height=200');
+}
+
 function logout() {
 	Ajax({
 		url : URL_CORE + "../logout.in",

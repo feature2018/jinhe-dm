@@ -24,11 +24,11 @@
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="script"/></TD>
-			<TD><textarea binding="script" style="width:95%;height:300"/></TD>
+			<TD><textarea binding="script" style="width:95%;height:270"/></TD>
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="param"/></TD>
-			<TD><textarea binding="param" style="width:95%;height:30"/></TD>
+			<TD><textarea binding="param" style="width:95%;height:60"/></TD>
 		</TR>
 		<TR>
 			<TD width="80"><label binding="datasource"/></TD>
