@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>货量趋势图</title>
+
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script> 
+    <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="../js/highcharts.js"></script>
+    <script src="../js/exporting.js"></script>
+
+    <script type="text/javascript">
+    var inMonth;
+    var searchType;
+
+    Array.prototype.contains = function(obj) {  
+        var i = this.length;  
+        while (i--) {  
+            if (this[i] === obj) {  
+                return true;  
+            }  
+        }  
+        return false;  
+    }  
+
+
+    var serviceUrl = "../../display/json/304";
+    
+    function query() {
+
+    var inDate = $$("inDate").value;      
+    var mst = new Date($$("inDate").value);    
+    inMonth = mst.getMonth()+1;
+    var selectType = $$("selectType").value;
+
+    switch(selectType)
+    {
+    case '4':
+      searchType = '总货量'
+      break;
+    case '3':
+      searchType = '单价'
+      break;
+    case '2':
+      searchType = '总成本'
+      break;
+    default:
+      searchType = '总收入'
+    };
+
+     
+
+        Ajax({
+            url : serviceUrl,
+            method : "POST",
+            params : {"param1": inMonth,"param2": searchType,"param3": inMonth,"param4": searchType,"param5": inMonth,"param6": searchType,"param7": inMonth,"param8": searchType},
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var data = eval(this.getResponseText());
+                show(data);
+            }
+        });   
+    }
+
+    function show(originData) {
+        var subs = [];
+        var detailsList = [];
+        var labels = [];
+        var maxdata = 0;
+        var bigdata = 0;
+        var factFee;
+        var budget;
+        
+        for(var i = 0; i < originData.length; i++) {
+            var sub = originData[i]["科目一"];
+            if( !subs.contains(sub) ) {
+                subs.push(sub);
+            }
+
+            var details = originData[i]["科目二"];
+            if( !detailsList.contains(details) ){
+                detailsList.push(details);
+            }
+
+            var label = originData[i]["省份"];
+            if( !labels.contains(label) ){
+                labels.push(label);
+            }            
+        }
+
+        var dataMap = {};
+        var dataMap2 = {};
+
+
+
+        var showDay =  [];
+        for(var i = 0; i < originData.length; i++) {
+            var fee = originData[i]["金额"];
+            var details   = originData[i]["科目二"];
+            var sub   = originData[i]["科目一"];
+            var label = originData[i]["省份"];
+
+            if(dataMap[details] == null) {
+                 dataMap[details] = [];
+            }
+
+            if(dataMap2[details] == null) {
+                 dataMap2[details] = [];
+            } 
+
+            bigdata = Math.max(factFee,budget);
+
+            dataMap[details].push(fee);
+            dataMap2[details].push(sub);
+            
+        };
+
+
+
+            
+        if (maxdata<bigdata) {
+            maxdata=bigdata
+        }
+
+        if (maxdata<10) {
+            scaledata=Math.ceil(maxdata);
+        };
+
+        if (maxdata<100 && maxdata>=10) {
+            scaledata=Math.ceil(maxdata/10) * 10;
+        };
+
+        if (maxdata<1000 && maxdata>=100) {
+            scaledata=Math.ceil(maxdata/100) * 100;
+        };
+
+        if (maxdata<10000 && maxdata>=1000) {
+            scaledata=Math.ceil(maxdata/1000) * 1000;
+        };
+
+        if (maxdata<100000 && maxdata>=10000) {
+            scaledata=Math.ceil(maxdata/10000) * 10000;
+        };
+
+        if (maxdata<1000000 && maxdata>=100000) {
+            scaledata=Math.ceil(maxdata/100000) * 100000;
+        };
+
+        if (maxdata<10000000 && maxdata>=1000000) {
+            scaledata=Math.ceil(maxdata/1000000) * 1000000;
+        };
+
+        if (maxdata<100000000 && maxdata>=10000000) {
+            scaledata=Math.ceil(maxdata/10000000) * 10000000;
+        };
+
+        
+        var data = [];
+        for(var details in dataMap) {
+            var temp = {};
+            temp.name = details;
+            temp.data = dataMap[details];
+            temp.stack = dataMap2[details].pop();
+            data.push(temp);
+        }
+
+                
+$(function () {
+    $('#container').highcharts({
+
+        chart: {
+            type: 'column'
+        },
+
+        title: {
+            text: '合计类财务指标'
+        },
+
+        xAxis: {
+            categories: labels
+        },
+
+        yAxis: {
+            allowDecimals: false,
+            min: -maxdata,
+            max: maxdata,
+                labels: {
+                    formatter: function(){
+                        return (this.value );
+                    }
+                },
+            title: {
+                text: '总部分摊成本为：'
+            }
+        },
+
+        tooltip: {
+            formatter: function() {
+                return '<b>'+ this.x +'</b><br/>'+
+                    this.series.name +': '+ this.y +'<br/>';
+            }
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+
+        credits:{                   //右边下标HighCharts.com去除  
+            enabled:false  
+        }, 
+
+        exporting: {
+            enabled: false
+        },
+
+        series: [ {
+            name: '预计毛利',
+            data: [-30, -30, -40,- 40,- 30],
+            stack: '预计'
+        }, {
+            name: '实际毛利',
+            data: [-30, -40, -40, -20, -50],
+            stack: '实际'
+        }]
+    });
+});                 
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+    <form method="get" target='hiddenFrame'>
+        选择日期(直接选择所在月任何日期即可查询对应月份数据): <input type="date" id="inDate"/>&nbsp;
+        统计方式: <select id="selectType">
+            <option value="1" selected>总收入</option>
+            <option value="2">总成本</option>
+            <option value="3">单价</option>
+            <option value="4">总货量</option>
+        </select>&nbsp;
+    
+        <input type="submit" onclick="query()" value="查询"/>
+    </form>
+    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    
+    <div id='container'></div>
+
+</body>
+</html>

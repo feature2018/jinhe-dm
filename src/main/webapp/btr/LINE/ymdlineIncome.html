@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>中转费趋势图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+
+	var serviceUrl;
+	
+	function query() {
+		var optionObj = document.getElementById('dataType');
+		if (optionObj.value==1) {
+			serviceUrl = "../../display/json/227";
+		}
+		if (optionObj.value==2) {
+			serviceUrl = "../../display/json/231";
+		}
+		if (optionObj.value==3) {
+			serviceUrl = "../../display/json/232";
+		}
+
+
+		var fromDate = $$("fromDate").value;
+		var toDate = $$("toDate").value;
+		var whichProv = $$("whichProv").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate,"param3": whichProv},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+				/*if( result == null ) {	 
+					return ;
+				}*/
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var total = 0;
+		var dataW = [];
+		var dataDay = [];
+		var showDay = [];
+
+		var maxdata = 0;
+		var maxDay = 0;
+		var scaledata = 0;
+		var spaceData = 0;
+
+		for(var i = 0; i < originData.length; i++) {
+			var fee = Math.round(originData[i]["金额"]);
+			var dateIn = originData[i]["日期"];
+			if (maxdata<fee) {
+				maxdata = fee;
+				maxDay = dateIn
+			}
+			scaledata=Math.ceil(maxdata/10)*10;
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = dateIn;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			total += fee;
+			dataW[i] = fee;
+			dataDay[i] = dateIn;
+		}
+
+		spaceData=scaledata/5;
+				
+		$(function() {
+		    //创建数据
+		    var data = [{
+		        name: '中转费',
+		        value: dataW,
+		        color: '#01acb6',
+		        line_width: 2
+		    }];
+		    //创建x轴标签文本
+		    var labels = showDay;
+		    var labelsxy = dataDay;
+		    var chart = new iChart.Area2D({
+		        render: 'canvasDiv',
+		        data: data,
+		        title: {
+		            text: '百世快运中转费情况',
+		            color: '#eff4f8',
+		            background_color: '#800000',
+		            height: 40,
+		            border: {
+		                enable: true,
+		                width: [0, 0, 4, 0],
+		                //只显示下边框
+		                color: '800000'
+		            }
+		        },
+		        subtitle: {
+		            text: '  ',
+		            //利用副标题设置单位信息
+		            fontsize: 14,
+		            color: '#eff4f8',
+		            textAlign: 'left',
+		            padding: '0 40',
+		            height: 20
+		        },
+		        footnote: {
+		            text: '百世快运中转费情况',
+		            color: '#708794',
+		            padding: '0 20',
+		            background_color: '#800000',
+		            height: 50,
+		            border: {
+		                enable: true,
+		                width: [3, 0, 0, 0],
+		                //只显示上边框
+		                color: '#800000'
+		            }
+		        },
+		        padding: '5 1',
+		        //设置padding,以便title能占满x轴
+		        sub_option: {
+		            label: false,
+		            hollow_inside: false,
+		            //设置一个点的亮色在外环的效果
+		            point_size: 10
+		        },
+		        tip: {
+		            enable: true,
+		            listeners: {
+		                //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+		                parseText: function(tip, name, value, text, i) {
+		                    return labelsxy[i] + "中转费:<span style='color:red'>" + value + "</span>元";
+		                }
+		            }
+		        },
+		        width: 1050,
+		        height: 550,
+		        background_color: '#800000',  //#228B22
+		        gradient: true,
+		        shadow: true,
+		        shadow_blur: 2,
+		        shadow_color: '#800000',
+		        shadow_offsetx: 0,
+		        shadow_offsety: 0,
+		        gradient_mode: 'LinearGradientDownUp',
+		        //设置一个从下到上的渐变背景
+		        border: {
+		            radius: 5
+		        },
+		        coordinate: {
+		            width: 1900,
+		            height: 840,
+		            grid_color: '#228B22',
+		            background_color: null,
+		            //设置坐标系为透明背景
+		            scale: [{
+		                position: 'left',
+		                label: {
+		                    color: '#eff4f8',
+		                    fontsize: 14,
+		                    fontweight: 600
+		                },
+		                start_scale: 0,
+		                end_scale: scaledata,
+		                scale_space: spaceData
+		            },
+		            {
+		                position: 'bottom',
+		                label: {
+		                    color: '#506673',
+		                    fontweight: 600
+		                },
+		                labels: labels
+		            }]
+		        }
+		    });
+		    chart.draw();
+		});
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+所属省份：<select id="whichProv">
+            <option>北京分公司</option>
+            <option>江苏分公司</option>
+            <option>广东分公司</option>
+            <option>浙江分公司</option>
+            <option>上海分公司</option>
+            <option>河北分公司</option>
+            <option>天津分公司</option>
+            <option>安徽分公司</option>
+            <option>福建分公司</option>
+            <option>云南分公司</option>
+        </select>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+		统计方式: <select id="dataType">
+			<option value="1" selected>按天</option>
+			<option value="2">按周</option>
+			<option value="3">按月</option>
+		</select>&nbsp;
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

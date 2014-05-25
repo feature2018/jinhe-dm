@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>货量趋势图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl;
+	var whichday;
+	var toDate;
+	var fromDate;
+	var inYear;
+	var attention;
+	
+	Date.prototype.getWeekOfYear = function(weekStart) { // weekStart：每周开始于周几：周日：0，周一：1，周二：2 ...，默认为周日
+		weekStart = (weekStart || 0) - 0;
+		if(isNaN(weekStart) || weekStart > 6)
+			weekStart = 0;	
+
+		var year = this.getFullYear();
+		var firstDay = new Date(year, 0, 1);
+		var firstWeekDays = 7 - firstDay.getDay() + weekStart;
+		var dayOfYear = (((new Date(year, this.getMonth(), this.getDate())) - firstDay) / (24 * 3600 * 1000)) + 1;
+		return Math.ceil((dayOfYear - firstWeekDays) / 7) + 1;
+	}
+
+	function query() {
+		var optionObj = document.getElementById('dataType');
+		if (optionObj.value==1) {
+			serviceUrl = "../../display/json/242";
+			fromDate = $$("fromDate").value;
+			toDate = $$("toDate").value;
+			var myDate = new Date(fromDate);
+            inYear = myDate.getFullYear();
+            attention = inYear + '年日汇总';
+		}
+		if (optionObj.value==2) {
+			serviceUrl = "../../display/json/243";
+			var dst = new Date($$("fromDate").value);
+			var det = new Date($$("toDate").value);
+			fromDate = dst.getWeekOfYear();
+			toDate = det.getWeekOfYear();
+			inYear = dst.getFullYear(); 
+			attention = '横坐标为' + inYear +'年第' + fromDate + '周--第' + toDate +'全周数据';
+		}
+		if (optionObj.value==3) {
+			serviceUrl = "../../display/json/244";
+			var mst = new Date($$("fromDate").value);
+			var met = new Date($$("toDate").value);
+			fromDate = mst.getMonth()+1;
+			toDate = met.getMonth()+1;
+			inYear = mst.getFullYear();
+			attention = '横坐标为' + inYear +'年第' + fromDate + '月--第' + toDate +'全月数据';
+		}
+
+		whichday = $$("whichday").value;
+		
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": inYear, "param2": fromDate, "param3": toDate, "param4": whichday},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+				/*if( result == null ) {	 
+					return ;
+				}*/
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var totalIn = 0;
+		var totalOut = 0;
+		var inScanList = [];
+		var outScanList = [];
+		var dayList = [];
+		var labels = [];
+		var maxdataIn = 0;
+		var maxoutScanListut = 0;
+		var maxdayIn = 0;
+		var maxdayOut = 0;
+		
+		var spaceData = 0;
+		var maxw = 0;
+		var showDay = [];
+		for(var i = 0; i < originData.length; i++) {
+			var inScan = Math.round(originData[i]["入网扫描"] * 1000 )/10;
+			var outScan =Math.round( originData[i]["出网扫描"] * 1000 )/10;
+			var day = originData[i]["日期"];
+			
+			var scaledata = 100;
+			
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = day;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			totalIn += inScan;
+			totalOut += outScan;
+			inScanList[i] = inScan;
+			outScanList[i] = outScan;
+			dayList[i] = day;
+		}
+
+		spaceData=scaledata/5;
+				
+		$(function() {
+		    var data = [{
+		        name: '入网扫描',
+		        value: inScanList,
+		        color: '#3F5666',
+		        line_width: 1
+		    },
+		    {
+		        name: '出网扫描',
+		        value: outScanList,
+		        color: '#EA2445',
+		        line_width: 2
+		    }];
+		    var labels = dayList;
+		    var chart = new iChart.Area2D({
+		        render: 'canvasDiv',
+		        data: data,
+		        title: whichday + '中心间到发件扫描率走势曲线，' + attention,
+		        width: 1050,
+		        height: 550,
+		        legend: {
+		            enable: true,
+		            row: 1,
+		            //设置在一行上显示，与column配合使用
+		            column: 'max',
+		            valign: 'top',
+		            background_color: null,
+		            //设置透明背景
+		            offsetx: -30,
+		            //设置x轴偏移，满足位置需要
+		            border: false
+		        },
+		        tip: {
+		            enable: true,
+		            listeners: {
+		                //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+		                parseText: function(tip, name, value, text, i) {
+		                    return labels[i] + ":<br/>" + name + ":" + value + "%";
+		                }
+		            }
+		        },
+		        crosshair: {
+		            enable: true,
+		            line_color: '#2F3440',
+		            line_width: 2
+		        },
+		        sub_option: {
+		            label: false,
+		            point_size: 5
+		        },
+		        background_color: '#F8CA4D',
+		        coordinate: {
+		            axis: {
+		                width: [0, 0, 2, 0]
+		            },
+		            background_color: '#F8CA4D',
+		            height: '90%',
+		            scale: [{
+		                position: 'left',
+		                scale_space: spaceData,
+		                scale_enable: false,
+		                //禁用小横线
+		                listeners: {
+		                    parseText: function(t, x, y) {
+		                        return {
+		                            text: t + "%"
+		                        }
+		                    }
+		                }
+		            },
+		            {
+		                position: 'bottom',
+		                start_scale: 1,
+		                end_scale: scaledata,
+		                parseText: function(t, x, y) {
+		                    return {
+		                        textY: y + 10
+		                    }
+		                },
+		                labels: showDay
+		            }]
+		        }
+		    });
+		    chart.draw();
+		});
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		分拨从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+		分拨(城市名): <input type="text" id="whichday"/>&nbsp;
+		统计方式: <select id="dataType">
+			<option value="1" selected>按天</option>
+			<option value="2">按周</option>
+			<option value="3">按月</option>
+		</select>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

@@ -12,10 +12,6 @@ $$ = function(id) {
 	return document.getElementById(id);
 }
 
-$ = function(id) {
-	return document.getElementById(id);
-}
-
 var bind = function(object, fun) {
 	return function() {
 		return fun.apply(object, arguments);
@@ -337,22 +333,18 @@ Query.get = function(name, decode) {
 	return str;
 }
 
-Query.set = function(name, value) {
-	this.items[name] = value;
-}
-
 Query.parse = function(queryString) {
 	var params = queryString.split("&");
 	for(var i=0; i < params.length; i++) {
 		var param = params[i];
 		var name  = param.split("=")[0];
 		var value = param.split("=")[1];
-		this.set(name, value);
+		this.items[name] = value;
 	}
 }
 
-Query.init = function() {
-	var queryString = window.location.search.substring(1);
+Query.init = function(queryString) {
+	queryString = queryString || window.location.search.substring(1);
 	this.parse(queryString);
 }
 
@@ -432,8 +424,12 @@ String.prototype.revertCDATA = function(){
  */
 String.prototype.trim = function(trimStr){
 	var str = this;
-	if( 0 == str.indexOf(trimStr) ){
+
+	if( trimStr && str.indexOf(trimStr) == 0 ){
 		str = str.substring(trimStr.length);
+	}
+	else {
+		str = str.replace(/^\s+|\s+$/g, '');
 	}
 	return str;
 }
@@ -1191,7 +1187,7 @@ Event.cancelBubble = function(eventObj) {
 			function:listener       回调方法                
  */
 Event.attachEvent = function(srcElement, eventName, listener) {
-	if(null == srcElement || null == eventName || null == listener) {
+	if(null == eventName || null == listener) {
 		return alert("需要的参数为空，请检查");
 	}
 
@@ -1310,6 +1306,8 @@ function getXmlDOM() {
     } 
 	return xmlDom;
 }
+
+var EMPTY_XML_DOM = getXmlDOM();
 
 function loadXmlDOM(url) {
 	var xmlDom;
@@ -1745,18 +1743,19 @@ Reminder.cancel = function() {
 Reminder.restore = function() {
 	this.flag = true;
 }
- 
-Event.attachEvent(window, "beforeunload", function() {
-	if(Reminder.getCount() > 0) {            
-		event.returnValue = "当前有 <" + count + "> 项修改未保存，您确定要离开吗？";
+
+window.onbeforeunload = function() {
+	var count = Reminder.getCount();
+	if(count > 0) {            
+		return "当前有 <" + count + "> 项修改未保存，您确定要离开吗？";
 	}
-});
+}
 
 /* 给xform等添加离开提醒 */
 function attachReminder(id, xform) {
 	if( xform ) {
-		xform.ondatachange = function() {
-			Reminder.add(id); // 数据有变化时才添加离开提醒
+		xform.element.ondatachange = function(eventObj) {
+			Reminder.add(eventObj.id); // 数据有变化时才添加离开提醒
 		}
 	}
 	else {

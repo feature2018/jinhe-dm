@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>306</title>
+
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script> 
+    <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="../js/highcharts.js"></script>
+    <script src="../js/exporting.js"></script>
+
+    <script type="text/javascript">
+    var inMonth;
+    var searchType;
+    var showType;
+
+    Array.prototype.contains = function(obj) {  
+        var i = this.length;  
+        while (i--) {  
+            if (this[i] === obj) {  
+                return true;  
+            }  
+        }  
+        return false;  
+    }  
+
+
+    var serviceUrl = "../../display/json/306";
+    
+    function query() {
+
+    var inDate = $$("inDate").value;      
+    var mst = new Date($$("inDate").value);    
+    inMonth = mst.getMonth()+1;
+    var selectType = $$("selectType").value;
+
+    switch(selectType)
+    {
+    case '4':
+      searchType = '毛率类'
+      showType = -1 
+      break;
+    case '3':
+      searchType = '利类'
+      showType = -1
+      break;
+    case '2':
+      searchType = '营业外收入支出'
+      showType = 1
+      break;
+    default:
+      searchType = '营业内收入成本费用'
+      showType = 1
+    };
+
+     
+
+        Ajax({
+            url : serviceUrl,
+            method : "POST",
+            params : {"param1": searchType,"param2": inMonth,"param3": searchType,"param4": inMonth},
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var data = eval(this.getResponseText());
+                show(data);
+            }
+        });   
+    }
+
+    function show(originData) {
+        var stacks = [];
+        var nameeList = [];
+        var labels = [];
+        var maxdata = 0;
+        var bigdata = 0;
+
+
+        for(var i = 0; i < originData.length; i++) {
+            var stack = originData[i]["stack"];
+            if( !stacks.contains(stack) ) {
+                stacks.push(stack);
+            }
+
+            var namee = originData[i]["namee"];
+            if( !nameeList.contains(namee) ){
+                nameeList.push(namee);
+            }
+
+            var label = originData[i]["pro"];
+            if( !labels.contains(label) ){
+                labels.push(label);
+            }            
+        }
+
+        var dataMap = {};
+        var dataMap2 = {};
+
+
+
+        var showDay =  [];
+        for(var i = 0; i < originData.length; i++) {
+            var fee = originData[i]["fee"];
+            var namee   = originData[i]["namee"];
+            var stack   = originData[i]["stack"];
+            var label = originData[i]["pro"];
+
+
+            if(dataMap[namee] == null) {
+                 dataMap[namee] = [];
+            }
+
+            if(dataMap2[namee] == null) {
+                 dataMap2[namee] = [];
+            } 
+
+            bigdata = Math.max(bigdata,Math.abs(fee));
+
+            dataMap[namee].push(fee);
+            dataMap2[namee].push(stack);
+            
+        };
+        
+        maxdata = bigdata; 
+
+        if (maxdata<10) {
+            scaledata=Math.ceil(maxdata);
+        };
+
+        if (maxdata<100 && maxdata>=10) {
+            scaledata=Math.ceil(maxdata/10) * 10;
+        };
+
+        if (maxdata<1000 && maxdata>=100) {
+            scaledata=Math.ceil(maxdata/100) * 100;
+        };
+
+        if (maxdata<10000 && maxdata>=1000) {
+            scaledata=Math.ceil(maxdata/1000) * 1000;
+        };
+
+        if (maxdata<100000 && maxdata>=10000) {
+            scaledata=Math.ceil(maxdata/10000) * 10000;
+        };
+
+        if (maxdata<1000000 && maxdata>=100000) {
+            scaledata=Math.ceil(maxdata/100000) * 100000;
+        };
+
+        if (maxdata<10000000 && maxdata>=1000000) {
+            scaledata=Math.ceil(maxdata/1000000) * 1000000;
+        };
+
+        if (maxdata<100000000 && maxdata>=10000000) {
+            scaledata=Math.ceil(maxdata/10000000) * 10000000;
+        };
+
+        
+        var data = [];
+        for(var namee in dataMap) {
+            var temp = {};
+            temp.name = namee;
+            temp.data = dataMap[namee];
+            temp.stack = dataMap2[namee].pop();
+            data.push(temp);
+        }
+
+                
+$(function () {
+    $('#container').highcharts({
+
+        chart: {
+            height: 550,            
+            type: 'column'
+            
+
+        },
+
+        title: {
+            text: '合计类财务指标，总部分摊成本未计入到各个分公司，与营业利润一致，故舍去展示'
+        },
+
+        xAxis: {
+            categories: labels
+        },
+
+        yAxis: {
+            allowDecimals: false,
+            min: -maxdata,
+            max: maxdata,
+                labels: {
+                    formatter: function(){
+                        return (showType * Math.abs(this.value) );
+                    }
+                },
+            title: {
+                text: '云南的毛利是正数，请以柱颜色为准'
+            }
+        },
+
+        tooltip: {
+            formatter: function() {
+                return '<b>'+ this.x +'</b><br/>'+
+                    this.series.name +': '+  showType * Math.abs(this.y) +'<br/>';
+            }
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal',               
+                //groupPadding: 0.1,
+                pointWidth: 25
+            }
+        },
+
+
+        credits:{                   //右边下标HighCharts.com去除  
+            enabled:false  
+        }, 
+
+        exporting: {
+            enabled: false
+        },
+
+        series: data
+    });
+});                 
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+    <form method="get" target='hiddenFrame'>
+        选择日期(直接选择所在月任何日期即可查询对应月份数据): <input type="date" id="inDate"/>&nbsp;
+        统计方式: <select id="selectType">
+            <option value="1" selected>按营业内类收入，成本，费用查看</option>
+            <option value="2">按营业外类收入，支出查看</option>
+            <option value="3">按毛利，营业利润，净利润</option>
+            <option value="4">按毛利率查看</option>
+        </select>&nbsp;
+    
+        <input type="submit" onclick="query()" value="查询"/>
+    </form>
+    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    
+    <div id='container' ></div>
+
+</body>
+</html>

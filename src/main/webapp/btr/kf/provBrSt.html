@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>柱状图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl = Query.get("service") || "../../display/json/214";
+	
+	function query() {
+		var selectedDate = $$("selectedDate").value;
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": selectedDate,"param2": selectedDate}, 
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var total = 0;
+		var datar = [];
+		var maxdata=0;
+		var scaledata=0;
+		var color=['#3883bd','#0000FF','#330033','#663333','#FF6633','#993333','#66FF00','#FF0066','#33FFFF','#FF0000','#009999','#FFCC00','#CC3300','#9999CC','#CC9999','#FFCC66'];		
+		for(var i = 0; i < originData.length; i++) {
+			var brst = originData[i]["破少数"];
+			var province = originData[i]["分公司"];
+			if (maxdata<brst[i]) {
+				maxdata=brst[i]
+			}
+			scaledata=Math.round(maxdata/10000) * 10000 + 5000;
+
+			total += brst;
+			datar[i] = {name: province, value: brst, color:color[i] };
+		}
+				
+	$(function(){
+var data = datar;
+var chart = new iChart.Pie2D({
+render : 'canvasDiv',
+data: data,
+title : {
+text : '问题件破损短少类型各省份占比',
+color : '#3e576f'
+},
+footnote : {
+text : '重复问题件类型不予重复计算',
+color : '#486c8f',
+fontsize : 11,
+padding : '0 38'
+},
+sub_option : {
+label : {
+background_color:null,
+sign:false,//设置禁用label的小图标
+padding:'0 4',
+border:{
+enable:false,
+color:'#666666'
+},
+fontsize:11,
+fontweight:600,
+color : '#4572a7'
+},
+border : {
+width : 2,
+color : '#ffffff'
+}
+},
+shadow : true,
+shadow_blur : 6,
+shadow_color : '#aaaaaa',
+shadow_offsetx : 0,
+shadow_offsety : 0,
+background_color:'#fefefe',
+offsetx:-60,//设置向x轴负方向偏移位置60px
+offset_angle:-120,//逆时针偏移120度
+showpercent:true,
+decimalsnum:2,
+width : 1050,
+height : 550,
+radius:120
+});
+//利用自定义组件构造右侧说明文本
+chart.plugin(new iChart.Custom({
+drawFn:function(){
+//计算位置
+var y = chart.get('originy'),
+w = chart.get('width');
+//在右侧的位置，渲染说明文字
+chart.target.textAlign('start')
+.textBaseline('middle')
+.textFont('600 16px Verdana')
+.fillText('总问题件破损短少数' + total + '票',w-220,y-40,false,'#be5985',false,20);
+}
+}));
+chart.draw();
+}); 
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

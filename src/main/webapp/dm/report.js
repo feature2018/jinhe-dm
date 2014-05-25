@@ -49,7 +49,7 @@ if(IS_TEST) {
 /* 页面初始化 */
 function init() {
 	if( !Public.isChrome() ) {
-		alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
+		_alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
 	}	
 
 	initNaviBar("dm.1");
@@ -185,7 +185,7 @@ function loadInitData() {
 			Focus.focus($$("treeTitle").firstChild.id);
 		}
 		treeElement.onTreeNodeDoubleClick = function(eventObj) {
-		        var treeNode = eventObj.treeNode;
+			var treeNode = eventObj.treeNode;
 			getTreeOperation(treeNode, function(_operation) {            
 				if( isReport() ) {
 					showReport();
@@ -232,8 +232,6 @@ function loadReportDetail(isCreate, readonly, type) {
 			
 			$$("reportForm").editable = readonly ? "false" : "true";
 			var xform = $X("reportForm", sourceInfoNode);
-
-			attachReminder(treeID, xform); // 离开提醒
 		
 			// 设置保存/关闭按钮操作
 			$$("closeReportForm").onclick = function() {
@@ -345,11 +343,10 @@ function moveReport() {
 
 function showReportInPointUrl(treeID, displayUri) {
 	var url = displayUri;
-	if( displayUri.indexOf("?service") > 0 ) {
+	if( displayUri.indexOf("?") < 0 ) {
+		url = url + "?id=" + treeID;
+	} else {
 		url = url + "&id=" + treeID;
-	}
-	else {
-		url = url + "?service=display/json/" + treeID; // 可用于既配置了定制页面，又写了script脚本的report
 	}
 
 	// 关闭左栏
@@ -363,100 +360,45 @@ function showReportInPointUrl(treeID, displayUri) {
 	$$("chatFrame").setAttribute("src", url);
 }
 
+var globalValiable = {}; // 用来存放传递给iframe页面的信息
+
 function showReport() {
 	var treeNode = $T("tree").getActiveTreeNode();
 	var treeID = treeNode.getId();
+	var displayUri  = (treeNode.getAttribute("displayUri") || "").trim().replace('|', '&'); 
+	var paramConfig = (treeNode.getAttribute("param") || "").trim(); 
 
-	var displayUri = treeNode.getAttribute("displayUri"); 
-	if(displayUri && displayUri.length > 0) {
-		showReportInPointUrl(treeID, displayUri);
-		return;
-	}
+	globalValiable.title = treeNode.getName();
 
-	var paramConfig = treeNode.getAttribute("param");  // eg: 仓库ID:Number,客户ID:Number 
-	showSearchForm(paramConfig || "");
-}
-
-function showSearchForm(paramConfig) {	
-	var columns = [];
-	var layouts = [];
-	var paramArray = paramConfig.split(",");
-	for( var i = 0; i < paramArray.length; i++ ) {
-		var param = paramArray[i];
-		var tempArray = param.split(":");
-		if(tempArray.length >= 2) {
-			var columnName = "param" + (i + 1);
-			var paramCaption = tempArray[0];
-			var paramType = tempArray[1];
-
-			var mode = "string";
-			var inputReg = null; 
-			switch(paramType.toLowerCase()) {
-				case "number":
-					mode = "number";
-					inputReg = "/^[0-9]*[1-9][0-9]*$/";
-					break;
-				case "string":
-					mode = "string";
-					break;
-				case "date":
-					mode = "string";
-					inputReg = "/^((?:19|20)\\d\\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/";
-					break;
-			}
-			
-			var empty = "true";
-			if(tempArray.length == 3) {
-				var empty = tempArray[2];
-			}
-
-			columns[columns.length] = "<column name='" +columnName+ "' caption='" +paramCaption+ "' mode='" +mode+ "' inputReg='" +inputReg+ "' empty='" +empty+ "'/>";
-
-			layouts[layouts.length] = " <TR>";
-			layouts[layouts.length] = "    <TD width='50'><label binding='" + columnName + "'/></TD>";
-			layouts[layouts.length] = "    <TD><input binding='" + columnName + "' type='text' style='width:250px'/></TD>";
-			layouts[layouts.length] = " </TR>";
+	// 判断当前报表是否专门配置了展示页面
+	if( displayUri.length > 0 ) {
+		// 如果还配置了参数，则由report页面统一生成查询Form，查询后再打开展示页面里。
+		if(paramConfig.length > 0) {
+			createQueryForm(treeID, paramConfig, function(searchFormXML) {
+				// 根据服务地址取出数据放在全局变量里
+				var url = getServiceUrl(treeID, displayUri);
+				Ajax({
+					url : url,
+					method : "POST",
+					xformNode : searchFormXML,
+					type : "json",
+					waiting : true,
+					ondata : function() { 
+						globalValiable.data = eval(this.getResponseText());
+						
+						// 数据在iframe里展示
+						showReportInPointUrl(treeID, displayUri);
+					}
+				});
+			});
 		}
-	}		
-	layouts[layouts.length] = "        <TR>";
-	layouts[layouts.length] = "          <TD colspan='2' align='center' height='36'>";
-	layouts[layouts.length] = "				<input type='button' class='btStrong' id='btSearch' value='查询'/> - ";
-	layouts[layouts.length] = "				<input type='button' class='btStrongL' id='btDownload' value='查询并导出'/> - ";
-	layouts[layouts.length] = "				<input type='button' class='btWeak' id='btCloseSearchForm' value='关闭'/>";
-	layouts[layouts.length] = "          </TD>";
-	layouts[layouts.length] = "        </TR>";
-	
-	Element.show($$("searchFormDiv"));
-	$$("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
-	
-	var str = [];
-	str[str.length] = "<xform>";
-	str[str.length] = "    <declare>";
-	str[str.length] = columns.join("");
-	str[str.length] = "    </declare>";
-	str[str.length] = "    <layout>";
-	str[str.length] = layouts.join("");
-	str[str.length] = "    </layout>";
-	str[str.length] = "    <data><row/></data>";
-	str[str.length] = "</xform>";
-	
-	var formContent = str.join("");
-	var xmlReader = new XmlReader(formContent);
-	var searchFormXML = new XmlNode(xmlReader.documentElement);
-	var searchForm = $X("searchForm", searchFormXML);
-	Cache.XmlDatas.add("searchForm", searchFormXML);
-	
-	$$("btSearch").onclick = function () {
-		var treeID = getTreeNodeId();
-		searchReport(treeID, false);
-	}
-	$$("btDownload").onclick = function () {
-		var treeID = getTreeNodeId();
-		searchReport(treeID, true);
-	}
-	$$("btCloseSearchForm").onclick = function () {
-		Element.hide($$("searchFormDiv"));
-	}
+		else {
+			showReportInPointUrl(treeID, displayUri); // 直接打开展示页面
+		}
+	} 
+	else {
+		createQueryForm(treeID, paramConfig); // 生成查询Form
+	}	
 }
 
 function searchReport(treeID, download) {		
@@ -464,12 +406,12 @@ function searchReport(treeID, download) {
 	if( xform && !xform.checkForm() ) return;
 
 	Element.hide($$("searchFormDiv"));
-	var searchLogFormXML = Cache.XmlDatas.get("searchForm");
+	var searchFormXML = Cache.XmlDatas.get("searchForm");
 
 	if(download) {
 		var queryString = "?";
-		if( searchLogFormXML ) {
-			var dataNode = searchLogFormXML.selectSingleNode(".//data");
+		if( searchFormXML ) {
+			var dataNode = searchFormXML.selectSingleNode(".//data");
 			if (dataNode) {
 				var nodes = dataNode.selectNodes("./row/*");
 				for(var i = 0; i < nodes.length; i++) {
@@ -489,8 +431,8 @@ function searchReport(treeID, download) {
 	var p = new HttpRequestParams();	
 	p.waiting = true;
 
-	if( searchLogFormXML ) {
-		var dataNode = searchLogFormXML.selectSingleNode(".//data");
+	if( searchFormXML ) {
+		var dataNode = searchFormXML.selectSingleNode(".//data");
 		if (dataNode) {
 			p.setXFormContent(dataNode);
 		}
@@ -531,17 +473,40 @@ function searchReport(treeID, download) {
 	request.send();
 } 
 
+function getServiceUrl(treeID, displayUri) {
+	Query.init(displayUri);
+	var url = Query.get("service") || (URL_REPORT_JSON + treeID); // 优先使用展示地址里指定的服务地址
+	Query.init();
+
+	return url;
+}
+
 function testRestfulReportService() {
 	var treeNode = $T("tree").getActiveTreeNode();
-	var url = URL_REPORT_JSON + treeNode.getId();
-	Ajax({
-		url : url,
-		method : "GET",
-		type : "json",
-		ondata : function() { 
-			alert("调试接口：" + url + "，返回结果：", this.getResponseText());
-		}
-	});
+	var treeID = treeNode.getId();
+	var paramConfig = (treeNode.getAttribute("param") || "").trim(); 
+	var displayUri  = (treeNode.getAttribute("displayUri") || "").trim().replace('|', '&'); 
+	var url = getServiceUrl(treeID, displayUri);
+
+	if(paramConfig.length > 0) {
+		createQueryForm(treeID, paramConfig, sendAjax);
+	} 
+	else {
+		sendAjax();
+	}
+
+	function sendAjax(searchFormXML) {
+		Ajax({
+			url : url,
+			method : "POST",
+			xformNode : searchFormXML,
+			type : "json",
+			waiting : true,
+			ondata : function() { 
+				alert("调试接口：" + url + "，返回结果：", this.getResponseText());
+			}
+		});
+	}
 }
 
 window.onload = init;
@@ -551,3 +516,166 @@ Event.attachEvent(window, "onunload", function() {
 		logout(); // 关闭页面自动注销
 	}
 });
+
+
+/* 
+ * 根据配置自动生成查询表单
+ */
+var ParamItem = function(index, paramInfo) {
+	this.name  = paramInfo.name || ("param" + (index + 1));
+	this.label = paramInfo.label;
+	this.type  = paramInfo.type || "string";
+	this.nullable = paramInfo.nullable == null ? true : paramInfo.nullable;
+	this.checkReg = paramInfo.checkReg;
+	this.options = paramInfo.options;
+	this.jsonUrl = paramInfo.jsonUrl;
+	this.multiple = paramInfo.multiple || false;
+	this.onchange = paramInfo.onchange;
+	this.width = paramInfo.width || "250px";
+	this.height = paramInfo.height;	
+	this.defaultValue = paramInfo.defaultValue;
+
+	switch(this.type.toLowerCase()) {
+		case "number":
+			this.mode = "number";
+			this.checkReg = this.checkReg || "/^[0-9]*[1-9][0-9]*$/";
+			break;
+		case "string":
+			this.mode = "string";
+			break;
+		case "date":
+			this.mode = "date";
+			break;
+	}
+}
+
+ParamItem.prototype.createColumn = function() {
+	var column = "<column name='" + this.name + "' caption='" +this.label+ "' mode='" +this.mode+ "' empty='" +this.nullable+ "' ";
+	if(this.checkReg) {
+		column += " inputReg='" +this.checkReg+ "' ";
+	}
+	if(this.multiple) {
+		column += " multiple='multiple' ";
+	}
+	if(this.onchange) {
+		column += " onchange='" +this.onchange+ "' ";
+	}
+	if(this.height) {
+		column += " height='" +this.height+ "' ";
+	}
+
+	if(this.options) {
+		column += " editor='comboedit' editorvalue='" + this.options.codes + "' editortext='" + this.options.names + "'";
+	}
+
+	if(this.jsonUrl) {
+		var thisObj = this;
+		column += " editor='comboedit' editorvalue='' editortext=''"; // editorvalue='1|2|3' editortext='1|2|3'
+
+		Ajax({
+			url : this.jsonUrl,
+			method: "GET",
+			type : "json",
+			ondata : function() { 
+				var result = eval(this.getResponseText());
+				if( result ) {
+					var selectObj = $$(thisObj.name);
+					for(var i = 0; i < result.length; i++) {
+						selectObj.options[selectObj.options.length] = createOption(result[i]);
+					}
+				}				
+			}
+		});
+	}	 
+
+	return column + "/>";
+}
+
+// item的类型可能为[pk, code, name] or {pk:'xx', id:'yy', text:'zz'}
+function createOption(item) {
+	var option = new Option();
+	option.value = item.pk || item[0];
+	option.text  = item.text || item[2];
+	return option;
+}
+
+ParamItem.prototype.createLayout = function() {
+	var layout = [];
+	layout[layout.length] = " <TR>";
+	layout[layout.length] = "    <TD width='50'><label binding='" + this.name + "'/></TD>";
+	layout[layout.length] = "    <TD><input binding='" + this.name + "' type='text' style='width:" + this.width + ";height:" + (this.height || '18px') + ";'/></TD>";
+	layout[layout.length] = " </TR>";
+
+	return layout.join("");
+}			
+
+ParamItem.prototype.createDataNode= function() {
+ 	if(this.defaultValue) {
+ 		return "<" + this.name + "><![CDATA[" + this.defaultValue + "]]></" + this.name + ">";
+ 	}
+	return "";
+}
+
+function createQueryForm(treeID, paramConfig, callback) {
+	var paramArray = paramConfig ? eval(paramConfig) : [];
+
+	var columns = [];
+	var layouts = [];
+	var datarow = [];
+	for( var i = 0; i < paramArray.length; i++ ) {
+		var paramInfo = eval(paramArray[i]);
+
+		var item = new ParamItem(i, paramInfo);
+		columns.push(item.createColumn());
+		layouts.push(item.createLayout());
+		datarow.push(item.createDataNode());
+	}
+
+	layouts[layouts.length] = "        <TR>";
+	layouts[layouts.length] = "          <TD colspan='2' height='46'><div class='buttonBox'>";
+	layouts[layouts.length] = "				<input type='button' class='btStrong' id='btSearch' value='查询'/> - ";
+	layouts[layouts.length] = "				<input type='button' class='btStrongL' id='btDownload' value='查询并导出'/> - ";
+	layouts[layouts.length] = "				<input type='button' class='btWeak' id='btCloseSearchForm' value='关闭'/>";
+	layouts[layouts.length] = "          </div></TD>";
+	layouts[layouts.length] = "        </TR>";
+	
+	Element.show($$("searchFormDiv"));
+	$$("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
+	
+	var str = [];
+	str[str.length] = "<xform>";
+	str[str.length] = "    <declare>";
+	str[str.length] = columns.join("");
+	str[str.length] = "    </declare>";
+	str[str.length] = "    <layout>";
+	str[str.length] = layouts.join("");
+	str[str.length] = "    </layout>";
+	str[str.length] = "    <data><row>" + datarow.join("") + "</row></data>";
+	str[str.length] = "</xform>";
+	
+	var formContent = str.join("");
+	var xmlReader = new XmlReader(formContent);
+	var searchFormXML = new XmlNode(xmlReader.documentElement);
+	var searchForm = $X("searchForm", searchFormXML);
+	Cache.XmlDatas.add("searchForm", searchFormXML);
+	
+	$$("btSearch").onclick = function () {
+		if(callback) {
+			if( !searchForm.checkForm() ) return;
+
+			Element.hide($$("searchFormDiv"));
+			var searchFormXML = Cache.XmlDatas.get("searchForm");
+
+			callback(searchFormXML); // 在回调函数里读取数据并展示
+		} 
+		else {
+			searchReport(treeID, false);
+		}
+	}
+	$$("btDownload").onclick = function () {
+		searchReport(treeID, true);
+	}
+	$$("btCloseSearchForm").onclick = function () {
+		Element.hide($$("searchFormDiv"));
+	}
+}

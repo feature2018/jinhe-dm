@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>柱状图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl1 = "../../display/json/284";
+	var serviceUrl2 = "../../display/json/285";
+	var serviceUrl3 = "../../display/json/286";
+	var serviceUrl4 = "../../display/json/287";
+	var originData1;
+	var originData2;
+	var originData3;
+	var originData4;
+	var selectedDate;
+
+	function query() {
+		Public.showWaitingLayer();
+		selectedDate = $$("selectedDate").value;
+		Ajax({
+			url : serviceUrl1,
+			method : "POST",
+			params : {"param1": selectedDate, "param2": selectedDate,"param3": selectedDate, "param4": selectedDate,"param5": selectedDate, "param6": selectedDate},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				originData1 = eval(this.getResponseText());
+				if ( originData1 && originData2 && originData3 && originData4){
+					show();
+					Public.hideWaitingLayer();
+				}	
+			}
+		});	 
+
+		Ajax({
+			url : serviceUrl2,
+			method : "POST",
+			params : {"param1": selectedDate, "param2": selectedDate},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				originData2 = eval(this.getResponseText());
+				if ( originData1 && originData2 && originData3 && originData4){
+					show();
+					Public.hideWaitingLayer();
+				}	
+			}
+		});
+
+		Ajax({
+			url : serviceUrl3,
+			method : "POST",
+			params : {"param1": selectedDate, "param2": selectedDate,"param3": selectedDate, "param4": selectedDate,"param5": selectedDate, "param6": selectedDate},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				originData3 = eval(this.getResponseText());
+				if ( originData1 && originData2 && originData3 && originData4){
+					show();
+					Public.hideWaitingLayer();
+				}	
+			}
+		}); 
+
+		Ajax({
+			url : serviceUrl4,
+			method : "POST",
+			params : {"param1": selectedDate},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				originData4 = eval(this.getResponseText());
+				if ( originData1 && originData2 && originData3 && originData4){					
+					show();
+					Public.hideWaitingLayer();
+				}	
+			}
+		}); 				 
+	}
+
+	
+	function show() {
+		var inweek;	
+		var storeExpense = originData1[0]["物料金额"];
+		var printExpense = originData1[0]["子单打印金额"];
+		var prepaid =originData2[0]["金额"];
+		var trans_fee = originData3[0]["应收中转费"];
+		var subsidy = originData3[0]["中转费补贴"];
+		var weight = originData3[0]["重量"];
+		var bill = originData3[0]["票数"];
+		var shuttle_cost = originData4[0]["金额"];	 
+		var per_weight_price = Math.round(((trans_fee - subsidy)/weight)*1000)/1000;
+		var total = storeExpense + printExpense + prepaid + trans_fee;
+		var storeExpense_percent = Math.round(storeExpense/total*1000)/10;
+		var printExpense_percent = Math.round(printExpense/total*1000)/10;
+		var prepaid_percent = Math.round(prepaid/total*1000)/10;
+		var trans_fee_percent = Math.round(trans_fee/total*1000)/10;
+		var income = Math.round(total - subsidy - shuttle_cost);
+		var shuttle_cost_rate = Math.round(shuttle_cost/(trans_fee - subsidy)*1000)/10;
+		var shuttle_cost_all_rate = Math.round(shuttle_cost/(trans_fee - subsidy + storeExpense + printExpense)*1000)/10;
+ 		var weekDay = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        
+        var myDate = new Date(Date.parse(selectedDate.replace(/-/g, "/"))); 
+        var inweek = weekDay[myDate.getDay()];
+	
+		$(function(){
+			var data = [
+			        	{name : '物料费       ' + storeExpense,value : storeExpense_percent,color:'#4572a7'},
+			        	{name : '子单打印费 ' + printExpense,value : printExpense_percent,color:'#aa4643'},
+			        	{name : '充值总额    ' + prepaid,value : prepaid_percent,color:'#89a54e'},
+			        	{name : '应收中转费 ' + trans_fee,value : trans_fee_percent,color:'#80699b'}
+			        	/*{name : '中转费补贴' + subsidy,value : subsidy,color:'#3d96ae'},
+			        	{name : '重量' + trans_fee,value : trans_fee,color:'#80699b'},
+			        	{name : '票数' + subsidy,value : subsidy,color:'#3d96ae'},
+			        	{name : '班车成本' + trans_fee,value : trans_fee,color:'#80699b'},
+			        	{name : '中转费补贴' + subsidy,value : subsidy,color:'#3d96ae'}*/
+		        	];
+
+	    	
+			var chart = new iChart.Pie2D({
+				render : 'canvasDiv',
+				data: data,
+				title : {
+					text : selectedDate + ' ' + inweek + ' 全网单价' + per_weight_price + " 元/kg",
+					height:40,
+					fontsize : 25,
+					color : '#282828'
+				},
+				footnote : {
+					text : '全网重量：' + weight + ' ;  票数：' + bill,
+					color : '#9C4421',
+					fontsize : 15,  
+					padding : '0 20'
+				},
+				sub_option : {
+					mini_label_threshold_angle : 40,//迷你label的阀值,单位:角度
+					mini_label:{//迷你label配置项
+						fontsize:20,
+						fontweight:600,
+						color : '#ffffff'
+					},
+					label : {
+						background_color:null,
+						sign:false,//设置禁用label的小图标
+						padding:'0 4',
+						border:{
+							enable:false,
+							color:'#666666'
+						},
+						fontsize:11,
+						fontweight:600,
+						color : '#4572a7'
+					},
+					border : {
+						width : 2,
+						color : '#ffffff'
+					},
+					listeners:{
+						parseText:function(d, t){
+							return d.get('value')+"%";//自定义label文本
+						}
+					} 
+				},
+				legend:{
+					enable:true,
+					padding:0,
+					offsetx:120,
+					offsety:50,
+					color:'#3e576f',
+					fontsize:20,//文本大小
+					sign_size:20,//小图标大小
+					line_height:28,//设置行高
+					sign_space:10,//小图标与文本间距
+					border:false,
+					align:'left',
+					background_color : null//透明背景
+				}, 
+				shadow : true,
+				shadow_blur : 6,
+				shadow_color : '#aaaaaa',
+				shadow_offsetx : 0,
+				shadow_offsety : 0,
+				background_color:'#f1f1f1',
+				align:'right',//右对齐
+				offsetx:-100,//设置向x轴负方向偏移位置60px
+				offset_angle:-90,//逆时针偏移120度
+				width : 800,
+				height : 400,
+				radius:150
+			});
+			//利用自定义组件构造右侧说明文本
+			chart.plugin(new iChart.Custom({
+					drawFn:function(){
+						//在右侧的位置，渲染说明文字
+						chart.target.textAlign('start')
+						.textBaseline('top')
+						.textFont('600 16px 微软雅黑')
+						.fillText('班车成本/中转费:  ' + shuttle_cost_rate + '%\n班车成本/(中转费+物料+子单打印):  ' + shuttle_cost_all_rate + '%',120,60,false,'#892034')
+						.textFont('600 20px 微软雅黑')
+						.fillText('班车成本  ：' + shuttle_cost +'\n中转费补贴：' + subsidy + '\n收入-支出：' + income ,120,110,false,'#be5985',false,24);
+					}
+			}));
+			
+			chart.draw();
+		});
+		
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

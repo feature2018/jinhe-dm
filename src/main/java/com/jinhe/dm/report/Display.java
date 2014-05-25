@@ -3,6 +3,7 @@ package com.jinhe.dm.report;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,6 +11,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import com.jinhe.dm.data.util.DataExport;
 import com.jinhe.tss.framework.component.log.IBusinessLogger;
 import com.jinhe.tss.framework.component.log.Log;
 import com.jinhe.tss.framework.component.param.ParamManager;
+import com.jinhe.tss.framework.exception.BusinessException;
 import com.jinhe.tss.framework.persistence.pagequery.PageInfo;
 import com.jinhe.tss.framework.web.dispaly.grid.DefaultGridNode;
 import com.jinhe.tss.framework.web.dispaly.grid.GridDataEncoder;
@@ -85,54 +88,99 @@ public class Display extends BaseActionSupport {
         outputAccessLog(reportId, "exportAsCSV", request.getParameterMap(), start);
     }
     
-    @RequestMapping("/json/{reportId}")
+    /**
+     * report可能是report的ID 也 可能是 Name
+     */
+    @RequestMapping("/json/{report}")
     @ResponseBody
-    public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("reportId") Long reportId) {
+    public List<Map<String, Object>> showAsJson(HttpServletRequest request, @PathVariable("report") String report) {
+    	Long reportId;
+    	try {
+    		reportId = Long.valueOf(report);
+    	} catch(Exception e) {
+    		reportId = reportService.getReportIdByName(report);
+    	}
+    	
+    	if(reportId == null) {
+    		throw new BusinessException("【" + report + "】数据服务不存在。");
+    	}
+    	
+    	long start = System.currentTimeMillis();
         SQLExcutor excutor = queryReport(request, reportId, 0, 0);
+        
+        outputAccessLog(reportId, "showAsJson", request.getParameterMap(), start);
+        
         return excutor.result;
     }
     
+	@SuppressWarnings("unchecked")
 	private SQLExcutor queryReport(HttpServletRequest request, Long reportId, int page, int pagesize) {
-	    
 		Map<String, String[]> requestMap = request.getParameterMap();
     	Report report = reportService.getReport(reportId);
+        String paramsConfig = report.getParam();
+        String reportScript = report.getScript();
         
-        String params = report.getParam();
     	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
-    	if( !EasyUtils.isNullOrEmpty(params) ) {
-    	    String[] paramArray = params.split(",");
-            for(int i = 0; i < paramArray.length; i++) {
-                int index = i + 1;
-                String paramKy = "param" + index;
-                if( !requestMap.containsKey(paramKy) ) continue;
-                
-                String paramValue = requestMap.get(paramKy)[0];
-                Object value;
-                
-                String paramType = paramArray[i].split(":")[1].toLowerCase();
-                if("number".equals(paramType)) {
-                    value = EasyUtils.convertObject2Integer(paramValue);
+    	Map<String, Object> fmDataMap = new HashMap<String, Object>();
+    	if( !EasyUtils.isNullOrEmpty(paramsConfig) ) {
+    		List<LinkedHashMap<Object, Object>> list;
+    		try {  
+    			ObjectMapper objectMapper = new ObjectMapper();
+    			paramsConfig = paramsConfig.replaceAll("'", "\"");
+    			
+				list = objectMapper.readValue(paramsConfig, List.class);  
+    	        
+    	    } catch (Exception e) {  
+    	        throw new BusinessException("报表【" + report.getName() + "】的参数配置有误，要求为标准JSON格式。", e);
+    	    }  
+    		
+    		for(int i = 0; i < list.size(); i++) {
+	        	LinkedHashMap<Object, Object> map = list.get(i);
+	        	
+	        	int index = i + 1;
+	        	String paramKy = "param" + index;
+                if( !requestMap.containsKey(paramKy) ) {
+                	continue;
                 }
-                else if("date".equals(paramType)) {
-                    value = new java.sql.Timestamp(DateUtil.parse(paramValue).getTime());
-                }
+                
+                String requestParamValue = requestMap.get(paramKy)[0];
+                Object paramType = map.get("type");
+                Object value = preTreatParamValue(requestParamValue, paramType);
+                
+                if(reportScript.indexOf("in (${" + paramKy + "})") > 0) {
+                	// 处理in查询的条件值，为每个项加上单引号
+                	value = SOUtil.insertSingleQuotes(value.toString());
+                } 
                 else {
-                    value = paramValue;
+                	paramsMap.put(paramsMap.size() + 1, value);
                 }
-                
-                paramsMap.put(index, value);
-            }
+                fmDataMap.put(paramKy, value);
+	        }
     	}
     	
         // 结合 requestMap 进行 freemarker解析 sql
-    	String script = report.getScript();
-    	script = SOUtil.freemarkerParse(script, requestMap);
+    	reportScript = SOUtil.freemarkerParse(reportScript, fmDataMap);
         
         SQLExcutor excutor = new SQLExcutor();
         String datasource = report.getDatasource();
-        excutor.excuteQuery(script, paramsMap, page, pagesize, datasource);
+        excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
 		
         return excutor;
+	}
+
+	private Object preTreatParamValue(String requestParamValue, Object paramType) {
+		if(paramType == null) return requestParamValue;
+		
+		paramType = paramType.toString().toLowerCase();
+		if("number".equals(paramType)) {
+			return EasyUtils.convertObject2Integer(requestParamValue);
+		}
+		else if("date".equals(paramType)) {
+			return new java.sql.Timestamp(DateUtil.parse(requestParamValue).getTime());
+		}
+		else {
+			return requestParamValue;
+		}
 	} 
 	
 	/** 业务日志处理对象 */

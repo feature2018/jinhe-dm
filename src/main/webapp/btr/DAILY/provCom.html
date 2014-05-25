@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>柱状图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl = Query.get("service") || "../../display/json/215";
+	
+	function query() {
+		var selectedDate = $$("selectedDate").value;
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": selectedDate,"param2": selectedDate}, 
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var total = 0;
+		var datar = [];
+		var maxdata=0;
+		var scaledata=0;
+		var color=['#3883bd','#0000FF','#330033','#663333','#FF6633','#993333','#66FF00','#FF0066','#33FFFF','#FF0000','#009999','#FFCC00','#CC3300','#9999CC','#CC9999','#FFCC66'];		
+		for(var i = 0; i < originData.length; i++) {
+			var brst = originData[i]["总投诉"];
+			var province = originData[i]["分公司"];
+			if (maxdata<brst[i]) {
+				maxdata=brst[i]
+			}
+			scaledata=Math.round(maxdata/10000) * 10000 + 5000;
+
+			total += brst;
+			datar[i] = {name: province, value: brst, color:color[i] };
+		}
+				
+	$(function(){
+var data = datar;
+var chart = new iChart.Pie3D({
+render : 'canvasDiv',
+title:{
+text:'已受理且投诉成立票数占比  投诉总量：' + total + '票',
+color:'#e0e5e8',
+height:40,
+border:{
+enable:true,
+width:[0,0,2,0],
+color:'#343b3e'
+}
+},
+padding:'2 10',
+footnote:{
+text:'同一票投诉类型不同，仍然算作一票',
+color:'#e0e5e8',
+height:30,
+border:{
+enable:true,
+width:[2,0,0,0],
+color:'#343b3e'
+}
+},
+width : 1050,
+height : 550,
+data:data,
+shadow:true,
+shadow_color:'#15353a',
+shadow_blur:8,
+background_color : '#3b4346',
+gradient:true,
+color_factor:0.28,
+gradient_mode:'RadialGradientOutIn',
+showpercent:true,
+decimalsnum:2,
+legend:{
+enable:true,
+padding:30,
+color:'#e0e5e8',
+border:{
+width:[0,0,0,2],
+color:'#343b3e'
+},
+background_color : null,
+},
+sub_option:{
+offsetx:-40,
+border:{
+enable:false
+},
+label : {
+background_color:'#fefefe',
+sign:false,//设置禁用label的小图标
+line_height:10,
+padding:4,
+border:{
+enable:true,
+radius : 4,//圆角设置
+color:'#e0e5e8'
+},
+fontsize:11,
+fontweight:600,
+color : '#444444'
+}
+},
+border:{
+width:[0,20,0,20],
+color:'#1e2223'
+}
+});
+chart.bound(0);
+}); 
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

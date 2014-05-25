@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script>
+    <title>省份互流货量</title>
+    <!--Step:1 Import a module loader, such as esl.js or require.js-->
+    <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
+    <script src="../js/esl.js"></script>
+ 
+
+</head>
+
+<body>
+    <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
+    <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
+    
+    <script type="text/javascript">
+    var serviceUrl = Query.get("service") || "../../display/json/216";
+    
+    function query() {
+        var selectedDate = $$("selectedDate").value;
+
+        Ajax({
+            url : serviceUrl,
+            method : "POST",
+            params : {"param1": selectedDate,"param2": selectedDate}, //
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var data = eval(this.getResponseText());
+                show(data);
+            }
+        });   
+    }
+
+
+    function show(originData) {
+        var totalIn = 0;
+        var dataDay = [];
+        var showDay = [];
+        var maxdataIn = 0;
+        var maxdataOut = 0;
+        var maxDayIn = 0;
+        var maxDayOut = 0;
+        var datac = [];
+        var maxw = 0;
+        var row=['安徽','北京','广东','江苏','上海','华北','浙江'];
+        var column=['安徽','北京','广东','江苏','上海','华北','浙江'];
+        var marix = new Array();       
+
+
+        for (var l = 0; l < column.length; l++) {
+            datac[l]={name : column[l]};
+            marix[l] = new Array();
+            for (var m = 0; m < row.length; m++) {
+                marix[l][m] = 0;
+            };
+        };
+        
+        for(var i = 0; i < originData.length; i++) {
+            var weight = originData[i]["重量"];
+            var outP = originData[i]["出发省份"];
+            var inP = originData[i]["目的省份"];
+            
+            for (k = 0; k < row.length; k++) {
+                if (outP == row[k]) {
+                    for (var j = 0; j < column.length; j++) {                        
+                            if (inP == column[j]) {
+                                marix[k][j] = weight;
+                                break;
+                            }; 
+                    };
+                    break;  
+                }          
+            };
+
+
+
+            totalIn += weight;             
+            dataDay[i] = inP;
+        }
+
+    // Step:3 conifg ECharts's path, link to echarts.js from current page.
+    // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
+            require.config({
+                paths:{ 
+                    echarts:'./js/echarts',
+                    'echarts/chart/bar' : './js/echarts',
+                    'echarts/chart/line': './js/echarts'
+                }
+            });
+            
+            // Step:4 require echarts and use it in the callback.
+            // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+            require(
+                [
+                    'echarts',
+                    'echarts/chart/bar',
+                    'echarts/chart/line'
+                ],
+                function(ec) {
+                    var myChart = ec.init(document.getElementById('main'));
+                    var option = {
+            title : {
+                text: '单位:KG',
+                subtext: '省份互流数据',
+                x:'right',
+                y:'bottom'
+            },
+            tooltip : {
+                trigger: 'item'
+            },
+            legend: {
+                x: 'left',
+                data:row
+            },
+            series : [
+                {
+                    type:'chord',
+                    sort : 'ascending',
+                    sortSub : 'descending',
+                    showScale : false,
+                    showScaleText : false,
+                    data : datac,
+                    itemStyle : {
+                        normal : {
+                            label : {
+                                show : true
+                            }
+                        }
+                    },
+                    matrix : marix
+                }
+            ]
+        };
+                    
+            
+            myChart.setOption(option);
+        }
+    );
+}
+    </script>
+
+    <form method="get" target='hiddenFrame'>
+        日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+        <input type="submit" onclick="query()" value="查询"/>
+    </form>
+    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    
+    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+</body>
+</html>

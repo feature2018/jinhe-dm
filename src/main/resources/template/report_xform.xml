@@ -4,9 +4,9 @@
 		<column name="id"     caption="报表ID"  mode="number" editable="false"/>
 		<column name="name"   caption="报表名称" mode="string" maxLength="30" empty="true"/>
 		<column name="script" caption="报表脚本" mode="string" maxLength="4000"/>
-		<column name="param"  caption="报表参数" mode="string" maxLength="400"/>
+		<column name="param"  caption="报表参数" mode="string" maxLength="1000"/>
 		<column name="datasource"  caption="数据源"  mode="string" editor="comboedit"/>
-		<column name="displayUri"  caption="展示页面" mode="string" maxLength="50"/>
+		<column name="displayUri"  caption="展示页面" mode="string" maxLength="200"/>
 		<column name="remark" caption="报表简介" mode="string" maxLength="400"/>
 	</declare>
 	<layout>
@@ -24,11 +24,11 @@
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="script"/></TD>
-			<TD><textarea binding="script" style="width:95%;height:270"/></TD>
+			<TD><textarea binding="script" style="width:95%;height:250"/></TD>
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="param"/></TD>
-			<TD><textarea binding="param" style="width:95%;height:60"/></TD>
+			<TD><textarea binding="param" style="width:95%;height:100"/></TD>
 		</TR>
 		<TR>
 			<TD width="80"><label binding="datasource"/></TD>

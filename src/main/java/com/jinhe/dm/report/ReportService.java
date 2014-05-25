@@ -12,6 +12,8 @@ public interface ReportService {
 
     Report getReport(Long id);
     
+    Long getReportIdByName(String name);
+    
     @PermissionTag(
     		application = Constants.APPLICATION_CODE,
     		resourceType = Report.RESOURCE_TYPE_REPORT,

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>分拨扫描率</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl = Query.get("service") || "../../display/json/251";
+	
+	function query() {
+
+		var selectedDate = $$("selectedDate").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": selectedDate,"param2": selectedDate}, //
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+			}
+		});	  
+	}
+
+
+
+
+	function show(originData) {
+		var total = 0;
+		var inScanList = [];
+		var outScanList = [];
+		var labels = [];
+		var dataList =[];
+		var maxdata=0;
+		var scaledata=0;
+		var spacedata = 0;
+		var datatype = 0;
+		var optionObj = document.getElementById('scanType');
+
+		for(var i = 0; i < originData.length; i++) {
+
+			var center = originData[i]["分拨"] ;
+			var inScan = Math.round(originData[i]["入网扫描"] * 100);
+			var outScan = Math.round(originData[i]["出网扫描"] * 100);	
+
+			if (optionObj.value==1) {
+				datatype = inScan;
+			}
+			if (optionObj.value==2) {
+				datatype = outScan;
+			}
+			labels[i] = center;
+			dataList[i] = {name: center, value: datatype, color:'#b5bcc5' };
+		}
+		
+		//total = Math.round(total/1000);
+
+
+	$(function(){
+var data = dataList;
+new iChart.Bar2D({
+render : 'canvasDiv',
+data: data,
+title : {
+text:'各分拨与网点间扫描率',
+color:'#b5bcc5'
+},
+subtitle : {
+text:'每日更新时间：下午16:00',
+color:'#afb6c0'
+},
+footnote : '根据子单扫描情况',
+width : 1050,
+height : 950,
+offsetx:20,
+coordinate:{
+width:1000,
+height:900,
+grid_color:'#D8CAAB',
+axis:{
+color:'#D8CAAB',
+width:[0,0,8,1]
+},
+scale:[{
+position:'bottom',
+start_scale:0,
+end_scale:100,
+scale_space:5,
+label:{color:'#ffffff'},
+listeners:{
+parseText:function(t,x,y){
+return {text:t+"%"}
+}
+}
+}]
+},
+label:{color:'#dcdcdc'},
+background_color : '#071E28',
+sub_option:{
+listeners:{
+parseText:function(r,t){
+return t+"%";
+}
+}
+},
+legend:{enable:false}
+}).draw();
+}); 
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		请选择查询类型：<select id='scanType'>
+		<option selected value='1'>到件扫描</option>
+		<option value = '2'>发件扫描</option></select>
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.exception.BusinessException;
+import com.jinhe.tss.util.EasyUtils;
 
 @Service("ReportService")
 public class ReportServiceImpl implements ReportService {
@@ -19,6 +20,15 @@ public class ReportServiceImpl implements ReportService {
         reportDao.evict(report);
         return report;
     }
+    
+	public Long getReportIdByName(String name) {
+		String hql = "select o.id from Report o where o.name = ? order by o.decode";
+		List<?> list = reportDao.getEntities(hql, name); 
+		if(EasyUtils.isNullOrEmpty(list)) {
+			return null;
+		}
+		return (Long) list.get(0);
+	}
     
     @SuppressWarnings("unchecked")
     public List<Report> getAllReport() {

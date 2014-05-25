@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>分拨日出货量</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var originData1;
+	var originData2;
+	var originData3;
+	var originData4;
+	var originData0;
+	var fromDate;
+	var toDate;
+
+
+	function query() {
+		// 每次查询前先清空上次查询的数据
+		originData1 = null;
+		originData2 = null;
+		originData3 = null;
+		originData4 = null;
+		originData0 = null;
+
+		fromDate = $$("fromDate").value;
+		toDate = $$("toDate").value;
+
+ 		Ajax({
+			url : '../../display/json/200',
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate}, 
+			type : "json",
+			waiting : true,					
+			ondata : function() {	
+				originData0 = eval(this.getResponseText());
+				if ( originData0 && originData1 && originData2 && originData3 && originData4 ) {
+					show();						
+				} 
+			}
+		});
+
+		Ajax({
+			url : '../../display/json/201',
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate}, 
+			type : "json",
+			waiting : true,					
+			ondata : function() {	
+				originData1 = eval(this.getResponseText());
+				if ( originData0 && originData1 && originData2 && originData3 && originData4 ) {
+					show();						
+				} 
+			}
+		});
+
+		Ajax({
+			url : '../../display/json/202',
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate}, 
+			type : "json",
+			waiting : true,					
+			ondata : function() {	
+				originData2 = eval(this.getResponseText());
+				if ( originData0 && originData1 && originData2 && originData3 && originData4 ) {
+					show();						
+				} 
+			}
+		});
+
+		Ajax({
+			url : '../../display/json/203',
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate}, 
+			type : "json",
+			waiting : true,					
+			ondata : function() {	
+				originData3 = eval(this.getResponseText());
+				if ( originData0 && originData1 && originData2 && originData3 && originData4 ) {
+					show();						
+				} 
+			}
+		});
+
+		Ajax({
+			url : '../../display/json/204',
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate}, 
+			type : "json",
+			waiting : true,					
+			ondata : function() {	
+				originData4 = eval(this.getResponseText());
+				if ( originData0 && originData1 && originData2 && originData3 && originData4 ) {
+					show();						
+				} 
+			}
+		});	
+
+	}
+
+	function show() {
+		var total1 = 0;
+		var total2 = 0;
+		var total3 = 0;
+		var total4 = 0;
+		var total0 = 0;
+		var datar1 = [];
+		var datar2 = [];
+		var datar3 = [];
+		var datar4 = [];
+		var datar0 = [];
+		var maxdata1=0;
+		var maxdata2=0;
+		var maxdata3=0;
+		var maxdata4=0;
+		var maxdata0=0;
+		var scaledata1=0;
+		var scaledata2=0;
+		var scaledata3=0;
+		var scaledata4=0;
+		var spacedata1 = 0;
+		var spacedata2 = 0;
+		var spacedata3 = 0;
+		var spacedata4 = 0;
+		var colorer = ['#c52120','#4572a7','#aa4643','#3d96ae'];
+
+		for(var i = 0; i < originData0.length; i++) {
+			var leaveTransOder0 = originData0[i]["子单数"];
+			var leaveTime0 = originData0[i]["留次类"];
+			if (maxdata0<leaveTransOder0) {
+				maxdata0=leaveTransOder0
+			}
+
+			//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+			//spacedata = scaledata/5;
+			total0 += leaveTransOder0;
+			datar0[i] = {name: leaveTime0, value: leaveTransOder0, color: colorer[i] };
+		}
+
+		for(var i = 0; i < originData1.length; i++) {
+			var leaveTransOder1 = originData1[i]["子单数"];
+			var leaveTime1 = originData1[i]["分拨"];
+			if (maxdata1<leaveTransOder1) {
+				maxdata1=leaveTransOder1
+			}
+
+			//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+			//spacedata = scaledata/5;
+			//total += leaveTransOder;
+			datar1[i] = {name: leaveTime1, value: leaveTransOder1, color: '#c52120' };
+		}
+
+		for(var i = 0; i < originData2.length; i++) {
+			var leaveTransOder2 = originData2[i]["子单数"];
+			var leaveTime2 = originData2[i]["分拨"];
+			if (maxdata2<leaveTransOder2) {
+				maxdata2=leaveTransOder2
+			}
+
+			//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+			//spacedata = scaledata/5;
+			//total += leaveTransOder;
+			datar2[i] = {name: leaveTime2, value: leaveTransOder2, color: '#4572a7' };
+		}
+
+		for(var i = 0; i < originData3.length; i++) {
+			var leaveTransOder3 = originData3[i]["子单数"];
+			var leaveTime3 = originData3[i]["分拨"];
+			if (maxdata3<leaveTransOder3) {
+				maxdata3=leaveTransOder3
+			}
+
+			//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+			//spacedata = scaledata/5;
+			//total += leaveTransOder;
+			datar3[i] = {name: leaveTime3, value: leaveTransOder3, color: '#aa4643' };
+		}
+
+		for(var i = 0; i < originData4.length; i++) {
+			var leaveTransOder4 = originData4[i]["子单数"];
+			var leaveTime4 = originData4[i]["分拨"];
+			if (maxdata4<leaveTransOder4) {
+				maxdata4=leaveTransOder4
+			}
+
+			//scaledata=Math.round(maxdata/10000) * 10000 + 10000;  /*这个可以变成向上取整*/
+			//spacedata = scaledata/5;
+			//total += leaveTransOder;
+			datar4[i] = {name: leaveTime4, value: leaveTransOder4, color: '#3d96ae' };
+		}
+
+		
+		//total = Math.round(total/1000);
+
+//定义数据组
+		var data1 = datar0;
+		var data2 = datar1;
+		var data3 = datar2;
+		var data4 = datar3;
+		var data5 = datar4;
+		
+		var data = {'子单留仓情况':datar0,'一次留仓': datar1,'二次留仓': datar2,'三次留仓': datar3,'四次留仓': datar4};
+
+		var sub = false;
+		function toChart(title, subtitle, d) {
+		var chart = new iChart.Column2D({
+		    render: 'canvasDiv',
+		    data: d,
+		    title: {
+		        text: title,
+		        color: '#3e576f'
+		    },
+		    subtitle: {
+		        text: subtitle,
+		        color: '#6d869f'
+		    },
+		    footnote: {
+		        text: '总数:' + total0 + '件',
+		        color: '#909090',
+		        fontsize: 11,
+		        padding: '0 38'
+		    },
+		    width: 1050,
+		    height: 600,
+		    label: {
+		        fontsize: 11,
+		        color: '#666666'
+		    },
+		    animation: true,
+		    animation_duration: 700,
+		    //700ms完成动画
+		    shadow: true,
+		    shadow_blur: 2,
+		    shadow_color: '#aaaaaa',
+		    shadow_offsetx: 1,
+		    shadow_offsety: 0,
+		    sub_option: {
+		        listeners: {
+		            parseText: function(r, t) {
+		                return t;
+		            },
+		            click: function(r, e) {
+		                sub = !sub;
+		                if (sub) toChart(r.get('name') + '子单留仓情况', '日期范围：' + fromDate + '到' + toDate, data[r.get('name')]);
+		                else toChart('分拨子单留仓', '日期范围：' + fromDate + '到' + toDate, data["子单留仓情况"]);
+		            }
+		        },
+		        label: {
+		            fontsize: 11,
+		            fontweight: 600,
+		            color: '#4572a7'
+		        },
+		        border: {
+		            width: 2,
+		            color: '#ffffff'
+		        }
+		    },
+		    tip: {
+		        enable: true,
+		        listeners: {
+		            parseText: function(tip, name, value, text) {
+		                if (sub) return name + ":" + (value / this.get('total') * 100).toFixed(2) + "%<br/>点击返回总图";
+		                else return name + ":" + (value / this.get('total') * 100).toFixed(2) + "%<br/>点击进入" + name + "详情";
+		            }
+		        }
+		    },
+		    coordinate: {
+		        background_color: null,
+		        grid_color: '#c0c0c0',
+		        width: 880,
+		        axis: {
+		            color: '#c0d0e0',
+		            width: [0, 0, 1, 0]
+		        },
+		        scale: [{
+		            position: 'left',
+		            scale_enable: false,
+		            label: {
+		                fontsize: 11,
+		                color: '#666666'
+		            }
+		        }]
+		    }
+		});
+		/**
+				*利用自定义组件构造左侧说明文本。
+				*/
+		chart.plugin(new iChart.Custom({
+		    drawFn: function() {
+		        /**
+				*计算位置
+				*/
+		        var coo = chart.getCoordinate(),
+		        x = coo.get('originx'),
+		        y = coo.get('originy'),
+		        H = coo.get('height');
+		        /**
+				*在左侧的位置，设置逆时针90度的旋转，渲染文字。
+				*/
+		        chart.target.textAlign('leaveTime').textBaseline('middle').textFont('600 13px Verdana').fillText('子单留仓', x - 40, y + H / 2, false, '#6d869f', false, false, false, -90);
+		    }
+		}));
+
+		chart.draw();
+		}
+				$(function() {
+		toChart('子单留仓情况', '日期范围：' + fromDate + '到' + toDate, data["子单留仓情况"]);
+				});
+				Public.hideWaitingLayer();
+
+	}
+
+
+
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

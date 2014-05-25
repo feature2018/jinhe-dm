@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>货量趋势图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+	var serviceUrl;
+	
+	function query() {
+		var optionObj = document.getElementById('dataType');
+		if (optionObj.value==1) {
+			serviceUrl = "../../display/json/205";
+		}
+		if (optionObj.value==2) {
+			serviceUrl = "../../display/json/219";
+		}
+		if (optionObj.value==3) {
+			serviceUrl = "../../display/json/220";
+		}
+
+
+		var fromDate = $$("fromDate").value;
+		var toDate = $$("toDate").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": fromDate, "param2": toDate},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+				/*if( result == null ) {	 
+					return ;
+				}*/
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var total = 0;
+		var dataW = [];
+		var dataDay = [];
+		var showDay = [];
+		var maxdata = 0;
+		var maxDay = 0;
+		var scaledata = 0;
+		var spaceData = 0;
+
+		for(var i = 0; i < originData.length; i++) {
+			var percent = Math.round(originData[i]["百分比"]*100);
+			var dateIn = originData[i]["日期"];
+			if (maxdata<percent) {
+				maxdata = percent;
+				maxDay = dateIn
+			}
+			scaledata=Math.ceil(maxdata/10)*10;
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = dateIn;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			total += percent;
+			dataW[i] = percent;
+			dataDay[i] = dateIn;
+		}
+
+		spaceData=scaledata/5;
+				
+		$(function(){
+
+			var data = [
+			{
+			name : '%',
+			value:dataW,
+			color:'#000000',
+			line_width:2
+			}
+			];
+			var labels =showDay;
+			var chart = new iChart.LineBasic2D({
+				render : 'canvasDiv',
+				data: data,
+				align:'center',
+				title : {
+				text:'百世快运破损少件类型问题件比率曲线图',
+				font : '微软雅黑',
+				fontsize:25,
+				color:'#000000'
+			},
+			subtitle : {
+				text:'查询段最大占比比率为：' + maxDay +': ' + maxdata + ' %',
+				font : '微软雅黑',
+				color:'#000000'
+			},
+			footnote : {
+				text:' ',
+				font : '微软雅黑',
+				fontsize:20,
+				fontpercent:600,
+				padding:'0 28',
+				color:'#000000'
+			},
+			width : 1050,
+			height : 550,
+			shadow:true,
+			shadow_color : '#9d987a',
+			shadow_blur : 8,
+			shadow_offsetx : 0,
+			shadow_offsety : 0,
+			background_color:'#BDB76B',
+			tip:{
+			enable:true,
+			shadow:true,
+			listeners:{
+				//tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+				parseText:function(tip,name,value,text,i){
+					return "<span style='color:#005268;font-size:12px;'>"+dataDay[i]+"破损少件率:<br/>"+
+					"</span><span style='color:#005268;font-size:20px;'>"+value+"%</span>";
+				}
+			}
+			},
+			crosshair:{
+			enable:true,
+			line_color:'#B22222'
+			},
+			sub_option : {
+				smooth : true,
+				label:false,
+				hollow:false,
+				hollow_inside:false,
+				point_size:8
+			},
+			coordinate:{
+				width:1640,
+				height:800,
+				striped_factor : 0.18,
+				grid_color:'#000000',
+				axis:{
+				color:'#000000',
+				width:[0,0,4,4]
+			},
+			scale:[{
+				position:'left',
+				start_scale:0,
+				end_scale:scaledata,
+				scale_space:spaceData,
+				scale_size:2,
+				scale_enable : false,
+				label : {color:'#000000',font : '微软雅黑',fontsize:20,fontpercent:600},
+				scale_color:'#000000'
+			},
+			{
+				position:'bottom',
+				label : {color:'#000000',font : '微软雅黑',fontsize:14,fontpercent:600},
+				scale_enable : false,
+				labels:labels
+			}]
+			}
+			});
+			//利用自定义组件构造左侧说明文本
+			chart.plugin(new iChart.Custom({
+			drawFn:function(){
+			//计算位置
+			var coo = chart.getCoordinate(),
+			x = coo.get('originx'),
+			y = coo.get('originy'),
+			w = coo.get('width'),
+			h = coo.get('height');
+			//在左上侧的位置，渲染一个单位的文字
+			chart.target.textAlign('start')
+			.textBaseline('bottom')
+			.textFont('600 20px 微软雅黑')
+			.fillText('百分比',x-40,y-12,false,'#000000')
+			.textBaseline('top')
+			.fillText('(时间)',x+w+12,y+h+10,false,'#000000');
+			}
+			}));
+			//开始画图
+			chart.draw();
+		}); 
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+		统计方式: <select id="dataType">
+			<option value="1" selected>按天</option>
+			<option value="2">按周</option>
+			<option value="3">按月</option>
+		</select>&nbsp;
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

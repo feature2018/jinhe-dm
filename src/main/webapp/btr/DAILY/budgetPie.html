@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>货量趋势图</title>
+
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script> 
+    <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="../js/highcharts.js"></script>
+    <script src="../js/exporting.js"></script>
+
+    <script type="text/javascript">
+    var inMonth;
+    var searchType;
+
+    Array.prototype.contains = function(obj) {  
+        var i = this.length;  
+        while (i--) {  
+            if (this[i] === obj) {  
+                return true;  
+            }  
+        }  
+        return false;  
+    }  
+
+
+    var serviceUrl = "../../display/json/304";
+    
+    function query() {
+
+    var inDate = $$("inDate").value;      
+    var mst = new Date($$("inDate").value);    
+    inMonth = mst.getMonth()+1;
+    var selectType = $$("selectType").value;
+
+    switch(selectType)
+    {
+    case '4':
+      searchType = '总货量'
+      break;
+    case '3':
+      searchType = '单价'
+      break;
+    case '2':
+      searchType = '总成本'
+      break;
+    default:
+      searchType = '总收入'
+    };
+
+     
+
+        Ajax({
+            url : serviceUrl,
+            method : "POST",
+            params : {"param1": inMonth,"param2": searchType,"param3": inMonth,"param4": searchType},
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var data = eval(this.getResponseText());
+                show(data);
+            }
+        });   
+    }
+
+    function show(originData) {
+        var subs = [];
+        var detailsList = [];
+        for(var i = 0; i < originData.length; i++) {
+            var sub = originData[i]["科目一"];
+            if( !subs.contains(sub) ) {
+                subs.push(sub);
+            }
+
+            var details = originData[i]["科目二"];
+            if( !detailsList.contains(details) ){
+                detailsList.push(details);
+            }
+        }
+
+        var dataMap = {};
+        var dataMap2 = {};
+
+
+        var showDay =  [];
+        for(var i = 0; i < originData.length; i++) {
+            var fee = originData[i]["金额"];
+            var details   = originData[i]["科目二"];
+            var sub   = originData[i]["科目一"];
+
+            if(dataMap[details] == null) {
+                 dataMap[details] = [];
+            }
+
+            if(dataMap2[details] == null) {
+                 dataMap2[details] = [];
+            }
+           
+            dataMap[details].push(fee);
+            dataMap2[details].push(sub);
+        };
+
+        
+        var data = [];
+        for(var details in dataMap) {
+            var temp = {};
+            temp.name = details;
+            temp.data = dataMap[details];
+            temp.stack = dataMap2[details].pop();
+            data.push(temp);
+        }
+
+                
+        $(function () {
+            $('#container').highcharts({
+
+                chart: {
+                    type: 'column'
+                },
+
+                title: {
+                    text: inMonth + '月  ' + searchType + '   省份经营状况明细横向对比',
+                    style:{
+                        color: '#00192E',
+                        fontWeight: 'bold',
+                        fontSize: '25px'
+                    }
+                },
+
+                subtitle: {
+                    text: '点击右侧图表示意，可隐藏对应数据柱',
+                    align: 'center',
+                    style: {
+                        color: '#730B18',
+                        /*fontWeight: 'bold',*/
+                        fontSize: '15px'
+                    }
+                },
+
+                xAxis: {
+                    categories: ['上海市', '云南省','华北', '安徽省', '山东省', '广东省', '江苏省',  '浙江省',  '福建省']
+                },
+
+                yAxis: {
+                    allowDecimals: false,
+                    min: 0,
+                    title: {
+                        text: '数额'
+                    }
+                },
+                credits:{                   //右边下标HighCharts.com去除  
+                    enabled:false  
+                }, 
+        
+                legend: {
+                    align: 'right',
+                    verticalAlign: 'top',
+                    x: 0,
+                    y: 50,
+                    itemDistance: 100,
+                    itemWidth: 150,
+                    layout: 'vertical'
+                },
+
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ this.x +'</b><br/>'+
+                            this.series.name +': '+ this.y +'<br/>'+
+                            '总额: '+ this.point.stackTotal;
+                    }
+                },
+
+                plotOptions: {
+                    column: {
+                        stacking: 'normal'
+                    }
+                },
+
+                series: data
+            });
+        });                 
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+    <form method="get" target='hiddenFrame'>
+        选择日期(直接选择所在月任何日期即可查询对应月份数据): <input type="date" id="inDate"/>&nbsp;
+        统计方式: <select id="selectType">
+            <option value="1" selected>总收入</option>
+            <option value="2">总成本</option>
+            <option value="3">单价</option>
+            <option value="4">总货量</option>
+        </select>&nbsp;
+    
+        <input type="submit" onclick="query()" value="查询"/>
+    </form>
+    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    
+    <div id='container'></div>
+
+</body>
+</html>

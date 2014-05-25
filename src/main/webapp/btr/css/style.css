@@ -1,0 +1,270 @@
+
+@charset 'UTF-8';
+@font-face {
+  font-family: 'entypo';
+  font-style: 'normal';
+  font-weight: 'normal';
+  src: url('http://weloveiconfonts.com/api/fonts/entypo/entypo.eot');
+  src: url('http://weloveiconfonts.com/api/fonts/entypo/entypo.eot?#iefix') format('eot'), url('http://weloveiconfonts.com/api/fonts/entypo/entypo.woff') format('woff'), url('http://weloveiconfonts.com/api/fonts/entypo/entypo.ttf') format('truetype'), url('http://weloveiconfonts.com/api/fonts/entypo/entypo.svg#entypo') format('svg');
+}
+
+body {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+  font-family: Muli, sans-serif;
+  color: #444;
+  height: 700px;
+}
+ul {
+  list-style: none;
+  margin-top: 0;
+  padding: 0;
+}
+a {
+  cursor: pointer;
+  display: block;
+  color: #b3b3b3;
+  text-decoration: none;
+}
+.bckg {
+  background-color: #383B42;
+  box-shadow: -4px 0px 10px rgba(14, 14, 14, 0.48) inset;
+  width: 205px;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+
+.submanu {
+   height: 0; 
+    overflow: hidden;
+    -webkit-transition: height linear .3s;
+    -moz-transition: height linear .3s;
+    -o-transition: height linear .3s;
+    transition: height linear .3s;
+}
+
+
+.mainmanu ul li {
+  background: #32353b;
+  box-shadow: #3a3c42 0 1px 0 inset;
+}
+
+.mainmanu ul li:nth-of-type(1){
+  box-shadow: rgba(0,0,0,0.1) 0 2px 2px inset;
+}
+.mainmanu ul li:nth-of-type(3){
+  box-shadow: rgba(0,0,0,0.1) 0 -2px 2px inset, #3a3c42 0 1px 0 inset;
+}
+
+.mainmanu ul li:hover {
+  background: -webkit-linear-gradient(top,  rgba(58,96,209,1) 0%,rgba(44,72,194,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(58,96,209,1) 0%,rgba(44,72,194,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(58,96,209,1) 0%,rgba(44,72,194,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(58,96,209,1) 0%,rgba(44,72,194,1) 100%); /* W3C */
+  box-shadow:#5173d5 1px 1px 0 inset;
+}
+
+
+h1 {
+  text-align: center;
+  font-weight: normal;
+  color: #F6F6EF;
+  line-height: 60px;
+  margin: 0;
+  font-size: 25px;
+  font-family:'方正姚体';
+  letter-spacing: 2px;
+  background-color: #34363A;
+  border-bottom: 1px solid rgba(101, 116, 134, 0.57);
+}
+
+h1:before{
+  content: url(m1.png);
+}
+
+h2 {
+  font-size: 24px;
+  font-family:'方正姚体';
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 3px;
+  color: #919191;
+  font-weight: normal;
+  padding-left: 40px;
+  line-height: 60px;
+  text-shadow: 1px 1px 2px #fff;
+  position: relative;
+  flex: 1;
+}
+
+h2:before {
+  content: '';
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  left: -19px;
+  top: 12px;
+  background-color: #34363A;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+h3 {
+  font-size: 17px;
+  margin: 0;
+  line-height: 40px;
+  color: #555;
+  cursor: pointer;
+  position: relative;
+}
+header {
+  width: 205px;
+  height: 100%;
+  float: left;
+  position: relative;
+  z-index: 99;
+}
+header nav ul li {
+  border-bottom: 1px solid #42454D;
+  padding-left: 48px;
+  transition: all 0.6s;
+  border-top: 1px solid #2E3036;
+
+
+ /* line-height: 55px;
+  font-size: 23px;
+  font-family: '方正兰亭黑_YS_GB18030';
+  position: relative;
+  letter-spacing: 1px;*/
+}
+header nav ul li:hover {
+  background-color: #454952;
+  transition: all 0.6s;
+  border-bottom: 1px solid #797979;
+}
+header nav ul li:hover a {
+  color: #fff;
+  transition: all 0.6s;
+}
+
+header nav ul li a {
+  line-height: 55px;
+  font-size: 20px;
+  font-family: '方正兰亭黑_YS_GB18030';
+  position: relative;
+  letter-spacing: 1px;
+  transition: all 0.6s;
+}
+
+header nav ul li a:before {
+  font-family: 'entypo', sans-serif;
+  font-size: 20px;
+  position: absolute;
+  left: -35px;
+}
+
+/*header nav ul li:first-child a:before {
+  content: url(m1.png);
+}*/
+
+header nav ul li:first-child a:before {
+  content: "\1f50d";
+}
+header nav ul li:nth-child(2) a:before {
+  content: "\e771";
+}
+header nav ul li:nth-child(3) a:before {
+  content: "\1f4c5";
+}
+
+
+
+
+
+/*header nav ul li:nth-child(4) a:before {
+  content: "\1f465";
+}
+header nav ul li:nth-child(5) a:before {
+  content: "\2699";
+}
+header nav ul li:nth-child(6) a:before {
+  content: "\268f";
+}*/
+main {
+  flex: 1;
+  height: 700px;
+}
+.title {
+  background-color: #fff;
+  border-bottom: 1px solid #C0C1C0;
+  height: 60px;
+  width: 100%;
+  display: flex;
+}
+.title a {
+  color: #AAA;
+  width: auto;
+  margin: 0 20px;
+  float: right;
+  line-height: 62px;
+  position: relative;
+  text-decoration: none;
+  transition: all .5s;
+}
+.title a:before {
+  content: "\1f464";
+  font-size: 38px;
+  position: absolute;
+  left: -50px;
+  font-family: 'entypo';
+}
+a:hover {
+  color: #33526B;
+  transition: all .5s;
+}
+
+.submanu li a{
+  line-height: 45px;
+  font-size: 14px;
+  font-family: '方正兰亭黑_YS_GB18030';
+  position: relative;
+  margin-left: 10px;
+}
+
+#daily:hover ul {
+  height: 658px;
+}
+
+#line:hover ul {
+  height: 517px;
+}
+
+#warning:hover ul {
+  height: 235px;
+}
+
+#daily li a:before{
+  content: "\1f50d";
+}
+
+#line li a:before{
+  content: "\e771";
+}
+
+#warning li a:before{
+  content: "\1f4c5";
+}
+
+#canvasMap {
+  margin-left: 0px;
+  margin-top: 0px;
+  height: 639px;
+  
+}
+
+

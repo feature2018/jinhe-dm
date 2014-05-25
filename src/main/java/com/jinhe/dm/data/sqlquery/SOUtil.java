@@ -33,7 +33,7 @@ public class SOUtil {
 			Object value = properties.get(key);
 			if(value != null) {
 				if(key.endsWith("Codes")){
-					value = filteringParameter(value.toString());
+					value = insertSingleQuotes(value.toString());
 				}
 				noNullProperties.put(key, value);
 			}
@@ -63,17 +63,20 @@ public class SOUtil {
 		return parametersMap;
 	}
 	
-	private static String  filteringParameter(String param){
-		if(param == null){
-			return null;
-		}
-		if(param.contains(",")){
-			return "\'" + param.replaceAll(",", "\',\'") + "\'";
-		}
-		else {
-			return "\'" + param + "\'";
-		}
-	}
+    /**
+     * 为逗号分隔的每一个值加上单引号
+     */
+    public static String insertSingleQuotes(String param) {
+        if (param == null) {
+            return null;
+        }
+        if (param.contains(",")) {
+            return "\'" + param.replaceAll(",", "\',\'") + "\'";
+
+        } else {
+            return "\'" + param + "\'";
+        }
+    }
 	
     public static String freemarkerParse(String script, AbstractSO so) {
     	return freemarkerParse(script, SOUtil.getProperties(so));

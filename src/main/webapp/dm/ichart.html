@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>ichart图表</title>
+
+	<script type="text/javascript" src="../framework/core.js"></script>
+	<script type="text/javascript" src="../framework/ajax.js"></script>
+	<script type="text/javascript" src="common.js"></script>
+	<script type="text/javascript" src="ichart.js"></script>
+
+	<script type="text/javascript" src="../tools/ichartjs/ichart.1.1.min.js"></script>
+
+	<style>
+
+		html {
+		  	height:100%;
+		  	scrollbar-face-color: #BEC6EE;
+		    scrollbar-highlight-color: #C0C4E7;
+		    scrollbar-shadow-color: #C0C4E7;
+		    scrollbar-3dlight-color: #A5AEDA;
+		    scrollbar-arrow-color: #000000;
+		    scrollbar-track-color: #FFFFFF;
+		    scrollbar-darkshadow-color: #919194;
+		    scrollbar-face-color: #BEC6EE;
+		}	
+		body {
+		    color: #000000;
+		    height:100%;
+		    margin: 0 0 0 0;
+		    background-color: #E7E7E7;
+		} 
+
+		#researh {
+			position: absolute;
+			top:5px;
+			left: 5px;
+			width: 100px;
+		    height: 30px;
+		    border: 1px solid #88D0E7;
+		    background: #0C6F73;
+		    box-shadow: #3a3c42 0 1px 0 inset;
+		    border-radius: 3px;
+		    font-size: 16px;
+		    font-family:"微软雅黑";
+		    color: #FFFFFF;
+		    cursor: pointer;
+		}
+
+		#researh:hover {
+		    font-weight: bold;
+		}
+
+	</style>
+
+	<script type="text/javascript">
+
+	var CHART_TYPES = ["Column2D", "Column3D", "Pie2D", "Pie3D", "Donut2D", "Bar2D", "Line2D"];
+	
+	var title      = Query.get("title") ;
+	var chartType  = Query.get("type") || "column2D";
+	var serviceUrl = Query.get("service", "true") ;  // 服务地址包括参数。编码的，先解码
+	var autoSize;
+
+	var test = true;
+
+	if(test) {
+		title = "报表XXX";
+		chartType = CHART_TYPES[2];
+		serviceUrl = "data/1.json";
+	}
+	
+	window.onload = function() {
+		$$("researh").onclick = function() {
+			Element.show(window.parent.$$("searchFormDiv"));
+		}
+
+		var globalValiable = window.parent.globalValiable;
+		if(globalValiable && globalValiable.data) {
+			title = globalValiable.title;
+			show(globalValiable.data);
+			return;
+		}
+
+		Ajax({
+			url : serviceUrl,
+			method : "GET",
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+
+				if(test) {
+					var index = 0;
+					window.setInterval( function() {
+						chartType = CHART_TYPES[index++ % CHART_TYPES.length];
+						show(data);
+					}, 1000 * 3); 
+				} else {
+					show(data);
+				}
+
+			}
+		});	  
+	}
+
+	function show(data) {	
+		autoSize = autoAdjustSize("canvasDiv");
+
+		var dataCopy = [];
+		for(var index = 0; index < data.length; index++) {
+			if(chartType == CHART_TYPES[2] || chartType == CHART_TYPES[3] || chartType == CHART_TYPES[4] ) {
+				data[index].color =  COLORS[index % 16];
+			}
+			else {
+				data[index].color =  COLORS[2];
+			}
+			
+			dataCopy.push(data[index]);
+		}
+ 
+ 		switch(chartType) {
+ 			case "Line2D":
+ 			case "Column3D":
+ 				eval(chartType + "(dataCopy)");
+ 				break;
+ 			default:
+ 				eval("draw" + chartType + "('canvasDiv', dataCopy, title, autoSize[0], autoSize[1])");
+ 				break;
+ 		}
+	}
+
+	function Column3D(data) {
+		var values = [];
+		var labels = [];
+		var max = 0, min = 99999999;
+		for(var i = 0; i < data.length; i++) {
+			var item = data[i];
+			values[i] = item.value;
+			labels[i] = item.name;
+
+			max = Math.max(max, item.value); 
+		}
+ 
+		max = $round(Math.round(max));
+
+		var _data = [
+	         	{
+	         		name : '',
+	         		value: values,
+	         		color: "#9370DB"
+	         	}
+	         ];
+		drawColumn3D('canvasDiv', _data, labels, max, title, "", autoSize[0], autoSize[1]);
+	}	
+
+	function Line2D(data) {
+		var _data = [];
+		var labels = [];
+		var max = 0, min = 99999999;
+		for(var i = 0; i < data.length; i++) {
+			var item = data[i];
+			_data[i]  = item.value;
+			labels[i] = item.name;
+
+			max = Math.max(max, item.value); 
+			min = Math.min(min, item.value); 
+		}
+ 
+		max = $round(Math.round(max));
+		min = $ceil(Math.round(min));
+
+		drawLine2D('canvasDiv', _data, labels, max, min, title, autoSize[0], autoSize[1]);
+	}
+	
+	</script>
+</head>
+
+<body>
+
+	<div id='canvasDiv'></div>
+ 
+	<input type='button' class='btLogin' id='researh' value='查询条件'/>
+
+</body>
+</html>

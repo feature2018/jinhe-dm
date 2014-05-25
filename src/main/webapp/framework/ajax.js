@@ -7,10 +7,6 @@ _XML_NODE_REQUEST_NAME     = "Name";
 _XML_NODE_REQUEST_VALUE    = "Value";
 _XML_NODE_REQUEST_PARAM    = "Param";
 
-/* HTTP响应状态 */
-_HTTP_RESPONSE_STATUS_LOCAL_OK = 0;
-_HTTP_RESPONSE_STATUS_REMOTE_OK = 200;
-
 /* HTTP响应解析结果类型 */
 _HTTP_RESPONSE_DATA_TYPE_EXCEPTION = "exception";
 _HTTP_RESPONSE_DATA_TYPE_SUCCESS = "success";
@@ -18,6 +14,23 @@ _HTTP_RESPONSE_DATA_TYPE_DATA = "data";
 
 /* HTTP超时(3分钟) */
 _HTTP_TIMEOUT = 3*60*1000;
+
+
+/*
+ *  对象名称：XmlHttp对象，负责XmlHttp对象创建
+ */
+function XmlHttp() {
+	if(window.ActiveXObject) {
+		return new ActiveXObject("MSXML2.XMLHTTP"); // for IE6
+	} 
+	else if( window.XMLHttpRequest ) {
+		return new XMLHttpRequest();
+	} 
+	else {
+		alert("您的浏览器不支持XMLHTTP");
+		return null;
+	}
+}
 
 /*
  *  XMLHTTP请求参数对象，负责配置XMLHTTP请求参数
@@ -29,10 +42,6 @@ function HttpRequestParams() {
 	this.async = true;
 	this.params = {};
 	this.header = {};
-}
-
-HttpRequestParams.prototype.setMethod = function(value) {
-	this.method = value;
 }
 
 /*
@@ -181,23 +190,9 @@ HttpRequest.prototype.getNodeValue = function(name) {
 
 /*
  * 发起XMLHTTP请求
- * 参数：boolean  是否等待其余请求完成再发送
  */
  HttpRequest.prototype.send = function(wait) {
 	 var oThis = this;
-
-	 if(wait) {
-		 var count = HttpRequests.getCount();
-		 if(count == 0) {
-			 oThis.send();
-		 }
-		 else {
-			 HttpRequests.onFinishAll( function() {
-				 oThis.send();
-			 });
-		 }
-		 return;
-	 }
 	
 	 try {
 		 if(this.paramObj.waiting) {
@@ -216,9 +211,6 @@ HttpRequest.prototype.getNodeValue = function(name) {
 
 				 if(oThis.isAbort) {
 					 Public.hideWaitingLayer();
-
-					 HttpRequests.del(oThis);  // 从队列中去除
-					 oThis.executeCallback();
 				 }
 				 else {
 					 setTimeout( function() {
@@ -227,24 +219,24 @@ HttpRequest.prototype.getNodeValue = function(name) {
 						 Public.hideWaitingLayer();
 						 oThis.onload(response);
 
-						 HttpRequests.del(oThis); // 从队列中去除
-						 oThis.executeCallback();
 					 }, 100);
 				 }
 			 }
 		 }
 
 		 this.xmlhttp.open(this.paramObj.method, this.paramObj.url, this.paramObj.async);
+		 
 		 this.setTimeout(); // 增加超时判定
-		 this.packageContent();
-		 this.setCustomRequestHeader();
+		 this.packageRequestParams();
+		 this.customizeRequestHeader();
 
+		 /* selectNodes()方法是依赖于 msxml 的，在IE10以前，浏览器处理了返回的XML格式的doucment , 使之变为 msxml-document ，使用 selectNode() 没问题。
+		    但是IE10去掉了这一处理，返回原生的 XML， 所以需要我们自己手动设置成 msxml 。*/
 		 try {  this.xmlhttp.responseType = 'msxml-document';  } catch (e) {  } 
+		 
 		 this.xmlhttp.send(this.requestBody);
 
-		 HttpRequests.add(this); // 存入队列
-	 }
-	 catch (e) {
+	 } catch (e) {
 		 Public.hideWaitingLayer();
 
 		 // throw e;
@@ -287,58 +279,56 @@ HttpRequest.prototype.clearTimeout = function() {
 /*
  *	对发送数据进行封装，以XML格式发送
  */
-HttpRequest.prototype.packageContent = function() {
+HttpRequest.prototype.packageRequestParams = function() {
 	var contentXml = new XmlReader("<" + _XML_NODE_REQUEST_ROOT+"/>");
 	var contentXmlRoot = new XmlNode(contentXml.documentElement);
-
-	function setParamNode(name, value) {
-		var tempNameNode  = contentXml.createElement(_XML_NODE_REQUEST_NAME);
-		var tempCDATANode = contentXml.createCDATA(name);
-		tempNameNode.appendChild(tempCDATANode);
-
-		var tempValueNode = contentXml.createElement(_XML_NODE_REQUEST_VALUE);
-		var tempCDATANode = contentXml.createCDATA(value);
-		tempValueNode.appendChild(tempCDATANode);
-
-		var tempParamNode = contentXml.createElement(_XML_NODE_REQUEST_PARAM);
-		tempParamNode.appendChild(tempNameNode);
-		tempParamNode.appendChild(tempValueNode);
-
-		contentXmlRoot.appendChild(tempParamNode);
-	}
-
+ 
 	for(var name in this.paramObj.params) {
 		var value = this.paramObj.params[name];
 		if(value) {
-			setParamNode(name, value);
+			var tempNameNode  = contentXml.createElement(_XML_NODE_REQUEST_NAME);
+			var tempCDATANode = contentXml.createCDATA(name);
+			tempNameNode.appendChild(tempCDATANode);
+
+			var tempValueNode = contentXml.createElement(_XML_NODE_REQUEST_VALUE);
+			var tempCDATANode = contentXml.createCDATA(value);
+			tempValueNode.appendChild(tempCDATANode);
+
+			var tempParamNode = contentXml.createElement(_XML_NODE_REQUEST_PARAM);
+			tempParamNode.appendChild(tempNameNode);
+			tempParamNode.appendChild(tempValueNode);
+
+			contentXmlRoot.appendChild(tempParamNode);
 		}
 	}
 
-	var contentStr = contentXml.toXml();
-	if( !window.DOMParser ) {
-		this.xmlhttp.setRequestHeader("Content-Length", contentStr.length);
-	}
-	this.requestBody = contentStr;
+	this.requestBody = contentXml.toXml();
 }
 
 /*
- *	设置自定义请求头信息
+ *	自定义请求头信息
  */
-HttpRequest.prototype.setCustomRequestHeader = function() {
+HttpRequest.prototype.customizeRequestHeader = function() {
 	this.xmlhttp.setRequestHeader("REQUEST-TYPE", "xmlhttp");
+	this.xmlhttp.setRequestHeader("CONTENT-TYPE","text/xml");
+	this.xmlhttp.setRequestHeader("CONTENT-TYPE","application/octet-stream");
+
+	if( !window.DOMParser ) {
+		this.xmlhttp.setRequestHeader("Content-Length", this.requestBody.length);
+	}
+
+	// 设置header里存放的参数到requestHeader中
 	for(var item in this.paramObj.header) {									
 		var itemValue = String(this.paramObj.header[item]);
-		if( itemValue != "" ) {
-			try {
-				this.xmlhttp.setRequestHeader(item, itemValue);
-			}
-			catch (e) {
-				// chrome往header里设置中文会报错
-			}
+		try {
+			this.xmlhttp.setRequestHeader(item, itemValue);
+		}
+		catch (e) {
+			// chrome往header里设置中文会报错
 		}
 	}
 
-	// 当页面url具有参数token则加
+	// 当页面url具有参数token则加入Cookie（可用于跨应用转发，见redirect.html）
 	var token = Query.get("token");
 	if( token != null ) {
 		var exp = new Date();  
@@ -346,9 +336,13 @@ HttpRequest.prototype.setCustomRequestHeader = function() {
 		var expires = exp.toGMTString();  // 过期时间设定为30s
 		Cookie.setValue("token", token, expires, "/" + CONTEXTPATH);
 	}
-	this.xmlhttp.setRequestHeader("CONTENT-TYPE","text/xml");
-	this.xmlhttp.setRequestHeader("CONTENT-TYPE","application/octet-stream");
+
 }
+
+
+/* HTTP响应状态 */
+_HTTP_RESPONSE_STATUS_LOCAL_OK  = 0;    // 本地OK
+_HTTP_RESPONSE_STATUS_REMOTE_OK = 200;  // 远程OK
 
 /*
  *	加载数据完成，对结果进行处理
@@ -371,17 +365,18 @@ HttpRequest.prototype.onload = function(response) {
 		return;
 	}
 
-	if(this.paramObj.type == "json") {
+	// 因数据类型为json的请求返回的数据不是XML格式，但出异常的时候异常信息是XML格式，所以如果没有异常，则直接执行ondata
+	if(this.paramObj.type == "json" && this.value.indexOf("<Error>") < 0) {
 		this.ondata();
 		return;
 	}
 
-	var responseParser = new HTTP_Response_Parser(this.value);
 
-	// 将通过解析后的xmlReader
+	// 解析返回结果，判断是success 还是 error
+	var responseParser = new HTTP_Response_Parser(this.value);
 	this.xmlReader = responseParser.xmlReader;
 
-	if(responseParser.result.dataType ==_HTTP_RESPONSE_DATA_TYPE_EXCEPTION) {
+	if(responseParser.result.dataType == _HTTP_RESPONSE_DATA_TYPE_EXCEPTION) {
 		new Message_Exception(responseParser.result, this);
 		this.returnValue = false;
 	}
@@ -420,21 +415,10 @@ HttpRequest.prototype.abort = function() {
 }
 
 /*
- *	执行回调函数
- */
-HttpRequest.prototype.executeCallback = function() {
-	if( HttpRequests.getCount() == 0 && HttpRequests.callback != null ) {
-		HttpRequests.callback();
-		HttpRequests.callback = null;
-	}
-}
-
-
-/*
  *  对象名称：HTTP_Response_Parser对象
  *  职责：负责分析处理后台响应数据
  *
- *  成功信息格式
+ *  成功信息格式：
  *  <Response>
  *      <Success>
  *          <type>1</type>
@@ -443,7 +427,7 @@ HttpRequest.prototype.executeCallback = function() {
  *      </Success>
  *  </Response>
  *
- *  错误信息格式
+ *  错误信息格式：
  *  <Response>
  *      <Error>
  *          <type>1</type>
@@ -498,23 +482,6 @@ function HTTP_Response_Parser(responseText) {
 	}
 }
 
-
-/*
- *  对象名称：XmlHttp对象，负责XmlHttp对象创建
- */
-function XmlHttp() {
-	if(window.ActiveXObject) {
-		return new ActiveXObject("MSXML2.XMLHTTP"); // for IE6
-	} 
-	else if( window.XMLHttpRequest ) {
-		return new XMLHttpRequest();
-	} 
-	else {
-		alert("您的浏览器不支持XMLHTTP");
-		return null;
-	}
-}
-
 /*
  *  对象名称：Message_Success对象
  *  职责：负责处理成功信息
@@ -524,12 +491,17 @@ function Message_Success(param, request) {
 
 	var str = [];
 	str[str.length] = "Success";
-	str[str.length] = "type=\"" + param.type + "\"";
 	str[str.length] = "msg=\""  + param.msg  + "\"";
-	str[str.length] = "description=\"" + param.description + "\"";
 
 	if(param.type != "0" && request.paramObj.type != "0") {
 		alert(param.msg, str.join("\r\n"));
+
+		// 3秒后自动自动隐藏成功提示信息
+		setTimeout(function() {
+			if($$("X-messageBox")) {
+				$$("X-messageBox").style.display = "none";
+			}
+		}, 3000);
 	}
 
 	request.onsuccess(param);
@@ -551,8 +523,6 @@ function Message_Success(param, request) {
  * <li>3－其他系统没有预见的异常信息
  */
 function Message_Exception(param, request) {
-	request.ondata();
-
 	var str = [];
 	str[str.length] = "Error";
 	str[str.length] = "type=\"" + param.type + "\"";
@@ -649,59 +619,6 @@ function relogin(request) {
     });
 }
 
-
-/*
- *	对象名称：HttpRequests（全局静态对象）
- *	职责：负责所有http请求连接
- */
-var HttpRequests = {};
-HttpRequests.items = [];
-
-/*
- *	终止所有请求连接
- */
-HttpRequests.closeAll = function() {
-	for(var i = 0; i < this.items.length; i++) {
-		this.items[i] = true;
-		this.items[i].abort();
-		this.items[i] = false;
-	}
-}
-
-/*
- *	加入一个请求连接
- */
-HttpRequests.add = function(request) {
-	this.items[this.items.length] = request;
-}
-
-/*
- *	去除一个请求连接
- */
-HttpRequests.del = function(request) {
-	for(var i = 0; i < this.items.length; i++) {
-		if(this.items[i] == request ) {
-			this.items.splice(i, 1); // splice() 方法用于插入、删除或替换数组的元素
-			break;
-		}
-	}
-}
-
-/*
- *	统计当前连接数
- */
-HttpRequests.getCount = function() {
-	return this.items.length;
-}
-
-/*
- *	等待当前请求全部结束
- */
-HttpRequests.onFinishAll = function(callback) {
-	this.callback = callback;
-}
-
-
 /*
  *  对象名称：Ajax请求对象
  *  职责：再次封装，简化xmlhttp使用
@@ -732,7 +649,7 @@ function Ajax() {
 	if(arg.waiting) {
 		p.waiting = arg.waiting;
 	}
-	if(arg.async) {
+	if(arg.async != null) {
 		p.async = arg.async;
 	}
 

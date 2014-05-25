@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>分拨操作货量</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+	var serviceUrl = Query.get("service") || "../../display/json/206";
+	
+	function query() {
+
+		var selectedDate = $$("selectedDate").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": selectedDate,"param2": selectedDate}, //
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+			}
+		});	  
+	}
+
+
+
+	function show(originData) {
+		var total = 0;
+		var dataw = [];
+		var datao = [];
+		var labels = [];
+		var data =[];
+		var maxdata=0;
+		var scaledata=0;
+		var spacedata = 0;
+		for(var i = 0; i < originData.length; i++) {
+
+			var center = originData[i]["分拨"];
+			var weight = originData[i]["货量"];
+			var orders = originData[i]["票数"];	
+
+			if (maxdata<weight) {
+				maxdata=weight
+			}
+			scaledata=Math.ceil(maxdata/1000) * 1000;
+			spacedata = scaledata/5;
+			total += weight;
+			dataw[i] = weight;
+			datao[i] = orders;
+			labels[i] = center;
+			data[i] = {name: center, value: weight, color:'#4572a7' };
+		}
+		
+		//total = Math.round(total/1000);
+
+
+		$(function() {
+
+	    var chart = new iChart.Column2D({
+	        render: 'canvasDiv',
+	        data: data,
+	        title: {
+	            text: '各分拨操作货量',
+	            color: '#3e576f'
+	        },
+	        subtitle: {
+	            text: '总操作货量：' + total + ' T',
+	            color: '#6d869f'
+	        },
+	        footnote: {
+	            text: '单位：T 该数据提取时间较长，请耐心等候',
+	            color: 'black',
+	            fontsize: 11,
+	            padding: '0 38'
+	        },
+	        width: 1050,
+	        height: 550,
+	        label: {
+	            fontsize: 15,
+	            textAlign: 'right',
+	            textBaseline: 'middle',
+	            rotate: -45,
+	            color: '#666666'
+	        },
+	        tip: {
+	            enable: true,
+	            listeners: {
+	                //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+	                parseText: function(tip, name, value, text, i) {
+	                    //将数字进行千位格式化
+	                    var f = new String(value);
+	                    f = f.split("").reverse().join("").replace(/(\d{3})/g, "$1,").split("").reverse();
+	                    if (f[0] == ',') {
+	                        f.shift();
+	                    }
+	                    f = f.join("");
+	                    return name + "操作量:<br/>" + f + "T<br/>占全网比重:<br/>" + (value / this.get('total') * 100).toFixed(2) + '%';
+	                }
+	            }
+	        },
+	        shadow: true,
+	        shadow_blur: 2,
+	        shadow_color: '#aaaaaa',
+	        shadow_offsetx: 1,
+	        shadow_offsety: 0,
+	        column_width: 62,
+	        sub_option: {
+	            label: false,
+	            border: {
+	                width: 2,
+	                color: '#ffffff'
+	            }
+	        },
+	        coordinate: {
+	            background_color: null,
+	            grid_color: '#c0c0c0',
+	            width: 1050,
+	            height: 550,
+	            axis: {
+	                color: '#c0d0e0',
+	                width: [0, 0, 1, 0]
+	            },
+	            scale: [{
+	                position: 'left',
+	                start_scale: 0,
+	                end_scale: scaledata,
+	                scale_space: spacedata,
+	                scale_enable: false,
+	                label: {
+	                    fontsize: 18,
+	                    color: '#666666'
+	                },
+	                listeners: {
+	                    parseText: function(t, x, y) {
+	                        return {
+	                            text: t
+	                        }
+	                    }
+	                }
+	            }]
+	        }
+	    });
+	    //利用自定义组件构造左侧说明文本
+	    chart.plugin(new iChart.Custom({
+	        drawFn: function() {
+	            //计算位置
+	            var coo = chart.getCoordinate(),
+	            x = coo.get('originx'),
+	            y = coo.get('originy');
+	            //在左上侧的位置，渲染一个单位的文字
+	            chart.target.textAlign('start').textBaseline('bottom').textFont('600 11px Verdana').fillText('操作量', x - 40, y - 10, false, '#6d869f');
+	        }
+	    }));
+	    chart.draw();
+	});
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

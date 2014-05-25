@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>人均效能趋势图</title>
+
+	<script type="text/javascript" src="../../framework/core.js"></script>
+	<script type="text/javascript" src="../../framework/ajax.js"></script>
+	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+	<script type="text/javascript">
+
+
+	var serviceUrl;
+	var whichCenter;
+	var toDate;
+	var fromDate;
+	var inYear;
+	var attention;
+
+	Date.prototype.getWeekOfYear = function(weekStart) { // weekStart：每周开始于周几：周日：0，周一：1，周二：2 ...，默认为周日
+		weekStart = (weekStart || 0) - 0;
+		if(isNaN(weekStart) || weekStart > 6)
+			weekStart = 0;	
+
+		var year = this.getFullYear();
+		var firstDay = new Date(year, 0, 1);
+		var firstWeekDays = 7 - firstDay.getDay() + weekStart;
+		var dayOfYear = (((new Date(year, this.getMonth(), this.getDate())) - firstDay) / (24 * 3600 * 1000)) + 1;
+		return Math.ceil((dayOfYear - firstWeekDays) / 7) + 1;
+	}
+
+	function query() {
+		var optionObj = document.getElementById('dataType');
+		if (optionObj.value==1) {
+			serviceUrl = "../../display/json/266";
+			fromDate = $$("fromDate").value;
+			toDate = $$("toDate").value;
+			var myDate = new Date(fromDate);
+            inYear = myDate.getFullYear();
+            attention = inYear + '年日汇总';
+		}
+		if (optionObj.value==2) {
+			serviceUrl = "../../display/json/267";
+			var dst = new Date($$("fromDate").value);
+			var det = new Date($$("toDate").value);
+			inYear = dst.getFullYear(); 
+			fromDate = dst.getWeekOfYear();
+			toDate = det.getWeekOfYear();
+			attention = '横坐标为' + inYear +'年第' + fromDate + '周--第' + toDate +'全周数据';
+		}
+		if (optionObj.value==3) {
+			serviceUrl = "../../display/json/268";
+			var mst = new Date($$("fromDate").value);
+			var met = new Date($$("toDate").value);
+			inYear = mst.getFullYear(); 
+			fromDate = mst.getMonth()+1;
+			toDate = met.getMonth()+1;
+			attention = '横坐标为' + inYear +'年第' + fromDate + '月--第' + toDate +'全月数据';
+		}
+ 
+
+
+		whichCenter = $$("whichCenter").value;
+
+		Ajax({
+			url : serviceUrl,
+			method : "POST",
+			params : {"param1": inYear,"param2": fromDate, "param3": toDate,"param4": whichCenter},
+			type : "json",
+			waiting : true,
+			ondata : function() {
+				var data = eval(this.getResponseText());
+				show(data);
+				/*if( result == null ) {	 
+					return ;
+				}*/
+			}
+		});	  
+	}
+
+	
+	function show(originData) {
+		var total = 0;
+		var dataW = [];
+		var dataDay = [];
+		var showDay = [];
+
+		var maxdata = 0;
+		var maxDay = 0;
+		var scaledata = 0;
+		var spaceData = 0;
+
+		for(var i = 0; i < originData.length; i++) {
+			var perf = Math.round(originData[i]["效能"]);
+			var dateIn = originData[i]["日期"];
+			if (maxdata<perf) {
+				maxdata = perf;
+				maxDay = dateIn
+			}
+			scaledata=Math.ceil(maxdata/10)*10;
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = dateIn;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			total += perf;
+			dataW[i] = perf;
+			dataDay[i] = dateIn;
+		}
+
+		spaceData=scaledata/5;
+				
+		$(function() {
+		    //创建数据
+		    var data = [{
+		        name: '人均效能',
+		        value: dataW,
+		        color: '#01acb6',
+		        line_width: 2
+		    }];
+		    //创建x轴标签文本
+		    var labels = showDay;
+		    var labelsxy = dataDay;
+		    var chart = new iChart.Area2D({
+		        render: 'canvasDiv',
+		        data: data,
+		        title: {
+		            text: whichCenter + '分拨人均效能走势  单位：T/人',
+		            color: '#005B63',
+		            background_color: '#D2CB97',
+		            height: 40,
+		            border: {
+		                enable: true,
+		                width: [0, 0, 4, 0],
+		                //只显示下边框
+		                color: '#D2CB97'
+		            }
+		        },
+		        subtitle: {
+		            text: '  ',
+		            //利用副标题设置单位信息
+		            fontsize: 14,
+		            color: '#2F5365',
+		            textAlign: 'left',
+		            padding: '0 40',
+		            height: 20
+		        },
+		        footnote: {
+		            text: '每日更新时间下午14:30',
+		            color: '#708794',
+		            padding: '0 20',
+		            background_color: '#D2CB97',
+		            height: 50,
+		            border: {
+		                enable: true,
+		                width: [3, 0, 0, 0],
+		                //只显示上边框
+		                color: '#D2CB97'
+		            }
+		        },
+		        padding: '5 1',
+		        //设置padding,以便title能占满x轴
+		        sub_option: {
+		            label: false,
+		            hollow_inside: false,
+		            //设置一个点的亮色在外环的效果
+		            point_size: 10
+		        },
+		        tip: {
+		            enable: true,
+		            listeners: {
+		                //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+		                parseText: function(tip, name, value, text, i) {
+		                    return labelsxy[i] + "人均效能:<span style='color:red'>" + value + "</span>T";
+		                }
+		            }
+		        },
+		        width: 1050,
+		        height: 550,
+		        background_color: '#D2CB97',  //#228B22
+		        gradient: true,
+		        shadow: true,
+		        shadow_blur: 2,
+		        shadow_color: '#D2CB97',
+		        shadow_offsetx: 0,
+		        shadow_offsety: 0,
+		        gradient_mode: 'LinearGradientDownUp',
+		        //设置一个从下到上的渐变背景
+		        border: {
+		            radius: 5
+		        },
+		        coordinate: {
+		            width: 1900,
+		            height: 840,
+		            grid_color: '#636B70',
+		            background_color: null,
+		            //设置坐标系为透明背景
+		            scale: [{
+		                position: 'left',
+		                label: {
+		                    color: '#2F5365',
+		                    fontsize: 14,
+		                    fontperf: 600
+		                },
+		                start_scale: 0,
+		                end_scale: scaledata,
+		                scale_space: spaceData
+		            },
+		            {
+		                position: 'bottom',
+		                label: {
+		                    color: '#506673',
+		                    fontperf: 600
+		                },
+		                labels: labels
+		            }]
+		        }
+		    });
+		    chart.draw();
+		});
+
+
+
+
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<form method="get" target='hiddenFrame'>
+		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
+		分拨(城市名): <input type="text" id="whichCenter"/>&nbsp;
+		统计方式: <select id="dataType">
+			<option value="1" selected>按天</option>
+			<option value="2">按周</option>
+			<option value="3">按月</option>
+		</select>&nbsp;
+		<input type="submit" onclick="query()" value="查询"/>
+	</form>
+	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

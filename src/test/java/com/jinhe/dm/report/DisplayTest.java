@@ -1,11 +1,7 @@
 package com.jinhe.dm.report;
 
-import java.io.File;
-import java.net.URL;
-
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -14,8 +10,6 @@ import com.jinhe.dm.Constants;
 import com.jinhe.dm.TxTestSupport;
 import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.sso.context.Context;
-import com.jinhe.tss.util.FileHelper;
-import com.jinhe.tss.util.URLUtil;
 
 public class DisplayTest extends TxTestSupport {
     
@@ -62,37 +56,40 @@ public class DisplayTest extends TxTestSupport {
         report1.setType(Report.TYPE1);
         report1.setParentId(Report.DEFAULT_PARENT_ID);
         report1.setName("report-1");
-        report1.setScript(" select id, orgCode, orgName from gv_bas_orgInfo " 
-        		+ " where id > ? " 
-        		+ " <#if param2??> and orgcode <> ? </#if> " 
-        		+ " and (createdTime > ? or createdTime > ?) "
-//        		+ " and orgcode in (${XXX}) "
-        		);
-        report1.setParam("组织ID:Number,组织CODE:String,创建时间:date:false,创建时间2:date:false");
+        report1.setScript(" select id, orgName from gv_bas_orgInfo " +
+        		" where id > ? " +
+        		"  <#if param2??> and orgcode <> ? </#if> " +
+        		"  and (createdTime > ? or createdTime > ?) " +
+        		"  and orgCode in (${param5})");
+        
+        String paramsConfig = "[ {'label':'组织ID', 'type':'Number', 'nullable':'false', 'jsonUrl':'../wms/whList', 'multiple':'true'}," +
+        		"{'label':'组织CODE', 'type':'String'}," +
+        		"{'label':'起始时间', 'type':'date', 'nullable':'false'}, " +
+        		"{'label':'结束时间', 'type':'date', 'nullable':'false'}," +
+        		"{'label':'组织列表', 'type':'String', 'nullable':'false'}]"	;
+        report1.setParam(paramsConfig);
+        
         report1.setRemark("test report");
         action.saveReport(response, report1);
         
         log.debug("开始测试报表展示：");
         request.addParameter("param1", "0");
         request.addParameter("param2", "best");
-        request.addParameter("param3", "2009-10-01");
-        request.addParameter("param4", "2009/10/01 11:11:11");
-        
-//        request.addParameter("XXX", "'Best009', 'best001', 'best010'");
+        request.addParameter("param3", "2012-10-01");
+        request.addParameter("param4", "2012/10/01 11:11:11");
+        request.addParameter("param5", "WH_YC_OFC,GZ_YC_OFC");
         
         Long reportId = report1.getId();
         display.showAsGrid(request, response, reportId, 1, 10);
-        display.showAsJson(request, reportId);
+        display.showAsJson(request, reportId.toString());
+        
+        display.showAsJson(request, report1.getName());
         
         if(paramService.getParam(Constants.TEMP_EXPORT_PATH) == null) {
-        	URL url = URLUtil.getResourceFileUrl("log4j.properties");
-            String log4jPath = url.getPath(); 
-            File classDir = new File(log4jPath).getParentFile();
-            
-            Assert.assertTrue(FileHelper.checkFile(classDir, "log4j.properties"));
-            
-            String tempDir = classDir.getPath() + "/temp";
-            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "默认导出目录", tempDir);
+			String tmpDir = System.getProperty("java.io.tmpdir") + "/temp";
+			log.info("本地文件输出目录：" + tmpDir);
+        
+			addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "默认导出目录", tmpDir);
         }
         display.exportAsCSV(request, response, reportId, 1, 0);
     }

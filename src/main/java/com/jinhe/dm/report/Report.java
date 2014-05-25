@@ -50,7 +50,10 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     
     @Column(length = 2000)  
     private String  script;     // SQL
-    private String  param;      // 参数值
+    
+    @Column(length = 1000)  
+    private String  param;      // 参数配置
+    
     private String  datasource; // 单独为报表指定数据源
     private String  displayUri; // 用来展示当前报表的模板页面的路径
     

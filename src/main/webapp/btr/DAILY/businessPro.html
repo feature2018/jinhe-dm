@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>各省份货量</title>
+
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script>
+    <script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+
+    <script type="text/javascript">
+
+    var serviceUrl = Query.get("service") || "../../display/json/255";
+    
+    function query() {
+        var selectedDate = $$("selectedDate").value;
+        var whichProv = $$("whichProv").value;
+        var sub = $$("sub").value;
+        Ajax({
+            url : serviceUrl,
+            method : "POST",
+            params : {"param1": selectedDate,"param2": whichProv,"param3": sub}, 
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var data = eval(this.getResponseText());
+                show(data);
+            }
+        });   
+    }
+
+    var COLORS = ['#F31455', 'green', '#f76864', 'yellow', '#8DA279', '#CFA986', '#FF530D','#33C1B5','#4ac2db','#dd4b4b','#add14f','#f47721'];
+
+    function show(originData) {
+        var total = 0;
+        var dataList = [];
+        var maxFee = 0
+        for(var i = 0; i < originData.length; i++) {
+            var fee = originData[i]["金额"];
+            var details = originData[i]["科目二"];
+
+            maxFee = Math.max(fee, maxFee);
+
+            total += fee;
+            dataList[i] = {name : details, value : fee, color:COLORS[i]};
+        }
+                
+$(function(){   
+            var data = dataList;
+            
+            //是否启用动画
+            var animation = false;
+            
+            var chart = new iChart.Column2D({
+                render : 'canvasDiv',
+                data: data,
+                title : {
+                    text : '各项主要费用或收入对比',
+                    color : '#3e576f'
+                },
+                subtitle : {
+                    text : '  ',
+                    color : '#6d869f'
+                },
+                footnote : {
+                    text : '每日更新时间下午14:00',
+                    color : '#909090',
+                    fontsize : 11,
+                    padding : '0 38'
+                },
+                width : 1050,
+                height : 550,
+                animation : animation,
+                animation_duration:600,
+                shadow : true,
+                shadow_blur : 2,
+                shadow_color : '#aaaaaa',
+                shadow_offsetx : 1,
+                shadow_offsety : 0,
+                column_width : 68,
+                label:{
+                    color:'#4c4f48'
+                },
+                sub_option:{
+                    label : {
+                        color : '#FDFCBF'
+                    },
+                    listeners:{
+                        parseText:function(r,t){
+                            //自定义柱形图上方label的格式。
+                            return '￥'+t+' ';
+                        }
+                    }
+                },
+                coordinate:{
+                    background_color : '#4a4b4f',
+                    grid_color : '#676a73',
+                    striped_factor:0.06,
+                    height:'100%',
+                    width:'84%',
+                    scale:[{
+                         position:'left',   
+                         start_scale:0,
+                         scale_space:1000000,
+                         label:{
+                            color:'#4c4f48'
+                         },
+                         listeners:{
+                            parseText:function(t,x,y){
+                            //自定义左侧坐标系刻度文本的格式。
+                                return {text:'￥'+t+' '}
+                            }
+                         }
+                    }]
+                }
+            });
+            var pie = new iChart.Pie2D({
+                data: data,
+                label:{
+                    color:'#4c4f48'
+                },
+                sub_option:{
+                    mini_label_threshold_angle : 60,//迷你label的阀值,单位:角度
+                    mini_label:{//迷你label配置项
+                        fontsize:10,
+                        fontweight:600,
+                        color : '#ffffff'
+                    },
+                    label : {
+                        background_color:null,
+                        sign:false,//设置禁用label的小图标
+                        padding:'0 4',
+                        border:{
+                            enable:false,
+                            color:'#666666'
+                        },
+                        fontsize:10,
+                        fontweight:600,
+                        color : '#ffe383'
+                    },
+                    listeners:{
+                        parseText:function(d, t){
+                            return d.get('value');//自定义label文本
+                        }
+                    } 
+                },
+                text_space : 16,
+                showpercent:true,
+                decimalsnum:1,
+                align : 'left',
+                offsetx:chart.coo.get('originx')+30,
+                offsety:-(chart.get('centery')-chart.coo.get('originy')-90),
+                animation : animation,
+                radius:60
+            });
+            
+            chart.plugin(pie);
+            
+             //利用自定义组件构造左侧说明文本。
+            chart.plugin(new iChart.Custom({
+                    drawFn:function(){
+                         //计算位置
+                        var coo = chart.getCoordinate(),
+                            x = coo.get('originx'),
+                            y = coo.get('originy'),
+                            H = coo.height;
+                        //在左侧的位置，渲染说明文字。
+                        chart.target.textAlign('center')
+                        .textBaseline('middle')
+                        .textFont('600 13px Verdana')
+                        .fillText('Sales Figure',x-50,y+H/2,false,'#6d869f', false,false,false,-90);
+                        
+                    }
+            }));
+
+            chart.draw();
+        });
+    }
+    
+    </script>
+</head>
+
+<body>
+    
+    <form method="get" target='hiddenFrame'>
+        日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
+        所属省份：<select id="whichProv">
+            <option>江苏省</option>
+            <option>广东省</option>
+            <option>浙江省</option>
+            <option>上海市</option>
+            <option>京津冀</option>
+            <option>安徽省</option>
+            <option>云南省</option>
+        </select>&nbsp;
+        科目：<select id="sub">
+            <option>营业收入</option>
+            <option>营业成本</option>
+            <option>费用</option>
+            <option>其他收入</option>
+            <option>其他支出</option>
+        </select>&nbsp;
+        <input type="submit" onclick="query()" value="查询"/>
+    </form>
+    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    
+    <div id='canvasDiv'></div>
+
+</body>
+</html>
