@@ -145,16 +145,18 @@ public class Display extends BaseActionSupport {
                 
                 String requestParamValue = requestMap.get(paramKy)[0];
                 Object paramType = map.get("type");
-                Object value = preTreatParamValue(requestParamValue, paramType);
+                Object isMacrocode = map.get("isMacrocode");
                 
-                if(reportScript.indexOf("in (${" + paramKy + "})") > 0) {
+                if( reportScript.indexOf("in (${" + paramKy + "})") > 0) {
                 	// 处理in查询的条件值，为每个项加上单引号
-                	value = SOUtil.insertSingleQuotes(value.toString());
+                	requestParamValue = SOUtil.insertSingleQuotes(requestParamValue.toString());
                 } 
-                else {
-                	paramsMap.put(paramsMap.size() + 1, value);
+                // 判断参数是否只用于freemarker解析
+                else if( !"true".equals(isMacrocode) ) {
+                	Object value = preTreatParamValue(requestParamValue, paramType);
+                	paramsMap.put(paramsMap.size() + 1, value); 
                 }
-                fmDataMap.put(paramKy, value);
+                fmDataMap.put(paramKy, requestParamValue);
 	        }
     	}
     	

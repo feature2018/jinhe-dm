@@ -344,6 +344,7 @@ Query.parse = function(queryString) {
 }
 
 Query.init = function(queryString) {
+	this.items = {}; // 先清空
 	queryString = queryString || window.location.search.substring(1);
 	this.parse(queryString);
 }

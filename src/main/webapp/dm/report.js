@@ -525,11 +525,11 @@ var ParamItem = function(index, paramInfo) {
 	this.name  = paramInfo.name || ("param" + (index + 1));
 	this.label = paramInfo.label;
 	this.type  = paramInfo.type || "string";
-	this.nullable = paramInfo.nullable == null ? true : paramInfo.nullable;
+	this.nullable = (paramInfo.nullable == null ? true : paramInfo.nullable);
 	this.checkReg = paramInfo.checkReg;
 	this.options = paramInfo.options;
 	this.jsonUrl = paramInfo.jsonUrl;
-	this.multiple = paramInfo.multiple || false;
+	this.multiple = (paramInfo.multiple == "true") || false;
 	this.onchange = paramInfo.onchange;
 	this.width = paramInfo.width || "250px";
 	this.height = paramInfo.height;	
@@ -617,6 +617,11 @@ ParamItem.prototype.createDataNode= function() {
 }
 
 function createQueryForm(treeID, paramConfig, callback) {
+	if( Cache.Variables.get("searchForm4TreeId") == treeID ) {
+		Element.show($$("searchFormDiv"));  // 如果上一次打开的也是同一报表的查询框，则直接显示
+		return;
+	}
+	
 	var paramArray = paramConfig ? eval(paramConfig) : [];
 
 	var columns = [];
@@ -658,6 +663,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 	var searchFormXML = new XmlNode(xmlReader.documentElement);
 	var searchForm = $X("searchForm", searchFormXML);
 	Cache.XmlDatas.add("searchForm", searchFormXML);
+	Cache.Variables.add("searchForm4TreeId", treeID);
 	
 	$$("btSearch").onclick = function () {
 		if(callback) {
