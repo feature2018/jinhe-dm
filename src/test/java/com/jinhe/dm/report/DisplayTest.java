@@ -18,7 +18,7 @@ public class DisplayTest extends TxTestSupport {
     
     @Test
     public void debugSQL() {     
-        String sql = "select x.idate 日期, " +
+    	String sql = "select to_char(x.idate, 'yyyyMMdd') 日期, " +
             "x.EC_IN 电商入库量, x.EC_OUT 电商出库量, x.EC_SKU_NUM EC变动SKU数, " +
             "y.KA_IN KA入库量, y.KA_OUT KA出库量, y.KA_SKU_NUM KA变动SKU数 " +
             "from " +

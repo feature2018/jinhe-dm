@@ -37,45 +37,28 @@ public class BaseInfoServiceImp implements BaseInfoService {
 		}
 
 		Map<String, Object> row = excutor.result.get(0);
-		Long userId = EasyUtils.convertObject2Long(row.get("id"));
+		Long userId = EasyUtils.convertObject2Long(row.get("ID"));
 		HttpSession session = Context.getRequestContext().getRequest().getSession();
 		session.setAttribute("WMS-userId", userId);
 
-		return new Object[] { userId, row.get("userName") };
+		return new Object[] { userId, row.get("USERNAME") };
 	}
 
-	public List<Object[]> getWarehouseList(String userId) {
+	public List<Object[]> getWarehouseList() {
 		HttpSession session = Context.getRequestContext().getRequest().getSession();
 		Long userIdInSession = (Long) session.getAttribute("WMS-userId");
-		if (userId == null || userIdInSession == null || !userIdInSession.equals(Long.parseLong(userId)))
-			return null;
 
 		String script = SqlConfig.getWMSSQL("whList", 2);
 
 		Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
-		paramsMap.put(1, userId);
+		paramsMap.put(1, userIdInSession);
 
 		SQLExcutor excutor = new SQLExcutor();
 		excutor.excuteQuery(script, paramsMap);
 
 		List<Object[]> result = new ArrayList<Object[]>();
 		for (Map<String, Object> row : excutor.result) {
-			result.add(new Object[] {row.get("id"), row.get("name")});
-		}
-		return result;
-	}
-	
-	public List<Object[]> getWarehouseList() {
-		String script = SqlConfig.getWMSSQL("whList", 1);
-
-		Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
-
-		SQLExcutor excutor = new SQLExcutor();
-		excutor.excuteQuery(script, paramsMap);
-
-		List<Object[]> result = new ArrayList<Object[]>();
-		for (Map<String, Object> row : excutor.result) {
-			result.add(new Object[] {row.get("id"), row.get("name")});
+			result.add(new Object[] {row.get("ID"), row.get("NAME")});
 		}
 		return result;
 	}

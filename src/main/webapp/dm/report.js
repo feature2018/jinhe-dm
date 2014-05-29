@@ -181,10 +181,7 @@ function loadInitData() {
 		var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));
 
 		var treeElement = $$("tree");
-		treeElement.onTreeNodeActived = function(eventObj) {
-			Focus.focus($$("treeTitle").firstChild.id);
-		}
-		treeElement.onTreeNodeDoubleClick = function(eventObj) {
+		treeElement.onTreeNodeActived = treeElement.onTreeNodeDoubleClick = function(eventObj) {
 			var treeNode = eventObj.treeNode;
 			getTreeOperation(treeNode, function(_operation) {            
 				if( isReport() ) {
@@ -197,8 +194,10 @@ function loadInitData() {
 		}
 		treeElement.onTreeNodeRightClick = function(eventObj) {
 			onTreeNodeRightClick(eventObj, true);
+			Element.hide($$("searchFormDiv"));
 		}
 		treeElement.onTreeNodeMoved = function(eventObj) {
+			Element.hide($$("searchFormDiv"));
 			sort(eventObj);
 		}
 	}
@@ -211,6 +210,7 @@ function loadReportDetail(isCreate, readonly, type) {
 	var treeID = treeNode.getId();
 	type = type || treeNode.getAttribute("type") ;
 	
+	Element.hide($$("searchFormDiv"));
 	Element.show($$("reportFormDiv"));
 	
 	var params = {};
@@ -545,6 +545,12 @@ var ParamItem = function(index, paramInfo) {
 			break;
 		case "date":
 			this.mode = "date";
+			if( this.defaultValue && (/today[\s]*-/gi).test(this.defaultValue) ) {
+				var deltaDays = parseInt(this.defaultValue.split("-")[1]);
+				var today = new Date();
+				today.setDate(today.getDate() - deltaDays);
+				this.defaultValue = today.format('yyyy-MM-dd');
+			} 
 			break;
 	}
 }
@@ -617,7 +623,7 @@ ParamItem.prototype.createDataNode= function() {
 }
 
 function createQueryForm(treeID, paramConfig, callback) {
-	if( Cache.Variables.get("searchForm4TreeId") == treeID ) {
+	if( Cache.Variables.get("searchForm4TreeId") == treeID && Cache.Variables.get("callbackInSearchForm") == callback) {
 		Element.show($$("searchFormDiv"));  // 如果上一次打开的也是同一报表的查询框，则直接显示
 		return;
 	}
@@ -664,6 +670,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 	var searchForm = $X("searchForm", searchFormXML);
 	Cache.XmlDatas.add("searchForm", searchFormXML);
 	Cache.Variables.add("searchForm4TreeId", treeID);
+	Cache.Variables.add("callbackInSearchForm", callback);
 	
 	$$("btSearch").onclick = function () {
 		if(callback) {

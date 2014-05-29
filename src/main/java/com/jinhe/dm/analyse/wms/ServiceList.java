@@ -44,13 +44,7 @@ public class ServiceList {
 	
 	@RequestMapping("/whList")
 	@ResponseBody
-	public List<Object[]> getWarehouseList(String userId) {
-		return baseService.getWarehouseList(userId);
-	}
-	
-	@RequestMapping("/allWhList")
-	@ResponseBody
-	public List<Object[]> getAllWarehouseList() {
+	public List<Object[]> getWarehouseList() {
 		return baseService.getWarehouseList();
 	}
  

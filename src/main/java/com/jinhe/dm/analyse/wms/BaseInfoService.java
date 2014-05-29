@@ -11,7 +11,4 @@ public interface BaseInfoService {
  
 	@Cached(cyclelife = CacheLife.LONG)
 	List<Object[]> getWarehouseList();
-	
-	@Cached(cyclelife = CacheLife.LONG)
-	List<Object[]> getWarehouseList(String userId);
 }

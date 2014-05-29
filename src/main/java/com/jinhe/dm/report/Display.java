@@ -33,7 +33,6 @@ import com.jinhe.tss.framework.web.dispaly.grid.IGridNode;
 import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
 import com.jinhe.tss.util.DateUtil;
 import com.jinhe.tss.util.EasyUtils;
-import com.jinhe.tss.util.XMLDocUtil;
 
 /**
  * http://localhost:9000/dm/display/12/1/100
@@ -61,7 +60,7 @@ public class Display extends BaseActionSupport {
             gridNode.getAttrs().putAll(item);
             temp.add(gridNode);
         }
-        GridDataEncoder gEncoder = new GridDataEncoder(temp, XMLDocUtil.dataXml2Doc(excutor.parser.gridTempalte));
+        GridDataEncoder gEncoder = new GridDataEncoder(temp, excutor.getGridTemplate());
         
         PageInfo pageInfo = new PageInfo();
         pageInfo.setPageSize(pagesize);
@@ -82,7 +81,7 @@ public class Display extends BaseActionSupport {
         
         String fileName = reportId + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
-        DataExport.exportCSV(exportPath, excutor.result, excutor.parser.selectFields);
+        DataExport.exportCSV(exportPath, excutor.result, excutor.selectFields);
         DataExport.downloadFileByHttp(response, exportPath);
         
         outputAccessLog(reportId, "exportAsCSV", request.getParameterMap(), start);

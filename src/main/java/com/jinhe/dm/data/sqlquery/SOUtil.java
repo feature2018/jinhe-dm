@@ -70,6 +70,9 @@ public class SOUtil {
         if (param == null) {
             return null;
         }
+        
+        // 支持列表in查询，分隔符支持中英文逗号、中英文分号、空格、顿号
+        param = param.replaceAll("，", ",").replaceAll(" ", ",").replaceAll("、", ",");
         if (param.contains(",")) {
             return "\'" + param.replaceAll(",", "\',\'") + "\'";
 

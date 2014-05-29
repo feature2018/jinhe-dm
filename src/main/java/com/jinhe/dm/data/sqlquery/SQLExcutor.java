@@ -3,6 +3,7 @@ package com.jinhe.dm.data.sqlquery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
 
 import com.jinhe.dm.Constants;
 import com.jinhe.tss.cache.Cacheable;
@@ -18,12 +20,30 @@ import com.jinhe.tss.cache.JCache;
 import com.jinhe.tss.cache.Pool;
 import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.exception.BusinessException;
+import com.jinhe.tss.util.XMLDocUtil;
 
 public class SQLExcutor {
     
     static Logger log = Logger.getLogger(SQLExcutor.class);
     
-    public SQLParser parser;
+    public List<String> selectFields = new ArrayList<String>();
+    
+    public Document getGridTemplate() {
+    	StringBuffer sb = new StringBuffer();
+        sb.append("<grid><declare sequence=\"true\">");
+        if(selectFields.size() > 0) {
+            for(String filed : selectFields) {
+                sb.append("<column name=\"" + filed + "\" mode=\"string\" caption=\"" + filed + "\" />");
+            }
+        }
+        else {
+        	sb.append("<column name=\"没有查询到数据\" mode=\"string\" caption=\"没有查询到数据\" />");
+        }
+
+        sb.append("</declare><data></data></grid>");
+        
+    	return XMLDocUtil.dataXml2Doc(sb.toString());
+    }
     
     public int count;
     public List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
@@ -105,15 +125,22 @@ public class SQLExcutor {
             }
             rs = pstmt.executeQuery();
             
-            this.parser = SQLParser.getInstance(sql);
-            while(rs.next()) {
-                Map<String, Object> rowData = new LinkedHashMap<String, Object>(); 
+            while (rs.next()) {
+                Map<String, Object> rowData = new LinkedHashMap<String, Object>();
                 
-                int index = 1;  // 从1开始，非0
-                for(String field : this.parser.selectFields) {
-                    rowData.put(field, rs.getObject(index++));
+                // 从1开始，非0
+                ResultSetMetaData rsMetaData = rs.getMetaData();
+				for(int index = 1; index <= rsMetaData.getColumnCount(); index++) {
+                	String columnName = rsMetaData.getColumnLabel(index).toLowerCase();
+                	if(columnName.equals("rn")) continue;
+                	
+					rowData.put(columnName, rs.getObject(index));
+					
+					if(result.isEmpty()) {
+						selectFields.add(columnName);
+					}
                 }
-                
+
                 result.add(rowData);
             }
             

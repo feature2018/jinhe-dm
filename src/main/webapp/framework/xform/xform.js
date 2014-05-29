@@ -546,13 +546,13 @@ Mode_Function.prototype = {
 		this.obj.className = (this.obj.disabled ? "function_disabled" : "function");
 
 		// function图标
-		this.obj.nextSibling.disabled  = this.obj.disabled;
-		this.obj.nextSibling.className = (this.obj.disabled ? "bt_disabled" : "");
-		this.obj.editable = status;
-
-		if( !this.isdate ) {
+		if(!this.isdate) {
+			this.obj.nextSibling.disabled  = this.obj.disabled;
+			this.obj.nextSibling.className = (this.obj.disabled ? "bt_disabled" : "");
 			this.obj.readOnly = true;
 		}
+		
+		this.obj.editable = status;
 	},
 
 	saveAsDefaultValue : function() {

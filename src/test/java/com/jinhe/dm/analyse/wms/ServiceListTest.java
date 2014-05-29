@@ -20,8 +20,7 @@ public class ServiceListTest extends TxTestSupport {
 		request.addParameter("password", "jonking");
 		serviceList.login(request, response);
 		
-		serviceList.getWarehouseList("106024");
-		serviceList.getAllWarehouseList();
+		serviceList.getWarehouseList();
 		
 		serviceList.logout(request, response);
 		
