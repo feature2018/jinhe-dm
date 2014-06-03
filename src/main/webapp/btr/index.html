@@ -10,13 +10,30 @@
     <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
     <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
     <meta name="keyFrame" content="width=device-width, initial-scale=1.0"></meta>
-    <script src="js/index.js"></script>
+
     <script type="text/javascript" src="../framework/core.js"></script>
     <script type="text/javascript" src="../framework/ajax.js"></script>
     <script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
-  <!--分拨产出货量画布-->
+
     <script type="text/javascript">
 
+    $(document).ready( function() {
+      
+      $('body').on("click", ".larg div h3", function(){
+        if ($(this).children('span').hasClass('close')) {
+          $(this).children('span').removeClass('close');
+        }
+        else {
+          $(this).children('span').addClass('close');
+        }
+        $(this).parent().children('p').slideToggle(250);
+      });
+      
+      $('body').on("click", ".submanu li a", function(){
+        var title = $(this).data('title');
+        $('.title').children('h2').html(title);
+      });
+    });
 
     </script>
 

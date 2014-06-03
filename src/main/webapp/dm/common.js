@@ -1,6 +1,16 @@
 	
 IS_TEST = false;
 
+Array.prototype.contains = function(obj) {  
+    var i = this.length;  
+    while (i--) {  
+        if (this[i] === obj) {  
+            return true;  
+        }  
+    }  
+    return false;  
+}  
+
 var COLORS = ["#FFD700", "#90EE90", "#9370DB", "#9ACD32", "#AFEEEE", "#FF6347", "#00BFFF", "#228B22", "gray", "green", "red", "blue", "yellow", "silver", "orange", "olive"];
 
 // 14345 返回 15000，坐标展示用 

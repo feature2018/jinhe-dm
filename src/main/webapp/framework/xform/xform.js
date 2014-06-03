@@ -605,6 +605,7 @@ var Mode_ComboEdit = function(colName, xform) {
 	// 当empty = false(表示不允许为空)时，下拉列表的默认值自动取第一项值
 	if( this.obj._value == "" &&  this.obj.getAttribute('empty') == "false") {
 		this.setValue(valueList[0]);
+		xform.setColumnValue(this.obj.id, valueList[0]);
 	}
 	
 	this.obj.onchange = function() {
@@ -644,6 +645,8 @@ Mode_ComboEdit.prototype.setValue = function(value) {
 	if(noSelected){
 		this.obj.selectedIndex = -1;	
 	}
+
+	this.obj._value = value;
 }
 
 Mode_ComboEdit.prototype.setEditable = function(status) {

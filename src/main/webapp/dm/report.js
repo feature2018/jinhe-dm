@@ -181,7 +181,15 @@ function loadInitData() {
 		var tree = $T("tree", this.getNodeValue(XML_SOURCE_TREE));
 
 		var treeElement = $$("tree");
-		treeElement.onTreeNodeActived = treeElement.onTreeNodeDoubleClick = function(eventObj) {
+		// treeElement.onTreeNodeActived = function(eventObj) {
+		// 	var treeNode = eventObj.treeNode;
+		// 	getTreeOperation(treeNode, function(_operation) {            
+		// 		if( isReport() ) {
+		// 			showReport();
+		// 		}
+		// 	});
+		// }
+		treeElement.onTreeNodeDoubleClick = function(eventObj) {
 			var treeNode = eventObj.treeNode;
 			getTreeOperation(treeNode, function(_operation) {            
 				if( isReport() ) {
@@ -384,6 +392,7 @@ function showReport() {
 					type : "json",
 					waiting : true,
 					ondata : function() { 
+						globalValiable.queryParams = this.paramObj.params;
 						globalValiable.data = eval(this.getResponseText());
 						
 						// 数据在iframe里展示
@@ -571,6 +580,14 @@ ParamItem.prototype.createColumn = function() {
 	}
 
 	if(this.options) {
+		if (this.options.codes == "year") {
+			this.options.codes = '2010|2011|2012|2013|2014|2015|2016|2017';
+			this.options.names = '2010|2011|2012|2013|2014|2015|2016|2017';
+		}
+		if (this.options.codes == "month") {
+			this.options.codes = '1|2|3|4|5|6|7|8|9|10|11|12';
+			this.options.names = '一月|二月|三月|四月|五月|六月|七月|八月|九月|十月|十一月|十二月';
+		}
 		column += " editor='comboedit' editorvalue='" + this.options.codes + "' editortext='" + this.options.names + "'";
 	}
 
@@ -622,8 +639,17 @@ ParamItem.prototype.createDataNode= function() {
 	return "";
 }
 
+/* 
+ * 判断方法是否相等
+ * 硬编码中声明函数的方式会影响到toString的结果，因此用正则进行格式化 
+ */
+function funcCompare(func1, func2) {
+	var fn = /^(function\s*)(\w*\b)/;
+	return func1.toString().replace(fn,'$1') === func2.toString().replace(fn,'$1'); 
+}
+
 function createQueryForm(treeID, paramConfig, callback) {
-	if( Cache.Variables.get("searchForm4TreeId") == treeID && Cache.Variables.get("callbackInSearchForm") == callback) {
+	if( Cache.Variables.get("treeID_SF") == treeID && funcCompare(Cache.Variables.get("callback_SF"), callback) ) {
 		Element.show($$("searchFormDiv"));  // 如果上一次打开的也是同一报表的查询框，则直接显示
 		return;
 	}
@@ -669,8 +695,8 @@ function createQueryForm(treeID, paramConfig, callback) {
 	var searchFormXML = new XmlNode(xmlReader.documentElement);
 	var searchForm = $X("searchForm", searchFormXML);
 	Cache.XmlDatas.add("searchForm", searchFormXML);
-	Cache.Variables.add("searchForm4TreeId", treeID);
-	Cache.Variables.add("callbackInSearchForm", callback);
+	Cache.Variables.add("treeID_SF", treeID);
+	Cache.Variables.add("callback_SF", callback);
 	
 	$$("btSearch").onclick = function () {
 		if(callback) {

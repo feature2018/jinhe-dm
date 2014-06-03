@@ -413,7 +413,7 @@
 			</activation>
 			<properties>
 				<log.level>info</log.level>
-				<db.url>10.8.8.106:3306</db.url>
+				<db.url>127.0.0.1:3306</db.url>
 				<environment>prod</environment>
 			</properties>
 		</profile>
@@ -424,7 +424,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
-				<db.url>10.45.9.160:3306</db.url>
+				<db.url>127.0.0.1:3306</db.url>
 				<environment>uat</environment>
 			</properties>
 		</profile>
