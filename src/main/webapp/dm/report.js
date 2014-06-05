@@ -383,31 +383,39 @@ function showReport() {
 		// 如果还配置了参数，则由report页面统一生成查询Form，查询后再打开展示页面里。
 		if(paramConfig.length > 0) {
 			createQueryForm(treeID, paramConfig, function(searchFormXML) {
-				// 根据服务地址取出数据放在全局变量里
-				var url = getServiceUrl(treeID, displayUri);
-				Ajax({
-					url : url,
-					method : "POST",
-					xformNode : searchFormXML,
-					type : "json",
-					waiting : true,
-					ondata : function() { 
-						globalValiable.queryParams = this.paramObj.params;
-						globalValiable.data = eval(this.getResponseText());
-						
-						// 数据在iframe里展示
-						showReportInPointUrl(treeID, displayUri);
-					}
-				});
+				sendAjax(searchFormXML);
 			});
 		}
 		else {
-			showReportInPointUrl(treeID, displayUri); // 直接打开展示页面
+			if(displayUri.indexOf("?type=") > 0) {
+				sendAjax(); // 使用通用模板的，有可能此处是不带任何参数的SQL查询
+			} 
+			else {
+				showReportInPointUrl(treeID, displayUri); // 直接打开展示页面
+			}
 		}
 	} 
 	else {
 		createQueryForm(treeID, paramConfig); // 生成查询Form
 	}	
+
+	function sendAjax(searchFormXML) {
+		var url = getServiceUrl(treeID, displayUri); // 根据服务地址取出数据放在全局变量里
+		Ajax({
+			url : url,
+			method : "POST",
+			xformNode : searchFormXML,
+			type : "json",
+			waiting : true,
+			ondata : function() { 
+				globalValiable.queryParams = this.paramObj.params;
+				globalValiable.data = eval(this.getResponseText());
+				
+				// 数据在iframe里展示
+				showReportInPointUrl(treeID, displayUri);
+			}
+		});
+	}
 }
 
 function searchReport(treeID, download) {		

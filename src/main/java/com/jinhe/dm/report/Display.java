@@ -2,8 +2,6 @@ package com.jinhe.dm.report;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +9,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jinhe.dm.Constants;
-import com.jinhe.dm.data.sqlquery.SOUtil;
 import com.jinhe.dm.data.sqlquery.SQLExcutor;
 import com.jinhe.dm.data.util.DataExport;
 import com.jinhe.tss.framework.component.log.IBusinessLogger;
@@ -31,8 +27,6 @@ import com.jinhe.tss.framework.web.dispaly.grid.DefaultGridNode;
 import com.jinhe.tss.framework.web.dispaly.grid.GridDataEncoder;
 import com.jinhe.tss.framework.web.dispaly.grid.IGridNode;
 import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
-import com.jinhe.tss.util.DateUtil;
-import com.jinhe.tss.util.EasyUtils;
 
 /**
  * http://localhost:9000/dm/display/12/1/100
@@ -50,7 +44,7 @@ public class Display extends BaseActionSupport {
             @PathVariable("pagesize") int pagesize) {
     	
     	long start = System.currentTimeMillis();
-    	SQLExcutor excutor = queryReport(request, reportId, page, pagesize);
+    	SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), page, pagesize);
     	
     	outputAccessLog(reportId, "showAsGrid", request.getParameterMap(), start);
         
@@ -77,7 +71,7 @@ public class Display extends BaseActionSupport {
             @PathVariable("pagesize") int pagesize) {
         
     	long start = System.currentTimeMillis();
-        SQLExcutor excutor = queryReport(request, reportId, page, pagesize);
+        SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), page, pagesize);
         
         String fileName = reportId + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
@@ -105,85 +99,13 @@ public class Display extends BaseActionSupport {
     	}
     	
     	long start = System.currentTimeMillis();
-        SQLExcutor excutor = queryReport(request, reportId, 0, 0);
+        SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), 0, 0);
         
         outputAccessLog(reportId, "showAsJson", request.getParameterMap(), start);
         
         return excutor.result;
     }
     
-	@SuppressWarnings("unchecked")
-	private SQLExcutor queryReport(HttpServletRequest request, Long reportId, int page, int pagesize) {
-		Map<String, String[]> requestMap = request.getParameterMap();
-    	Report report = reportService.getReport(reportId);
-        String paramsConfig = report.getParam();
-        String reportScript = report.getScript();
-        
-    	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
-    	Map<String, Object> fmDataMap = new HashMap<String, Object>();
-    	if( !EasyUtils.isNullOrEmpty(paramsConfig) ) {
-    		List<LinkedHashMap<Object, Object>> list;
-    		try {  
-    			ObjectMapper objectMapper = new ObjectMapper();
-    			paramsConfig = paramsConfig.replaceAll("'", "\"");
-    			
-				list = objectMapper.readValue(paramsConfig, List.class);  
-    	        
-    	    } catch (Exception e) {  
-    	        throw new BusinessException("报表【" + report.getName() + "】的参数配置有误，要求为标准JSON格式。", e);
-    	    }  
-    		
-    		for(int i = 0; i < list.size(); i++) {
-	        	LinkedHashMap<Object, Object> map = list.get(i);
-	        	
-	        	int index = i + 1;
-	        	String paramKy = "param" + index;
-                if( !requestMap.containsKey(paramKy) ) {
-                	continue;
-                }
-                
-                String requestParamValue = requestMap.get(paramKy)[0];
-                Object paramType = map.get("type");
-                Object isMacrocode = map.get("isMacrocode");
-                
-                if( reportScript.indexOf("in (${" + paramKy + "})") > 0) {
-                	// 处理in查询的条件值，为每个项加上单引号
-                	requestParamValue = SOUtil.insertSingleQuotes(requestParamValue.toString());
-                } 
-                // 判断参数是否只用于freemarker解析
-                else if( !"true".equals(isMacrocode) ) {
-                	Object value = preTreatParamValue(requestParamValue, paramType);
-                	paramsMap.put(paramsMap.size() + 1, value); 
-                }
-                fmDataMap.put(paramKy, requestParamValue);
-	        }
-    	}
-    	
-        // 结合 requestMap 进行 freemarker解析 sql
-    	reportScript = SOUtil.freemarkerParse(reportScript, fmDataMap);
-        
-        SQLExcutor excutor = new SQLExcutor();
-        String datasource = report.getDatasource();
-        excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
-		
-        return excutor;
-	}
-
-	private Object preTreatParamValue(String requestParamValue, Object paramType) {
-		if(paramType == null) return requestParamValue;
-		
-		paramType = paramType.toString().toLowerCase();
-		if("number".equals(paramType)) {
-			return EasyUtils.convertObject2Integer(requestParamValue);
-		}
-		else if("date".equals(paramType)) {
-			return new java.sql.Timestamp(DateUtil.parse(requestParamValue).getTime());
-		}
-		else {
-			return requestParamValue;
-		}
-	} 
-	
 	/** 业务日志处理对象 */
     @Autowired private IBusinessLogger businessLogger;
 	

@@ -1,8 +1,12 @@
 package com.jinhe.dm.report;
 
 import java.util.List;
+import java.util.Map;
 
 import com.jinhe.dm.Constants;
+import com.jinhe.dm.data.sqlquery.SQLExcutor;
+import com.jinhe.tss.framework.component.cache.CacheLife;
+import com.jinhe.tss.framework.component.cache.Cached;
 import com.jinhe.tss.framework.component.log.Logable;
 import com.jinhe.tss.um.permission.filter.PermissionFilter4Create;
 import com.jinhe.tss.um.permission.filter.PermissionFilter4Sort;
@@ -56,4 +60,6 @@ public interface ReportService {
     @Logable(operateObject="报表", operateInfo="移动(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。")
     void move(Long reportId, Long groupId);
 
+    @Cached(cyclelife = CacheLife.SHORTER)
+    SQLExcutor queryReport(Long reportId, Map<String, String[]> requestMap, int page, int pagesize);
 }

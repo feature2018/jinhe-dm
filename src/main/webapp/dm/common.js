@@ -205,5 +205,5 @@ function autoAdjustSize(elementID) {
 	var _width  = $$(elementID).parentNode.offsetWidth - 5;
     var _height = $$(elementID).parentNode.offsetHeight - 5;
 
-    return [ Math.max(800, _width), Math.max(600, _height)];
+    return [ Math.max(600, _width), Math.max(300, _height)];
 }
