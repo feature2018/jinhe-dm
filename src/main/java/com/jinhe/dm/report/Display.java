@@ -2,6 +2,7 @@ package com.jinhe.dm.report;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,6 +37,19 @@ import com.jinhe.tss.framework.web.mvc.BaseActionSupport;
 public class Display extends BaseActionSupport {
     
     @Autowired private ReportService reportService;
+    
+    private Map<String, String> getRequestMap(HttpServletRequest request) {
+    	Map<String, String[]> parameterMap = request.getParameterMap();
+    	Map<String, String> requestMap = new HashMap<String, String>();
+    	for(String key : parameterMap.keySet()) {
+    		String[] value = parameterMap.get(key);
+    		if(value != null && value.length > 0) {
+    			requestMap.put(key, value[0]);
+    		}
+    	}
+    	
+    	return requestMap;
+    }
  
     @RequestMapping("/{reportId}/{page}/{pagesize}")
     public void showAsGrid(HttpServletRequest request, HttpServletResponse response, 
@@ -44,9 +58,10 @@ public class Display extends BaseActionSupport {
             @PathVariable("pagesize") int pagesize) {
     	
     	long start = System.currentTimeMillis();
-    	SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), page, pagesize);
+    	Map<String, String> requestMap = getRequestMap(request);
+		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize);
     	
-    	outputAccessLog(reportId, "showAsGrid", request.getParameterMap(), start);
+    	outputAccessLog(reportId, "showAsGrid", requestMap, start);
         
         List<IGridNode> temp = new ArrayList<IGridNode>();
         for(Map<String, Object> item : excutor.result) {
@@ -71,14 +86,15 @@ public class Display extends BaseActionSupport {
             @PathVariable("pagesize") int pagesize) {
         
     	long start = System.currentTimeMillis();
-        SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), page, pagesize);
+    	Map<String, String> requestMap = getRequestMap(request);
+        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize);
         
         String fileName = reportId + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
         DataExport.exportCSV(exportPath, excutor.result, excutor.selectFields);
         DataExport.downloadFileByHttp(response, exportPath);
         
-        outputAccessLog(reportId, "exportAsCSV", request.getParameterMap(), start);
+        outputAccessLog(reportId, "exportAsCSV", requestMap, start);
     }
     
     /**
@@ -99,9 +115,10 @@ public class Display extends BaseActionSupport {
     	}
     	
     	long start = System.currentTimeMillis();
-        SQLExcutor excutor = reportService.queryReport(reportId, request.getParameterMap(), 0, 0);
+    	Map<String, String> requestMap = getRequestMap(request);
+        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, 0, 0);
         
-        outputAccessLog(reportId, "showAsJson", request.getParameterMap(), start);
+        outputAccessLog(reportId, "showAsJson", requestMap, start);
         
         return excutor.result;
     }
@@ -112,13 +129,13 @@ public class Display extends BaseActionSupport {
 	/**
 	 * 记录下报表的访问信息。
 	 */
-	private void outputAccessLog(Long reportId, String methodName, Map<String, String[]> requestMap, long start) {
+	private void outputAccessLog(Long reportId, String methodName, Map<String, String> requestMap, long start) {
 		Report report = reportService.getReport(reportId);
 		String methodCnName = report.getName();
 		
 		String params = "";
-		for(Entry<String, String[]> entry : requestMap.entrySet()) {
-			params += entry.getKey() + "=" + entry.getValue()[0] + ", ";
+		for(Entry<String, String> entry : requestMap.entrySet()) {
+			params += entry.getKey() + "=" + entry.getValue() + ", ";
 		}
         if (params != null && params.length() > 500) {
             params = params.substring(0, 500);

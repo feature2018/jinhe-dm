@@ -91,6 +91,9 @@ function logout() {
 		method : "GET",
 		onsuccess : function() { 
 			Cookie.del("token", "/" + CONTEXTPATH);
+			Cookie.del("token", "/" + APPLICATION);
+			Cookie.del("token", "");
+			Cookie.del("token", "/");
 			location.href = URL_CORE + "../login.html";
 		}
 	});

@@ -122,13 +122,15 @@ public class ReportServiceImpl implements ReportService {
     }
     
     @SuppressWarnings("unchecked")
-  	public SQLExcutor queryReport(Long reportId, Map<String, String[]> requestMap, int page, int pagesize) {
+  	public SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize) {
       	Report report = this.getReport(reportId);
           String paramsConfig = report.getParam();
           String reportScript = report.getScript();
           
       	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
       	Map<String, Object> fmDataMap = new HashMap<String, Object>();
+        fmDataMap.putAll(requestMap);
+      	
       	if( !EasyUtils.isNullOrEmpty(paramsConfig) ) {
       		List<LinkedHashMap<Object, Object>> list;
       		try {  
@@ -150,7 +152,7 @@ public class ReportServiceImpl implements ReportService {
                   	continue;
                   }
                   
-                  String requestParamValue = requestMap.get(paramKy)[0];
+                  String requestParamValue = requestMap.get(paramKy);
                   Object paramType = map.get("type");
                   Object isMacrocode = map.get("isMacrocode");
                   
