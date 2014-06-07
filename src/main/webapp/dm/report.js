@@ -387,6 +387,7 @@ function showReport() {
 			});
 		}
 		else {
+			$$("searchForm").innerHTML = ""; // 删除查询框（其它报表的）
 			if(displayUri.indexOf("?type=") > 0) {
 				sendAjax(); // 使用通用模板的，有可能此处是不带任何参数的SQL查询
 			} 

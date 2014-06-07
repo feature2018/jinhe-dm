@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params>
+	<url>jdbc:oracle:thin:@172.18.19.159:1521:v5rep1</url>
+	<driver>oracle.jdbc.driver.OracleDriver</driver>
+	<user>vf_readonly</user>
+	<password>vf_readonly_2013</password>
+	<groupSql>
+	    select distinct t.id, t.parent_id as parentId, t.name, t.code as description
+              from usrvf_gg.gtv_org_golden t
+              where t.id >=:groupId 
+	</groupSql>
+	<userSql>
+	   select distinct u.id, u.org_id as groupId, u.user_name as loginName, u.user_name_cn as userName, 
+                u.email, null as sex, null as birthday, u.re_mark || ', ' || u.job_name as employeeNo, null authMethod
+             from usrvf_gg.gt_user u 
+             where u.org_id >= :groupId
+               and u.is_enable = 1
+               and u.user_type_id = 117
+               and (u.user_name like 'BL%' or u.user_name like 'TM%' or u.user_name like 'OS%')
+	</userSql>
+	<singleUser>
+	     select distinct u.id, u.org_id as groupId, u.user_name as loginName, u.user_name_cn as userName, 
+                u.email, null as sex, null as birthday, u.re_mark || ', ' || u.job_name as employeeNo, null authMethod
+             from usrvf_gg.gt_user u 
+             where u.id = :userId
+	</singleUser>
+</params>

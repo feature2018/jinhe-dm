@@ -2,6 +2,7 @@
 <Response>
 	<NaviInfo>
 		<Menus>
+			<MenuItem id="dm.index" name="返回首页" href="index.html"/>
             <MenuItem id="dm.1" name="数据分析" href="dm/report.html"/>
 
 			<MenuItem id="cache" name="缓存管理" href="framework/module/cache/cache.htm"/>

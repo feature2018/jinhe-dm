@@ -177,7 +177,7 @@ function drawLine2D(canvasName, _data, labels, max, min, title, width, height) {
 		        		name : '',
 		        		value: _data,
 		        		color:'#1f7e92',
-		        		line_width:3
+		        		line_width:2
 		        	}
 		       ];
 		var chart = new iChart.LineBasic2D({
@@ -189,7 +189,9 @@ function drawLine2D(canvasName, _data, labels, max, min, title, width, height) {
 					sub_option:{
 						smooth : true, //平滑曲线
 						label:false,
-						point_size:10
+						hollow:false,
+						hollow_inside:false,
+						point_size:2
 					},
 					tip:{
 						enable:true,

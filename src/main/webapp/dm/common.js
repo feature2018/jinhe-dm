@@ -1,5 +1,7 @@
-	
-IS_TEST = false;
+
+IS_TEST = true;
+
+REQUEST_METHOD = IS_TEST ? "GET" : "POST";
 
 Array.prototype.contains = function(obj) {  
     var i = this.length;  
@@ -162,6 +164,19 @@ function filterEmptyParams(params) {
 	}
 }
 
+// 读取画布上一级element的大小，以自动调整画布的大小
+function autoAdjustSize(elementID) {
+	var _width  = $$(elementID).parentNode.offsetWidth - 5;
+    var _height = $$(elementID).parentNode.offsetHeight - 5;
+
+    return [ Math.max(600, _width), Math.max(300, _height)];
+}
+
+function getLastFlushTime() {
+	var today = new Date();
+	return today.format('yyyy-MM-dd hh:mm:ss');  
+}
+
 
 URL_DOWNLOAD = 'download/';
 
@@ -198,12 +213,4 @@ function createExportFrame() {
 		document.body.appendChild(exportDiv);
 	}
 	return frameName;
-}
-
-// 读取画布上一级element的大小，以自动调整画布的大小
-function autoAdjustSize(elementID) {
-	var _width  = $$(elementID).parentNode.offsetWidth - 5;
-    var _height = $$(elementID).parentNode.offsetHeight - 5;
-
-    return [ Math.max(600, _width), Math.max(300, _height)];
 }

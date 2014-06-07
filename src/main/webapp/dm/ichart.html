@@ -66,12 +66,11 @@
 
 	if(test) {
 		title = "报表XXX";
-		chartType = CHART_TYPES[2];
 		serviceUrl = "data/1.json";
 	}
 	
 	window.onload = function() {
-		if(window.parent.$$("searchFormDiv")) {
+		if(window.parent.$$("searchFormDiv") && window.parent.$$("btCloseSearchForm")) {
 			$$("researh").onclick = function() {
 				Element.show(window.parent.$$("searchFormDiv"));
 			}
