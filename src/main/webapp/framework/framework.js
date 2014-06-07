@@ -78,13 +78,6 @@ function initUserInfo() {
 	});
 }
 
-function showUserInfo() {
-	window.open(NO_AUTH_PATH + 'userInfo.htm', '', 'width=800,height=250');
-}
-function modifyPassword() {
-	window.open(NO_AUTH_PATH + 'password.htm', '', 'width=400,height=200');
-}
-
 function logout() {
 	Ajax({
 		url : URL_CORE + "../logout.in",
@@ -360,50 +353,6 @@ function disableButton(btObj) {
 /* 允许点击按钮 */
 function enableButton(btObj) {
 	btObj.disabled = false;
-}
-
-/*
- *	初始化导航条
- *	参数：	string:curId       当前菜单项id
- */
-function initNaviBar(curId, relativePath) {	
-	var isModule = (window.location.href.indexOf("module") > 0);
-	relativePath = relativePath || (isModule ? "../../../" : "../");
-
-	Ajax({
-		url : relativePath + "navi.xml",
-		method : "GET",
-		onresult : function() {
-			var data = this.getNodeValue("NaviInfo");
-
-			var str = [];
-			var menuItems = data.selectNodes("MenuItem");
-			for(var i=0; i < menuItems.length; i++) {
-				var menuItem = menuItems[i];
-				var id   = menuItem.getAttribute("id");
-				var href = menuItem.getAttribute("href");
-				var name = menuItem.getAttribute("name");
-				var onclick = menuItem.getAttribute("onclick");
-				
-				if(href == null && onclick == null) {
-					str[str.length] = name;
-					continue;
-				}
-
-				if( href && false == /^javascript\:/.test(href) ) {
-					href = relativePath + href;
-				}
-
-				href = " href='" + (href || "#") + "'";
-				onclick = onclick ? " onclick='" + onclick + "'" : "";
-				
-				var cssStyle = (curId == id) ? "naviActive" : "navi";
-				str[str.length] = "<a " + href + " " + onclick + " class='" + cssStyle + "'>" + name + "</a>";
-			}
-			$$("navibar").innerHTML = str.join(" ");
-			$$("navibar").style.display = "inline";
-		}
-	});
 }
 
 /* 创建导入Div */

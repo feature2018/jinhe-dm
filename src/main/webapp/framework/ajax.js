@@ -539,9 +539,7 @@ function Message_Exception(param, request) {
 	// 是否需要重新登录
 	if(param.relogin == "1") {
 		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
-
-		_alert(param.msg);
-
+		popupMessage(param.msg);
 		relogin(request);
 	}
 }
@@ -585,12 +583,12 @@ function relogin(request) {
 		var loginName = $$("loginName").value;
         var password = $$("password").value;
         if( "" == loginName ) {
-            _alert("请输入账号");
+            popupMessage("请输入账号");
             $$("loginName").focus();
             return;
         } 
 		else if( "" == password ) {
-            _alert("请输入密码");
+            popupMessage("请输入密码");
             $$("password").focus();
             return;
         }
@@ -617,6 +615,15 @@ function relogin(request) {
             }, 10);
         }
     });
+}
+
+function popupMessage(msg) {
+	if(window._alert) {
+		_alert(msg);
+	}
+	else {
+		alert(msg);
+	}
 }
 
 /*

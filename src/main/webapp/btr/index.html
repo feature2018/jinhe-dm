@@ -1,122 +1,574 @@
 <!DOCTYPE html>
-<html>
+<html> 
+    <head>
+        <meta charset="UTF-8">
+        <title>BTR数据门户</title>
 
-<head>
+        <script src="framework/core.js"></script>
+        <script src="framework/ajax.js"></script>
 
-  <meta charset="UTF-8">
+        <script src="tools/ichartjs/ichart.1.1.min.js"></script>
+        <script type="text/javascript" src="dm/common.js"></script>
+        <script type="text/javascript" src="dm/ichart.js"></script>
 
-  <title>BTR-BUSINESS INTELLIGENCE</title>
+        <style type="text/css">
 
-    <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
-    <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
-    <meta name="keyFrame" content="width=device-width, initial-scale=1.0"></meta>
+html {
+    height:100%;
+}
 
-    <script type="text/javascript" src="../framework/core.js"></script>
-    <script type="text/javascript" src="../framework/ajax.js"></script>
-    <script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+body {
+    width:100%;
+    height:100%;
+}
 
-    <script type="text/javascript">
+body,h1,h2,h3,h4,h5,h6,hr,p,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0; padding:0;}
+body,button,input,select,textarea{font:12px/1.5 tahoma,arial,\5b8b\4f53;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+address,cite,dfn,em,var{font-style:normal;}
+code,kbd,pre,samp{font-family:courier new,courier,monospace;}
+small{font-size:12px;}
+ul,ol{list-style:none;}
+a{text-decoration:none;}
+a:hover{text-decoration:underline;cursor: pointer;}
+sup{vertical-align:text-top;}
+sub{vertical-align:text-bottom;}
+legend{color:#000;}
+fieldset,img{border:0;}
+button,input,select,textarea{font-size:100%;}
+table{border-collapse:collapse;border-spacing:0;}
 
-    $(document).ready( function() {
-      
-      $('body').on("click", ".larg div h3", function(){
-        if ($(this).children('span').hasClass('close')) {
-          $(this).children('span').removeClass('close');
+
+#header {
+    height: 40px;
+    background-color: blue;
+    margin: 0 auto;
+    z-index: 100;
+}
+
+#logo {
+    height:29px;
+    padding-top:3px;
+    padding-left:10px;
+}
+
+#header span {
+    text-indent:13px;
+    font-weight: bold;
+    font-family:"微软雅黑";
+    color: #FFFFFF;
+}
+
+#logoName {
+    position: absolute;
+    top:4px;
+    left: 170px;
+    font-size: 20px;
+}
+
+#enter {
+    position: absolute;
+    right:260px;
+    height:36px;
+    cursor: pointer;
+}
+
+#more {
+    position: absolute;
+    top:6px;
+    right:130px;
+    width: 120px;
+    border: 1px solid #88D0E7;
+    background: #0C6F73;
+    box-shadow: #3a3c42 0 1px 0 inset;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+#logout {
+    position: absolute;
+    top:12px;
+    right:30px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* 主体样式 */
+#content {
+    clear: left;
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+    padding: 1px 0;
+}
+#content h2 {
+    height:22px;
+    line-height:22px;
+    font-size:12px;
+    text-indent:13px;
+    background-color:#D2E8F7;
+}
+
+#gridBox1{
+    float: left;
+    height: 360px;
+    margin: 0 2px 0 3px;
+    width: 30%;
+    border: 1px solid #6E6E6E;
+    border-style: none none none none;
+}
+
+#scrollGrid{
+    padding: 0px 2px 0;
+    height: 338px;
+    overflow: auto;
+}
+
+#scrollGrid table {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+#scrollGrid table>tr:hover {
+    background-color: yellow;
+}
+
+#scrollGrid table>tr>th, 
+#scrollGrid table>tr>td {
+    padding: 2px 2px 2px 2px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+    text-align: left;
+}
+
+#scrollGrid table .odd {
+    background-color: #FFC;
+}
+#scrollGrid table .even {
+    background-color: #FFF;
+}
+ 
+#chartBox1 {
+    float: left;
+    height: 360px;
+    margin: 0 3px 0 0;
+    overflow: hidden;
+    position: relative;
+    width: 69%;
+    border: 1px solid #6E6E6E;
+    border-style: none none none none;
+}
+ 
+#reportBox {
+    float: left;
+    height: 340px;
+    width: 99%;
+    margin: 1px 0 0 4px;
+    border: 1px solid #6E6E6E;
+    border-style: none none none;
+}
+
+.tabmenu {
+    width:100%;
+    height:23px;
+    border-left:1px solid  #CCC;
+    border-top:1px solid #ccc;
+}
+.tabmenu ul {
+    margin:0; 
+    padding:0;
+    list-style-type: none;
+}
+.tabmenu li { 
+    text-align:center; 
+    float:left; 
+    display:block; 
+    width:100px; 
+    height:22px; 
+    overflow:hidden; 
+    background-color: #D2E8F7; 
+    line-height:27px; 
+    border-bottom:#ccc 1px solid; 
+    display:inline; 
+    font-size:12px;
+    margin-left: 1px;
+    cursor:pointer;
+}
+.tabmenu .cli {
+    font-weight: bold;
+    background-color: #fff;
+    border-bottom:#fff 1px solid;
+    cursor:default;
+}
+           
+    </style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+    var globalValiable = {}; // 用来存放传递给iframe页面的信息
+
+    URL_DATA_SERVICE1   = 'display/json/' + 51;
+    URL_DATA_SERVICE2   = 'wms/kanban/1';
+    URL_DATA_SERVICE3   = 'display/json/' + 57;
+    URL_DATA_SERVICE4   = 'display/json/' + '';
+    URL_DATA_SERVICE5   = 'display/json/' + 49;
+
+    if (IS_TEST) {
+        URL_DATA_SERVICE1 = 'data/index-1.json?';
+        URL_DATA_SERVICE2 = 'data/index-2.json?';
+        URL_DATA_SERVICE3 = 'data/index-3.json?';
+        URL_DATA_SERVICE4 = 'data/index-4.json?';
+        URL_DATA_SERVICE5 = 'data/index-5.json?';
+    }
+    else {
+        if(Cookie.getValue("token") == null) {
+            window.location = "login.html";
         }
-        else {
-          $(this).children('span').addClass('close');
+    }
+
+    window.setInterval(refresh, 1000 * 100);  // 每100秒刷新一次
+
+    function refresh(isClickRefresh) {
+        if( !isClickRefresh ) {
+             queryTodaySO(); // 点击仓库或货主触发刷新时无需刷新此grid
         }
-        $(this).parent().children('p').slideToggle(250);
-      });
+       
+        queryKanban();
+
+        var arrayli = $$("reportBox").getElementsByTagName("li"); // 获取li数组
+        for(var i=0; i < arrayli.length; i++) {
+            if(arrayli[i].className == "cli") {
+                eval("tab" + (i + 1) + "Function()");
+            }                
+        }
+    }
+
+    function queryTodaySO() {
+        var queryParams = {};
+
+        var today = new Date();
+        today.setDate(today.getDate() - 1);
+        queryParams.param2 = today.format('yyyy-MM-dd') + " 16:00:00";  
+
+        today.setDate(today.getDate() + 2);
+        queryParams.param3 = today.format('yyyy-MM-dd') + " 23:59:59";  
+ 
+        Ajax({
+            url : URL_DATA_SERVICE1,
+            method : REQUEST_METHOD,
+            params : queryParams,
+            type : "json",
+            waiting : true,
+            ondata : function() { 
+                var result = JSON.parse(this.getResponseText());
+                var scrollGrid = $$("scrollGrid");
+                scrollGrid.innerHTML = "";
+
+                var table = document.createElement("table");
+                scrollGrid.appendChild(table);
+
+                for(var i = 0; i < result.length; i++) {
+                    var row = result[i];
+
+                    var tr = document.createElement("tr");
+                    tr.className = (i % 2 == 0 ? "odd" : "even");
+                    table.appendChild(tr);
+                    tr.row = row;
+
+                    var td = document.createElement("td");
+                    td.innerHTML = (i + 1);
+                    td.style.width = "25px";
+                    tr.appendChild(td);
+
+                    var td = document.createElement("td");
+                    td.innerHTML = "<a href='#'>" + row["仓库"] + "</a>";
+                    td.style.width = "38%";
+                    tr.appendChild(td);
+                    td.firstChild.onclick = function() {
+                        var row = this.parentNode.parentNode.row;
+                        globalValiable._whName = row["仓库"];
+                        globalValiable._whCode = row["whcode"];
+                        globalValiable._whId   = row["whid"];
+
+                        delete globalValiable._customerName;
+                        delete globalValiable._customerId;
+
+                        refresh(true);
+                    };
+
+                    var td = document.createElement("td");
+                    td.innerHTML = "<a href='#'>" + row["货主"] + "</a>";
+                    td.style.width = "43%";
+                    tr.appendChild(td);
+                    td.firstChild.onclick = function() {
+                        var row = this.parentNode.parentNode.row;
+                        globalValiable._whName = row["仓库"];
+                        globalValiable._whCode = row["whcode"];
+                        globalValiable._whId   = row["whid"];
+
+                        globalValiable._customerName = row["货主"];
+                        globalValiable._customerId   = row["customerid"];
+
+                        refresh(true);
+                    }
+
+                    var td = document.createElement("td");
+                    td.innerHTML = row["订单数量"];
+                    tr.appendChild(td);
+                }
+            }
+        });
+    }
+
+    function queryKanban() {
+        var queryParams = {};
+        var today = new Date();
+        queryParams.searchTimeTo = today.format('yyyy-MM-dd') + " 23:59:59";  
+
+        today.setDate(today.getDate() - 1);
+        queryParams.searchTimeFrom = today.format('yyyy-MM-dd') + " 16:00:00";  
+
+        if(globalValiable._whCode != null) {
+            queryParams.whCodes = globalValiable._whCode;
+        }
+        if(globalValiable._customerId != null) {
+            queryParams.customerIds = globalValiable._customerId;
+        }
+ 
+        Ajax({
+            url : URL_DATA_SERVICE2,
+            params : queryParams,
+            method : REQUEST_METHOD,
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                var originData = eval(this.getResponseText());
+                if (originData) {
+                    drawKanban(originData);
+                }
+            }
+        });
+
+        function drawKanban(originData) {
+            var values1 = [];
+            var values2 = [];
+            var max = 0;
+            for(var i = 0; i < originData.length; i++) {
+                values1[i] = originData[i][1]; 
+                values2[i] = originData[i][2]; 
+                max = Math.max(max, values1[i] + values2[i]);
+            }
+            max = $round(Math.round(max));
+
+            var data = [
+                        {
+                            name : '已完成',
+                            value: values2,
+                            color:'green'
+                        },
+                        {
+                            name : '待做',
+                            value: values1,
+                            color:'red'
+                        }
+                     ];
       
-      $('body').on("click", ".submanu li a", function(){
-        var title = $(this).data('title');
-        $('.title').children('h2').html(title);
-      });
-    });
 
-    </script>
+            var autoSize  = autoAdjustSize("canvasDiv");
+            var labels = ["创建","取消","分配","拣货","验货", "称重", "发运"];
 
-</head>
+            var preTitle = globalValiable._customerName ? globalValiable._customerName : globalValiable._whName
+            var title = (preTitle ? preTitle : "") + ' 最后更新:' + getLastFlushTime();
+            var unitName = "单";
+            var canvasName = 'canvasDiv';
 
-<body>
+            drawColumn3D(canvasName, data, labels, max, title, unitName, autoSize[0], autoSize[1]);
+        }
+    }
+ 
+    function tabChange(obj) {
+        var arrayli = obj.parentNode.getElementsByTagName("li"); // 获取li数组
+        for(var i=0; i < arrayli.length; i++) {
+            if(obj == arrayli[i]) {
+                if(arrayli[i].className == "cli") {
+                    return;
+                }
 
-  <span class='bckg'></span>
-<header>
-  <h1>
-    BTR-BI
-  </h1>
-  <nav>
-    <ul>
-      <li class='mainmanu' id='daily'>
-        <a >全网日报</a>
-        <ul class='submanu'>
-            <li><a target="keyFrame" data-title='省份产出货量' href="DAILY/provinceTransorder.html">省产出货量</a></li>
-            <li><a target="keyFrame" data-title='分拨产出货量' href="DAILY/centerTransQ.html">分拨产出货量</a></li>
-            <li><a target="keyFrame" data-title='分拨操作货量' href="DAILY/opWeight.html">分拨操作货量</a></li>            
-            <li><a target="keyFrame" data-title='子单留仓扫描' href="DAILY/le-cen.html">子单留仓扫描</a></li>
-            <li><a target="keyFrame" data-title='破损少件问题件比率' href="DAILY/provBrSt.html">省破少问题件</a></li>
-            <li><a target="keyFrame" data-title='审核并确认投诉率占比' href="DAILY/provCom.html">省投诉率比</a></li>
-            <li><a target="keyFrame" data-title='省份货量流向' href="DAILY/inOutTransQ.html">省份货量流向</a></li> 
-            <li><a target="keyFrame" data-title='中转物料收入' href="DAILY/income.html">中转物料收入</a></li>
-            <li><a target="keyFrame" data-title='物料收入' href="DAILY/incomeStock.html">物料收入</a></li>
-            <li><a target="keyFrame" data-title='分拨间扫描率' href="DAILY/zzscanR.html">分拨扫描率</a></li>
-            <li><a target="keyFrame" data-title='网点分拨扫描率' href="DAILY/zdscanR.html">网点分拨扫描</a></li> 
-            <li><a target="keyFrame" data-title='分拨时效达成情况' href="DAILY/centerTimeE.html">时效达成率</a></li> 
-            <li><a target="keyFrame" data-title='分拨或省份人均效能' href="DAILY/personPerformance.html">人均效能</a></li> 
-            <li><a target="keyFrame" data-title='省份方向时效' href="DAILY/inOutTimeE.html">省份方向时效</a></li>                  
-          </ul>
-      </li>
-      <li class='mainmanu' id='line'>
-        <a >指标走势</a>
-          <ul class='submanu'>
-            <li><a target="keyFrame" data-title='全网货量走势(日/周/月)' href="LINE/ymdlineTransQ.html">全网货量</a></li>
-            <li><a target="keyFrame" data-title='分拨出派货量走势(日/周/月)' href="LINE/ymdlineCenter.html">分拨出派货量</a></li>
-            <li><a target="keyFrame" data-title='同省份分拨横向产出货量走势' href="LINE/lineAllP2.html">各分拨产出量</a></li>  
-            <li><a target="keyFrame" data-title='分拨操作量走势(日/周/月)' href="LINE/ymdlineOpWeight.html">分拨操作量</a></li>
-            <li><a target="keyFrame" data-title='中转费收入走势(日/周/月)' href="LINE/ymdlineIncome.html">中转费收入</a></li>
-            <li><a target="keyFrame" data-title='时效达成率走势(日/周/月)' href="LINE/ymdLineTimeE2.html">时效达成率</a></li>
-            <li><a target="keyFrame" data-title='线路装载率' href="LINE/lineLoadR3.html">线路装载率</a></li>            
-            <li><a target="keyFrame" data-title='破损少件问题件比率(日/周/月)' href="LINE/ymdlineProblemPercent.html">破少问题件比</a></li>
-            <li><a target="keyFrame" data-title='审核并确认投诉率占比(日/周/月)' href="LINE/ymdlineComplaint.html">投诉率比</a></li>
-            <li><a target="keyFrame" data-title='中心扫描率(日/周/月)' href="LINE/ymdScanCC.html">中心扫描率</a></li>
-            <li><a target="keyFrame" data-title='人均效能' href="LINE/ymdlinePersonP.html">人均效能</a></li>
-          </ul>
-      </li>
-      <li class='mainmanu' id='warning'>
-        <a >财务指标</a>
-          <ul class='submanu'>
-            <li><a target="keyFrame" data-title='经营状况预警之省份横向比较' href="DAILY/budgetStack2.html">省预算实际比</a></li>
-            <li><a target="keyFrame" data-title='经营状况预警之明细预算实际比' href="DAILY/budgetPoNe.html">单项预算实际</a></li> <li>
-            <li><a target="keyFrame" data-title='合计类大项对比' href="DAILY/budgetStackIncomeAndPayout.html">大项预算实际</a></li>           
-            <li><a target="keyFrame" data-title='日各项财务指标横向比较' href="DAILY/finance.html">财务日数据</a></li>
-            <li><a target="keyFrame" data-title='各项财务指标走势' href="LINE/ymdlineFee.html">财务指标走势</a></li>            
+                arrayli[i].className = "cli";
+                
+                eval("tab" + (i + 1) + "Function()");
+            }
+            else {
+                arrayli[i].className = "";
+            }
+        }
+    }
 
-            <li><a target="keyFrame" data-title='经营状况预警之七省份横向对比' href="DAILY/business.html">七省横向对比</a></li>            
-            <li><a target="keyFrame" data-title='网点运能预警' href="DAILY/budgetStackIncomeAndPayout.html">网点运能预警</a></li>
-          </ul>
-      </li>
-     
-    </ul>
-  </nav>
-</header>
-<main>
-  <div class='title'>
-    <h2>BTR数据集市</h2>
-    <a href='#' title='用户'>
-      百世快运V1.0
+    function tab1Function() {
+        var queryParams = {};
+        if(globalValiable._whId != null) {
+            queryParams._whIds = globalValiable._whId;
+        }
+        if(globalValiable._customerId != null) {
+            queryParams._customerIds = globalValiable._customerId;
+        }
+
+        Ajax({
+            url : URL_DATA_SERVICE3,
+            method : REQUEST_METHOD,
+            params : queryParams,
+            type : "json",
+            waiting : true,
+            ondata : function() { 
+                var result = eval(this.getResponseText());
+                if(result == null || result.length == 0) return;
+
+                var resultMap = {};
+                for(var i = 0; i < result.length; i++) {
+                    resultMap[result[i].name] = result[i].value;
+                }
+
+                var now = new Date();
+                var index = now.getHours() * 60 + now.getMinutes();
+                globalValiable.data = [];
+
+                var dayMinutes = everyMinuteOfDay();
+                for(var i = index; i < 24 * 60; i++) {
+                    var name = dayMinutes[i];
+                    var value = resultMap[name] || 0;
+                    globalValiable.data.push( {"name": name, "value": value} )
+                }
+
+                for(var i = 0; i < index; i++) {
+                    var name = dayMinutes[i];
+                    var value = resultMap[name] || 0;
+                    globalValiable.data.push( {"name": name, "value": value} )
+                }
+                
+                // 数据在iframe里展示
+                $$("chatFrame").setAttribute("src", "dm/ichart.html?type=Line2D");
+            }
+        });
+    }
+
+    function everyMinuteOfDay() {
+        var array = [];
+        for(var i = 0; i < 24; i++) {
+             for(var j = 0; j < 60; j++) {
+                array.push( (i < 10 ? "0" : "") + i + ":" + (j < 10 ? "0" : "") + j );
+             }
+        }
+        return array;
+    }
+
+    function tab2Function() {
+        
+    }
+
+    function tab3Function() {
+        var queryParams = {};
+        var today = new Date();
+        today.setDate(today.getDate() - 30);
+        queryParams.param3 = today.format('yyyy-MM-dd');  
+
+        // 发送AJAX请求，取回数据，再打开iframe里的页面
+        Ajax({
+            url : URL_DATA_SERVICE5,
+            method : REQUEST_METHOD,
+            params : queryParams,
+            type : "json",
+            waiting : true,
+            ondata : function() { 
+                globalValiable.queryParams = this.paramObj.params;
+                globalValiable.data = eval(this.getResponseText());
+                globalValiable.title = "";
+                
+                // 数据在iframe里展示
+                $$("chatFrame").setAttribute("src", "dm/ichart.html?type=Line2D");
+            }
+        });
+    }
+
+    function autoAdjustSize(elementID) {
+        var _width  = $$(elementID).parentNode.offsetWidth - 5;
+        var _height = $$(elementID).parentNode.offsetHeight - 5;
+
+        return [ _width, _height];
+    }
+
+    function logout() {
+        Ajax({
+            url : "logout.in",
+            method : "GET",
+            onsuccess : function() { 
+                Cookie.del("token", "/dms/");
+                Cookie.del("token", "/dms");
+                Cookie.del("token", "");
+                Cookie.del("token", "/");
+                location.href = "login.html";
+            }
+        });
+    }
+
+    window.onload = function() {
+        refresh();
+        tab1Function();
+
+        $$("logout").onclick = logout;
+
+        var autoSize  = autoAdjustSize("header");
+        $$("reportBox").style.height = (autoSize[1] - 40 - 360 - 25) + "px";
+    }
+
+//-->
+</SCRIPT>
+ 
+    </head>
+    
+    <body>
+
+<div id="header">
+    <img src="images/logo.png" id="logo"/>
+    <span id="logoName">BTR数据门户</span>
+
+    <a href="dm/report.html">
+        <img src="images/arrow-left.png" id="enter"/>
+        <span id="more">更多数据分析</span>
     </a>
-  </div>
 
-  <div id='canvasMap'>
-    <iframe width='100%' height='100%'  src="" name='keyFrame' style='border:none;'></iframe> <!-- style='border:none;'-->    
-    <div id='canvasDiv'></div>
-  </div>
+    <span id="logout">退 出</span>
+</div>
+
+<div id="content">
+ 
+    <div id="gridBox1">
+        <h2>今日单量排名</h2>
+        <div id="scrollGrid">
+
+        </div>
+    </div>
+
+    <div id="chartBox1">
+        <h2>订单作业进度</h2>
+        <div id="canvasDiv"></div>
+    </div>
+
+    <div id="reportBox" class="tabbox">
+        <div class="tabmenu">
+            <ul>
+                <li onclick="tabChange(this)" class="cli">发货单(每分钟)</li>
+                <li onclick="tabChange(this)">验货量(每分钟)</li>
+                <li onclick="tabChange(this)">今日访问统计</li>
+            </ul>
+        </div>
+        <iframe id="chatFrame" src="" style="width:100%;height:100%;" frameborder="0"></iframe>
+    </div>
+ 
+</div>
   
-</main>
-
-
-
-</body>
+    </body>
 
 </html>

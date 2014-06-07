@@ -52,7 +52,6 @@ function init() {
 		_alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
 	}	
 
-	initNaviBar("dm.1");
 	initMenus();
 	initEvents();
 

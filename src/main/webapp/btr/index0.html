@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>BTR-BUSINESS INTELLIGENCE</title>
+
+    <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+    <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+    <meta name="keyFrame" content="width=device-width, initial-scale=1.0"></meta>
+
+    <script type="text/javascript" src="../framework/core.js"></script>
+    <script type="text/javascript" src="../framework/ajax.js"></script>
+    <script type="text/javascript" src="../ichartjs/ichart.1.1.min.js"></script>
+
+    <script type="text/javascript">
+
+    $(document).ready( function() {
+      
+      $('body').on("click", ".larg div h3", function(){
+        if ($(this).children('span').hasClass('close')) {
+          $(this).children('span').removeClass('close');
+        }
+        else {
+          $(this).children('span').addClass('close');
+        }
+        $(this).parent().children('p').slideToggle(250);
+      });
+      
+      $('body').on("click", ".submanu li a", function(){
+        var title = $(this).data('title');
+        $('.title').children('h2').html(title);
+      });
+    });
+
+    </script>
+
+</head>
+
+<body>
+
+  <span class='bckg'></span>
+<header>
+  <h1>
+    BTR-BI
+  </h1>
+  <nav>
+    <ul>
+      <li class='mainmanu' id='daily'>
+        <a >全网日报</a>
+        <ul class='submanu'>
+            <li><a target="keyFrame" data-title='省份产出货量' href="DAILY/provinceTransorder.html">省产出货量</a></li>
+            <li><a target="keyFrame" data-title='分拨产出货量' href="DAILY/centerTransQ.html">分拨产出货量</a></li>
+            <li><a target="keyFrame" data-title='分拨操作货量' href="DAILY/opWeight.html">分拨操作货量</a></li>            
+            <li><a target="keyFrame" data-title='子单留仓扫描' href="DAILY/le-cen.html">子单留仓扫描</a></li>
+            <li><a target="keyFrame" data-title='破损少件问题件比率' href="DAILY/provBrSt.html">省破少问题件</a></li>
+            <li><a target="keyFrame" data-title='审核并确认投诉率占比' href="DAILY/provCom.html">省投诉率比</a></li>
+            <li><a target="keyFrame" data-title='省份货量流向' href="DAILY/inOutTransQ.html">省份货量流向</a></li> 
+            <li><a target="keyFrame" data-title='中转物料收入' href="DAILY/income.html">中转物料收入</a></li>
+            <li><a target="keyFrame" data-title='物料收入' href="DAILY/incomeStock.html">物料收入</a></li>
+            <li><a target="keyFrame" data-title='分拨间扫描率' href="DAILY/zzscanR.html">分拨扫描率</a></li>
+            <li><a target="keyFrame" data-title='网点分拨扫描率' href="DAILY/zdscanR.html">网点分拨扫描</a></li> 
+            <li><a target="keyFrame" data-title='分拨时效达成情况' href="DAILY/centerTimeE.html">时效达成率</a></li> 
+            <li><a target="keyFrame" data-title='分拨或省份人均效能' href="DAILY/personPerformance.html">人均效能</a></li> 
+            <li><a target="keyFrame" data-title='省份方向时效' href="DAILY/inOutTimeE.html">省份方向时效</a></li>                  
+          </ul>
+      </li>
+      <li class='mainmanu' id='line'>
+        <a >指标走势</a>
+          <ul class='submanu'>
+            <li><a target="keyFrame" data-title='全网货量走势(日/周/月)' href="LINE/ymdlineTransQ.html">全网货量</a></li>
+            <li><a target="keyFrame" data-title='分拨出派货量走势(日/周/月)' href="LINE/ymdlineCenter.html">分拨出派货量</a></li>
+            <li><a target="keyFrame" data-title='同省份分拨横向产出货量走势' href="LINE/lineAllP2.html">各分拨产出量</a></li>  
+            <li><a target="keyFrame" data-title='分拨操作量走势(日/周/月)' href="LINE/ymdlineOpWeight.html">分拨操作量</a></li>
+            <li><a target="keyFrame" data-title='中转费收入走势(日/周/月)' href="LINE/ymdlineIncome.html">中转费收入</a></li>
+            <li><a target="keyFrame" data-title='时效达成率走势(日/周/月)' href="LINE/ymdLineTimeE2.html">时效达成率</a></li>
+            <li><a target="keyFrame" data-title='线路装载率' href="LINE/lineLoadR3.html">线路装载率</a></li>            
+            <li><a target="keyFrame" data-title='破损少件问题件比率(日/周/月)' href="LINE/ymdlineProblemPercent.html">破少问题件比</a></li>
+            <li><a target="keyFrame" data-title='审核并确认投诉率占比(日/周/月)' href="LINE/ymdlineComplaint.html">投诉率比</a></li>
+            <li><a target="keyFrame" data-title='中心扫描率(日/周/月)' href="LINE/ymdScanCC.html">中心扫描率</a></li>
+            <li><a target="keyFrame" data-title='人均效能' href="LINE/ymdlinePersonP.html">人均效能</a></li>
+          </ul>
+      </li>
+      <li class='mainmanu' id='warning'>
+        <a >财务指标</a>
+          <ul class='submanu'>
+            <li><a target="keyFrame" data-title='经营状况预警之省份横向比较' href="DAILY/budgetStack2.html">省预算实际比</a></li>
+            <li><a target="keyFrame" data-title='经营状况预警之明细预算实际比' href="DAILY/budgetPoNe.html">单项预算实际</a></li> <li>
+            <li><a target="keyFrame" data-title='合计类大项对比' href="DAILY/budgetStackIncomeAndPayout.html">大项预算实际</a></li>           
+            <li><a target="keyFrame" data-title='日各项财务指标横向比较' href="DAILY/finance.html">财务日数据</a></li>
+            <li><a target="keyFrame" data-title='各项财务指标走势' href="LINE/ymdlineFee.html">财务指标走势</a></li>            
+
+            <li><a target="keyFrame" data-title='经营状况预警之七省份横向对比' href="DAILY/business.html">七省横向对比</a></li>            
+            <li><a target="keyFrame" data-title='网点运能预警' href="DAILY/budgetStackIncomeAndPayout.html">网点运能预警</a></li>
+          </ul>
+      </li>
+     
+    </ul>
+  </nav>
+</header>
+<main>
+  <div class='title'>
+    <h2>BTR数据集市</h2>
+    <a href='#' title='用户'>
+      百世快运V1.0
+    </a>
+  </div>
+
+  <div id='canvasMap'>
+    <iframe width='100%' height='100%'  src="" name='keyFrame' style='border:none;'></iframe> <!-- style='border:none;'-->    
+    <div id='canvasDiv'></div>
+  </div>
+  
+</main>
+
+
+
+</body>
+
+</html>

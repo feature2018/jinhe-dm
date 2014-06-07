@@ -1,6 +1,6 @@
   html {
-  	height:100%;
-  	scrollbar-face-color: #BEC6EE;
+    height:100%;
+    scrollbar-face-color: #BEC6EE;
     scrollbar-highlight-color: #C0C4E7;
     scrollbar-shadow-color: #C0C4E7;
     scrollbar-3dlight-color: #A5AEDA;
@@ -18,24 +18,24 @@
   }
 
   span {
-	  display:inline-block;
+    display:inline-block;
   }
   table {
-  	 border: 0;
-  	 margin: 0;
-  	 border-collapse:collapse;
+     border: 0;
+     margin: 0;
+     border-collapse:collapse;
   }
   td {
     color: #000000;
     font-size: 12px; 
-	  padding:0;
+    padding:0;
   }
 
   /* 充满父容器的表格 */
   table.full {
     width: 100%;
     height: 100%;
-	  border:0; 
+    border:0; 
   }
   table.hFull {
     width: 100%;
@@ -46,8 +46,8 @@
 
   table.border {
     border: 1px solid #96969E;
-  	border-collapse: collapse; 
-  	border-spacing:0;
+    border-collapse: collapse; 
+    border-spacing:0;
   }
 
   /* 右栏凹陷区域 */
@@ -65,7 +65,7 @@
 
   a {
     text-decoration: none;
-	  font-family: "宋体";
+    font-family: "宋体";
   }
   a:link {
     color: #000000;
@@ -75,56 +75,6 @@
   }
   a:hover {
     text-decoration: none;
-  }
-
-  /* 顶部 */
-  .top td{
-    background-image: url(../images/blue_top.gif);
-  }
-  .top .logo {
-    width: 571px;
-    height: 41px;
-    background-image: url(../images/title.jpg);
-  }
-  /* 系统功能 */
-  .system {
-    color: #D0E8FF;
-    text-align:right;
-    padding-right:16px;
-    padding-top:24px;
-    position:relative;
-  }
-
-  .system a:link {
-    color: #D0E8FF;
-  }
-  .system a:active {
-    color: #D0E8FF;
-  }
-  .system a:visited {
-    color: #D0E8FF;
-  }
-  .system a:hover {
-    text-decoration: underline;
-  }
-  /* 导航条 */
-  a.navi:link,a.navi:visited,a.navi:active,a.navi:hover{
-    color: #000000;
-    text-align: center;
-    vertical-align: middle;
-    height: 18px;
-    padding: 2px 3px 0px 3px;
-	  margin:0px 2px;
-  }
-  a.naviActive:link,a.naviActive:visited,a.naviActive:active,a.naviActive:hover{
-    color: #000000;
-    text-align: center;
-    vertical-align: middle;
-    height: 18px;
-    padding: 2px 3px 0px 3px;
-	  margin:0px 2px;
-    background-color: #ACB5F2;
-    border: 1px solid #6868B0;
   }
 
   .panel {
@@ -196,14 +146,14 @@
     padding-left: 4px;
     padding-top: 4px;
     height: 21px;
-	  cursor:default;
+    cursor:default;
   }
   /* 左栏树标题横条展开状态 */
   #palette .bar .opened{
     position: relative;
     background-image: url(../images/title_opened.gif);
     background-repeat: repeat-x;
-    border-left: 1px solid #E5E8F5;
+
   }
   /* 左栏树标题横条折叠状态 */
   #palette .bar .closed{
@@ -248,7 +198,7 @@
   }
 
   #closeLeftBarIcon {
-	  position: absolute;
+    position: absolute;
     top: 1px;
     right: 0px;
     width: 18px;
@@ -296,60 +246,60 @@
 
 
   .btWeak {
-  	color: #403756;
-  	width: 50px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #403756;
+    width: 50px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_weak.gif);
   }
   .btWeakS {
-  	color: #403756;
-  	width: 18px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #403756;
+    width: 18px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_weak_short.gif);
   }
   .btWeakL {
-  	color: #403756;
-  	width: 90px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #403756;
+    width: 90px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_weak_long.gif);
   }
   .btStrong {
-  	color: #2F2469;
-  	width: 50px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #2F2469;
+    width: 50px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_strong.gif);
   }
   .btStrongS {
-  	color: #2F2469;
-  	width: 18px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #2F2469;
+    width: 18px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_strong_short.gif);
   }
   .btStrongL {
-  	color: #2F2469;
-  	width: 90px;
-  	height: 18px;
-  	border: 0 !important;
+    color: #2F2469;
+    width: 90px;
+    height: 18px;
+    border: 0 !important;
     background-image: url(../images/button_strong_long.gif);
   }
 
   /* 加载中动画 */
   .loading {
-  	width: 53px;
-  	height: 20px;	
+    width: 53px;
+    height: 20px; 
     background-image: url(../images/loading.gif);
-  	background-repeat: no-repeat;
-  	background-position: 3px 3px;
+    background-repeat: no-repeat;
+    background-position: 3px 3px;
   }
   /* 列表项前的圆点图片 */
   .bullet {
     background-image: url(../images/icon_circle.gif);
-  	background-repeat: no-repeat;
+    background-repeat: no-repeat;
     background-position:1px 3px;
     width:5px;
     height:5px;
