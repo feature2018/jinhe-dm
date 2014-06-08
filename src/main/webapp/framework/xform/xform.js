@@ -186,7 +186,7 @@ XForm.prototype.tempalte2HTML = function() {
 			if(name == "editable") {
 				value = value || oThis.editable;
 			}
-			returnVal += name + " = '" + value + "' ";
+			returnVal += name + " = \"" + value + "\" ";
 		}
 		return returnVal;
 	 }
