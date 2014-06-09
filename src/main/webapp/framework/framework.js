@@ -44,8 +44,6 @@ CACHE_MAIN_TREE = "_tree_";
 
 DEFAULT_NEW_ID = "-10";
 
-DEFAULT_IDENTIFIER = "com.jinhe.tss.um.sso.UMPasswordIdentifier";
-
 function showOnlineUser() {
 	Ajax({
 		url : AUTH_PATH + "user/online",

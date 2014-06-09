@@ -53,7 +53,7 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
             addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);
         }
         if(paramService.getParam(Constants.DEFAULT_CONN_POOL) == null) {
-            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", "connpool-vf-oracle");
         }
         if(paramService.getParam(Constants.Log_DIR) == null) {
 			String tmpDir = System.getProperty("java.io.tmpdir") + "fbLog";

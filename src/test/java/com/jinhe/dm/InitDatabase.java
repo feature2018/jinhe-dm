@@ -108,7 +108,7 @@ public class InitDatabase extends AbstractTransactionalJUnit4SpringContextTests 
         }
         
         // 数据源配置
-        addParam(group.getId(), Constants.DEFAULT_CONN_POOL, "默认数据源", "connectionpool-1");
+        addParam(group.getId(), Constants.DEFAULT_CONN_POOL, "默认数据源", "connpool-vf-oracle");
         
         Param dlParam = addParamGroup(group.getId(), Constants.DATASOURCE_LIST, "数据源列表");
         addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);

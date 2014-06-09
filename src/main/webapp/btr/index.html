@@ -4,12 +4,12 @@
         <meta charset="UTF-8">
         <title>BTR数据门户</title>
 
-        <script src="framework/core.js"></script>
-        <script src="framework/ajax.js"></script>
+        <script src="../framework/core.js"></script>
+        <script src="../framework/ajax.js"></script>
 
-        <script src="tools/ichartjs/ichart.1.1.min.js"></script>
-        <script type="text/javascript" src="dm/common.js"></script>
-        <script type="text/javascript" src="dm/ichart.js"></script>
+        <script src="../tools/ichartjs/ichart.1.1.min.js"></script>
+        <script type="text/javascript" src="../dm/common.js"></script>
+        <script type="text/javascript" src="../dm/ichart.js"></script>
 
         <style type="text/css">
 
@@ -210,18 +210,18 @@ table{border-collapse:collapse;border-spacing:0;}
 <!--
     var globalValiable = {}; // 用来存放传递给iframe页面的信息
 
-    URL_DATA_SERVICE1   = 'display/json/' + 51;
-    URL_DATA_SERVICE2   = 'wms/kanban/1';
-    URL_DATA_SERVICE3   = 'display/json/' + 57;
-    URL_DATA_SERVICE4   = 'display/json/' + '';
-    URL_DATA_SERVICE5   = 'display/json/' + 49;
+    URL_DATA_SERVICE1   = '../display/json/' + 51;
+    URL_DATA_SERVICE2   = '../display/json/' + 51;
+    URL_DATA_SERVICE3   = '../display/json/' + 57;
+    URL_DATA_SERVICE4   = '../display/json/' + '';
+    URL_DATA_SERVICE5   = '../display/json/' + 49;
 
     if (IS_TEST) {
-        URL_DATA_SERVICE1 = 'data/index-1.json?';
-        URL_DATA_SERVICE2 = 'data/index-2.json?';
-        URL_DATA_SERVICE3 = 'data/index-3.json?';
-        URL_DATA_SERVICE4 = 'data/index-4.json?';
-        URL_DATA_SERVICE5 = 'data/index-5.json?';
+        URL_DATA_SERVICE1 = '../data/index-1.json?';
+        URL_DATA_SERVICE2 = '../data/index-2.json?';
+        URL_DATA_SERVICE3 = '../data/index-3.json?';
+        URL_DATA_SERVICE4 = '../data/index-4.json?';
+        URL_DATA_SERVICE5 = '../data/index-5.json?';
     }
     else {
         if(Cookie.getValue("token") == null) {
@@ -449,7 +449,7 @@ table{border-collapse:collapse;border-spacing:0;}
                 }
                 
                 // 数据在iframe里展示
-                $$("chatFrame").setAttribute("src", "dm/ichart.html?type=Line2D");
+                $$("chatFrame").setAttribute("src", "../dm/ichart.html?type=Line2D");
             }
         });
     }
@@ -487,7 +487,7 @@ table{border-collapse:collapse;border-spacing:0;}
                 globalValiable.title = "";
                 
                 // 数据在iframe里展示
-                $$("chatFrame").setAttribute("src", "dm/ichart.html?type=Line2D");
+                $$("chatFrame").setAttribute("src", "../dm/ichart.html?type=Line2D");
             }
         });
     }
@@ -531,11 +531,11 @@ table{border-collapse:collapse;border-spacing:0;}
     <body>
 
 <div id="header">
-    <img src="images/logo.png" id="logo"/>
+    <img src="../images/logo.png" id="logo"/>
     <span id="logoName">BTR数据门户</span>
 
     <a href="dm/report.html">
-        <img src="images/arrow-left.png" id="enter"/>
+        <img src="../images/arrow-left.png" id="enter"/>
         <span id="more">更多数据分析</span>
     </a>
 

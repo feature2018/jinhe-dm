@@ -569,8 +569,30 @@ function relogin(request) {
 
 	// 显示登录框
 	reloginBox.style.display = "block";
-	$$("loginName").focus();
-	$$("password").value = ""; // 清空上次输入的密码，以防泄密
+	var loginNameObj = $$("loginName");
+	var passwordObj = $$("password");
+	loginNameObj.focus();
+	passwordObj.value = ""; // 清空上次输入的密码，以防泄密
+	
+	loginNameObj.onblur = function() { 
+        var value = this.value;
+        if(value == null || value == "") return;
+ 		
+ 		delete loginNameObj.identifier;
+ 		
+        Ajax({
+            url: "/" + CONTEXTPATH + "getLoginInfo.in",
+            headers: {"appCode": FROMEWORK_CODE},
+            contents: {"loginName": value},
+            onexcption: function() {
+                loginNameObj.focus();
+            },
+            onresult: function(){
+                loginNameObj.identifier = this.getNodeValue("ClassName");
+                passwordObj.focus();
+            }
+        });
+    }
 
 	var loginButton = $$("bt_login");
 	var cancelButton = $$("bt_cancel");
@@ -580,8 +602,10 @@ function relogin(request) {
 	}
 	
 	var doLogin = function() {
-		var loginName = $$("loginName").value;
-        var password = $$("password").value;
+		var loginName = loginNameObj.value;
+        var password = passwordObj.value;
+        var identifier = loginNameObj.identifier;
+        
         if( "" == loginName ) {
             popupMessage("请输入账号");
             $$("loginName").focus();
@@ -591,12 +615,16 @@ function relogin(request) {
             popupMessage("请输入密码");
             $$("password").focus();
             return;
-        }
+        } 
+        else if( identifier == null ) {
+            popupMessage("无法登录，用户配置可能有误，请联系管理员。");
+            return;
+        } 
 
 		var p = request.paramObj;
 		p.setHeader("loginName", loginName);
 		p.setHeader("password",  password);
-		p.setHeader("identifier", DEFAULT_IDENTIFIER);
+		p.setHeader("identifier", identifier);
 
 		request.send();
 

@@ -167,7 +167,7 @@ function drawBar2D(canvasName, data, title, width, height) {
 
 function drawLine2D(canvasName, _data, labels, max, min, title, width, height) {
 
-	labels = processLabelSize(labels, width/100);
+	labels = processLabelSize(labels, width/120);
 
 	if(labels.length == 0) return;
 

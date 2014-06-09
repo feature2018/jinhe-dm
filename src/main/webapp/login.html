@@ -79,7 +79,6 @@ body {
     font-weight: bold;
 }
 
- 
     </style>
 
 <SCRIPT LANGUAGE="JavaScript">
@@ -91,80 +90,98 @@ body {
     window.alert = _alert;
     
     window.onload = function() {
-
-        $$("loginName").onfocus = $$("password").onfocus = function() {
+        var loginNameObj = $$("loginName");
+        var passwordObj  = $$("password");
+    
+        loginNameObj.onfocus = passwordObj.onfocus = function() {
              this.style.backgroundColor = "white";
         }
 
-        $$("loginName").focus();
+        loginNameObj.focus();
 
         var loginButton = $$("bt_login");
 
-        loginButton.onclick = doLogin;
+        loginButton.onclick = function() {
+            doLogin(loginNameObj, passwordObj);
+        };
  
-
         Event.attachEvent(document, "keydown", function(eventObj) {
             if(13 == eventObj.keyCode) { // enter
                 event.returnValue = false;
                 $$("bt_login").focus();
 
                 setTimeout(function() {
-                    doLogin();
+                    doLogin(loginNameObj, passwordObj);
                 }, 10);
             }
         });
 
-        $$("password").onblur = function() { 
+        passwordObj.onblur = function() { 
             this.style.backgroundColor = "#f0f0f0";
         }
 
-        $$("loginName").onblur = function() { 
+        loginNameObj.onblur = function() { 
             this.style.backgroundColor = "#f0f0f0";
 
             var value = this.value;
             if(value == null || value == "") return;
  
+            delete loginNameObj.identifier;
             Ajax({
                 url: URL_GET_USER_NAME,
                 headers: {"appCode": FROMEWORK_CODE},
                 contents: {"loginName": value},
                 onexcption: function() {
-                    $$("loginName").focus();
+                    loginNameObj.focus();
                 },
                 onresult: function(){
-                    var identifier = this.getNodeValue("ClassName");
-
-                    DEFAULT_IDENTIFIER = identifier;
-                    $$("password").focus();
+                    loginNameObj.identifier = this.getNodeValue("ClassName");
+                    passwordObj.focus();
                 }
             });
         }
     }
 
-    var doLogin = function() {
-        var loginName = $$("loginName").value;
-        var password = $$("password").value;
+    var doLogin = function(loginNameObj, passwordObj) {
+        var loginName = loginNameObj.value;
+        var password   = passwordObj.value;
+        var identifier = loginNameObj.identifier;
+        
         if( "" == loginName ) {
-            _alert("请输入账号");
-            $$("loginName").focus();
+            popupMessage("请输入账号");
+            loginNameObj.focus();
             return;
         } 
         else if( "" == password ) {
-            _alert("请输入密码");
-            $$("password").focus();
+            popupMessage("请输入密码");
+            passwordObj.focus();
             return;
         }
+        else if( identifier == null ) {
+            popupMessage("无法登录，用户配置可能有误，请联系管理员。");
+            return;
+        } 
 
         Ajax({
             url: URL_LOGIN,
-            headers : {"appCode": FROMEWORK_CODE, "loginName": loginName, "password": password, "identifier": DEFAULT_IDENTIFIER},
+            headers : {"appCode": FROMEWORK_CODE, "loginName": loginName, "password": password, "identifier": identifier},
             onexception: function(errorMsg) {
-                $$("password").focus();
+                passwordObj.focus();
             },
             onsuccess: function() {
                 location.href = "index.html";
             }
         });
+    }
+
+    /* 找回密码  */
+    function forget() {
+        window.open("forget.html", "", "width=400, height=250");
+    }
+
+    /* 注册 */
+    function register() {
+        window.open("register.htm", "", "width=400, height=250");
     }
 
 //-->
