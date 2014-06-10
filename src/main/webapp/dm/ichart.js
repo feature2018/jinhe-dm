@@ -12,7 +12,7 @@ function drawColumn3D(canvasName, data, labels, max, title, unitName, width, hei
 			},
 			width: width,
 			height: height,
-			column_width:70,
+			column_width:50,
 			background_color : '#ffffff',
 			shadow : true,
 			shadow_blur : 3,

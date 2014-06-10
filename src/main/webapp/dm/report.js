@@ -423,7 +423,7 @@ function searchReport(treeID, download) {
 	if( xform && !xform.checkForm() ) return;
 
 	Element.hide($$("searchFormDiv"));
-	var searchFormXML = Cache.XmlDatas.get("searchForm");
+	var searchFormXML = Cache.XmlDatas.get("searchFormXML");
 
 	if(download) {
 		var queryString = "?";
@@ -702,7 +702,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 	var xmlReader = new XmlReader(formContent);
 	var searchFormXML = new XmlNode(xmlReader.documentElement);
 	var searchForm = $X("searchForm", searchFormXML);
-	Cache.XmlDatas.add("searchForm", searchFormXML);
+	Cache.XmlDatas.add("searchFormXML", searchFormXML);
 	Cache.Variables.add("treeID_SF", treeID);
 	Cache.Variables.add("callback_SF", callback);
 	
@@ -711,7 +711,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 			if( !searchForm.checkForm() ) return;
 
 			Element.hide($$("searchFormDiv"));
-			var searchFormXML = Cache.XmlDatas.get("searchForm");
+			var searchFormXML = Cache.XmlDatas.get("searchFormXML");
 
 			callback(searchFormXML); // 在回调函数里读取数据并展示
 		} 

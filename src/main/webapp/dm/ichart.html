@@ -123,14 +123,14 @@
 			dataCopy.push(data[index]);
 		}
 		
-		// 除折线图外，Culomn、bar、pie等图都需要控制数据个数，控制在10个
+		// 除折线图外，Culomn、bar、pie等图都需要控制数据个数，控制在16个
 		function sortNumber(a, b) {
 			return parseFloat(a.value) - parseFloat(b.value);
 		}
 
-		if(dataCopy.length > 12 && chartType != "Line2D") {
+		if(dataCopy.length > 16 && chartType != "Line2D") {
 			var tempArray1 = [];
-			var temp =  dataCopy.slice().sort(sortNumber)[dataCopy.length - 11];
+			var temp =  dataCopy.slice().sort(sortNumber)[dataCopy.length - 15];
 			for(var i=0; i < dataCopy.length; i++) {
 				if( dataCopy[i].value >= Math.max(1, temp.value) ) {
 					tempArray1.push(dataCopy[i]);
