@@ -217,6 +217,7 @@ function loadReportDetail(isCreate, readonly, type) {
 	var treeID = treeNode.getId();
 	type = type || treeNode.getAttribute("type") ;
 	
+	Cache.Variables.del("treeID_SF");
 	Element.hide($$("searchFormDiv"));
 	Element.show($$("reportFormDiv"));
 	

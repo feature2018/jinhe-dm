@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>版本信息</title>
+ 
+<script language="javascript" src="framework/core.js"></script>
+<script language="javascript" src="framework/ajax.js"></script>
+
+<STYLE type="text/css">
+	#version{
+		padding-top:100px;
+		padding-left:100px;
+		font-size: 38px;
+	}
+</STYLE>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+ 	function init(operatedNodeID) {		
+		Ajax({
+			url : "framework/version",
+			method : "GET",
+			type : "json",
+			ondata : function() {
+				var result = eval(this.getResponseText()); 
+				if( result ) {	 
+					$$("version").innerText = "打包时间：" + result[0] + ",  环境：" + result[1]; 
+				}				
+			}
+		});
+	}
+	
+    window.onload = init;
+//-->
+</SCRIPT>
+</head>
+
+<body>
+  
+  <div id="version"></div>
+
+</body>
+</html>

@@ -3,46 +3,23 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>货量趋势图</title>
-
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
 	<script type="text/javascript">
 
-	var serviceUrl;
-	
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		if (optionObj.value==1) {
-			serviceUrl = "../../display/json/207";
-		}
-		if (optionObj.value==2) {
-			serviceUrl = "../../display/json/217";
-		}
-		if (optionObj.value==3) {
-			serviceUrl = "../../display/json/218";
-		}
-
-		var fromDate = $$("fromDate").value;
-		var toDate = $$("toDate").value;
-		var whichCenter = $$("whichCenter").value;
-		
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": fromDate, "param2": toDate, "param3": fromDate, "param4": toDate, "param5": whichCenter},
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-				/*if( result == null ) {	 
-					return ;
-				}*/
-			}
-		});	  
-	}
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param4 +'分拨出入货量趋势';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 	
 	function show(originData) {
@@ -60,6 +37,8 @@
 		var spaceData = 0;
 		var maxw = 0;
 		var weekday;
+
+
 		
 		for(var i = 0; i < originData.length; i++) {
 			var weightIn = originData[i]["入网重量"];
@@ -95,7 +74,9 @@
 		}
 
 		spaceData=scaledata/5;
-				
+
+		var autoSize  = autoAdjustSize("canvasDiv");	
+
 		$(function() {
 		    var data = [{
 		        name: '派件货量',
@@ -113,9 +94,9 @@
 		    var chart = new iChart.Area2D({
 		        render: 'canvasDiv',
 		        data: data,
-		        title: '出入货量走势曲线',
-		        width: 1050,
-		        height: 550,
+		        title: title,
+		        width: autoSize[0],
+		        height: autoSize[1],
 		        legend: {
 		            enable: true,
 		            row: 1,
@@ -188,19 +169,7 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-		分拨(城市名): <input type="text" id="whichCenter"/>&nbsp;
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
-	
+
 	<div id='canvasDiv'></div>
 
 </body>

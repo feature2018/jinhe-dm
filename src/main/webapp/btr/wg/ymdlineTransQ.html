@@ -3,48 +3,22 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>货量趋势图</title>
-
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
 	<script type="text/javascript" src="../../framework/core.js"></script>
 	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
-
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 	<script type="text/javascript">
 
-	var serviceUrl;
-	
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		if (optionObj.value==1) {
-			serviceUrl = "../../display/json/197";
-		}
-		if (optionObj.value==2) {
-			serviceUrl = "../../display/json/208";
-		}
-		if (optionObj.value==3) {
-			serviceUrl = "../../display/json/209";
-		}
-
-
-		var fromDate = $$("fromDate").value;
-		var toDate = $$("toDate").value;
-
-
-
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": fromDate, "param2": toDate},
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-				/*if( result == null ) {	 
-					return ;
-				}*/
-			}
-		});	  
-	}
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日'  +'全网货量曲线图';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 	
 	function show(originData) {
@@ -81,7 +55,8 @@
 		}
 
 		spaceData=scaledata/5;
-				
+
+		var autoSize  = autoAdjustSize("canvasDiv");		
 		$(function(){
 
 			var data = [
@@ -98,7 +73,7 @@
 				data: data,
 				align:'center',
 				title : {
-				text:'百世快运货量曲线图',
+				text:title,
 				font : '微软雅黑',
 				fontsize:18,
 				color:'#b4b4b4'
@@ -116,8 +91,8 @@
 				padding:'0 28',
 				color:'#b4b4b4'
 			},
-			width : 1050,
-			height : 550,
+			width : autoSize[0],
+			height : autoSize[1],
 			shadow:true,
 			shadow_color : '#202020',
 			shadow_blur : 8,
@@ -201,17 +176,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>&nbsp;
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 

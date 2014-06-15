@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report id="login" name="登录">
+		<sql index="1"><![CDATA[
+			select t.id as id, t.user_name_cn as userName
+			   from usrvf_gg.gt_user t
+			   where t.is_enable = 1
+			     and t.user_name = ?
+			     and t.user_password = ?
+		]]></sql>
+	</report>
+</reports>

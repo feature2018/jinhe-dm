@@ -166,8 +166,16 @@ function filterEmptyParams(params) {
 
 // 读取画布上一级element的大小，以自动调整画布的大小
 function autoAdjustSize(elementID) {
-	var _width  = $$(elementID).parentNode.offsetWidth - 5;
-    var _height = $$(elementID).parentNode.offsetHeight - 5;
+	var parentNode;
+	if($$(elementID).parentNode) {
+		parentNode = $$(elementID).parentNode;
+	}
+	else {
+		parentNode = document.body;
+	} 
+
+	var _width  = parentNode.offsetWidth - 5;
+    var _height = parentNode.offsetHeight - 5;
 
     return [ Math.max(600, _width), Math.max(300, _height)];
 }

@@ -2,38 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
     <script type="text/javascript" src="../../framework/core.js"></script>
     <script type="text/javascript" src="../../framework/ajax.js"></script>
+    <script  src="../../dm/common.js"></script>
     <title>省份互流货量</title>
     <!--Step:1 Import a module loader, such as esl.js or require.js-->
     <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
-    <script src="../js/esl.js"></script>
+    <script src="../../tools/echarts/esl.js"></script>
  
-
-</head>
-
-<body>
     <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
     <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
     
     <script type="text/javascript">
-    var serviceUrl = Query.get("service") || "../../display/json/216";
-    
-    function query() {
-        var selectedDate = $$("selectedDate").value;
 
-        Ajax({
-            url : serviceUrl,
-            method : "POST",
-            params : {"param1": selectedDate,"param2": selectedDate}, //
-            type : "json",
-            waiting : true,
-            ondata : function() {
-                var data = eval(this.getResponseText());
-                show(data);
-            }
-        });   
-    }
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 省份互流数据';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 
     function show(originData) {
@@ -86,9 +78,9 @@
     // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
             require.config({
                 paths:{ 
-                    echarts:'./js/echarts',
-                    'echarts/chart/bar' : './js/echarts',
-                    'echarts/chart/line': './js/echarts'
+                    echarts:'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/bar' : 'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/line': 'http://echarts.baidu.com/build/echarts'
                 }
             });
             
@@ -105,7 +97,7 @@
                     var option = {
             title : {
                 text: '单位:KG',
-                subtext: '省份互流数据',
+                subtext: title,
                 x:'right',
                 y:'bottom'
             },
@@ -141,14 +133,13 @@
         }
     );
 }
-    </script>
-
-    <form method="get" target='hiddenFrame'>
-        日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
-        <input type="submit" onclick="query()" value="查询"/>
-    </form>
-    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+    </script> 
     
-    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+</head>
+
+<body>
+
+    <div id="main" style="height:660px;border:1px solid #ccc;padding:10px;"></div>
+
 </body>
 </html>

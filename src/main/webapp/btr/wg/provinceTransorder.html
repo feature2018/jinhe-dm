@@ -4,30 +4,25 @@
 	<meta charset="UTF-8" />
 	<title>各省份货量</title>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
-	<script type="text/javascript">
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
 
-	var serviceUrl = Query.get("service") || "../../display/json/193";
+	<script  src="../../framework/core.js"></script>
+	<script  src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
+	<script >
+
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 各省货量分布';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
 	
-	function query() {
-		var selectedDate = $$("selectedDate").value;
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": selectedDate,"param2": selectedDate}, 
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-			}
-		});	  
-	}
-
-	var COLORS = ['red', 'green', '#f76864', 'yellow', 'blue', '#555555', '#4444444'];
-
 	function show(originData) {
 		var total = 0;
 		var data = [];
@@ -38,13 +33,15 @@
 			total += weight;
 			data[i] = {name: province, value: weight, color: COLORS[i] };
 		}
+
+		var autoSize  = autoAdjustSize("canvasDiv");
 				
 	    $(function(){
 				var chart = new iChart.Donut2D({
 					render : 'canvasDiv',
 					data: data,
 					title : {
-						text : '各省货量分布',
+						text : title,
 						color : '#3e576f'
 					},
 					footnote : {
@@ -90,8 +87,8 @@
 					offset_angle:-120,//逆时针偏移120度
 					showpercent:false,
 					decimalsnum:2,
-					width : 1050,
-					height : 550,
+					width : autoSize[0],
+					height : autoSize[1],
 					radius:200
 				});
 				
@@ -103,12 +100,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 
