@@ -24,6 +24,7 @@ import com.jinhe.tss.framework.component.log.Log;
 import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.exception.BusinessException;
 import com.jinhe.tss.framework.persistence.pagequery.PageInfo;
+import com.jinhe.tss.framework.sso.Environment;
 import com.jinhe.tss.framework.web.dispaly.grid.DefaultGridNode;
 import com.jinhe.tss.framework.web.dispaly.grid.GridDataEncoder;
 import com.jinhe.tss.framework.web.dispaly.grid.IGridNode;
@@ -59,7 +60,7 @@ public class Display extends BaseActionSupport {
     	
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize);
+		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, Environment.getOperatorId());
     	
     	outputAccessLog(reportId, "showAsGrid", requestMap, start);
         
@@ -87,7 +88,7 @@ public class Display extends BaseActionSupport {
         
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize);
+        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, Environment.getOperatorId());
         
         String fileName = reportId + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
@@ -116,7 +117,7 @@ public class Display extends BaseActionSupport {
     	
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, 0, 0);
+        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, 0, 0, Environment.getOperatorId());
         
         outputAccessLog(reportId, "showAsJson", requestMap, start);
         

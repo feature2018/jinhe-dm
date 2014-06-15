@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,14 @@ public class DataExport {
 
             int index = 0;
             for (Object[] row : data) {
-                fw.write(EasyUtils.list2Str(Arrays.asList(row)));
+            	List<Object> values = new ArrayList<Object>();
+            	for(Object value : row) {
+            		if(value == null) {
+            			value = "";
+            		}
+            		values.add(value.toString().replaceAll(",", "，")); // 导出时字段含英文逗号会错列
+            	}
+                fw.write(EasyUtils.list2Str(values));
                 fw.write("\r\n");
 
                 if (index++ % 10000 == 0) {

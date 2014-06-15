@@ -1,7 +1,9 @@
 
 // 画各种图
 
-function drawColumn3D(canvasName, data, labels, max, title, unitName, width, height) {
+function drawColumn3D(canvasName, data, labels, max, title, unitName, width, height, fontsize) {
+	var columnWidth =  width / (labels.length*2.2);
+	fontsize = fontsize || 18; // 字体大小
 	var chart = new iChart.ColumnStacked3D({
 			render : canvasName,
 			data: data,
@@ -12,7 +14,7 @@ function drawColumn3D(canvasName, data, labels, max, title, unitName, width, hei
 			},
 			width: width,
 			height: height,
-			column_width:50,
+			column_width:columnWidth,
 			background_color : '#ffffff',
 			shadow : true,
 			shadow_blur : 3,
@@ -20,7 +22,7 @@ function drawColumn3D(canvasName, data, labels, max, title, unitName, width, hei
 			shadow_offsetx : 1,
 			shadow_offsety : 0, 
 			sub_option:{
-				label:{color:'#f9f9f9',fontsize:12,fontweight:600},
+				label:{color:'#f9f9f9',fontsize:fontsize,fontweight:600},
 				border : {
 					width : 2,
 					color : '#ffffff'

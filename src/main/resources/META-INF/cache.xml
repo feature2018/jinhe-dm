@@ -11,24 +11,6 @@
 	<visible>1</visible>  
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
   </strategy>
-  <strategy code="connectionpool-0" name="DB连接池-WMS生产库"> 
-    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
-    <poolSize>10</poolSize>  
-    <cyclelife>0</cyclelife>  
-    <interruptTime>1000</interruptTime>  
-    <initNum>0</initNum>  
-    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
-	<paramFile>oracle-wms-prod.properties</paramFile>
-  </strategy>
-  <strategy code="connectionpool-1" name="DB连接池-WMS只读库"> 
-    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
-    <poolSize>10</poolSize>  
-    <cyclelife>0</cyclelife>  
-    <interruptTime>1000</interruptTime>  
-    <initNum>0</initNum>  
-    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
-	<paramFile>oracle-wms-adg.properties</paramFile>
-  </strategy>
   <strategy code="connpool-vf-oracle" name="DB连接池-VF只读库"> 
     <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
     <poolSize>10</poolSize>  

@@ -622,11 +622,11 @@ ParamItem.prototype.createColumn = function() {
 	return column + "/>";
 }
 
-// item的类型可能为[pk, code, name] or {pk:'xx', id:'yy', text:'zz'}
+// item的类型可能为[id, code, name] or {id:'xx', code:'yy', name:'zz'}
 function createOption(item) {
 	var option = new Option();
-	option.value = item.pk || item[0];
-	option.text  = item.text || item[2];
+	option.value = item.id || item[0];
+	option.text  = item.name || item[2];
 	return option;
 }
 
@@ -652,6 +652,16 @@ ParamItem.prototype.createDataNode= function() {
  * 硬编码中声明函数的方式会影响到toString的结果，因此用正则进行格式化 
  */
 function funcCompare(func1, func2) {
+	if(func1 == null && func2 != null) {
+		return false;
+	}
+	if(func2 == null && func1 != null) {
+		return false;
+	}
+	if(func2 == null && func1 == null) {
+		return true;
+	}
+
 	var fn = /^(function\s*)(\w*\b)/;
 	return func1.toString().replace(fn,'$1') === func2.toString().replace(fn,'$1'); 
 }

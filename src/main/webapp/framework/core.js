@@ -677,7 +677,9 @@ Element.show = function(element) {
 
 Element.hide = function(element) {
 	element.style.display = "none"; 
-	Balloons.dispose();
+	if(window.Balloons) {
+		Balloons.dispose();
+	}
 }
 
 

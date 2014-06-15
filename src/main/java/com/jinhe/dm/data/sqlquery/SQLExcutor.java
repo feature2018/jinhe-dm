@@ -73,21 +73,15 @@ public class SQLExcutor {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+        	String dbUrl = conn.getMetaData().getURL();
+            String driveName = conn.getMetaData().getDriverName();
+
+            log.debug(" database url: 【" + dbUrl + "】。");
+            log.debug(" database diverName: 【 " + driveName + "】。");
+            
         	if(page > 0 && pagesize > 0) {
-        		int fromIndex = sql.indexOf("from");
-        		if(fromIndex < 0) {
-        			fromIndex = sql.indexOf("FROM");
-        		}
-        	    String queryCountSql = " select count(*) " + sql.substring(fromIndex);
-        	    int orderbyIndex = queryCountSql.lastIndexOf("order by");
-        	    if(orderbyIndex < 0) {
-        	    	orderbyIndex = queryCountSql.lastIndexOf("ORDER BY");
-        	    }
-        	    if(orderbyIndex > 0) {
-        	        queryCountSql = queryCountSql.substring(0, orderbyIndex);
-        	    }
-        	    
-        	    log.debug("    queryCountSql: "  + queryCountSql);
+        		String queryCountSql = " select count(*) from (\n " + sql + " \n) t ";
+                log.debug("  excuteQuery  queryCountSql: \n" + queryCountSql);
         	    
         	    pstmt = conn.prepareStatement(queryCountSql);
         	    if(paramsMap != null) {
@@ -96,7 +90,6 @@ public class SQLExcutor {
         	    	}
         	    }
                 rs = pstmt.executeQuery(); 
-
                 if (rs.next()) {  
                     count = rs.getInt(1);  
                 }  
@@ -105,19 +98,16 @@ public class SQLExcutor {
         		int toRow = pagesize * page;
         		
         		// 各种数据库的分页不一样
-        		if(datasource.endsWith("mysql")) {
-        			queryDataSql = sql + " LIMIT " + (fromRow) + ", " + pagesize;
-        		} 
-        		else { // 默认为oracle
-        			queryDataSql = "SELECT * FROM " + 
-            	    		"( " + 
-            	    		"   SELECT t.*, ROWNUM RN FROM ( " + sql + " ) t WHERE ROWNUM <= " + toRow +
-            	    		") " + 
-            	    		"WHERE RN > " + fromRow;
-        		}
+                if (driveName.startsWith("MySQL")) {
+                    queryDataSql = sql + "\n LIMIT " + (fromRow) + ", " + pagesize;
+                } else if (driveName.startsWith("Oracle")) {
+					queryDataSql = "SELECT * FROM ( SELECT t.*, ROWNUM RN FROM (\n " + sql + " \n) t WHERE ROWNUM <= " + toRow + ") WHERE RN > " + fromRow;
+                } else {
+                    // TODO 暂时不支持其他数据源
+                } 
         	}
         	
-        	log.debug("    queryDataSql: "  + queryDataSql);
+        	log.debug("    queryDataSql: \n"  + queryDataSql);
         	
             pstmt = conn.prepareStatement(queryDataSql);
             for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {

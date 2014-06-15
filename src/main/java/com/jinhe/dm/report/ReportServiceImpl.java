@@ -1,11 +1,13 @@
 package com.jinhe.dm.report;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import com.jinhe.tss.util.EasyUtils;
 
 @Service("ReportService")
 public class ReportServiceImpl implements ReportService {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
     
     @Autowired ReportDao reportDao;
     
@@ -122,10 +126,13 @@ public class ReportServiceImpl implements ReportService {
     }
     
     @SuppressWarnings("unchecked")
-  	public SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize) {
-      	Report report = this.getReport(reportId);
-          String paramsConfig = report.getParam();
-          String reportScript = report.getScript();
+  	public SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize, Object loginUserId) {
+		Report report = this.getReport(reportId);
+		String paramsConfig = report.getParam();
+		String reportScript = report.getScript();
+		if(reportScript != null && reportScript.startsWith("sqlConfig")) {
+			
+		}
           
       	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
       	Map<String, Object> fmDataMap = new HashMap<String, Object>();
@@ -172,11 +179,11 @@ public class ReportServiceImpl implements ReportService {
           // 结合 requestMap 进行 freemarker解析 sql
       	reportScript = SOUtil.freemarkerParse(reportScript, fmDataMap);
           
-          SQLExcutor excutor = new SQLExcutor();
-          String datasource = report.getDatasource();
-          excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
-  		
-          return excutor;
+		SQLExcutor excutor = new SQLExcutor();
+		String datasource = report.getDatasource();
+		excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
+
+		return excutor;
   	}
 
   	private Object preTreatParamValue(String requestParamValue, Object paramType) {
@@ -186,8 +193,14 @@ public class ReportServiceImpl implements ReportService {
   		if("number".equals(paramType)) {
   			return EasyUtils.convertObject2Integer(requestParamValue);
   		}
-  		else if("date".equals(paramType) && EasyUtils.isNullOrEmpty(requestParamValue) ) {
-  			return new java.sql.Timestamp(DateUtil.parse(requestParamValue).getTime());
+  		else if("date".equals(paramType)) {
+			try {
+				Date dateObj = DateUtil.parse(requestParamValue);
+				return new java.sql.Timestamp(dateObj.getTime());
+			} catch(Exception e) {
+				logger.error("Date type param'value is wrong: " + e.getMessage());
+				return null;
+			}
   		}
   		else {
   			return requestParamValue;

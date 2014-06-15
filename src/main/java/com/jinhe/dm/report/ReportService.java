@@ -61,5 +61,5 @@ public interface ReportService {
     void move(Long reportId, Long groupId);
 
     @Cached(cyclelife = CacheLife.SHORTER)
-    SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize);
+    SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize, Object loginUserId);
 }
