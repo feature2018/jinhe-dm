@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <title>货量趋势图</title>
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
+    <script  src="../../framework/core.js"></script>
+    <script  src="../../framework/ajax.js"></script> 
+    <script  src="../../tools/jquery/jquery-1.10.1.min.js"></script>
+    <script  src="../../tools/highcharts/highcharts.js"></script>
+    <script  src="../../dm/common.js"></script>    
 
-    <script type="text/javascript" src="../../framework/core.js"></script>
-    <script type="text/javascript" src="../../framework/ajax.js"></script> 
-    <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
-    <script type="text/javascript" src="../js/highcharts.js"></script>
-    <script src="../js/exporting.js"></script>
-
-    <script type="text/javascript">
+    <script >
 
     Array.prototype.contains = function(obj) {  
         var i = this.length;  
@@ -22,27 +22,15 @@
         return false;  
     }  
 
-
-    var serviceUrl = "../../display/json/226";
-    
-    function query() {
-
-    var fromDate = $$("fromDate").value;
-    var toDate = $$("toDate").value;
-    var whichProv = $$("whichProv").value;
-
-        Ajax({
-            url : serviceUrl,
-            method : "POST",
-            params : {"param1": fromDate, "param2": toDate, "param3": whichProv},
-            type : "json",
-            waiting : true,
-            ondata : function() {
-                var data = eval(this.getResponseText());
-                show(data);
-            }
-        });   
-    }
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +'分拨出货量对比曲线图';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
     function show(originData) {
         var centers = [];
@@ -64,7 +52,7 @@
         var totalWeight = 0;
         var showDay =  [];
         for(var i = 0; i < originData.length; i++) {
-            var weight = originData[i]["入网重量"];
+            var weight = originData[i]["入网货量"];
             var center = originData[i]["分拨"];
             var date   = originData[i]["日期"];
 
@@ -101,11 +89,12 @@
             temp.data = dataMap[center];
             data.push(temp);
         }
-                
+       
+        var autoSize  = autoAdjustSize("container");
        $(function () {
                 $('#container').highcharts({
                     title: {
-                        text: '分拨出货量对比曲线图',
+                        text: title,
                         x: -20 //center
                     },
                     subtitle: {
@@ -127,6 +116,10 @@
                     },
                     credits:{                   //右边下标HighCharts.com去除  
                         enabled:false  
+                    },
+                    chart: {
+                        height:autoSize[1],
+                        type: 'line'
                     }, 
                     exporting: {
                         enabled: false
@@ -151,24 +144,7 @@
 
 <body>
     
-    <form method="get" target='hiddenFrame'>
-        日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-    所属省份：<select id="whichProv">
-            <option>北京分公司</option>
-            <option>江苏分公司</option>
-            <option>广东分公司</option>
-            <option>浙江分公司</option>
-            <option>上海分公司</option>
-            <option>河北分公司</option>
-            <option>天津分公司</option>
-            <option>安徽分公司</option>
-            <option>福建分公司</option>
-            <option>云南分公司</option>
-        </select>&nbsp;
-        <input type="submit" onclick="query()" value="查询"/>
-    </form>
-    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
-    
+ 
     <div id='container'></div>
 
 </body>

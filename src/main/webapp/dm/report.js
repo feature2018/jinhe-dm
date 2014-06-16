@@ -634,7 +634,7 @@ function createOption(item) {
 ParamItem.prototype.createLayout = function() {
 	var layout = [];
 	layout[layout.length] = " <TR>";
-	layout[layout.length] = "    <TD width='50'><label binding='" + this.name + "'/></TD>";
+	layout[layout.length] = "    <TD width='88'><label binding='" + this.name + "'/></TD>";
 	layout[layout.length] = "    <TD><input binding='" + this.name + "' type='text' style='width:" + this.width + ";height:" + (this.height || '18px') + ";'/></TD>";
 	layout[layout.length] = " </TR>";
 

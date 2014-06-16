@@ -3,31 +3,23 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>分拨日出货量</title>
-
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
 	<script type="text/javascript">
 	
-	var serviceUrl = Query.get("service") || "../../display/json/199";
-	
-	function query() {
-
-		var selectedDate = $$("selectedDate").value;
-
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": selectedDate,"param2": selectedDate}, 
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-			}
-		});	  
-	}
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 各分拨产出货量';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 
 
@@ -51,13 +43,16 @@
 		
 		total = Math.round(total/1000);
 
+
+		var autoSize  = autoAdjustSize("canvasDiv");	
+
 		$(function() {
 
 	    var chart = new iChart.Column2D({
 	        render: 'canvasDiv',
 	        data: data,
 	        title: {
-	            text: '分拨产出货量',
+	            text: title,
 	            color: '#3e576f'
 	        },
 	        subtitle: {
@@ -70,8 +65,8 @@
 	            fontsize: 11,
 	            padding: '0 38'
 	        },
-	        width: 1050,
-	        height: 550,
+	        width: autoSize[0],
+	        height: autoSize[1],
 	        label: {
 	            fontsize: 15,
 	            textAlign: 'right',
@@ -111,8 +106,8 @@
 	        coordinate: {
 	            background_color: null,
 	            grid_color: '#c0c0c0',
-	            width: 1050,
-	            height: 550,
+	            width: autoSize[0],
+	            height: autoSize[1],
 	            axis: {
 	                color: '#c0d0e0',
 	                width: [0, 0, 1, 0]
@@ -157,12 +152,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 

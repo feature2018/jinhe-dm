@@ -37,17 +37,6 @@ public class BaseServiceImpl implements BaseService {
 		HttpSession session = Context.getRequestContext().getRequest().getSession();
 		session.setAttribute("BTR-USERID", userId);
 		
-		// TODO 读取登录用户有权限看到的分公司、分拨等信息
-		script = "select t.id as id, t.code as code, t.name as name from usrvf_gg.gtv_org_golden t";
-		excutor = new SQLExcutor();
-		excutor.excuteQuery(script, paramsMap);
-		
-		script = "select t.id, t.code, t.name, t.org_id, t.org_name " +
-				" from usrvf_gg.gt_site t " +
-				" where type_code = '01' and status = 'ENABLE'  and org_id in (60000) ";
-		excutor = new SQLExcutor();
-		excutor.excuteQuery(script, paramsMap);
-
 		return true;
 	}
 }

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,10 @@ public class SQLExcutor {
     
     public void excuteQuery(String sql, Map<Integer, Object> paramsMap) {
     	excuteQuery(sql, paramsMap, 0, 0);
+    }
+    
+    public void excuteQuery(String sql) {
+    	excuteQuery(sql, new HashMap<Integer, Object>());
     }
     
     public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize) {

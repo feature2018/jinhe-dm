@@ -155,24 +155,24 @@ public class ReportServiceImpl implements ReportService {
   	        	
   	        	int index = i + 1;
   	        	String paramKy = "param" + index;
-                  if( !requestMap.containsKey(paramKy) ) {
-                  	continue;
-                  }
-                  
-                  String requestParamValue = requestMap.get(paramKy);
-                  Object paramType = map.get("type");
-                  Object isMacrocode = map.get("isMacrocode");
-                  
-                  if( reportScript.indexOf("in (${" + paramKy + "})") > 0) {
-                  	// 处理in查询的条件值，为每个项加上单引号
-                  	requestParamValue = SOUtil.insertSingleQuotes(requestParamValue.toString());
-                  } 
-                  // 判断参数是否只用于freemarker解析
-                  else if( !"true".equals(isMacrocode) ) {
-                  	Object value = preTreatParamValue(requestParamValue, paramType);
-                  	paramsMap.put(paramsMap.size() + 1, value); 
-                  }
-                  fmDataMap.put(paramKy, requestParamValue);
+				if (!requestMap.containsKey(paramKy)) {
+					continue;
+				}
+
+				String requestParamValue = requestMap.get(paramKy);
+				Object paramType = map.get("type");
+				Object isMacrocode = map.get("isMacrocode");
+
+				if (reportScript.indexOf("in (${" + paramKy + "})") > 0) {
+					// 处理in查询的条件值，为每个项加上单引号
+					requestParamValue = SOUtil.insertSingleQuotes(requestParamValue.toString());
+				}
+				// 判断参数是否只用于freemarker解析
+				else if (!"true".equals(isMacrocode)) {
+					Object value = preTreatParamValue(requestParamValue, paramType);
+					paramsMap.put(paramsMap.size() + 1, value);
+				}
+				fmDataMap.put(paramKy, requestParamValue);
   	        }
       	}
       	

@@ -164,7 +164,7 @@ body {
 
         Ajax({
             url: URL_LOGIN,
-            headers : {"appCode": FROMEWORK_CODE, "loginName": loginName, "password": password, "identifier": identifier},
+            headers : { "loginName": loginName, "password": password, "identifier": identifier },
             onexception: function(errorMsg) {
                 passwordObj.focus();
             },

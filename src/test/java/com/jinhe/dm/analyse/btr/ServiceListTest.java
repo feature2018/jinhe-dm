@@ -15,7 +15,7 @@ public class ServiceListTest extends TxTestSupport {
 		baseInfoService.login("BL00618", "jonking");
 		
 		serviceList.getOrgList();
-		serviceList.getSiteList();
+		serviceList.getCenterList("60000");
 	}
  
 }

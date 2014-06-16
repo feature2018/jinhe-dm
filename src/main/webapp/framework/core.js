@@ -670,7 +670,6 @@ Element.show = function(element) {
 	element.style.left = "18%";   
 	element.style.top  = "70px"; 		
 	element.style.zIndex = "999"; 
-	element.style.overflow = "hidden";
 
 	Element.setOpacity(element, 95);
 }
