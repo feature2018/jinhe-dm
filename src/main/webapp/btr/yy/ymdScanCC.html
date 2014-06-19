@@ -3,78 +3,24 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>货量趋势图</title>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script  src="../../framework/core.js"></script>
+	<script  src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<script >
 
-	<script type="text/javascript">
-
-	var serviceUrl;
-	var whichday;
-	var toDate;
-	var fromDate;
-	var inYear;
-	var attention;
-	
-	Date.prototype.getWeekOfYear = function(weekStart) { // weekStart：每周开始于周几：周日：0，周一：1，周二：2 ...，默认为周日
-		weekStart = (weekStart || 0) - 0;
-		if(isNaN(weekStart) || weekStart > 6)
-			weekStart = 0;	
-
-		var year = this.getFullYear();
-		var firstDay = new Date(year, 0, 1);
-		var firstWeekDays = 7 - firstDay.getDay() + weekStart;
-		var dayOfYear = (((new Date(year, this.getMonth(), this.getDate())) - firstDay) / (24 * 3600 * 1000)) + 1;
-		return Math.ceil((dayOfYear - firstWeekDays) / 7) + 1;
-	}
-
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		if (optionObj.value==1) {
-			serviceUrl = "../../display/json/242";
-			fromDate = $$("fromDate").value;
-			toDate = $$("toDate").value;
-			var myDate = new Date(fromDate);
-            inYear = myDate.getFullYear();
-            attention = inYear + '年日汇总';
-		}
-		if (optionObj.value==2) {
-			serviceUrl = "../../display/json/243";
-			var dst = new Date($$("fromDate").value);
-			var det = new Date($$("toDate").value);
-			fromDate = dst.getWeekOfYear();
-			toDate = det.getWeekOfYear();
-			inYear = dst.getFullYear(); 
-			attention = '横坐标为' + inYear +'年第' + fromDate + '周--第' + toDate +'全周数据';
-		}
-		if (optionObj.value==3) {
-			serviceUrl = "../../display/json/244";
-			var mst = new Date($$("fromDate").value);
-			var met = new Date($$("toDate").value);
-			fromDate = mst.getMonth()+1;
-			toDate = met.getMonth()+1;
-			inYear = mst.getFullYear();
-			attention = '横坐标为' + inYear +'年第' + fromDate + '月--第' + toDate +'全月数据';
-		}
-
-		whichday = $$("whichday").value;
-		
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": inYear, "param2": fromDate, "param3": toDate, "param4": whichday},
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-				/*if( result == null ) {	 
-					return ;
-				}*/
-			}
-		});	  
-	}
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +'分拨到分拨到发扫描情况';
+            checktype = queryParams.param4;
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 	
 	function show(originData) {
@@ -87,21 +33,26 @@
 		var maxdataIn = 0;
 		var maxoutScanListut = 0;
 		var maxdayIn = 0;
-		var maxdayOut = 0;
+		var weekday ;
 		
 		var spaceData = 0;
-		var maxw = 0;
+		var ctype = '';
 		var showDay = [];
+
+		if (checktype == 'DATE') {ctype = '天'};		
+		if (checktype == 'week') {ctype = '周'};
+		if (checktype == 'month') {ctype = '月'};
 		for(var i = 0; i < originData.length; i++) {
 			var inScan = Math.round(originData[i]["入网扫描"] * 1000 )/10;
 			var outScan =Math.round( originData[i]["出网扫描"] * 1000 )/10;
 			var day = originData[i]["日期"];
-			
+			var ymday = originData[i]["日期2"];
+			weekday = "天一二三四五六".charAt(new Date(day).getDay());
 			var scaledata = 100;
 			
 
-			if (i % Math.round(originData.length/10) == 0){
-				showDay[i] = day;
+			if (i % Math.round(originData.length/3) == 0){
+				showDay[i] = day + '第' + ymday + ctype + ' 星期' + weekday;
 			}
 			else{
 				showDay[i] = ' ';
@@ -115,7 +66,7 @@
 		}
 
 		spaceData=scaledata/5;
-				
+		var autoSize  = autoAdjustSize("canvasDiv");		
 		$(function() {
 		    var data = [{
 		        name: '入网扫描',
@@ -133,9 +84,9 @@
 		    var chart = new iChart.Area2D({
 		        render: 'canvasDiv',
 		        data: data,
-		        title: whichday + '中心间到发件扫描率走势曲线，' + attention,
-		        width: 1050,
-		        height: 550,
+		        title: title,
+		        width: autoSize[0],
+		        height: autoSize[1],
 		        legend: {
 		            enable: true,
 		            row: 1,
@@ -208,18 +159,7 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		分拨从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-		分拨(城市名): <input type="text" id="whichday"/>&nbsp;
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
+
 	
 	<div id='canvasDiv'></div>
 

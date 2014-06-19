@@ -3,49 +3,23 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>操作量趋势图</title>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<script>
 
-	<script type="text/javascript">
-
-
-	var serviceUrl;
-	var whichCenter;
-	
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		if (optionObj.value==1) {
-			serviceUrl = "../../display/json/228";
-		}
-		if (optionObj.value==2) {
-			serviceUrl = "../../display/json/233";
-		}
-		if (optionObj.value==3) {
-			serviceUrl = "../../display/json/234";
-		}
-
-
-		var fromDate = $$("fromDate").value;
-		var toDate = $$("toDate").value;
-		whichCenter = $$("whichCenter").value;
-
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": fromDate, "param2": toDate,"param3": whichCenter},
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-				/*if( result == null ) {	 
-					return ;
-				}*/
-			}
-		});	  
-	}
+   window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日 ' +  queryParams.param4 + ' 操作量走势';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 	
 	function show(originData) {
@@ -53,7 +27,7 @@
 		var dataW = [];
 		var dataDay = [];
 		var showDay = [];
-
+		var weekday;
 		var maxdata = 0;
 		var maxDay = 0;
 		var scaledata = 0;
@@ -67,9 +41,9 @@
 				maxDay = dateIn
 			}
 			scaledata=Math.ceil(maxdata/100)*100;
-
+			weekday = "天一二三四五六".charAt(new Date(dateIn).getDay());
 			if (i % Math.round(originData.length/10) == 0){
-				showDay[i] = dateIn;
+				showDay[i] = dateIn + '星期' + weekday;
 			}
 			else{
 				showDay[i] = ' ';
@@ -81,7 +55,7 @@
 		}
 
 		spaceData=scaledata/5;
-				
+		var autoSize  = autoAdjustSize("canvasDiv");				
 		$(function() {
 		    //创建数据
 		    var data = [{
@@ -97,7 +71,7 @@
 		        render: 'canvasDiv',
 		        data: data,
 		        title: {
-		            text: whichCenter + '分拨操作量走势  单位：T',
+		            text: title,
 		            color: '#005B63',
 		            background_color: '#FFFFE3',
 		            height: 40,
@@ -147,8 +121,8 @@
 		                }
 		            }
 		        },
-		        width: 1050,
-		        height: 550,
+		        width: autoSize[0],
+		        height: autoSize[1],
 		        background_color: '#FFFFE3',  //#228B22
 		        gradient: true,
 		        shadow: true,
@@ -200,18 +174,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-		分拨(城市名): <input type="text" id="whichCenter"/>&nbsp;
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 
