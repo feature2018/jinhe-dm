@@ -42,7 +42,7 @@ public class ServiceList {
         } 
         else if(fatherGroupNames.size() >= 2) { // 分公司员工 & 分拨员工，只能看到其所在的分公司
         	for(Map<String, Object> temp : excutor.result) {
-        		if(temp.get("id").equals(fatherGroupNames.get(1))) {
+        		if(temp.get("name").equals(fatherGroupNames.get(1))) {
         			return Arrays.asList(temp);
         		}
         	}
@@ -66,7 +66,7 @@ public class ServiceList {
 		
 		HttpSession session = Context.getRequestContext().getSession();
 		List<String> fatherGroupNames = (List<String>) session.getAttribute(BTRAfterLoginCustomizer.USER_GROUPS_ID);
-        if(fatherGroupNames.size() == 3) { // 分拨员工，只能看到其所在的分拨
+        if(fatherGroupNames.size() >= 3) { // 分拨员工，只能看到其所在的分拨
         	for(Map<String, Object> temp : excutor.result) {
         		if(temp.get("name").equals(fatherGroupNames.get(2))) {
         			return Arrays.asList(temp);

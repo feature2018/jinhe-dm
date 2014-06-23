@@ -2,63 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
     <script type="text/javascript" src="../../framework/core.js"></script>
     <script type="text/javascript" src="../../framework/ajax.js"></script>
-    <title>省份互流货量</title>
+    <script  src="../../dm/common.js"></script>
+    <title>人均效能</title>
     <!--Step:1 Import a module loader, such as esl.js or require.js-->
     <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
-    <script src="../js/esl.js"></script>
+    <script src="../../tools/echarts/esl.js"></script>
  
 
 </head>
 
-<body>
+
     <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
     <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
     
     <script type="text/javascript">
-    var originData1;
-    var originData2;
-    
-    var serviceUrl1;
-    var serviceUrl2;
-    
-    function query() {
-        originData1 = null;
-        originData2 = null;
-        var selectedDate = $$("selectedDate").value;
-        var optionObj = document.getElementById("checktype");
-        if (optionObj.value == 1) {serviceUrl1 = "../../display/json/262";serviceUrl2 = "../../display/json/264";};
-        if (optionObj.value == 2) {serviceUrl1 = "../../display/json/263";serviceUrl2 = "../../display/json/265";};
 
-        Ajax({
-            url : serviceUrl1,
-            method : "POST",
-            params : {"param1": selectedDate,"param2": selectedDate}, //
-            type : "json",
-            waiting : true,
-            ondata : function() {
-                originData1 = eval(this.getResponseText());
-                if ( originData1 && originData2) {
-                    show();                     
-                };
-            }
-        }); 
+     window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 ' + queryParams.param2 + ' 人均效能';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
-        Ajax({
-            url : serviceUrl2,
-            method : "GET",
-            //params : {"param1": selectedDate,"param2": selectedDate}, //
-            type : "json",
-            waiting : true,
-            ondata : function() {
-                originData2 = eval(this.getResponseText());
-                if ( originData1 && originData2) {
-                    show();                     
-                };
-            }
-        });   
-    }
 
 
     function show() {   
@@ -93,9 +64,9 @@
     // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
             require.config({
                 paths:{ 
-                    echarts:'./js/echarts',
-                    'echarts/chart/bar' : './js/echarts',
-                    'echarts/chart/line': './js/echarts'
+                    echarts:'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/bar' : 'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/line': 'http://echarts.baidu.com/build/echarts'
                 }
             });
             
@@ -218,16 +189,8 @@ option = {
 }
     </script>
 
-    <form method="get" target='hiddenFrame'>
-        日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
-        查询纬度<select id="checktype">
-        <option value="1" selected>按分拨</option>
-        <option value="2">按省份</option>
-    </select>
-        <input type="submit" onclick="query()" value="查询"/>
-    </form>
-    <iframe width='0px' height='0px' name='hiddenFrame'></iframe>
-    
+
+<body>  
     <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
 </body>
 </html>
