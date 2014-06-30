@@ -12,7 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tss.version>2.1.1</tss.version>
+		<tss.version>2.1.2</tss.version>
 		<spring.version>3.2.0.RELEASE</spring.version>
 		<hibernate.version>3.5.1-Final</hibernate.version>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -373,10 +373,10 @@
 									replace="last\.package\.time = ${maven.build.timestamp}"
 									byline="true" />
 								<echo>
-									process application.properties: set localhost:3306 to ${db.url};
+									process application.properties: set localhost:3306/dms to ${db.url};
 								</echo>
 								<replaceregexp
-									file="${basedir}/target/classes/application.properties" match="localhost:3306"
+									file="${basedir}/target/classes/application.properties" match="localhost:3306\/dms"
 									replace="${db.url}" byline="true" />
 								<echo>
 									process application.properties: set environment to ${environment};
@@ -413,7 +413,7 @@
 			</activation>
 			<properties>
 				<log.level>info</log.level>
-				<db.url>127.0.0.1:3306</db.url>
+				<db.url>127.0.0.1:3306/dms</db.url>
 				<environment>prod</environment>
 			</properties>
 		</profile>
@@ -424,7 +424,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
-				<db.url>127.0.0.1:3306</db.url>
+				<db.url>127.0.0.1:3306/dms</db.url>
 				<environment>uat</environment>
 			</properties>
 		</profile>
@@ -435,7 +435,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
-				<db.url>127.0.0.1:3306</db.url>
+				<db.url>127.0.0.1:3306/dms</db.url>
 				<environment>dev</environment>
 			</properties>
 		</profile>

@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
+    <script type="text/javascript" src="../../framework/core.js"></script>
+    <script type="text/javascript" src="../../framework/ajax.js"></script>
+    <script  src="../../dm/common.js"></script>
+    <title>人均效能</title>
+    <!--Step:1 Import a module loader, such as esl.js or require.js-->
+    <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
+    <script src="../../tools/echarts/esl.js"></script>
+ 
+
+</head>
+
+
+    <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
+    <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
+    
+    <script type="text/javascript">
+
+     window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 ' + queryParams.param2 + ' 人均效能';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+
+
+    function show() {   
+      
+        var category = [];       
+        var maxPer = [];
+        var maxRightPer = [];
+        var maxCate = [];        
+        var perList = [];
+
+        for(var i = 0; i < originData2.length; i++) {
+            var perform = originData2[i]["performance"];
+            var orgniza = originData2[i]["所属"]; 
+            maxCate[i]=orgniza;
+            maxPer[i]=perform;
+        }
+
+        
+        for(var i = 0; i < originData1.length; i++) {
+            var performance = originData1[i]["performance"];
+            var orgnization = originData1[i]["所属"];                     
+            
+            category[i]=orgnization;
+            perList[i]=performance;
+
+            for (var j = 0; j < maxCate.length; j++) {
+                if (maxCate[j]==category[i]) {maxRightPer[i]=Math.round(maxPer[j]-perList[i])};
+            };
+        }
+
+    // Step:3 conifg ECharts's path, link to echarts.js from current page.
+    // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
+            require.config({
+                paths:{ 
+                    echarts:'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/bar' : 'http://echarts.baidu.com/build/echarts',
+                    'echarts/chart/line': 'http://echarts.baidu.com/build/echarts'
+                }
+            });
+            
+            // Step:4 require echarts and use it in the callback.
+            // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+            require(
+                [
+                    'echarts',
+                    'echarts/chart/bar',
+                    'echarts/chart/line'
+                ],
+                function(ec) {
+                    var myChart = ec.init(document.getElementById('main'));
+                    var placeHoledStyle = {
+    normal:{
+        borderColor:'rgba(0,0,0,0)',
+        color:'rgba(0,0,0,0)'
+    },
+    emphasis:{
+        borderColor:'rgba(0,0,0,0)',
+        color:'rgba(0,0,0,0)'
+    }
+};
+option = {
+    title : {
+        text: '人均效能',
+        subtext: '每日更新时间下午14:30',
+        sublink: '人均效能超过25吨存在人员数据错报的可能'
+    },
+    tooltip : {
+        trigger: 'axis',
+        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        },
+        formatter: function(param){
+            return param[0][1] + '<br/>'
+                   + param[0][0] + ' : ' + param[0][2] + '<br/>'
+                   + param[1][0] + ' : ' + (param[1][2] + param[0][2]);
+        }
+    },
+    legend: {
+        data:['当日效能', '最大人均效能']
+    },
+    toolbox: {
+        show : false,
+        feature : {
+            mark : true,
+            dataView : {readOnly: false},
+            restore : true,
+            saveAsImage : true
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'category',
+            splitLine : {show: false},
+            data : category
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value',
+            boundaryGap: [0, 0.1],
+            splitArea : {show : true}
+        }
+    ],
+    series : [
+        {
+            name:'当日人均效能',
+            type:'bar',
+            stack: 'sum',
+            barCategoryGap: '50%',
+            itemStyle: {
+                normal: {
+                    color: 'black',
+                    borderColor: 'black',
+                    borderWidth: 6,
+                    label : {
+                        show: true, position: 'inside'
+                    }
+                }
+            },
+            data:perList
+        },
+        {
+            name:'最大人均效能',
+            type:'bar',
+            stack: 'sum',
+            itemStyle: {
+                normal: {
+                    color: '#fff',
+                    borderColor: 'black',
+                    borderWidth: 6,
+                    label : {
+                        show: true, 
+                        position: 'top',
+                        formatter: function(a, b, c) {
+                            for (var i = 0, l = option.xAxis[0].data.length; i < l; i++) {
+                                if (option.xAxis[0].data[i] == b) {
+                                    return option.series[0].data[i] + c;
+                                }
+                            }
+                        },
+                        textStyle: {
+                            color: 'black'
+                        }
+                    }
+                }
+            },
+            data:maxRightPer
+        }
+    ]
+};
+                    
+            
+            myChart.setOption(option);
+        }
+    );
+}
+    </script>
+
+
+<body>  
+    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+</body>
+</html>

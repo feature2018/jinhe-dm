@@ -1,30 +1,22 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8" />
+    <title>分拨扫描率</title>
     <link rel="stylesheet" type="text/css" href="../../dm/common.css">
-    <script type="text/javascript" src="../../framework/core.js"></script>
-    <script type="text/javascript" src="../../framework/ajax.js"></script>
+    <script src="../../framework/core.js"></script>
+    <script src="../../framework/ajax.js"></script>
+    <script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
     <script  src="../../dm/common.js"></script>
-    <title>人均效能</title>
-    <!--Step:1 Import a module loader, such as esl.js or require.js-->
-    <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
-    <script src="../../tools/echarts/esl.js"></script>
- 
-
-</head>
 
 
-    <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
-    <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
-    
     <script type="text/javascript">
 
-     window.onload = function() {
+    window.onload = function() {
         var globalValiable = window.parent.globalValiable;
         if(globalValiable && globalValiable.data) {
             queryParams = globalValiable.queryParams;
-            title = queryParams.param1 + '日 ' + queryParams.param2 + ' 人均效能';
+            title = queryParams.param2 + '人均效能';
             show(globalValiable.data);
             return;
         }
@@ -32,165 +24,150 @@
 
 
 
-    function show() {   
-      
-        var category = [];       
-        var maxPer = [];
-        var maxRightPer = [];
-        var maxCate = [];        
-        var perList = [];
 
-        for(var i = 0; i < originData2.length; i++) {
-            var perform = originData2[i]["performance"];
-            var orgniza = originData2[i]["所属"]; 
-            maxCate[i]=orgniza;
-            maxPer[i]=perform;
-        }
-
+    function show(originData) {
+        var total = 0;
+        var inScanList = [];
+        var outScanList = [];
+        var labels = [];
+        var dataList =[];
+        var mindata= 100;
+        var scaledata=0;
         
-        for(var i = 0; i < originData1.length; i++) {
-            var performance = originData1[i]["performance"];
-            var orgnization = originData1[i]["所属"];                     
-            
-            category[i]=orgnization;
-            perList[i]=performance;
+        var datatype = 0;       
 
-            for (var j = 0; j < maxCate.length; j++) {
-                if (maxCate[j]==category[i]) {maxRightPer[i]=Math.round(maxPer[j]-perList[i])};
-            };
+        for(var i = 0; i < originData.length; i++) {
+
+            var center = originData[i]["所属"] ;
+            var datatype = Math.round(originData[i]["performance"] );   
+
+            mindata = (mindata<datatype) ? mindata : datatype;
+
+            labels[i] = center;
+            dataList[i] = {name: center, value: datatype, color:'#384758' };
         }
 
-    // Step:3 conifg ECharts's path, link to echarts.js from current page.
-    // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
-            require.config({
-                paths:{ 
-                    echarts:'http://echarts.baidu.com/build/echarts',
-                    'echarts/chart/bar' : 'http://echarts.baidu.com/build/echarts',
-                    'echarts/chart/line': 'http://echarts.baidu.com/build/echarts'
+        scaledata = Math.floor(mindata / 10 ) * 10;
+        
+        //total = Math.round(total/1000);
+
+var autoSize  = autoAdjustSize("canvasDiv");
+
+
+$(function() {
+            var data =  dataList;
+            
+            var chart = new iChart.Column2D({
+                render : 'canvasDiv',
+                data : data,
+                title : {
+                    text : title,
+                    color : '#3e576f'
+                },
+                subtitle : {
+                    text : ' ',
+                    color : '#6d869f'
+                },
+                footnote : {
+                    text : '每日下午4:00更新',
+                    color : '#909090',
+                    fontsize : 11,
+                    padding : '0 38'
+                },
+                width : autoSize[0],
+                height : autoSize[1],
+                label : {
+                    fontsize:16,
+                    textAlign:'right',
+                    textBaseline:'middle',
+                    rotate:-45,
+                    color : '#666666'
+                },
+                tip:{
+                    enable:true,
+                    listeners:{
+                         //tip:提示框对象、name:数据名称、value:数据值、text:当前文本、i:数据点的索引
+                        parseText:function(tip,name,value,text,i){
+                            //将数字进行千位格式化
+                            var f = new String(value);
+                            f = f.split("").reverse().join("").replace(/(\d{3})/g,"$1,").split("").reverse();
+                            if(f[0]==','){
+                                f.shift();
+                            }   
+                            f = f.join("");
+                            
+                            return name+"分拨:<br/>"+f+"%<br/>";
+                        }
+                    }
+                },
+                shadow : true,
+                shadow_blur : 2,
+                shadow_color : '#aaaaaa',
+                shadow_offsetx : 1,
+                shadow_offsety : 0,
+                column_width : 62,
+                sub_option : {
+                    label : false,
+                    border : {
+                        width : 2,
+                        color : '#ffffff'
+                    }
+                },
+                coordinate : {
+                    background_color : null,
+                    grid_color : '#c0c0c0',
+                    width : autoSize[0],
+                    height:autoSize[1],
+                    axis : {
+                        color : '#c0d0e0',
+                        width : [0, 0, 1, 0]
+                    },
+                    scale : [{
+                        position : 'left',
+                        start_scale : scaledata,
+                        end_scale : scaledata,
+                        scale_space : 1,
+                        scale_enable : false,
+                        label : {
+                            fontsize:11,
+                            color : '#666666'
+                        },
+                        listeners:{
+                            parseText:function(t,x,y){
+                                return {text:t}
+                            }
+                         }
+                    }]
                 }
             });
             
-            // Step:4 require echarts and use it in the callback.
-            // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
-            require(
-                [
-                    'echarts',
-                    'echarts/chart/bar',
-                    'echarts/chart/line'
-                ],
-                function(ec) {
-                    var myChart = ec.init(document.getElementById('main'));
-                    var placeHoledStyle = {
-    normal:{
-        borderColor:'rgba(0,0,0,0)',
-        color:'rgba(0,0,0,0)'
-    },
-    emphasis:{
-        borderColor:'rgba(0,0,0,0)',
-        color:'rgba(0,0,0,0)'
-    }
-};
-option = {
-    title : {
-        text: '人均效能',
-        subtext: '每日更新时间下午14:30',
-        sublink: '人均效能超过25吨存在人员数据错报的可能'
-    },
-    tooltip : {
-        trigger: 'axis',
-        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-        },
-        formatter: function(param){
-            return param[0][1] + '<br/>'
-                   + param[0][0] + ' : ' + param[0][2] + '<br/>'
-                   + param[1][0] + ' : ' + (param[1][2] + param[0][2]);
-        }
-    },
-    legend: {
-        data:['当日效能', '最大人均效能']
-    },
-    toolbox: {
-        show : false,
-        feature : {
-            mark : true,
-            dataView : {readOnly: false},
-            restore : true,
-            saveAsImage : true
-        }
-    },
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            splitLine : {show: false},
-            data : category
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            boundaryGap: [0, 0.1],
-            splitArea : {show : true}
-        }
-    ],
-    series : [
-        {
-            name:'当日人均效能',
-            type:'bar',
-            stack: 'sum',
-            barCategoryGap: '50%',
-            itemStyle: {
-                normal: {
-                    color: 'black',
-                    borderColor: 'black',
-                    borderWidth: 6,
-                    label : {
-                        show: true, position: 'inside'
+            //利用自定义组件构造左侧说明文本
+            chart.plugin(new iChart.Custom({
+                    drawFn:function(){
+                        //计算位置
+                        var coo = chart.getCoordinate(),
+                            x = coo.get('originx'),
+                            y = coo.get('originy');
+                        //在左上侧的位置，渲染一个单位的文字
+                        chart.target.textAlign('start')
+                        .textBaseline('bottom')
+                        .textFont('600 11px Verdana')
+                        .fillText('吨/人',x-40,y-10,false,'#6d869f');
+                        
                     }
-                }
-            },
-            data:perList
-        },
-        {
-            name:'最大人均效能',
-            type:'bar',
-            stack: 'sum',
-            itemStyle: {
-                normal: {
-                    color: '#fff',
-                    borderColor: 'black',
-                    borderWidth: 6,
-                    label : {
-                        show: true, 
-                        position: 'top',
-                        formatter: function(a, b, c) {
-                            for (var i = 0, l = option.xAxis[0].data.length; i < l; i++) {
-                                if (option.xAxis[0].data[i] == b) {
-                                    return option.series[0].data[i] + c;
-                                }
-                            }
-                        },
-                        textStyle: {
-                            color: 'black'
-                        }
-                    }
-                }
-            },
-            data:maxRightPer
-        }
-    ]
-};
-                    
+            }));
             
-            myChart.setOption(option);
+            chart.draw();
+        });
         }
-    );
-}
+    
     </script>
+</head>
 
+<body>
+    
 
-<body>  
-    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+    <div id='canvasDiv'></div>
+
 </body>
 </html>
