@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,12 +8,8 @@
     <script type="text/javascript" src="../../framework/ajax.js"></script>
     <script  src="../../dm/common.js"></script>
     <title>省份互流货量</title>
-    <!--Step:1 Import a module loader, such as esl.js or require.js-->
-    <!--Step:1 引入一个模块加载器，如esl.js或者require.js-->
-    <script src="../../tools/echarts/esl.js"></script>
  
-    <!--Step:2 Prepare a dom for ECharts which (must) has size (width & hight)-->
-    <!--Step:2 为ECharts准备一个具备大小（宽高）的Dom-->
+    <script src="../../tools/echarts1.4.1/echarts-plain.js"></script>
     
     <script type="text/javascript">
 
@@ -74,27 +70,9 @@
             dataDay[i] = inP;
         }
 
-    // Step:3 conifg ECharts's path, link to echarts.js from current page.
-    // Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
-            require.config({
-                paths:{ 
-                    echarts:'http://echarts.baidu.com/build/echarts',
-                    'echarts/chart/bar' : 'http://echarts.baidu.com/build/echarts',
-                    'echarts/chart/line': 'http://echarts.baidu.com/build/echarts'
-                }
-            });
-            
-            // Step:4 require echarts and use it in the callback.
-            // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
-            require(
-                [
-                    'echarts',
-                    'echarts/chart/bar',
-                    'echarts/chart/line'
-                ],
-                function(ec) {
-                    var myChart = ec.init(document.getElementById('main'));
-                    var option = {
+		var myChart = echarts.init(document.getElementById('main'));
+ 
+        var option = {
             title : {
                 text: '单位:KG',
                 subtext: title,
@@ -128,11 +106,8 @@
             ]
         };
                     
-            
-            myChart.setOption(option);
-        }
-    );
-}
+        myChart.setOption(option);
+	}
     </script> 
     
 </head>

@@ -4,178 +4,25 @@
 	<meta charset="UTF-8" />
 	<title>货量趋势图</title>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
 	<script type="text/javascript">
 
-	var serviceUrl;
-	var toDate;
-	var fromDate;
-	var inYear;
-	var attention;
-	var title_attention;
-	var from_range;
-	var to_range;
-
-	Date.prototype.getWeekOfYear = function(weekStart) { // weekStart：每周开始于周几：周日：0，周一：1，周二：2 ...，默认为周日
-		weekStart = (weekStart || 0) - 0;
-		if(isNaN(weekStart) || weekStart > 6)
-			weekStart = 0;	
-
-		var year = this.getFullYear();
-		var firstDay = new Date(year, 0, 1);
-		var firstWeekDays = 7 - firstDay.getDay() + weekStart;
-		var dayOfYear = (((new Date(year, this.getMonth(), this.getDate())) - firstDay) / (24 * 3600 * 1000)) + 1;
-		return Math.ceil((dayOfYear - firstWeekDays) / 7) + 1;
-
-	}
+   window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +  queryParams.param5 +'至'+  queryParams.param6 + queryParams.param4 ;
+            show(globalValiable.data);
+            return;
+        }
+    } 
 	
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		var optionTobj = document.getElementById('time_Type');
-		var optionFromobj = document.getElementById('from_Type');
-		var optionToobj = document.getElementById('to_Type');
 
-		if (optionFromobj.value == 1 ) {from_range = '全网' };
-		if (optionFromobj.value  == 2 ) {from_range = '华东' };
-		if (optionFromobj.value  == 3 ) {from_range = '华南' };
-		if (optionFromobj.value  == 4 ) {from_range = '华北' };
-		if (optionFromobj.value  == 5 ) {from_range = '山东地区' };
-		if (optionToobj.value  == 1 ) {to_range = '全网' };
-		if (optionToobj.value  == 2 ) {to_range = '华东' };
-		if (optionToobj.value  == 3 ) {to_range = '华南' };
-		if (optionToobj.value  == 4 ) {to_range = '华北' };
-		if (optionToobj.value  == 5 ) {to_range = '山东地区' };
-
-		title_attention = from_range + '至' + to_range;
-
-		if (optionObj.value==1) {			
-			fromDate = $$("fromDate").value;
-			toDate = $$("toDate").value;
-			var myDate = new Date(fromDate);
-            inYear = myDate.getFullYear();
-            attention = inYear + '年日汇总';
-
-
-            if (optionTobj.value==1) {
-            	if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/213";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/314";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/317";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/308";};            	
-            } 
-			else{
-				if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/256";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/320";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/323";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/311";};				
-			}
-		}
-
-		if (optionObj.value==2) {			
-			var dst = new Date($$("fromDate").value);
-			var det = new Date($$("toDate").value);
-			inYear = dst.getFullYear(); 
-			fromDate = dst.getWeekOfYear();
-			toDate = det.getWeekOfYear();
-			attention = '横坐标为' + inYear +'年第' + fromDate + '周--第' + toDate +'全周数据';
-
-			if (optionTobj.value==1) {
-				if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/236";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/315";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/318";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/309";};   				
-			} 
-			else{
-				if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/257";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/321";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/324";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/312";};					
-			}	
-		}
-
-		if (optionObj.value==3) {			
-			var mst = new Date($$("fromDate").value);
-			var met = new Date($$("toDate").value);
-			inYear = mst.getFullYear(); 
-			fromDate = mst.getMonth()+1;
-			toDate = met.getMonth()+1;
-			attention = '横坐标为' + inYear +'年第' + fromDate + '月--第' + toDate +'全月数据';
-
-			if (optionTobj.value == 1) {
-				if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/237";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/316";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/319";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/310";};				
-			} 
-			else{
-				if (optionFromobj.value == 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/258";};
-            	if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/322";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　==1) {serviceUrl = "../../display/json/325";};
-            	if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {serviceUrl = "../../display/json/313";};				
-			}	
-		}
-
-
-		if (optionFromobj.value == 1 &&　optionToobj.value　==1) {
-			Ajax({
-				url : serviceUrl,
-				method : "POST",
-				params : {"param1": inYear, "param2": fromDate, "param3": toDate},
-				type : "json",
-				waiting : true,
-				ondata : function() {
-					var data = eval(this.getResponseText());
-					show(data);
-				}
-			});
-		};	
-
-		if (optionFromobj.value == 1 &&　optionToobj.value　> 1) {
-			Ajax({
-				url : serviceUrl,
-				method : "POST",
-				params : {"param1": inYear, "param2": fromDate, "param3": toDate, "param4": to_range},
-				type : "json",
-				waiting : true,
-				ondata : function() {
-					var data = eval(this.getResponseText());
-					show(data);
-				}
-			});
-		};  
-
-		if (optionFromobj.value > 1 &&　optionToobj.value　== 1) {
-			Ajax({
-				url : serviceUrl,
-				method : "POST",
-				params : {"param1": inYear, "param2": fromDate, "param3": toDate, "param4": from_range},
-				type : "json",
-				waiting : true,
-				ondata : function() {
-					var data = eval(this.getResponseText());
-					show(data);
-				}
-			});
-		}; 
-
-		if (optionFromobj.value > 1 &&　optionToobj.value　> 1) {
-			Ajax({
-				url : serviceUrl,
-				method : "POST",
-				params : {"param1": inYear, "param2": fromDate, "param3": toDate, "param4": from_range, "param5": to_range},
-				type : "json",
-				waiting : true,
-				ondata : function() {
-					var data = eval(this.getResponseText());
-					show(data);
-				}
-			});
-		};   
-	}
-
-	
 	function show(originData) {
 		var total = 0;
 		var dataE = [];
@@ -212,6 +59,8 @@
 		}
 
 		spaceData=scaledata/5;
+
+		var autoSize  = autoAdjustSize("canvasDiv");	
 				
 		$(function(){
 
@@ -229,7 +78,7 @@
 				data: data,
 				align:'center',
 				title : {
-				text: title_attention  + '全网时效达成率走势',
+				text: title,
 				font : '微软雅黑',
 				fontsize:25,
 				color:'#FF9900'
@@ -240,15 +89,15 @@
 				color:'#FF9900'
 			},
 			footnote : {
-				text:attention,
+				text:'数据实时更新',
 				font : '微软雅黑',
 				fontsize:20,
 				fontpercent:600,
 				padding:'0 28',
 				color:'#FF9900'
 			},
-			width : 1050,
-			height : 550,
+			width : autoSize[0],
+			height : autoSize[1],
 			shadow:false,
 			shadow_color : '#9d987a',
 			shadow_blur : 0,
@@ -333,35 +182,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;		
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-		查询起始: <select id="from_Type">
-			<option value="1" selected>全网</option>
-			<option value="2">华东</option>
-			<option value="3">华南</option>
-			<option value="4">华北</option>
-			<option value="5">山东地区</option>
-			</select>&nbsp;
-		查询目的: <select id="to_Type">
-			<option value="1" selected>全网</option>
-			<option value="2">华东</option>
-			<option value="3">华南</option>
-			<option value="4">华北</option>
-			<option value="5">山东地区</option>
-			</select>&nbsp;
-		查询类型: <select id="time_Type">
-			<option value="1" selected>准时时效</option>
-			<option value="2">准时加一时效</option>
-			</select>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>&nbsp;
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 

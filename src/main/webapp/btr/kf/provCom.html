@@ -4,28 +4,24 @@
 	<meta charset="UTF-8" />
 	<title>柱状图</title>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+
+	<script  src="../../framework/core.js"></script>
+	<script  src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
 	<script type="text/javascript">
 
-	var serviceUrl = Query.get("service") || "../../display/json/215";
-	
-	function query() {
-		var selectedDate = $$("selectedDate").value;
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": selectedDate,"param2": selectedDate}, 
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-			}
-		});	  
-	}
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '日 已受理且投诉成立票数占比';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 
 	
 	function show(originData) {
@@ -33,7 +29,7 @@
 		var datar = [];
 		var maxdata=0;
 		var scaledata=0;
-		var color=['#3883bd','#0000FF','#330033','#663333','#FF6633','#993333','#66FF00','#FF0066','#33FFFF','#FF0000','#009999','#FFCC00','#CC3300','#9999CC','#CC9999','#FFCC66'];		
+				
 		for(var i = 0; i < originData.length; i++) {
 			var brst = originData[i]["总投诉"];
 			var province = originData[i]["分公司"];
@@ -43,15 +39,17 @@
 			scaledata=Math.round(maxdata/10000) * 10000 + 5000;
 
 			total += brst;
-			datar[i] = {name: province, value: brst, color:color[i] };
+			datar[i] = {name: province, value: brst, color:COLORS[i] };
 		}
-				
+
+		var autoSize  = autoAdjustSize("canvasDiv");
+								
 	$(function(){
 var data = datar;
 var chart = new iChart.Pie3D({
 render : 'canvasDiv',
 title:{
-text:'已受理且投诉成立票数占比  投诉总量：' + total + '票',
+text:title + '投诉总量：' + total + '票',
 color:'#e0e5e8',
 height:40,
 border:{
@@ -71,8 +69,8 @@ width:[2,0,0,0],
 color:'#343b3e'
 }
 },
-width : 1050,
-height : 550,
+width : autoSize[0],
+height : autoSize[1],
 data:data,
 shadow:true,
 shadow_color:'#15353a',
@@ -126,12 +124,6 @@ chart.bound(0);
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期: <input type="date" name="selectedDate" id="selectedDate"/> &nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 

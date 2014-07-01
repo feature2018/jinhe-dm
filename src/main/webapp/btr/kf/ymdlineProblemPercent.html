@@ -4,45 +4,23 @@
 	<meta charset="UTF-8" />
 	<title>货量趋势图</title>
 
-	<script type="text/javascript" src="../../framework/core.js"></script>
-	<script type="text/javascript" src="../../framework/ajax.js"></script>
-	<script type="text/javascript" src="../../ichartjs/ichart.1.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
 
 	<script type="text/javascript">
-	var serviceUrl;
-	
-	function query() {
-		var optionObj = document.getElementById('dataType');
-		if (optionObj.value==1) {
-			serviceUrl = "../../display/json/205";
-		}
-		if (optionObj.value==2) {
-			serviceUrl = "../../display/json/219";
-		}
-		if (optionObj.value==3) {
-			serviceUrl = "../../display/json/220";
-		}
 
-
-		var fromDate = $$("fromDate").value;
-		var toDate = $$("toDate").value;
-
-		Ajax({
-			url : serviceUrl,
-			method : "POST",
-			params : {"param1": fromDate, "param2": toDate},
-			type : "json",
-			waiting : true,
-			ondata : function() {
-				var data = eval(this.getResponseText());
-				show(data);
-				/*if( result == null ) {	 
-					return ;
-				}*/
-			}
-		});	  
-	}
-
+   window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +'百世快运破损少件类型问题件比率曲线图';
+            show(globalValiable.data);
+            return;
+        }
+    } 
 	
 	function show(originData) {
 		var total = 0;
@@ -53,10 +31,12 @@
 		var maxDay = 0;
 		var scaledata = 0;
 		var spaceData = 0;
+		var weekday;
 
 		for(var i = 0; i < originData.length; i++) {
 			var percent = Math.round(originData[i]["百分比"]*100);
 			var dateIn = originData[i]["日期"];
+			weekday = "天一二三四五六".charAt(new Date(dateIn).getDay());
 			if (maxdata<percent) {
 				maxdata = percent;
 				maxDay = dateIn
@@ -64,7 +44,7 @@
 			scaledata=Math.ceil(maxdata/10)*10;
 
 			if (i % Math.round(originData.length/10) == 0){
-				showDay[i] = dateIn;
+				showDay[i] = dateIn + '\n' + "星期" + weekday;
 			}
 			else{
 				showDay[i] = ' ';
@@ -76,6 +56,8 @@
 		}
 
 		spaceData=scaledata/5;
+
+		var autoSize  = autoAdjustSize("canvasDiv");
 				
 		$(function(){
 
@@ -111,8 +93,8 @@
 				padding:'0 28',
 				color:'#000000'
 			},
-			width : 1050,
-			height : 550,
+			width : autoSize[0],
+			height : autoSize[1],
 			shadow:true,
 			shadow_color : '#9d987a',
 			shadow_blur : 8,
@@ -196,17 +178,6 @@
 </head>
 
 <body>
-	
-	<form method="get" target='hiddenFrame'>
-		日期从: <input type="date" id="fromDate"/>  到:  <input type="date" id="toDate"/>&nbsp;
-		<input type="submit" onclick="query()" value="查询"/>
-		统计方式: <select id="dataType">
-			<option value="1" selected>按天</option>
-			<option value="2">按周</option>
-			<option value="3">按月</option>
-		</select>&nbsp;
-	</form>
-	<iframe width='0px' height='0px' name='hiddenFrame'></iframe>
 	
 	<div id='canvasDiv'></div>
 
