@@ -130,9 +130,6 @@ public class ReportServiceImpl implements ReportService {
 		Report report = this.getReport(reportId);
 		String paramsConfig = report.getParam();
 		String reportScript = report.getScript();
-		if(reportScript != null && reportScript.startsWith("sqlConfig")) {
-			
-		}
           
       	Map<Integer, Object> paramsMap = new HashMap<Integer, Object>();
       	Map<String, Object> fmDataMap = new HashMap<String, Object>();

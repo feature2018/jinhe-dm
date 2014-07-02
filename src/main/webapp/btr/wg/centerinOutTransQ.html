@@ -17,7 +17,7 @@
         var globalValiable = window.parent.globalValiable;
         if(globalValiable && globalValiable.data) {
             queryParams = globalValiable.queryParams;
-            title = queryParams.param1 + '日 省份互流数据';
+            title = queryParams.param1 + '日 分拨互流数据';
             show(globalValiable.data);
             return;
         }
@@ -25,40 +25,48 @@
 
 
     function show(originData) {
-        var totalIn = 0;     
-        
-        
-        var datac = [];        
+        var totalIn = 0;
+        var dataDay = [];
+        var showDay = [];
+        var maxdataIn = 0;
+        var maxdataOut = 0;
+        var maxDayIn = 0;
+        var maxDayOut = 0;
+        var datac = [];
+        var maxw = 0;
        
         var marix = new Array();       
 
-
         var rows = [];
         var columns = [];
+        /*var rows = ['杭州分拨','南京分拨','广州分拨','北京分拨'];
+        var columns = ['杭州分拨','南京分拨','广州分拨','北京分拨'];*/
         for(var i = 0; i < originData.length; i++) {
-            var row = originData[i]["出发省份"];
+            var row = originData[i]["入网中心"];
             if( !rows.contains(row) ) {
                 rows.push(row);
             }
 
-            var column = originData[i]["目的省份"];
+            /*var column = originData[i]["出网中心"];
             if( !columns.contains(column) ){
                 columns.push(column);
-            }
+            }*/
         }
+
+        columns = rows;
 
         for (var l = 0; l < rows.length; l++) {
             datac[l]={name : rows[l]};
             marix[l] = new Array();
             for (var m = 0; m < columns.length; m++) {
-                marix[l][m] = 0;
+                marix[l][m] = 2;
             };
         };
         
         for(var i = 0; i < originData.length; i++) {
-            var weight = originData[i]["重量"];
-            var outP = originData[i]["出发省份"];
-            var inP = originData[i]["目的省份"];
+            var weight = originData[i]["weight"];
+            var outP = originData[i]["入网中心"];
+            var inP = originData[i]["出网中心"];
 
 
             for (k = 0; k < rows.length; k++) {
@@ -75,8 +83,8 @@
 
 
 
-            totalIn += weight;            
-            
+            totalIn += weight;             
+            dataDay[i] = inP;
         }
 
 		var myChart = echarts.init(document.getElementById('main'));
@@ -93,6 +101,7 @@
             },
             legend: {
                 x: 'left',
+                 itemGap: 20,
                 data:rows
             },
             series : [

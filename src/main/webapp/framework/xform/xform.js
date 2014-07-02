@@ -618,11 +618,23 @@ var Mode_ComboEdit = function(colName, xform) {
 		}
 		this._value = x.join(",");
 		xform.updateData(this);
+		
+		fireOnChangeEvent(this, this._value);
+	}
+}
 
-		var onchangeFunc = this.getAttribute("onchange");
-		if(onchangeFunc) {
-			eval(onchangeFunc + "('" + this._value + "')");
+function fireOnChangeEvent(obj, newValue) {
+	var onchangeFunc = obj.getAttribute("onchange");
+	if(onchangeFunc) {
+		var rightKH = onchangeFunc.indexOf(")");
+		if(rightKH > 0) {
+			onchangeFunc = onchangeFunc.substring(0, rightKH) + ", '" + newValue + "')"; 
 		}
+		else {
+			onchangeFunc = onchangeFunc + "('" + newValue + "')";
+		}
+
+		eval(onchangeFunc);
 	}
 }
 
@@ -647,6 +659,8 @@ Mode_ComboEdit.prototype.setValue = function(value) {
 	}
 
 	this.obj._value = value;
+
+	fireOnChangeEvent(this.obj, value);
 }
 
 Mode_ComboEdit.prototype.setEditable = function(status) {

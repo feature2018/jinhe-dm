@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>货量趋势图</title>
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
+
+	<script type="text/javascript">
+
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param4 +'出入货量趋势';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+	
+	function show(originData) {
+		var totalIn = 0;
+		var totalOut = 0;
+		var dataW = [];
+		var dataO = [];
+		var dataDay = [];
+		var showDay = [];
+		var maxdataIn = 0;
+		var maxdataOut = 0;
+		var maxDayIn = 0;
+		var maxDayOut = 0;
+		var scaledata = 0;
+		var spaceData = 0;
+		var maxw = 0;
+		var weekday;
+
+
+		
+		for(var i = 0; i < originData.length; i++) {
+			var weightIn = originData[i]["入网重量"];
+			var weightOut = originData[i]["出网重量"];
+			var dateIn = originData[i]["日期"];
+			weekday = "天一二三四五六".charAt(new Date(dateIn).getDay());
+			if (maxdataIn<weightIn) {
+				maxdataIn = weightIn;
+				maxDayIn = dateIn
+			}
+			if (maxdataOut<weightOut) {
+				maxdataOut = weightOut;				
+			}
+			maxw = maxdataOut;
+
+			if (maxdataOut<maxdataIn) {maxw = maxdataIn}
+			
+			if (maxw/100<1) {scaledata=Math.ceil(maxw/10) * 10;}
+			scaledata=Math.ceil(maxw/100) * 100;
+
+			if (i % Math.round(originData.length/10) == 0){
+				showDay[i] = dateIn  + '\n' + "星期" + weekday;
+			}
+			else{
+				showDay[i] = ' ';
+			}
+
+			totalIn += weightIn;
+			totalOut += weightOut;
+			dataW[i] = weightIn;
+			dataO[i] = weightOut;
+			dataDay[i] = dateIn  + '\n' + "星期" + weekday;
+		}
+
+		spaceData=scaledata/5;
+
+		var autoSize  = autoAdjustSize("canvasDiv");	
+
+		$(function(){
+						var pv=[],ip=[],t;
+						for(var i=0;i<61;i++){
+							t = Math.floor(Math.random()*(30+((i%12)*5)))+10;
+							pv.push(t);
+							t = Math.floor(t*0.5);
+							t = t-Math.floor((Math.random()*t)/2);
+							ip.push(t);
+						}
+						
+						var data = [
+						         	{
+						         		name : 'PV',
+						         		value:pv,
+						         		color:'#0d8ecf',
+						         		line_width:2
+						         	},
+						         	{
+						         		name : 'IP',
+						         		value:ip,
+						         		color:'#ef7707',
+						         		line_width:2
+						         	}
+						         ];
+				         
+						var labels = ["2012-08-01","2012-08-02","2012-08-03","2012-08-04","2012-08-05","2012-08-06"];
+						var line = new iChart.LineBasic2D({
+							render : 'canvasDiv',
+							data: data,
+							align:'center',
+							title : 'ichartjs官方网站最近5天流量趋势',
+							subtitle : '平均每个人访问2-3个页面(访问量单位：万)',
+							footnote : '数据来源：模拟数据',
+							width : 800,
+							height : 400,
+							tip:{
+								enable:true,
+								shadow:true
+							},
+							legend : {
+								enable : true,
+								row:1,//设置在一行上显示，与column配合使用
+								column : 'max',
+								valign:'top',
+								sign:'bar',
+								background_color:null,//设置透明背景
+								offsetx:-80,//设置x轴偏移，满足位置需要
+								border : true
+							},
+							crosshair:{
+								enable:true,
+								line_color:'#62bce9'
+							},
+							sub_option : {
+								label:false,
+								point_hollow : false
+							},
+							coordinate:{
+								width:640,
+								height:240,
+								axis:{
+									color:'#9f9f9f',
+									width:[0,0,2,2]
+								},
+								grids:{
+									vertical:{
+										way:'share_alike',
+								 		value:5
+									}
+								},
+								scale:[{
+									 position:'left',	
+									 start_scale:0,
+									 end_scale:100,
+									 scale_space:10,
+									 scale_size:2,
+									 scale_color:'#9f9f9f'
+								},{
+									 position:'bottom',	
+									 labels:labels
+								}]
+							}
+						});
+					
+					//开始画图
+					line.draw();
+				});
+
+		}
+	
+	</script>
+</head>
+
+<body>
+
+	<div id='canvasDiv'></div>
+
+</body>
+</html>
