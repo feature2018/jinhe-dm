@@ -578,7 +578,9 @@ function relogin(request) {
         var value = this.value;
         if(value == null || value == "") return;
  		
- 		delete loginNameObj.identifier;
+ 		if(loginNameObj.identifier) {
+			delete loginNameObj.identifier;
+		}
  		
         Ajax({
             url: "/" + CONTEXTPATH + "getLoginInfo.in",
@@ -621,6 +623,12 @@ function relogin(request) {
             return;
         } 
 
+		// 重新登录前，先清除token cookie，防止在门户iframe登录平台应用（如DMS），而'/tss'目录下的token依旧是过期的，这样当访问TSS的功能时还是会要求重新登录
+		Cookie.del("token", "/" + CONTEXTPATH);
+		Cookie.del("token", "/" + FROMEWORK_CODE);
+		Cookie.del("token", "");
+		Cookie.del("token", "/");
+		
 		var p = request.paramObj;
 		p.setHeader("loginName", loginName);
 		p.setHeader("password",  password);

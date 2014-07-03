@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>柱状图</title>
+
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+
+	<script  src="../../framework/core.js"></script>
+	<script  src="../../framework/ajax.js"></script>
+	<script  src="../../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script  src="../../dm/common.js"></script>
+
+	<script type="text/javascript">
+
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '至' + queryParams.param2 + '日' + queryParams.param3 +' 装载量变化';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+	
+	function show(originData) {
+		var total = 0;
+		var datar = [];
+		var dataload = [];
+		var label = [];
+		var maxdata=0;
+		var scaledata=0;
+		var spacedata=0;
+				
+		for(var i = 0; i < originData.length; i++) {
+			var brst = originData[i]["weight"];
+			var load = originData[i]["loadw"];
+			var inday = originData[i]["inday"];
+			if (maxdata<load) {
+				maxdata=load
+			}
+			scaledata=Math.round(maxdata)  + 4;
+
+			total += brst;
+			datar[i] = brst;
+			dataload[i] = load;
+			label[i] = inday;
+		}
+		spacedata = scaledata/10;
+		var autoSize  = autoAdjustSize("canvasDiv");
+								
+	$(function(){
+				var data = [
+				         	{
+				         		name : '实载',
+				         		value: datar,
+				         		color:'#1385a5'
+				         	},
+				         	{
+				         		name : '额载',
+				         		value: dataload,
+				         		color:'#061726'
+				         	}
+				         ];
+				var chart = new iChart.ColumnMulti2D({
+						render : 'canvasDiv',
+						data: data,
+						labels:label,
+						title : title,
+						subtitle : '单位:kg',
+						footnote : '数据来源：数据中心',
+						width : autoSize[0],
+						height : autoSize[1],
+						background_color : '#ffffff',
+						legend:{
+							enable:true,
+							background_color : null,
+							border : {
+								enable : false
+							}
+						},
+						coordinate:{
+							background_color : '#f1f1f1',
+							scale:[{
+								 position:'left',	
+								 start_scale:0,
+								 end_scale:scaledata,
+								 scale_space:spacedata
+							}],
+							width:autoSize[0],
+							height:autoSize[1]
+						}
+				});
+				chart.draw();
+			});
+		}
+	
+	</script>
+</head>
+
+<body>
+	
+	<div id='canvasDiv'></div>
+
+</body>
+</html>

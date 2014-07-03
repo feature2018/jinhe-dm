@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>货量趋势图</title>
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
+    <script  src="../../framework/core.js"></script>
+    <script  src="../../framework/ajax.js"></script> 
+    <script  src="../../tools/jquery/jquery-1.10.1.min.js"></script>
+    <script  src="../../tools/highcharts/highcharts.js"></script>
+    <script  src="../../dm/common.js"></script>    
+
+    <script >
+
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + '至' + queryParams.param2 + '日' + queryParams.param3 +' 装载量变化';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+    function show(originData) {
+
+        var total = 0;
+        var datar = [];
+        var dataload = [];
+        var datarate = [];
+        var label = [];
+        var maxdata=0;
+        var scaledata=0;
+        var spacedata=0;
+                
+        for(var i = 0; i < originData.length; i++) {
+            var brst = originData[i]["weight"];
+            var load = originData[i]["loadw"];
+            var loadrate = originData[i]["loadrate"];
+            var inday = originData[i]["inday"];
+            if (maxdata<load) {
+                maxdata=load
+            }
+            scaledata=Math.round(maxdata)  + 4;
+
+            total += brst;
+            datar[i] = brst;
+            dataload[i] = load;
+            datarate[i] =loadrate;
+            label[i] = inday;
+        }
+        spacedata = scaledata/10;
+        var autoSize  = autoAdjustSize("canvasDiv");
+       
+
+
+       $(function () {                                                               
+                $('#container').highcharts({                                          
+                    chart: {                                                          
+                    },                                                                
+                    title: {                                                          
+                        text: 'Combination chart'                                     
+                    },                                                                
+                    xAxis: {                                                          
+                        categories: label
+                    },                                                                
+                    tooltip: {                                                        
+                        formatter: function() {                                       
+                            var s;                                                    
+                            if (this.point.name) { // the pie chart                   
+                                s = ''+                                               
+                                    this.point.name +': '+ this.y +' fruits';         
+                            } else {                                                  
+                                s = ''+                                               
+                                    this.x  +': '+ this.y;                            
+                            }                                                         
+                            return s;                                                 
+                        }                                                             
+                    },                                                                
+                    labels: {                                                         
+                        items: [{                                                     
+                            html: 'Total fruit consumption',                          
+                            style: {                                                  
+                                left: '40px',                                         
+                                top: '8px',                                           
+                                color: 'black'                                        
+                            }                                                         
+                        }]                                                            
+                    },                                                                
+                    series: [{                                                        
+                        type: 'column',                                               
+                        name: 'Jane',                                                 
+                        data: datar                                        
+                    }, {                                                              
+                        type: 'column',                                               
+                        name: 'John',                                                 
+                        data: dataload                                         
+                    }, {                                                              
+                        type: 'spline',                                               
+                        name: 'Average',                                              
+                        data: datarate,                               
+                        marker: {                                                     
+                            lineWidth: 2,                                               
+                            lineColor: Highcharts.getOptions().colors[3],               
+                            fillColor: 'white'                                          
+                        }                                                             
+                    }                                                            
+                    }]                                                                
+                });                                                                   
+            });      
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+ 
+    <div id='container'></div>
+
+</body>
+</html>
