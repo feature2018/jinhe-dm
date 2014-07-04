@@ -51,10 +51,13 @@
         var maxWeight = 0;
         var totalWeight = 0;
         var showDay =  [];
+        var weekday;
         for(var i = 0; i < originData.length; i++) {
             var weight = originData[i]["入网货量"];
             var center = originData[i]["分拨"];
             var date   = originData[i]["日期"];
+
+            weekday = "天一二三四五六".charAt(new Date(date).getDay());
 
             if(dataMap[center] == null) {
                  dataMap[center] = [];
@@ -63,14 +66,19 @@
             dataMap[center].push(weight);
             maxWeight = Math.max(weight, maxWeight);
             totalWeight += weight;
-
-            if (i % Math.round(originData.length/10) == 0){
-                showDay[i] = date;
+            /*if (Math.round(originData.length)>=8) {
+                if (i % Math.round(originData.length/4) == 0){
+                    showDay[i] = date + '\n' + "周" + weekday;
+                }
+                else{
+                    showDay[i] = ' ';
+                }
             }
             else{
-                showDay[i] = ' ';
-            }
+                showDay[i] = date + '\n' + "周" + weekday;
+            };*/
         };
+        
 
         var scaledata = 0;
         if (maxWeight < 100) {

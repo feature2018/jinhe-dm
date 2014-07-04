@@ -16,7 +16,7 @@
         var globalValiable = window.parent.globalValiable;
         if(globalValiable && globalValiable.data) {
             queryParams = globalValiable.queryParams;
-            title = queryParams.param1 + '至' + queryParams.param2 + '日' + queryParams.param3 +' 装载量变化';
+            title = queryParams.param1 + ' ' + queryParams.param2 + ' ' + queryParams.param3 +' 装载量变化';
             show(globalValiable.data);
             return;
         }
@@ -46,11 +46,11 @@
             total += brst;
             datar[i] = brst;
             dataload[i] = load;
-            datarate[i] =loadrate;
+            datarate[i] =Math.round(loadrate*100);
             label[i] = inday;
         }
         spacedata = scaledata/10;
-        var autoSize  = autoAdjustSize("canvasDiv");
+        var autoSize  = autoAdjustSize("container");
        
 
 
@@ -59,17 +59,33 @@
                     chart: {                                                          
                     },                                                                
                     title: {                                                          
-                        text: 'Combination chart'                                     
+                        text: title                                     
                     },                                                                
                     xAxis: {                                                          
                         categories: label
+                    },
+                    yAxis: {
+                        title: {
+                            text: '货量/装载率'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    credits:{                   //右边下标HighCharts.com去除  
+                        enabled:false  
+                    },
+                    chart: {
+                        height:autoSize[1]
                     },                                                                
                     tooltip: {                                                        
                         formatter: function() {                                       
                             var s;                                                    
                             if (this.point.name) { // the pie chart                   
                                 s = ''+                                               
-                                    this.point.name +': '+ this.y +' fruits';         
+                                    this.point.name +': '+ this.y +' 吨';         
                             } else {                                                  
                                 s = ''+                                               
                                     this.x  +': '+ this.y;                            
@@ -79,7 +95,7 @@
                     },                                                                
                     labels: {                                                         
                         items: [{                                                     
-                            html: 'Total fruit consumption',                          
+                            html: '更新时间：早上10点',                          
                             style: {                                                  
                                 left: '40px',                                         
                                 top: '8px',                                           
@@ -89,23 +105,22 @@
                     },                                                                
                     series: [{                                                        
                         type: 'column',                                               
-                        name: 'Jane',                                                 
-                        data: datar                                        
+                        name: '实际装载',                                                 
+                        data: datar                                         
                     }, {                                                              
                         type: 'column',                                               
-                        name: 'John',                                                 
+                        name: '额定装载',                                                 
                         data: dataload                                         
                     }, {                                                              
                         type: 'spline',                                               
-                        name: 'Average',                                              
+                        name: '装载率',                                              
                         data: datarate,                               
                         marker: {                                                     
                             lineWidth: 2,                                               
                             lineColor: Highcharts.getOptions().colors[3],               
-                            fillColor: 'white'                                          
+                            fillColor: 'blue'                                          
                         }                                                             
-                    }                                                            
-                    }]                                                                
+                    }]                                                               
                 });                                                                   
             });      
 

@@ -538,7 +538,13 @@ function Message_Exception(param, request) {
 
 	// 是否需要重新登录
 	if(param.relogin == "1") {
-		Cookie.del("token", "/" + CONTEXTPATH); // 先清除令牌
+		/* 重新登录前，先清除token cookie，防止在门户iframe登录平台应用（如DMS），而'/tss'目录下的token依旧是过期的，
+	     * 这样再次点击菜单（需redirect.html跳转的菜单）时还是会要求重新登录。 */
+		Cookie.del("token", "");
+		Cookie.del("token", "/");
+		Cookie.del("token", "/" + FROMEWORK_CODE.toLowerCase());
+		Cookie.del("token", "/" + CONTEXTPATH);
+
 		popupMessage(param.msg);
 		relogin(request);
 	}
@@ -622,13 +628,7 @@ function relogin(request) {
             popupMessage("无法登录，用户配置可能有误，请联系管理员。");
             return;
         } 
-
-		// 重新登录前，先清除token cookie，防止在门户iframe登录平台应用（如DMS），而'/tss'目录下的token依旧是过期的，这样当访问TSS的功能时还是会要求重新登录
-		Cookie.del("token", "/" + CONTEXTPATH);
-		Cookie.del("token", "/" + FROMEWORK_CODE);
-		Cookie.del("token", "");
-		Cookie.del("token", "/");
-		
+ 
 		var p = request.paramObj;
 		p.setHeader("loginName", loginName);
 		p.setHeader("password",  password);

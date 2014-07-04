@@ -31,8 +31,8 @@
 	var params = new Params(queryString);
 
 	var token = params.getValue("token");
-	if(token) {
-		window.document.cookie = "token=" + token;;
+	if(token && token != "null") {
+		window.document.cookie = "token=" + token;
 	}
 
 	var url   = params.getValue("url");
