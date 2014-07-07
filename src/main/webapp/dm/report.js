@@ -737,3 +737,36 @@ function createQueryForm(treeID, paramConfig, callback) {
 		Element.hide($$("searchFormDiv"));
 	}
 }
+
+// ------------------------------------------------- 多级下拉选择联动 ------------------------------------------------
+
+function getNextLevelOption(nextIndex, serviceID, paramIndex, paramValue) {
+	if(nextIndex == null || serviceID == null || paramValue == null || paramValue == "") return;
+
+	var paramElementId = "param" + nextIndex;
+	var params = {};
+	params["param" + paramIndex] = paramValue
+
+	Ajax({
+		url : '../display/json/' + serviceID,  // ../display/json/GetFenBo
+		method: "POST",
+		params : params,
+		type : "json",
+		ondata : function() { 
+			var result = eval(this.getResponseText());
+			if( result ) {
+				var selectObj = $$(paramElementId);
+				selectObj.options.length = 0; // 先清空
+				for(var i = 0; i < result.length; i++) {
+					var option = createOption(result[i]);
+					selectObj.options[selectObj.options.length] = option;
+
+					// 设置为默认选中第一个
+					if(i == 0) {
+						$X("searchForm").updateDataExternal(paramElementId, option.value); 
+					}	
+				}
+			}				
+		}
+	});
+}

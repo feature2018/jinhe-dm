@@ -422,7 +422,7 @@
 				<log.level>info</log.level>
 				<db.url>127.0.0.1:3306/dms_btr</db.url>
 				<environment>prod</environment>
-				<tomcat.url>btrbi.800best.com:8888</tomcat.url>
+				<tomcat.url>172.20.121.19:8082</tomcat.url>
 			</properties>
 		</profile>
 		<profile>
