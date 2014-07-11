@@ -86,11 +86,11 @@ public class SOUtil {
     }
  
     /** 用Freemarker引擎解析脚本 */
-    public static String freemarkerParse(String script, Map<String, ?> requestMap) {
+    public static String freemarkerParse(String script, Map<String, ?> dataMap) {
         try {
             Template temp = new Template("t.ftl", new StringReader(script), new Configuration());
             Writer out = new StringWriter();
-            temp.process(requestMap, out);
+            temp.process(dataMap, out);
             script = out.toString();
             out.flush();
         } catch (Exception e) {
