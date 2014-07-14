@@ -13,7 +13,6 @@
         <property name="host" value="smtp.163.com"/>
         <property name="port" value="25" />
         
-        <!-- 有些邮件服务器发送邮件需要认证，所以必须提供帐号  -->
         <property name="username" value="lovejava@163.com"/>
         <property name="password" value="lovejava=jonking"/>
         <property name="javaMailProperties">
@@ -22,40 +21,23 @@
             </props>
         </property>
     </bean>
-    
-    <!--一个邮件模板-->
-    <bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
-        <property name="to" value="lovejava@163.com"/>
-        <property name="from" value="lovejava@163.com"/>
-        <property name="subject" value="test"/>
-    </bean>
 
-    <bean id="reportJob"
-        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="mailService"/>
+    <!-- user overdue Job Config -->
+	<bean id="reportJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="mailService"/>
         <property name="targetMethod" value="sendMail"/>
-    </bean>
-    
-    <!--一个简单的调度器-->
-    <bean id="simpleTrigger"
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail" ref="reportJob"/>
-        <property name="startDelay" value="1"/>   在web启动多少毫秒后启动任务
-        <property name="repeatInterval" value="100000000"/> 表示没隔多少毫秒启动
-    </bean>
-    
-    <!--一个定时的调度器-->
-    <bean id="cronTrigger"
-        class="org.springframework.scheduling.quartz.CronTriggerBean">
-        <property name="jobDetail" ref="reportJob"/>
-        <property name="cronExpression" value="0 0 6 * * ?"/> 指明每天早上6点启动任务,表达式的解释见下篇文章
-    </bean>
-    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="triggers">
-            <list>
-                <ref bean="simpleTrigger"/>
-            </list>
-        </property>
-    </bean>
+	</bean>
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="reportJob"/>
+		<property name="cronExpression">
+			<value>0 0 0 * * ?</value>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list><ref local="cronTrigger"/></list>
+		</property>
+	</bean> 
+	<!-- Job end -->
  
 </beans>

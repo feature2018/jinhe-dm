@@ -57,7 +57,10 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     private String  datasource; // 单独为报表指定数据源
     private String  displayUri; // 用来展示当前报表的模板页面的路径
     
-    private Integer type;       // 种类  0：报表分组 1: 业务报表
+    @Column(length = 500)
+    private String  timer; // 定时配置   0 0 0 * * ?, 0 0 12 * * ? | xxx@gmail.com,zzz@163.com
+    
+    private Integer type;  // 种类  0：报表分组 1: 业务报表
     private String  remark; 
     
     private Long    parentId;  // 父节点
@@ -197,5 +200,13 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
 	
 	public Serializable getPK() {
 		return this.id;
+	}
+
+	public String getTimer() {
+		return timer;
+	}
+
+	public void setTimer(String timer) {
+		this.timer = timer;
 	}
 }
