@@ -90,7 +90,7 @@ public class Display extends BaseActionSupport {
     	Map<String, String> requestMap = getRequestMap(request);
         SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, Environment.getOperatorId());
         
-        String fileName = reportId + ".csv";
+        String fileName = reportId + "-" + System.currentTimeMillis() + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
         DataExport.exportCSV(exportPath, excutor.result, excutor.selectFields);
         DataExport.downloadFileByHttp(response, exportPath);

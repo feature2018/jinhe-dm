@@ -9,8 +9,4 @@ public interface Constants {
 
     static final String TEMP_EXPORT_PATH = "TEMP_EXPORT_PATH";
     
-    static final String Log_DIR = "Log_DIR";
-    
-    static final String KANBAN_EAMIL = "KANBAN_EAMIL";
-    static final String KANBAN_SMS = "KANBAN_SMS";
 }

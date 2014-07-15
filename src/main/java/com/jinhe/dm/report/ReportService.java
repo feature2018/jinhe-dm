@@ -60,6 +60,9 @@ public interface ReportService {
     @Logable(operateObject="报表", operateInfo="移动(ID: ${args[0]}) 报表至 (ID: ${args[1]}) 报表组下。")
     void move(Long reportId, Long groupId);
 
+    /**
+     * 传入 loginUserId 目的是防止不同用户使用同一份缓存数据，因用户权限不同，各自看到的数据多少也不同，所以需要分开来缓存。
+     */
     @Cached(cyclelife = CacheLife.SHORTER)
     SQLExcutor queryReport(Long reportId, Map<String, String> requestMap, int page, int pagesize, Object loginUserId);
 }

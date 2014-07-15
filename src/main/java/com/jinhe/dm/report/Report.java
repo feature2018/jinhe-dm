@@ -28,10 +28,10 @@ import com.jinhe.tss.util.BeanUtil;
 @SequenceGenerator(name = "report_sequence", sequenceName = "report_sequence", initialValue = 1, allocationSize = 10)
 public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDecodable, IResource {
     
-    static final int TYPE0 = 0;  // 报表分组
-    static final int TYPE1 = 1;  // 业务报表
+	public static final int TYPE0 = 0;  // 报表分组
+	public static final int TYPE1 = 1;  // 业务报表
     
-    static final Long DEFAULT_PARENT_ID = 0L;
+	public static final Long DEFAULT_PARENT_ID = 0L;
     
     // 资源类型： 报表
     public static final String RESOURCE_TYPE_REPORT = "D1"; 
@@ -56,9 +56,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
     
     private String  datasource; // 单独为报表指定数据源
     private String  displayUri; // 用来展示当前报表的模板页面的路径
-    
-    @Column(length = 500)
-    private String  timer; // 定时配置   0 0 0 * * ?, 0 0 12 * * ? | xxx@gmail.com,zzz@163.com
     
     private Integer type;  // 种类  0：报表分组 1: 业务报表
     private String  remark; 
@@ -200,13 +197,5 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
 	
 	public Serializable getPK() {
 		return this.id;
-	}
-
-	public String getTimer() {
-		return timer;
-	}
-
-	public void setTimer(String timer) {
-		this.timer = timer;
 	}
 }

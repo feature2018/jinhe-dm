@@ -1,4 +1,4 @@
-package com.jinhe.dm.report.timer;
+package com.jinhe.dm.other;
 
 import java.io.File;
 
@@ -6,20 +6,24 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@ContextConfiguration(locations = { "classpath:META-INF/spring-timer.xml" })
-public class SpringMailTest extends AbstractJUnit4SpringContextTests {
+public class SpringMailTest {
 
-	@Autowired
-	MailSender sender;
+	private JavaMailSenderImpl getMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.163.com");
+		mailSender.setPort(25);
+		
+		mailSender.setUsername("lovejava@163.com");
+		mailSender.setPassword("lovejava=jonking"); 
+		
+		mailSender.getJavaMailProperties().put("mail.smtp.auth", true);
+		
+		return mailSender;
+	}
 
 //	@Test
 	public void testSendMail() {
@@ -27,10 +31,10 @@ public class SpringMailTest extends AbstractJUnit4SpringContextTests {
 
 		try {
 			mail.setTo("pjjin@800best.com");// 接受者
-			mail.setFrom("pjjin@800best.com");// 发送者,这里还可以另起Email别名，不用和xml里的username一致
+			mail.setFrom("lovejava@163.com");// 发送者,这里还可以另起Email别名，不用和xml里的username一致
 			mail.setSubject("spring mail test!");// 主题
 			mail.setText("springMail的简单发送测试");// 邮件内容
-			sender.send(mail);
+			getMailSender().send(mail);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -50,7 +54,7 @@ public class SpringMailTest extends AbstractJUnit4SpringContextTests {
 			messageHelper.setFrom("lovejava@163.com");// 发送者
 			messageHelper.setSubject("测试邮件");// 主题
 			// 邮件内容，注意加参数true
-			// //注意<img/>标签，src='cid:a'，'cid'是contentId的缩写，'a'是一个标记，需要在后面的代码中调用MimeMessageHelper的addInline方法替代成文件  
+			// 注意<img/>标签，src='cid:a'，'cid'是contentId的缩写，'a'是一个标记，需要在后面的代码中调用MimeMessageHelper的addInline方法替代成文件  
 			messageHelper
 					.setText(
 							"<html><head></head><body><h1>hello!!chao.wang</h1><img src='cid:a'/></body></html>",
@@ -63,7 +67,7 @@ public class SpringMailTest extends AbstractJUnit4SpringContextTests {
 			// 这里的方法调用和插入图片是不同的，使用MimeUtility.encodeWord()来解决附件名称的中文问题
 			messageHelper.addAttachment(MimeUtility.encodeWord(file.getName()), file);
 			
-			((JavaMailSender)sender).send(mailMessage);
+			getMailSender().send(mailMessage);
 		} 
 		catch (Exception e) {
 			e.printStackTrace();

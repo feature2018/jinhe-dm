@@ -7,7 +7,6 @@
 		<column name="param"  caption="报表参数" mode="string" maxLength="1000"/>
 		<column name="datasource"  caption="数据源"  mode="string" editor="comboedit"/>
 		<column name="displayUri"  caption="展示页面" mode="string" maxLength="200"/>
-		<column name="timer"  caption="定时设置" mode="string" maxLength="500"/>
 		<column name="remark" caption="报表简介" mode="string" maxLength="400"/>
 	</declare>
 	<layout>
@@ -34,10 +33,6 @@
 		<TR>
 			<TD width="80"><label binding="datasource"/></TD>
 			<TD><input binding="datasource" type="text" style="width:50%;"/></TD>
-		</TR>
-		<TR>
-			<TD width="80" valign="top"><label binding="timer"/></TD>
-			<TD><textarea binding="timer" style="width:95%;height:40"/></TD>
 		</TR>
 		<TR>
 			<TD width="80" valign="top"><label binding="remark"/></TD>

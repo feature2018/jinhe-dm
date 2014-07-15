@@ -17,5 +17,8 @@ public class ServiceListTest extends TxTestSupport {
 		serviceList.getOrgList();
 		serviceList.getCenterList("60000");
 	}
- 
+	
+    protected String getDefaultSource(){
+    	return "connpool-vf-oracle";
+    }
 }

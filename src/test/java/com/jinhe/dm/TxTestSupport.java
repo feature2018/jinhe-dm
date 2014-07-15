@@ -53,13 +53,17 @@ public abstract class TxTestSupport extends AbstractTransactionalJUnit4SpringCon
             addParamItem(dlParam.getId(), "connectionpool-1", "数据源1", ParamConstants.COMBO_PARAM_MODE);
         }
         if(paramService.getParam(Constants.DEFAULT_CONN_POOL) == null) {
-            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", "connpool-vf-oracle");
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.DEFAULT_CONN_POOL, "默认数据源", getDefaultSource());
         }
-        if(paramService.getParam(Constants.Log_DIR) == null) {
-			String tmpDir = System.getProperty("java.io.tmpdir") + "fbLog";
-			log.info("输出日志目录：" + tmpDir);
-            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.Log_DIR, "反馈日志目录", tmpDir);
+        if(paramService.getParam(Constants.TEMP_EXPORT_PATH) == null) {
+			String tmpDir = System.getProperty("java.io.tmpdir") + "temp";
+			log.info("临时文件导出目录：" + tmpDir);
+            addParam(ParamConstants.DEFAULT_PARENT_ID, Constants.TEMP_EXPORT_PATH, "临时文件导出目录", tmpDir);
         }
+    }
+    
+    protected String getDefaultSource(){
+    	return "connectionpool";
     }
  
     @After
