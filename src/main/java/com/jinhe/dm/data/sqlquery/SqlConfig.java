@@ -24,7 +24,7 @@ public class SqlConfig {
 	public static String getWMSSQL(String reportName, int index) {
 		Cacheable cacheItem = cache.getObject(reportName);
 		if(cacheItem == null) {
-			File sqlDir = new File(URLUtil.getResourceFileUrl("script/wms").getPath());
+			File sqlDir = new File(URLUtil.getResourceFileUrl("script/btr").getPath());
 			List<File> sqlFiles = FileHelper.listFilesByTypeDeeply("xml", sqlDir);
 			for(File sqlFile : sqlFiles) {
 				Document doc = XMLDocUtil.createDocByAbsolutePath(sqlFile.getPath());

@@ -25,6 +25,7 @@ public class ReportJob extends AbstractJob {
 
 	private static final String SEND_FROM_EMAIL = "330391381@qq.com";
 
+	// TODO 邮箱信息配置到参数管理里
 	private MailSender getMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.qq.com");
