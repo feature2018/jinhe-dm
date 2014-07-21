@@ -39,10 +39,13 @@ public class BTRAfterLoginCustomizer implements ILoginCustomizer {
         session.setAttribute(USER_GROUPS_NAME, fatherGroupNames);
         
         // TODO 处理下org和center的格式（现在是List<Map>）
-        String orgs = EasyUtils.list2Str(baseService.getOrgList());
+        List<?> orgList = baseService.getOrgList();
+		String orgs = EasyUtils.list2Str(orgList);
         session.setAttribute(PERMISSION_1, orgs);
         
-        String centers = EasyUtils.list2Str(baseService.getCenterList(orgs));
-        session.setAttribute(PERMISSION_2, centers);
+        if(orgList.size() > 0 ) {
+        	String centers = EasyUtils.list2Str(baseService.getCenterList(orgs));
+            session.setAttribute(PERMISSION_2, centers);
+        }
     }
 }
