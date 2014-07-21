@@ -39,15 +39,13 @@ public class BTRUserIdentifier extends BaseUserIdentifier {
         	throw new BusinessException("用户密码不正确，请重新登录", false);
         }
         
-        // 读取用户的所属分组信息（包括了分拨、分公司等）
-        
         return operator;
     }
     
     boolean checkPWDInBTR(IPWDOperator operator, String password){
         log.debug("用户登陆时密码在主用户组中验证不通过，转向进行再次验证。");
         
-        BaseService btrService = (BaseService) Global.getContext().getBean("BaseInfoService");
+        BaseService btrService = (BaseService) Global.getContext().getBean("BaseService");
         
         String loginName = operator.getLoginName();
         boolean result = btrService.login(loginName, password);

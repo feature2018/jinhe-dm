@@ -11,27 +11,39 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 public class SpringMailTest {
+ 
+	static String MAIL_SERVER = "smtp.163.com";
+	static String USERNAME = "lovejava@163.com";
+	static String PASSWORD = "lovejava=jonking";
 
+//	private JavaMailSenderImpl getMailSender() {
+//		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//		mailSender.setHost(MAIL_SERVER);
+//		mailSender.setPort(25);
+//		
+//		mailSender.setUsername(USERNAME);
+//		mailSender.setPassword(PASSWORD); 
+//		
+//		mailSender.getJavaMailProperties().put("mail.smtp.auth", true);
+//		
+//		return mailSender;
+//	}
+	
 	private JavaMailSenderImpl getMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.163.com");
+		mailSender.setHost("hzsmtp1.800best.com");
 		mailSender.setPort(25);
-		
-		mailSender.setUsername("lovejava@163.com");
-		mailSender.setPassword("lovejava=jonking"); 
-		
-		mailSender.getJavaMailProperties().put("mail.smtp.auth", true);
 		
 		return mailSender;
 	}
 
-//	@Test
+	@Test
 	public void testSendMail() {
 		SimpleMailMessage mail = new SimpleMailMessage();
 
 		try {
 			mail.setTo("pjjin@800best.com");// 接受者
-			mail.setFrom("lovejava@163.com");// 发送者,这里还可以另起Email别名，不用和xml里的username一致
+			mail.setFrom("J.K@800best.com");// 发送者,这里还可以另起Email别名，不用和xml里的username一致
 			mail.setSubject("spring mail test!");// 主题
 			mail.setText("springMail的简单发送测试");// 邮件内容
 			getMailSender().send(mail);
@@ -40,7 +52,7 @@ public class SpringMailTest {
 		}
 	}
 
-	@Test
+//	@Test
 	public void send() {
 		// 获取JavaMailSender bean
 		JavaMailSenderImpl senderImpl = new JavaMailSenderImpl();
