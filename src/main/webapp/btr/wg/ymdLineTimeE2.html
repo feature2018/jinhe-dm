@@ -16,7 +16,7 @@
         var globalValiable = window.parent.globalValiable;
         if(globalValiable && globalValiable.data) {
             queryParams = globalValiable.queryParams;
-            title = queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +  queryParams.param5 +'至'+  queryParams.param6 + queryParams.param4 ;
+            title = '客户时效' + queryParams.param1 +'至' + queryParams.param2 + '日' +  queryParams.param3 +  queryParams.param5 +'至'+  queryParams.param6 + queryParams.param4 ;
             show(globalValiable.data);
             return;
         }

@@ -366,11 +366,8 @@
 									log4j.logger.com.jinhe.dm to ${log.level};
 								</echo>
 								<replaceregexp file="${basedir}/target/classes/log4j.properties"
-									match="log4j\.logger\.com\.jinhe\.dm=debug"
-									replace="log4j\.logger\.com\.jinhe\.dm=${log.level}"
-									byline="true" />
+									match="=debug" replace="=${log.level}" byline="true" />
 									
-								
 								<echo>
 									process application.properties: set job.enable to ${job.enable};
 								</echo>

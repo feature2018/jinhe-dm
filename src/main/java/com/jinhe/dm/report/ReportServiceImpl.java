@@ -191,27 +191,24 @@ public class ReportServiceImpl implements ReportService {
   		}
   		paramValue = paramValue.trim();
   		
+		if (Pattern.compile("^today[\\s]*-[\\s]*\\d{1,4}").matcher(paramValue).matches()) {
+			int deltaDays = Integer.parseInt(paramValue.split("-")[1].trim());
+			Date today = _DateUtil.noHMS(new Date());
+			paramValue = DateUtil.format(_DateUtil.subDays(today, deltaDays));
+		} 
+  		
   		paramType = paramType.toString().toLowerCase();
   		if("number".equals(paramType)) {
   			return EasyUtils.convertObject2Integer(paramValue);
   		}
   		else if("date".equals(paramType)) {
-  			Date dateObj;
-  			if (Pattern.compile("^today[\\s]*-[\\s]*\\d{1,4}").matcher(paramValue).matches()) {
-				int deltaDays = Integer.parseInt(paramValue.split("-")[1].trim());
-				Date today = _DateUtil.noHMS(new Date());
-				dateObj = _DateUtil.subDays(today, deltaDays);
-			} 
-  			else {
-  				try {
-  					dateObj = DateUtil.parse(paramValue);
-  				} catch(Exception e) {
-  					logger.error("Date type param'value is wrong: " + e.getMessage());
-  					return null;
-  				}
-  			}
-			
-			return new java.sql.Timestamp(dateObj.getTime());
+			try {
+				Date dateObj = DateUtil.parse(paramValue);
+				return new java.sql.Timestamp(dateObj.getTime());
+			} catch(Exception e) {
+				logger.error("Date type param'value is wrong: " + e.getMessage());
+				return null;
+			}
   		}
   		else {
   			return paramValue;

@@ -29,6 +29,15 @@
     <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
 	<paramFile>mysql-btr.properties</paramFile>
   </strategy>
+  <strategy code="connpool-fin-mysql" name="DB连接池-FIN-MySQL"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>28000000</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>0</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>mysql-fin.properties</paramFile>
+  </strategy>
     
   <strategy code="threadpool" name="线程池"> 
     <poolClass>com.jinhe.tss.cache.extension.threadpool.ThreadPool</poolClass>  
