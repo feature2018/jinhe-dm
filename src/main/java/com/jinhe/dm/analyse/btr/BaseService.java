@@ -1,6 +1,7 @@
 package com.jinhe.dm.analyse.btr;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BaseService {
  
@@ -9,11 +10,11 @@ public interface BaseService {
 	/**
 	 * 读取登录用户有权限看到的分公司
 	 */
-	List<?> getOrgList();
+	List<Map<String, Object>> getOrgList();
 	
 	/**
 	 * 读取快运分拨中心列表
 	 */
-	List<?> getCenterList(String orgIds);
+	List<Map<String, Object>> getCenterList(String org);
 
 }

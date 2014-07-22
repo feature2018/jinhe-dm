@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/btr")
+@RequestMapping("/service")
 public class ServiceList {
 	
 	protected Logger logger = Logger.getLogger(this.getClass());
@@ -30,7 +30,7 @@ public class ServiceList {
 	 */
 	@RequestMapping("/centers")
 	@ResponseBody
-	public List<?> getCenterList(String orgIds) {
-		return baseService.getCenterList(orgIds);
+	public List<?> getCenterList(String org) {
+		return baseService.getCenterList(org);
 	}
 }

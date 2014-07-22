@@ -9,6 +9,9 @@ import com.jinhe.tss.framework.Global;
 import com.jinhe.tss.framework.component.timer.AbstractJob;
 import com.jinhe.tss.util.EasyUtils;
 
+/**
+ *
+ */
 public class ReportJob extends AbstractJob {
 
 	/* 

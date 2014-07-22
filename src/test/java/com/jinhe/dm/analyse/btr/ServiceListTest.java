@@ -25,15 +25,15 @@ public class ServiceListTest extends TxTestSupport {
         
 		session.setAttribute(BTRAfterLoginCustomizer.USER_GROUPS_NAME, Arrays.asList( "百世快运".split(",") ));
 		Assert.assertTrue(serviceList.getOrgList().size() > 10);
-		Assert.assertTrue(serviceList.getCenterList("60000").size() > 1);
+		Assert.assertTrue(serviceList.getCenterList("浙江分公司").size() > 1);
 		
 		session.setAttribute(BTRAfterLoginCustomizer.USER_GROUPS_NAME, Arrays.asList( "百世快运,浙江分公司".split(",") ));
 		Assert.assertTrue(serviceList.getOrgList().size() == 1);
-		Assert.assertTrue(serviceList.getCenterList("60000").size() > 1);
+		Assert.assertTrue(serviceList.getCenterList("浙江分公司").size() > 1);
 		
 		session.setAttribute(BTRAfterLoginCustomizer.USER_GROUPS_NAME, Arrays.asList( "百世快运,浙江分公司,杭州分拨".split(",") ));
 		Assert.assertTrue(serviceList.getOrgList().size() == 1);
-		Assert.assertTrue(serviceList.getCenterList("60000").size() == 1);
+		Assert.assertTrue(serviceList.getCenterList("浙江分公司").size() == 1);
 	}
 	
     protected String getDefaultSource(){

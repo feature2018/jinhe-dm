@@ -10,7 +10,6 @@ import com.jinhe.tss.framework.sso.Environment;
 import com.jinhe.tss.framework.sso.ILoginCustomizer;
 import com.jinhe.tss.framework.sso.context.Context;
 import com.jinhe.tss.um.service.ILoginService;
-import com.jinhe.tss.util.EasyUtils;
 
 public class BTRAfterLoginCustomizer implements ILoginCustomizer {
     
@@ -20,8 +19,8 @@ public class BTRAfterLoginCustomizer implements ILoginCustomizer {
     public final static String USER_GROUPS_ID = "USER_GROUPS_ID";
     public final static String USER_GROUPS_NAME = "USER_GROUPS_NAME";
     
-    public final static String PERMISSION_1 = "PERMISSION_1";
-    public final static String PERMISSION_2 = "PERMISSION_2";
+    public final static String PERMISSION_1 = "permission_1";
+    public final static String PERMISSION_2 = "permission_2";
     
     public void execute() {
         // 获取登陆用户所在父组
@@ -38,14 +37,15 @@ public class BTRAfterLoginCustomizer implements ILoginCustomizer {
         session.setAttribute(USER_GROUPS_ID, fatherGroupIds);
         session.setAttribute(USER_GROUPS_NAME, fatherGroupNames);
         
-        // TODO 处理下org和center的格式（现在是List<Map>）
-        List<?> orgList = baseService.getOrgList();
-		String orgs = EasyUtils.list2Str(orgList);
-        session.setAttribute(PERMISSION_1, orgs);
-        
-        if(orgList.size() > 0 ) {
-        	String centers = EasyUtils.list2Str(baseService.getCenterList(orgs));
-            session.setAttribute(PERMISSION_2, centers);
+        // 分公司或分公司用户
+        if(fatherGroupNames.size() >= 2) {
+        	String orgName = fatherGroupNames.get(1);
+			session.setAttribute(PERMISSION_1, orgName);
+        	
+            // 分拨用户
+            if(fatherGroupNames.size() >= 3) {
+                session.setAttribute(PERMISSION_2, fatherGroupNames.get(2));
+            }
         }
     }
 }
