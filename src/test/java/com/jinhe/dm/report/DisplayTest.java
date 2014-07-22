@@ -42,8 +42,8 @@ public class DisplayTest extends TxTestSupport {
         log.debug("开始测试报表展示：");
         request.addParameter("param1", "0");
         request.addParameter("param2", "0");
-        request.addParameter("param3", "2012-10-01");
-        request.addParameter("param4", "2012/10/01 11:11:11");
+        request.addParameter("param3", "2013-10-01");
+        request.addParameter("param4", "2013/10/01 11:11:11");
         request.addParameter("param5", "report-1,report-1");
         
         Long reportId = report1.getId();
@@ -53,5 +53,12 @@ public class DisplayTest extends TxTestSupport {
         display.showAsJson(request, report1.getName());
         
         display.exportAsCSV(request, response, reportId, 1, 0);
+        
+        request = new MockHttpServletRequest();
+        request.addParameter("param1", "0");
+        request.addParameter("param3", "today - 100");
+        request.addParameter("param4", "2013/10/01 11:11:11");
+        request.addParameter("param5", "report-1,report-1");
+        display.showAsJson(request, report1.getName());
     }
 }

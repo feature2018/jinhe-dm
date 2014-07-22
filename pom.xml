@@ -369,6 +369,14 @@
 									match="log4j\.logger\.com\.jinhe\.dm=debug"
 									replace="log4j\.logger\.com\.jinhe\.dm=${log.level}"
 									byline="true" />
+									
+								
+								<echo>
+									process application.properties: set job.enable to ${job.enable};
+								</echo>
+								<replaceregexp
+									file="${basedir}/target/classes/application.properties" match="job.enable = true"
+									replace="job.enable = ${job.enable}" byline="true" />
 
 								<echo>
 									process application.properties: set last.package.time to
@@ -426,6 +434,20 @@
 			</activation>
 			<properties>
 				<log.level>info</log.level>
+				<job.enable>false</job.enable>
+				<db.url>127.0.0.1:3306/dms_btr</db.url>
+				<environment>prod</environment>
+				<tomcat.url>172.20.121.19:8082</tomcat.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod-job</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<log.level>info</log.level>
+				<job.enable>true</job.enable>
 				<db.url>127.0.0.1:3306/dms_btr</db.url>
 				<environment>prod</environment>
 				<tomcat.url>172.20.121.19:8082</tomcat.url>
@@ -438,6 +460,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
+				<job.enable>true</job.enable>
 				<db.url>127.0.0.1:3306/dms</db.url>
 				<environment>uat</environment>
 				<tomcat.url>bl00618-l:8088</tomcat.url>
@@ -450,6 +473,7 @@
 			</activation>
 			<properties>
 				<log.level>debug</log.level>
+				<job.enable>true</job.enable>
 				<db.url>127.0.0.1:3306/dms</db.url>
 				<environment>dev</environment>
 				<tomcat.url>localhost:8088</tomcat.url>

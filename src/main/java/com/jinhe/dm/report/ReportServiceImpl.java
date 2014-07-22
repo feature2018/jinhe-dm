@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.jinhe.dm.data.sqlquery.SOUtil;
 import com.jinhe.dm.data.sqlquery.SQLExcutor;
+import com.jinhe.dm.data.util._DateUtil;
 import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.exception.BusinessException;
 import com.jinhe.tss.util.DateUtil;
@@ -183,24 +185,36 @@ public class ReportServiceImpl implements ReportService {
 		return excutor;
   	}
 
-  	private Object preTreatParamValue(String requestParamValue, Object paramType) {
-  		if(paramType == null) return requestParamValue;
+  	private Object preTreatParamValue(String paramValue, Object paramType) {
+  		if(paramType == null || paramValue == null) {
+  			return paramValue;
+  		}
+  		paramValue = paramValue.trim();
   		
   		paramType = paramType.toString().toLowerCase();
   		if("number".equals(paramType)) {
-  			return EasyUtils.convertObject2Integer(requestParamValue);
+  			return EasyUtils.convertObject2Integer(paramValue);
   		}
   		else if("date".equals(paramType)) {
-			try {
-				Date dateObj = DateUtil.parse(requestParamValue);
-				return new java.sql.Timestamp(dateObj.getTime());
-			} catch(Exception e) {
-				logger.error("Date type param'value is wrong: " + e.getMessage());
-				return null;
-			}
+  			Date dateObj;
+  			if (Pattern.compile("^today[\\s]*-[\\s]*\\d{1,4}").matcher(paramValue).matches()) {
+				int deltaDays = Integer.parseInt(paramValue.split("-")[1].trim());
+				Date today = _DateUtil.noHMS(new Date());
+				dateObj = _DateUtil.subDays(today, deltaDays);
+			} 
+  			else {
+  				try {
+  					dateObj = DateUtil.parse(paramValue);
+  				} catch(Exception e) {
+  					logger.error("Date type param'value is wrong: " + e.getMessage());
+  					return null;
+  				}
+  			}
+			
+			return new java.sql.Timestamp(dateObj.getTime());
   		}
   		else {
-  			return requestParamValue;
+  			return paramValue;
   		}
   	} 
 }
