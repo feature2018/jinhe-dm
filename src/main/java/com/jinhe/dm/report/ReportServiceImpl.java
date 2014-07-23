@@ -158,20 +158,27 @@ public class ReportServiceImpl implements ReportService {
 					continue;
 				}
 
-				String requestParamValue = requestMap.get(paramKy);
+				String paramValue = requestMap.get(paramKy).trim();
 				Object paramType = map.get("type");
 				Object isMacrocode = map.get("isMacrocode");
+				
+				// 将相对时间解析成绝对时间（today - 2 --> 2014-7-20）
+				if (Pattern.compile("^today[\\s]*-[\\s]*\\d{1,4}").matcher(paramValue).matches()) {
+					int deltaDays = Integer.parseInt(paramValue.split("-")[1].trim());
+					Date today = _DateUtil.noHMS(new Date());
+					paramValue = DateUtil.format(_DateUtil.subDays(today, deltaDays));
+				} 
 
 				if (reportScript.indexOf("in (${" + paramKy + "})") > 0) {
 					// 处理in查询的条件值，为每个项加上单引号
-					requestParamValue = SOUtil.insertSingleQuotes(requestParamValue.toString());
+					paramValue = SOUtil.insertSingleQuotes(paramValue);
 				}
 				// 判断参数是否只用于freemarker解析
 				else if (!"true".equals(isMacrocode)) {
-					Object value = preTreatParamValue(requestParamValue, paramType);
+					Object value = preTreatParamValue(paramValue, paramType);
 					paramsMap.put(paramsMap.size() + 1, value);
 				}
-				fmDataMap.put(paramKy, requestParamValue);
+				fmDataMap.put(paramKy, paramValue);
   	        }
       	}
       	
@@ -189,13 +196,6 @@ public class ReportServiceImpl implements ReportService {
   		if(paramType == null || paramValue == null) {
   			return paramValue;
   		}
-  		paramValue = paramValue.trim();
-  		
-		if (Pattern.compile("^today[\\s]*-[\\s]*\\d{1,4}").matcher(paramValue).matches()) {
-			int deltaDays = Integer.parseInt(paramValue.split("-")[1].trim());
-			Date today = _DateUtil.noHMS(new Date());
-			paramValue = DateUtil.format(_DateUtil.subDays(today, deltaDays));
-		} 
   		
   		paramType = paramType.toString().toLowerCase();
   		if("number".equals(paramType)) {
