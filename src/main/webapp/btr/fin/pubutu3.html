@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>货量趋势图</title>
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
+    <script  src="../../framework/core.js"></script>
+    <script  src="../../framework/ajax.js"></script> 
+    <script  src="../../tools/jquery/jquery-1.10.1.min.js"></script>
+    <script  src="../../tools/highcharts/highcharts.js"></script>
+     <script  src="../../tools/highcharts/highcharts-more.js"></script>
+    <script  src="../../dm/common.js"></script>    
+
+    <script >
+
+ 
+
+    window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            title = queryParams.param1 + queryParams.param1 +  '快运财务收支情况';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+    function show(originData) {
+        var valnames = [];
+        var realvals =[];
+        var types = [];
+       
+        var data = [];
+        
+        var dataMap = {};
+        
+       
+        for(var i = 0; i < originData.length; i++) {
+            var realval = originData[i]["realval"];
+            var valname = originData[i]["valname"];
+            var type = originData[i]["type"];
+
+            valnames[i]= valname;
+            realvals[i] = realval;
+            types[i] = type;
+        }
+
+
+
+        for (var i = 0; i < valnames.length; i++) {
+
+            data[i] = {name:valnames[i],y:realvals[i]};
+                   
+        };
+
+        /*var k = 0;
+        var m = 0;
+        while(k<valnames.length) {
+            if (types[k] == types[k+1]) {
+                data[m] = {name:valnames[k],y:realvals[k]};
+                m++;
+            } else{
+                data[m] ={ name: '总值',
+                        isIntermediateSum: true,
+                        color: Highcharts.getOptions().colors[1]};
+                m++;
+            };
+            k++;
+        };*/
+       
+              
+        var autoSize  = autoAdjustSize("container");
+       $(function () {
+    $('#container').highcharts({
+        chart: {
+            height:autoSize[1],
+            type: 'waterfall'
+        },
+
+        title: {
+            text: '百世快运财务收支情况'
+        },
+
+        xAxis: {
+            type: 'category',
+             labels: {
+                           //step: 2,
+                           rotation: 90,//坐标旋转角度 为0：表示横放置
+                           staggerLines: 0, //标签的交错显示（上下)
+                           enable:true, //是否显示坐标值
+                           /*style: {
+                            fontSize: '12'
+                            }*/
+                  }
+        },
+
+        yAxis: {
+            title: {
+                text: 'RMB'
+            }
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        tooltip: {
+            pointFormat: '<b>￥{point.y:,.2f}</b> RMB'
+        },
+
+        credits:{                   //右边下标HighCharts.com去除  
+                        enabled:false  
+                    },
+
+       
+        series: [{
+            upColor: Highcharts.getOptions().colors[2],
+            color: Highcharts.getOptions().colors[3],
+            data: data,
+            dataLabels: {
+                enabled: true,
+                formatter: function () {
+                    return Highcharts.numberFormat(this.y / 1000, 0, ',') + 'k';
+                },
+                style: {
+                    color: '#FFFFFF',
+                    fontWeight: 'bold',
+                    textShadow: '0px 0px 3px black'
+                }
+            },
+            pointPadding: 0
+        }]
+    });
+});                            
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+ 
+    <div id='container'></div>
+
+</body>
+</html>
