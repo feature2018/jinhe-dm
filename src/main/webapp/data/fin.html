@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>财务报表1</title>
+
+	<link rel="stylesheet" type="text/css" href="../tools/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../tools/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../dm/common.css">
+
+	<script src="../tools/easyui/jquery.min.js"></script>
+	<script src="../tools/easyui/jquery.easyui.min.js"></script>
+
+	<script src="../framework/core.js"></script>
+	<script src="../framework/ajax.js"></script>
+	<script src="../dm/common.js"></script>
+
+
+	<script type="text/javascript">
+	    window.onload = function() {
+
+	    Ajax({
+            url : '../data/cities.json',
+            method : REQUEST_METHOD,
+            type : "json",
+            waiting : true,
+            ondata : function() { 
+                var list = eval(this.getResponseText());
+                var cHtml = [];
+
+                var sql = "SELECT rank, NAME"
+                for(var i=0; i < list.length; i++) {
+                	var province = list[i].province + "汇总";
+                	cHtml.push('<th field="' + province + '" width="80" align="right">' + province + '</th>');
+                	sql += "," + province;
+
+                	var city = list[i].cities.split(",");
+                	for(var j=0; j < city.length; j++) {
+                		cHtml.push('<th field="' + city[j] + '" width="60" align="right">' + city[j] + '</th>');
+                		sql += "," + city[j];
+                	}
+                }
+                cHtml.push('<th field="' + '汇总' + '" width="65" align="right">' + '汇总' + '</th>');
+
+                sql += " from bisc";
+                console.log(sql);
+ 				
+ 				$$("cityColumn").innerHTML = cHtml.join("\n");
+
+ 				show();
+            }
+        });
+
+	        // var globalValiable = window.parent.globalValiable;
+	        // if(globalValiable && globalValiable.data) {
+	        //     queryParams = globalValiable.queryParams;
+	        //     show(globalValiable.data);
+	        //     return;
+	        // }
+	    } 
+
+	    function show() {
+	    	$('#detailTable').treegrid({
+			    url:'../data/fin.json',
+			    idField:'id',
+			    treeField:'name',
+			    rownumbers: true,
+			    showFooter: true
+			});
+	    }
+
+	
+	</script>
+</head>
+
+<body>
+ 
+	<div class="easyui-accordion" data-options="fit:true">
+		<div title="明细">
+			<table id="detailTable" >
+		        <thead frozen="true">
+		            <tr>
+		                <th field="name" width="200">名称</th>
+		            </tr>
+		        </thead>
+		        <thead>
+		            <tr id="cityColumn">
+		                
+		            </tr>
+		        </thead>
+		    </table>
+		</div>
+
+		<div title="图表" style="padding: 10px">
+			<div id='canvasDiv'></div>
+		</div>
+
+	</div>
+
+</body>
+</html>

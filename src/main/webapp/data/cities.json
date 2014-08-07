@@ -1,0 +1,82 @@
+[
+    {
+        "province": "上海",
+        "cities": "上海"
+    },
+    {
+        "province": "云南",
+        "cities": "昆明"
+    },
+    {
+        "province": "京津晋冀",
+        "cities": "天津,太原,石家庄,北京,保定"
+    },
+    {
+        "province": "内蒙古",
+        "cities": "呼和浩特"
+    },
+    {
+        "province": "四川",
+        "cities": "成都,德阳"
+    },
+    {
+        "province": "安徽",
+        "cities": "合肥"
+    },
+    {
+        "province": "山东",
+        "cities": "德州,烟台,青岛,临沂,济南"
+    },
+    {
+        "province": "广东",
+        "cities": "东莞,广州,珠海,中山,深圳"
+    },
+    {
+        "province": "广西",
+        "cities": "南宁"
+    },
+    {
+        "province": "江苏",
+        "cities": "无锡,苏州,常州,昆山,南京"
+    },
+    {
+        "province": "江西",
+        "cities": "南昌"
+    },
+    {
+        "province": "河南",
+        "cities": "郑州"
+    },
+    {
+        "province": "浙江",
+        "cities": "义乌,温州,湖州,杭州,宁波,嘉兴"
+    },
+    {
+        "province": "湖北",
+        "cities": "荆门,武汉"
+    },
+    {
+        "province": "湖南",
+        "cities": "长沙"
+    },
+    {
+        "province": "福建",
+        "cities": "厦门,泉州,福州"
+    },
+    {
+        "province": "辽宁",
+        "cities": "哈尔滨,沈阳,营口,大连,长春"
+    },
+    {
+        "province": "重庆",
+        "cities": "重庆"
+    },
+    {
+        "province": "陕西",
+        "cities": "银川,西安,乌鲁木齐,兰州"
+    },
+    {
+        "province": "公共",
+        "cities": "公共"
+    }
+]
