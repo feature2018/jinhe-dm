@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +68,22 @@ public class SQLExcutor {
     	excuteQuery(sql, paramsMap, page, pagesize, datasource);
     }
     
+    private PreparedStatement prepareStatement(Connection conn, String sql, Map<Integer, Object> paramsMap) throws SQLException {
+    	PreparedStatement pstmt = conn.prepareStatement(sql);
+        if (paramsMap != null) {
+        	log.debug("params : " + paramsMap);
+            for (Entry<Integer, Object> entry : paramsMap.entrySet()) {
+                Object value = entry.getValue();
+                if(value instanceof Date) {
+            		value = new Timestamp(((Date)value).getTime());
+            	}
+				pstmt.setObject(entry.getKey(), value); // 从1开始
+            }
+        }
+        
+        return pstmt;
+    }
+    
     public void excuteQuery(String sql, Map<Integer, Object> paramsMap, int page, int pagesize, String datasource) {
         Pool connpool = JCache.getInstance().getPool(datasource);
         if(connpool == null) {
@@ -77,6 +95,8 @@ public class SQLExcutor {
         String queryDataSql = sql;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        result = new ArrayList<Map<String, Object>>();
+        
         try {
         	String dbUrl = conn.getMetaData().getURL();
             String driveName = conn.getMetaData().getDriverName();
@@ -84,20 +104,19 @@ public class SQLExcutor {
             log.debug(" database url: 【" + dbUrl + "】。");
             log.debug(" database diverName: 【 " + driveName + "】。");
             
-        	if(page > 0 && pagesize > 0) {
-        		String queryCountSql = " select count(*) from (\n " + sql + " \n) t ";
-                log.debug("  excuteQuery  queryCountSql: \n" + queryCountSql);
-        	    
-        	    pstmt = conn.prepareStatement(queryCountSql);
-        	    if(paramsMap != null) {
-        	    	for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {
-        	    		pstmt.setObject(entry.getKey(), entry.getValue()); // 从1开始，非0
-        	    	}
-        	    }
-                rs = pstmt.executeQuery(); 
-                if (rs.next()) {  
-                    count = rs.getInt(1);  
-                }  
+            // 如果不分页查询 ，则不执行count(*)查询
+            if (page > 0 && pagesize > 0) {
+            	// 已经取到总记录Count值，则不执行count(*)查询
+            	if(count <= 0) {
+	        		String queryCountSql = " select count(*) from (\n " + sql + " \n) t ";
+	                log.debug("  excuteQuery  queryCountSql: \n" + queryCountSql);
+	        	    
+	                pstmt = prepareStatement(conn, queryCountSql, paramsMap);
+	                rs = pstmt.executeQuery(); 
+	                if (rs.next()) {  
+	                    count = rs.getInt(1);  
+	                }  
+            	}
                 
         		int fromRow = pagesize * (page - 1);
         		int toRow = pagesize * page;
@@ -114,10 +133,7 @@ public class SQLExcutor {
         	
         	log.debug("    queryDataSql: \n"  + queryDataSql);
         	
-            pstmt = conn.prepareStatement(queryDataSql);
-            for( Entry<Integer, Object> entry : paramsMap.entrySet() ) {
-                pstmt.setObject(entry.getKey(), entry.getValue()); // 从1开始，非0
-            }
+            pstmt = prepareStatement(conn, queryDataSql, paramsMap);
             rs = pstmt.executeQuery();
             
             while (rs.next()) {
@@ -131,7 +147,7 @@ public class SQLExcutor {
                 	
 					rowData.put(columnName, rs.getObject(index));
 					
-					if(result.isEmpty()) {
+					if(result.isEmpty() && !selectFields.contains(columnName)) {
 						selectFields.add(columnName);
 					}
                 }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>货量趋势图</title>
+    <link rel="stylesheet" type="text/css" href="../../dm/common.css">
+    <script  src="../../framework/core.js"></script>
+    <script  src="../../framework/ajax.js"></script> 
+    <script  src="../../tools/jquery/jquery-1.10.1.min.js"></script>
+    <script  src="../../tools/highcharts/highcharts.js"></script>
+    <script  src="../../dm/common.js"></script>    
+
+    <script >
+
+     window.onload = function() {
+        var globalValiable = window.parent.globalValiable;
+        if(globalValiable && globalValiable.data) {
+            queryParams = globalValiable.queryParams;
+            
+            var par2 = '';
+            
+            if (queryParams.param2 == 1) {par2 = "按人头数"} else{par2 = "按金额"};
+            title =  ' 6月 ' + par2  + '人员预算与实际对比';
+            show(globalValiable.data);
+            return;
+        }
+    } 
+
+    function show(originData) {
+        var fedrals = [];
+        var facts = [];
+        var typeList = [];
+        
+        var maxdata = 0;
+        var totalfact = 0;   
+        var totalfedral = 0;
+
+        var mm = '';
+        if (queryParams.param2 == '1') {mm = '人'} else{ mm = 'RMB'};        
+        
+        for(var i = 0; i < originData.length; i++) {
+            var fact = originData[i]["实际"];
+            var fedral = originData[i]["预算"];
+            var type   = originData[i]["项目"];
+
+                    
+            fedrals[i] = fedral;
+            facts[i] = fact;
+            maxdata = Math.max(fact, maxdata,fedral);
+            typeList[i] = type;
+            totalfact += fact;
+            totalfedral += fedral;
+            
+        };  
+
+      
+       
+        var autoSize  = autoAdjustSize("container");
+       $(function () {
+    $('#container').highcharts({
+        chart: {height:autoSize[1],
+            type: 'column'
+        },
+        title: {
+            text: title
+        },
+        subtitle: {
+            text: ' '
+        },
+        xAxis: {
+            categories: typeList
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: mm
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} ' + mm + '</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        credits:{                   //右边下标HighCharts.com去除  
+                        enabled:false  
+                    },
+        series: [{
+            name: '预算',
+            data: fedrals
+
+        }, {
+            name: '实际',
+            data: facts
+
+        }]
+    });
+});             
+
+        }
+    
+    </script>
+</head>
+
+<body>
+    
+ 
+    <div id='container'></div>
+
+</body>
+</html>

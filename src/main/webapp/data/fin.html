@@ -31,16 +31,16 @@
                 var sql = "SELECT rank, NAME"
                 for(var i=0; i < list.length; i++) {
                 	var province = list[i].province + "汇总";
-                	cHtml.push('<th field="' + province + '" width="80" align="right">' + province + '</th>');
+                	cHtml.push('<th field="' + province + '" width="90" align="right" formatter="formatter" styler="styler">' + province + '</th>');
                 	sql += "," + province;
 
                 	var city = list[i].cities.split(",");
                 	for(var j=0; j < city.length; j++) {
-                		cHtml.push('<th field="' + city[j] + '" width="60" align="right">' + city[j] + '</th>');
+                		cHtml.push('<th field="' + city[j] + '" width="70" align="right" formatter="formatter">' + city[j] + '</th>');
                 		sql += "," + city[j];
                 	}
                 }
-                cHtml.push('<th field="' + '汇总' + '" width="65" align="right">' + '汇总' + '</th>');
+                cHtml.push('<th field="' + '汇总' + '" width="80" align="right" formatter="formatter">' + '汇总' + '</th>');
 
                 sql += " from bisc";
                 console.log(sql);
@@ -60,15 +60,66 @@
 	    } 
 
 	    function show() {
-	    	$('#detailTable').treegrid({
-			    url:'../data/fin.json',
-			    idField:'id',
-			    treeField:'name',
-			    rownumbers: true,
-			    showFooter: true
-			});
+	    	Ajax({
+	            url : '../data/fin2.json',
+	            method : REQUEST_METHOD,
+	            type : "json",
+	            waiting : true,
+	            ondata : function() { 
+	                var data = window.JSON.parse(this.getResponseText());
+
+	                var rows = data.rows;
+	                var rank1 = [];
+	                var rank2 = [];
+	                for(var i = 0; i < rows.length; i++) {
+	                	var row = rows[i];
+	                	row.id = i + 1;
+
+	                	if(row.rank === "一级") {
+	                		rank1.push(row);
+	                		row.state = "closed";
+	                	}
+	                	else if(row.rank === "二级") {
+	                		row._parentId = rank1[rank1.length - 1].id;
+	                		rank2.push(row);
+	                		row.state = "closed";
+	                	}
+	                	else if(row.rank === "三级") {
+	                		row._parentId = rank2[rank2.length - 1].id;
+	                	}
+	                }
+
+	                $('#detailTable').treegrid({
+					    idField:'id',
+					    treeField:'name',
+					    rownumbers: true,
+					    showFooter: true,
+					    animate: true,
+					    data: data
+					});
+	            }
+	        });
 	    }
 
+	    function styler(value,row,index){
+			return 'color:red;font-weight:bold;';
+		}
+
+	    function formatter(value, row, index){
+			return formatMoney(value, 1);
+		}
+
+		function formatMoney(s, n) {   
+		   n = n > 0 && n <= 20 ? n : 2;   
+		   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";   
+		   var l = s.split(".")[0].split("").reverse(),   
+		   r = s.split(".")[1];   
+		   t = "";   
+		   for(i = 0; i < l.length; i ++ ) {   
+		      t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");   
+		   }   
+		   return t.split("").reverse().join("") + "." + r;   
+		} 
 	
 	</script>
 </head>
@@ -84,9 +135,7 @@
 		            </tr>
 		        </thead>
 		        <thead>
-		            <tr id="cityColumn">
-		                
-		            </tr>
+		            <tr id="cityColumn"></tr>
 		        </thead>
 		    </table>
 		</div>

@@ -58,7 +58,9 @@ public class DataExport {
             		if(value == null) {
             			value = "";
             		}
-            		values.add(value.toString().replaceAll(",", "，")); // 导出时字段含英文逗号会错列
+            		String valueS = value.toString().replaceAll(",", "，");
+            		valueS = valueS.replaceAll("\r\n", " ").replaceAll("\n", " ");
+					values.add(valueS); // 导出时字段含英文逗号会错列
             	}
                 fw.write(EasyUtils.list2Str(values));
                 fw.write("\r\n");
