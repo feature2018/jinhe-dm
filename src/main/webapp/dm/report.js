@@ -582,10 +582,10 @@ ParamItem.prototype.createColumn = function() {
 		column += " multiple='multiple' ";
 	}
 	if(this.onchange) {
-		column += " onchange='" +this.onchange+ "' ";
+		column += " onchange='" + this.onchange + "' ";
 	}
 	if(this.height) {
-		column += " height='" +this.height+ "' ";
+		column += " height='" + this.height + "' ";
 	}
 
 	if(this.options) {
@@ -743,12 +743,18 @@ function createQueryForm(treeID, paramConfig, callback) {
 function getNextLevelOption(nextIndex, serviceID, paramIndex, paramValue) {
 	if(nextIndex == null || serviceID == null || paramValue == null || paramValue == "") return;
 
+	var dreg = /^[1-9]+[0-9]*]*$/;
 	var paramElementId = "param" + nextIndex;
 	var params = {};
-	params["param" + paramIndex] = paramValue
+
+	var paramName = dreg.test(paramIndex) ? "param" + paramIndex : paramIndex;
+	params[paramName] = paramValue;
+	
+	// serviceID maybe is ID of report, maybe a serviceUrl
+	var url = dreg.test(serviceID) ? '../display/json/' + serviceID : serviceID;
 
 	Ajax({
-		url : '../display/json/' + serviceID,  // ../display/json/GetFenBo
+		url : url,  // ../display/json/GetFenBo
 		method: "POST",
 		params : params,
 		type : "json",

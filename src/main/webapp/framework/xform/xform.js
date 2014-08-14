@@ -626,6 +626,7 @@ var Mode_ComboEdit = function(colName, xform) {
 function fireOnChangeEvent(obj, newValue) {
 	var onchangeFunc = obj.getAttribute("onchange");
 	if(onchangeFunc) {
+		onchangeFunc = onchangeFunc.replace(/\^/g, "'"); // 有些地方的配置無法直接使用引號（如JSON），用^代替，這裡替換回來
 		var rightKH = onchangeFunc.indexOf(")");
 		if(rightKH > 0) {
 			onchangeFunc = onchangeFunc.substring(0, rightKH) + ", '" + newValue + "')"; 
