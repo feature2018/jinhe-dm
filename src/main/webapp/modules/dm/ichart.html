@@ -4,32 +4,16 @@
 	<meta charset="UTF-8" />
 	<title>ichart图表</title>
 
-	<script type="text/javascript" src="../framework/core.js"></script>
-	<script type="text/javascript" src="../framework/ajax.js"></script>
-	<script type="text/javascript" src="common.js"></script>
-	<script type="text/javascript" src="ichart.js"></script>
+	<script src="../../tools/tssJS/tssJS.all.js"></script>
+	<script src="common.js"></script>
+	<script src="ichart.js"></script>
 
-	<script type="text/javascript" src="../tools/ichartjs/ichart.1.1.min.js"></script>
+	<script src="../../tools/ichartjs/ichart.1.1.min.js"></script>
 
 	<style>
 
-		html {
-		  	height:100%;
-		  	scrollbar-face-color: #BEC6EE;
-		    scrollbar-highlight-color: #C0C4E7;
-		    scrollbar-shadow-color: #C0C4E7;
-		    scrollbar-3dlight-color: #A5AEDA;
-		    scrollbar-arrow-color: #000000;
-		    scrollbar-track-color: #FFFFFF;
-		    scrollbar-darkshadow-color: #919194;
-		    scrollbar-face-color: #BEC6EE;
-		}	
-		body {
-		    color: #000000;
-		    height:100%;
-		    margin: 0 0 0 0;
-		    background-color: #E7E7E7;
-		} 
+		html { height:100%; }	
+		body { color: #000000; height:100%; margin: 0 0 0 0; background-color: #E7E7E7; } 
 
 		#researh {
 			position: absolute;
@@ -43,13 +27,11 @@
 		    border-radius: 3px;
 		    font-size: 16px;
 		    font-family:"微软雅黑";
-		    color: #FFFFFF;
+		    color: #fff;
 		    cursor: pointer;
 		}
 
-		#researh:hover {
-		    font-weight: bold;
-		}
+		#researh:hover { font-weight: bold; }
 
 	</style>
 
@@ -57,9 +39,9 @@
 
 	var CHART_TYPES = ["Column2D", "Column3D", "Pie2D", "Pie3D", "Donut2D", "Bar2D", "Line2D"];
 	
-	var title      = Query.get("title") ;
-	var chartType  = Query.get("type") || "column2D";
-	var serviceUrl = Query.get("service", "true") ;  // 服务地址包括参数。编码的，先解码
+	var title      = $.Query.get("title") ;
+	var chartType  = $.Query.get("type") || "column2D";
+	var serviceUrl = $.Query.get("service", "true") ;  // 服务地址包括参数。编码的，先解码
 	var autoSize;
 
 	var test = true;
@@ -70,13 +52,13 @@
 	}
 	
 	window.onload = function() {
-		if(window.parent.$$("searchFormDiv") && window.parent.$$("btCloseSearchForm")) {
-			$$("researh").onclick = function() {
-				Element.show(window.parent.$$("searchFormDiv"));
+		if(window.parent.$1("searchFormDiv") && window.parent.$1("btCloseSearchForm")) {
+			$1("researh").onclick = function() {
+				Element.show(window.parent.$1("searchFormDiv"));
 			}
 		}
 		else {
-			$$("researh").style.display = "none";
+			$1("researh").style.display = "none";
 		}
 
 		var globalValiable = window.parent.globalValiable;
@@ -86,20 +68,20 @@
 			return;
 		}
 
-		Ajax({
+		$.ajax({
 			url : serviceUrl,
 			method : "GET",
 			type : "json",
 			waiting : true,
 			ondata : function() {
-				var data = eval(this.getResponseText());
+				var data = this.getResponseJSON();
 
 				if(test) {
 					var index = 0;
 					window.setInterval( function() {
 						chartType = CHART_TYPES[index++ % CHART_TYPES.length];
 						show(data);
-					}, 1000 * 3); 
+					}, 1000 * 1.5); 
 				} else {
 					show(data);
 				}
@@ -200,8 +182,7 @@
 <body>
 
 	<div id='canvasDiv'></div>
- 
-	<input type='button' class='btLogin' id='researh' value='查询条件'/>
+	<input type='button' id='researh' value='查询条件'/>
 
 </body>
 </html>

@@ -98,35 +98,33 @@ function drawColumn3D(canvasName, data, labels, max, title, unitName, width, hei
 }
 
 function drawColumn2D(canvasName, data, title, width, height) {
-    $(function(){
-		new iChart.Column2D({
-			render : canvasName,
-			data: data,
-			title : title,
-			decimalsnum:2,
-			width : width,
-			height : height,
-			sub_option : {
-				label : {
-					fontsize:11,
-					fontweight:600,
-					color : '#4572a7'
-				},
-				border : {
-					width : 2,
-					radius : '5 5 0 0', //上圆角设置
-					color : '#ffffff'
-				}
+	new iChart.Column2D({
+		render : canvasName,
+		data: data,
+		title : title,
+		decimalsnum:2,
+		width : width,
+		height : height,
+		sub_option : {
+			label : {
+				fontsize:11,
+				fontweight:600,
+				color : '#4572a7'
 			},
-			coordinate:{
-				background_color:'#fefefe',
-				scale:[{
-					 position:'left',	
-					 start_scale:0
-				}]
+			border : {
+				width : 2,
+				radius : '5 5 0 0', //上圆角设置
+				color : '#ffffff'
 			}
-		}).draw();
-	});
+		},
+		coordinate:{
+			background_color:'#fefefe',
+			scale:[{
+				 position:'left',	
+				 start_scale:0
+			}]
+		}
+	}).draw();
 }
 
 function drawBar2D(canvasName, data, title, width, height) {
@@ -173,216 +171,208 @@ function drawLine2D(canvasName, _data, labels, max, min, title, width, height) {
 
 	if(labels.length == 0) return;
 
-	$(function(){
-		var data = [
-		        	{
-		        		name : '',
-		        		value: _data,
-		        		color:'#1f7e92',
-		        		line_width:2
-		        	}
-		       ];
-		var chart = new iChart.LineBasic2D({
-					render : canvasName,
-					data: data,
-					title : title,
-					width : width,
-					height : height,
-					sub_option:{
-						smooth : true, //平滑曲线
-						label:false,
-						hollow:false,
-						hollow_inside:false,
-						point_size:2
+	var data = [
+	        	{
+	        		name : '',
+	        		value: _data,
+	        		color:'#1f7e92',
+	        		line_width:2
+	        	}
+	       ];
+	var chart = new iChart.LineBasic2D({
+				render : canvasName,
+				data: data,
+				title : title,
+				width : width,
+				height : height,
+				sub_option:{
+					smooth : true, //平滑曲线
+					label:false,
+					hollow:false,
+					hollow_inside:false,
+					point_size:2
+				},
+				tip:{
+					enable:true,
+					shadow:true
+				},
+				legend: {
+					enable : false
+				},
+				crosshair:{
+					enable:true,
+					line_color:'#62bce9'
+				},
+				coordinate:{
+					height:'95%',
+					axis:{
+						color:'#9f9f9f',
+						width:[0,0,2,2]
 					},
-					tip:{
-						enable:true,
-						shadow:true
+					grids:{
+						vertical:{
+							way:'share_alike',
+					 		value:12
+						}
 					},
-					legend: {
-						enable : false
-					},
-					crosshair:{
-						enable:true,
-						line_color:'#62bce9'
-					},
-					coordinate:{
-						height:'95%',
-						axis:{
-							color:'#9f9f9f',
-							width:[0,0,2,2]
-						},
-						grids:{
-							vertical:{
-								way:'share_alike',
-						 		value:12
-							}
-						},
-						scale:[{
-							 position:'left',	
-							 start_scale:min,
-							 end_scale:max,
-							 scale_color:'#9f9f9f'
-						},{
-							 position:'bottom',	
-							 labels:labels
-						}]
-					}
-				});
-		chart.draw();
-	});
+					scale:[{
+						 position:'left',	
+						 start_scale:min,
+						 end_scale:max,
+						 scale_color:'#9f9f9f'
+					},{
+						 position:'bottom',	
+						 labels:labels
+					}]
+				}
+			});
+	chart.draw();
 }
 
 function drawPie2D(canvasName, data, title, width, height) {
-	$(function() {
-		new iChart.Pie2D({
-			render : canvasName,
-			data: data,
-			title : title,
-			legend : {
-				enable : true
-			},
-			showpercent:true,
-			decimalsnum:2,
-			width : width,
-			height : height,
-			radius: height / 2.5
-		}).draw();
-	});
+	new iChart.Pie2D({
+		render : canvasName,
+		data: data,
+		title : title,
+		legend : {
+			enable : true
+		},
+		showpercent:true,
+		decimalsnum:2,
+		width : width,
+		height : height,
+		radius: height / 2.5
+	}).draw();
 }
 
-function drawPie3D(canvasName, data, title, width, height) {
-	$(function(){   
- 		var chart = new iChart.Pie3D({
-			render : canvasName,
-			title:{
-				text:title,
-				color:'#e0e5e8',
-				height:40,
-				border:{
-					enable:true,
-					width:[0,0,2,0],
-					color:'#343b3e'
-				}
-			},
-			padding:'2 10',
-			footnote:{
-				text:'wmsdata.800best.com',
-				color:'#e0e5e8',
-				height:30,
-				border:{
-					enable:true,
-					width:[2,0,0,0],
-					color:'#343b3e'
-				}
-			},
-			width : width,
-			height : height,
-			data:data,
-			shadow:true,
-			shadow_color:'#15353a',
-			shadow_blur:8,
-			background_color : '#3b4346',
-			gradient:true,
-			color_factor:0.28,
-			gradient_mode:'RadialGradientOutIn',
-			showpercent:true,
-			decimalsnum:2,
-			legend:{
-				enable:true,
-				padding:30,
-				color:'#e0e5e8',
-				border:{
-					width:[0,0,0,2],
-					color:'#343b3e'
-				},
-				background_color : null,
-			},
-			sub_option:{
-				offsetx:-40,
-				border:{
-					enable:false
-				},
-				label : {
-					background_color:'#fefefe',
-					sign:false, // 设置禁用label的小图标
-					line_height:10,
-					padding:4,
-					border:{
-						enable:true,
-						radius : 4,//圆角设置
-						color:'#e0e5e8'
-					},
-					fontsize:11,
-					fontweight:600,
-					color : '#444444'
-				}
-			},
+function drawPie3D(canvasName, data, title, width, height) {  
+	var chart = new iChart.Pie3D({
+		render : canvasName,
+		title:{
+			text:title,
+			color:'#e0e5e8',
+			height:40,
 			border:{
-				width:[0,20,0,20],
-				color:'#1e2223'
+				enable:true,
+				width:[0,0,2,0],
+				color:'#343b3e'
 			}
-		});
-		
-		chart.bound(0);
+		},
+		padding:'2 10',
+		footnote:{
+			text:'wmsdata.800best.com',
+			color:'#e0e5e8',
+			height:30,
+			border:{
+				enable:true,
+				width:[2,0,0,0],
+				color:'#343b3e'
+			}
+		},
+		width : width,
+		height : height,
+		data:data,
+		shadow:true,
+		shadow_color:'#15353a',
+		shadow_blur:8,
+		background_color : '#3b4346',
+		gradient:true,
+		color_factor:0.28,
+		gradient_mode:'RadialGradientOutIn',
+		showpercent:true,
+		decimalsnum:2,
+		legend:{
+			enable:true,
+			padding:30,
+			color:'#e0e5e8',
+			border:{
+				width:[0,0,0,2],
+				color:'#343b3e'
+			},
+			background_color : null,
+		},
+		sub_option:{
+			offsetx:-40,
+			border:{
+				enable:false
+			},
+			label : {
+				background_color:'#fefefe',
+				sign:false, // 设置禁用label的小图标
+				line_height:10,
+				padding:4,
+				border:{
+					enable:true,
+					radius : 4,//圆角设置
+					color:'#e0e5e8'
+				},
+				fontsize:11,
+				fontweight:600,
+				color : '#444444'
+			}
+		},
+		border:{
+			width:[0,20,0,20],
+			color:'#1e2223'
+		}
 	});
+	
+	chart.bound(0);
 }
 
 // 环形图
 function drawDonut2D(canvasName, data, title, width, height) {
-	$(function() {
-		var chart = new iChart.Donut2D({
-			render : canvasName,
-			data: data,
-			footnote : {
-				text : 'wmsdata.800best.com',
-				color : '#486c8f',
-				fontsize : 12,
-				padding : '0 38'
-			},
-			sub_option : {
-				label : false,
-				border : false
-			},
-			legend:{
-				enable:true,
-				padding:150,
-				offsetx:-86,
-				color:'#3e576f',
-				fontsize:20,    //文本大小
-				sign_size:20,   //小图标大小
-				line_height:24, //设置行高
-				sign_space:10,  //小图标与文本间距
-				border:false,
-				valign:'bottom',
-				background_color : null //透明背景
-			},
-			align : 'left',
-			offsetx:50,
-			separate_angle:10, //分离角度
-			shadow : true,
-			shadow_blur : 2,
-			shadow_color : '#aaaaaa',
-			shadow_offsetx : 0,
-			shadow_offsety : 0,
-			background_color:'#f3f3f3',
-			width : width,
-			height : height,
-			radius: height / 2.5
-		});
-
-		//利用自定义组件构造右侧说明文本
-		chart.plugin(new iChart.Custom({
-				drawFn:function(){
-					chart.target.textAlign('start')
-					.textBaseline('top')
-					.textFont('600 22px 微软雅黑')
-					.fillText(title, width*0.66, 100, false, '#3e576f');	
-				}
-		}));
-		
-		chart.draw();
+	var chart = new iChart.Donut2D({
+		render : canvasName,
+		data: data,
+		footnote : {
+			text : 'wmsdata.800best.com',
+			color : '#486c8f',
+			fontsize : 12,
+			padding : '0 38'
+		},
+		sub_option : {
+			label : false,
+			border : false
+		},
+		legend:{
+			enable:true,
+			padding:150,
+			offsetx:-86,
+			color:'#3e576f',
+			fontsize:20,    //文本大小
+			sign_size:20,   //小图标大小
+			line_height:24, //设置行高
+			sign_space:10,  //小图标与文本间距
+			border:false,
+			valign:'bottom',
+			background_color : null //透明背景
+		},
+		align : 'left',
+		offsetx:50,
+		separate_angle:10, //分离角度
+		shadow : true,
+		shadow_blur : 2,
+		shadow_color : '#aaaaaa',
+		shadow_offsetx : 0,
+		shadow_offsety : 0,
+		background_color:'#f3f3f3',
+		width : width,
+		height : height,
+		radius: height / 2.5
 	});
+
+	//利用自定义组件构造右侧说明文本
+	chart.plugin(new iChart.Custom({
+			drawFn:function(){
+				chart.target.textAlign('start')
+				.textBaseline('top')
+				.textFont('600 22px 微软雅黑')
+				.fillText(title, width*0.66, 100, false, '#3e576f');	
+			}
+	}));
+	
+	chart.draw();
 }
  
 // 更多图形：柱状对比图、组合图等

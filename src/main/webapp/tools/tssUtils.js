@@ -62,6 +62,13 @@ function initWorkSpace() {
 function initPaletteResize() {
 	// Element.attachColResize($1("palette"));
 }
+
+function closePalette() {
+	$("#palette").hide();
+	$("#paletteOpen").show();
+	$(".panel .header>td:nth-child(2)").hide();
+	$(".panel .footer>td:nth-child(2)").hide();
+}
  
 /* 事件绑定初始化 */
 function initEvents() {
@@ -73,14 +80,7 @@ function initEvents() {
 	/* 点击左栏控制按钮 */
 	if($1("paletteOpen")) {
 		$("#paletteOpen").hide();
-	
-		$("#paletteClose").click(function() {
-			$("#palette").hide();
-			$("#paletteOpen").show();
-			$(".panel .header>td:nth-child(2)").hide();
-			$(".panel .footer>td:nth-child(2)").hide();
-		});	
-
+		$("#paletteClose").click(closePalette);	
 		$("#paletteOpen").click(function() { 
 			$("#palette").show();
 			$("#paletteOpen").hide();

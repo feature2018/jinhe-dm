@@ -89,7 +89,7 @@ Grid\:Box div { position:relative; left:0px; top:0px; }
 Grid\:Box table { width:100%; height:auto; table-layout:fixed; border:0px; margin:0px; border-collapse:collapse;}
 Grid\:Box td { font-size:12px; text-align:center; border-style:solid; border-color:#FFFFFF #96969E #96969E #FFFFFF; border-width:1px;}
 Grid\:Box thead td { background-color:#E4E6F5; height:25px; width:50px;}
-Grid\:Box tbody td { overflow:hidden; text-overflow:ellipsis; }
+Grid\:Box tbody td { overflow:hidden; text-overflow:ellipsis; white-space: nowrap; word-break:keep-all; }
 Grid\:Box tbody { background-color:#F7F8FD;	}
 Grid\:Box tbody tr { height:22px; }
 Grid\:Box .highlightCol { background-color:#FFFFCC; }

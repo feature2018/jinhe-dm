@@ -3,19 +3,19 @@
 	<SourceTree>
 		<actionSet>
 			<treeNode id="_root" name="全部" _open="true">
-				<treeNode icon="images/reportGroup.gif" type="0" id="9" parentId="0" name="业务报表" disabled="0">
+				<treeNode icon="images/reportGroup.gif" type="0" id="9" parentId="0" name="业务报表" disabled="0" _open="true">
 					<treeNode icon="images/report_0.gif" type="1" id="17" parentId="9" name="库存余量" disabled="0"
-						param="仓库:Number,货主ID:Number:false,货物:String,库位:String"></treeNode>
+						param="[{'label':'报表类型', 'type':'String'},{'label':'结束时间', 'type':'date', 'nullable':'false'}]"/>
 				</treeNode>
 				<treeNode icon="images/reportGroup.gif" type="0" id="10" parentId="0" name="临时报表" disabled="0">
-					<treeNode icon="images/report_0.gif" type="1" id="127" parentId="10" name="仓库列表" disabled="0"></treeNode>
+					<treeNode icon="images/report_0.gif" type="1" id="127" parentId="10" name="仓库列表" disabled="0"/>
 				</treeNode>
 				<treeNode icon="images/reportGroup.gif" type="0" id="11" parentId="0" name="测试分组1" disabled="0">
-					<treeNode icon="images/reportGroup.gif" type="0" id="15" parentId="11" name="子组一" disabled="0"></treeNode>
+					<treeNode icon="images/reportGroup.gif" type="0" id="15" parentId="11" name="子组一" disabled="0"/>
 				</treeNode>
-				<treeNode icon="images/reportGroup.gif" type="0" id="12" parentId="0" name="测试分组2" disabled="0">
-					<treeNode icon="images/report_0.gif" type="1" id="14" parentId="12" name="测试报表二" disabled="0"></treeNode>
-					<treeNode icon="images/report_0.gif" type="1" id="16" parentId="12" name="测试报表四" disabled="0"></treeNode>
+				<treeNode icon="images/reportGroup.gif" type="0" id="12" parentId="0" name="测试分组2" disabled="0" _open="true">
+					<treeNode icon="images/report_0.gif" type="1" id="14" parentId="12" name="测试报表二" disabled="0" displayUri="../../404.html"/>
+					<treeNode icon="images/report_0.gif" type="1" id="16" parentId="12" name="测试报表四" disabled="0"/>
 				</treeNode>
 			</treeNode>
 		</actionSet>

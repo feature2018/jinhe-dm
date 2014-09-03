@@ -10,22 +10,6 @@
 			return option;
 		},
 
-		/* 判断方法是否相等 */
-		funcCompare = function(func1, func2) {
-			if(func1 == null && func2 != null) {
-				return false;
-			}
-			if(func2 == null && func1 != null) {
-				return false;
-			}
-			if(func2 == null && func1 == null) {
-				return true;
-			}
-
-			var fn = /^(function\s*)(\w*\b)/;
-			return func1.toString().replace(fn,'$1') === func2.toString().replace(fn,'$1'); 
-		},
-
 	Field = function(info) {
 		this.name  = info.name;
 		this.label = info.label;
@@ -130,14 +114,14 @@
 	}
 
 	$.json2Form = function(formId, jsonTemplate, buttonBox) {
-		var infos = jsonTemplate ? $.parseJSON(paramConfig) : [];
+		var infos = jsonTemplate ? eval(jsonTemplate) : [];
 
 		var columns = [];
 		var layouts = [];
 		var datarow = [];
 		infos.each(function(i, info) {
 			info.name = info.name || "param" + (i+1);
-			var item = new Field(i, info);
+			var item = new Field(info);
 			columns.push(item.createColumn());
 			layouts.push(item.createLayout());
 			datarow.push(item.createDataNode());
@@ -180,6 +164,22 @@
 				}				
 			}
 		});
+	};
+
+	/* 判断方法是否相等 */
+	$.funcCompare = function(func1, func2) {
+		if(func1 == null && func2 != null) {
+			return false;
+		}
+		if(func2 == null && func1 != null) {
+			return false;
+		}
+		if(func2 == null && func1 == null) {
+			return true;
+		}
+
+		var fn = /^(function\s*)(\w*\b)/;
+		return func1.toString().replace(fn,'$1') === func2.toString().replace(fn,'$1'); 
 	}
 
 }) (tssJS);

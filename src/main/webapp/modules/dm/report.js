@@ -171,7 +171,7 @@ function loadInitData() {
 		// 	});
 		// }
 		tree.onTreeNodeDoubleClick = function(ev) {
-			var treeNode = ev.treeNode;
+			var treeNode = getActiveTreeNode();
 			getTreeOperation(treeNode, function(_operation) {            
 				if( isReport() ) {
 					showReport();
@@ -218,7 +218,7 @@ function loadReportDetail(isCreate, readonly, type) {
 		contents : params,
 		onresult : function() { 
 			var sourceInfoNode = this.getNodeValue(XML_SOURCE_INFO);
-			$.cache.Variables[treeID] = sourceInfoNode;
+			$.cache.XmlDatas[treeID] = sourceInfoNode;
 			
 			$1("reportForm").editable = readonly ? "false" : "true";
 			var xform = $.F("reportForm", sourceInfoNode);
@@ -277,7 +277,7 @@ function copyReportTo() {
     var params = {id:id, parentID: pId};
     popupTree(URL_GROUPS_TREE, "SourceTree", params, function(target) {
         $.ajax({
-            url : URL_COPY_PARAM + id + "/" + target.id,
+            url : URL_COPY_SOURCE + id + "/" + target.id,
             onresult : function() { 
                 var newNode = this.getNodeValue(XML_MAIN_TREE).querySelector("treeNode");
                 tree.addTreeNode(newNode, target)
@@ -307,7 +307,7 @@ function showReportInPointUrl(treeID, displayUri) {
 	}
 
 	// 关闭左栏
-	$("#paletteClose").click();
+	closePalette();
  
 	$("#grid").hide();
 	$("#chatFrame").show();
@@ -467,7 +467,7 @@ window.onload = init;
  
 
 function createQueryForm(treeID, paramConfig, callback) {
-	if( $.cache.Variables["treeID_SF"] == treeID && funcCompare($.cache.Variables["callback_SF"], callback) ) {
+	if( $.cache.Variables["treeID_SF"] == treeID && $.funcCompare($.cache.Variables["callback_SF"], callback) ) {
 		Element.show($1("searchFormDiv"));  // 如果上一次打开的和本次打开的是同一报表的查询框，则直接显示
 		return;
 	}
@@ -481,7 +481,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 	buttonBox[buttonBox.length] = "          </div></TD>";
 	buttonBox[buttonBox.length] = "        </TR>";
 
-	var searchForm = $.json2Form("searchForm", paramConfig, buttonBox);
+	var searchForm = $.json2Form("searchForm", paramConfig, buttonBox.join(""));
 
 	Element.show($1("searchFormDiv"));
 	$1("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
