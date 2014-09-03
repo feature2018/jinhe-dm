@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<SourceInfo>
+		<xform>
+			<declare>	
+				<column name="id"     caption="报表ID"  mode="number" editable="false"/>
+				<column name="name"   caption="报表名称" mode="string" maxLength="30" empty="true"/>
+				<column name="script" caption="报表脚本" mode="string" maxLength="4000"/>
+				<column name="param"  caption="报表参数" mode="string" maxLength="1000"/>
+				<column name="datasource"  caption="数据源"  mode="string" 
+					editor="comboedit" editorvalue="connectionpool-1|connectionpool-2" editortext="数据源1|数据源2"/>
+				<column name="displayUri"  caption="展示页面" mode="string" maxLength="200"/>
+				<column name="remark" caption="报表简介" mode="string" maxLength="400"/>
+			</declare>
+			<layout>
+				<TR>
+					<TD width="80"><label binding="id"/></TD>
+					<TD><input binding="id" style="width:50px;"/></TD>
+				</TR>
+				<TR>
+					<TD><label binding="name"/></TD>
+					<TD><input binding="name" style="width:50%;"/></TD>
+				</TR>
+				<TR>
+					<TD><label binding="displayUri"/></TD>
+					<TD><input binding="displayUri" style="width:80%;"/></TD>
+				</TR>
+				<TR>
+					<TD valign="top"><label binding="script"/></TD>
+					<TD><textarea binding="script" style="width:95%;height:250px"/></TD>
+				</TR>
+				<TR>
+					<TD valign="top"><label binding="param"/></TD>
+					<TD><textarea binding="param" style="width:95%;height:100px"/></TD>
+				</TR>
+				<TR>
+					<TD><label binding="datasource"/></TD>
+					<TD><input binding="datasource" style="width:50%;"/></TD>
+				</TR>
+				<TR>
+					<TD valign="top"><label binding="remark"/></TD>
+					<TD><textarea binding="remark" style="width:95%;height:30px"/></TD>
+				</TR>
+			</layout>
+			<data>
+				<row>
+					<createTime><![CDATA[2013-06-09 00:00:00.0]]></createTime>
+					<updateTime><![CDATA[2013-06-13 16:53:03.0]]></updateTime>
+					<seqNo><![CDATA[1]]></seqNo>
+					<param><![CDATA[仓库:Number,货主ID:Number:false,货物:String,库位:String]]></param>
+					<type><![CDATA[1]]></type>
+					<script><![CDATA[select sku.skucode SKU, sku.descrcn 产品名称, sku.skueancode EAN, l.locationcode as 库位, 
+  t.qtyuom as 库存数量, t.qtyuseuom as 可用数量, t.qtyallocateduom as 分配量 
+from gv_inv_lotlocationuom t, gv_bas_sku sku, gv_bas_location l 
+where t.qtyuom > 200 and t.sku_id = sku.id and l.id = t.location_id 
+   and t.warehouse_id = ? and t.customer_id = ?
+   <#if param3??> and sku.skuCode in (?) </#if>
+   <#if param4??> and l.locationCode in (?) </#if>]]>
+					</script>
+					<deleted><![CDATA[0]]></deleted>
+					<levelNo><![CDATA[2]]></levelNo>
+					<lockVersion><![CDATA[6]]></lockVersion>
+					<id><![CDATA[17]]></id>
+					<parentId><![CDATA[9]]></parentId>
+					<decode><![CDATA[0000100001]]></decode>
+					<name><![CDATA[库存余量]]></name>
+					<datasource><![CDATA[connectionpool-2]]></datasource>
+					<disabled><![CDATA[0]]></disabled>
+				</row>
+			</data>
+		</xform>
+	</SourceInfo>
+</Response>

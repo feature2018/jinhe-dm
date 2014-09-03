@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<Error>
+		<msg><![CDATA[ 通讯失败T T ]]></msg>
+		<description><![CDATA[ 在提交数据时出现错误，可能是网络发生故障，以下省略N字... ]]></description>
+		<type>2</type>
+	</Error>
+</Response>

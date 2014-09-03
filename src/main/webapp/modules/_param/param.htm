@@ -1,0 +1,447 @@
+<!DOCTYPE HTML>
+<HTML xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:Form>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>参数管理</title>
+
+<link href="../../tools/tssJS/css/tss.all.css" rel="stylesheet">
+<link href="../../css/css.css" rel="stylesheet">
+
+<script src="../../tools/tssJS/tssJS.all.js"></script>
+<script src="../../tools/tssUtils.js"></script>
+
+<SCRIPT type="text/javascript">
+<!--
+	
+	ICON = "images/";
+    
+    /* 后台响应数据节点名称  */
+    XML_MAIN_TREE  = "ParamTree";
+    XML_PARAM_LIST = "ParamList";
+    XML_PARAM_INFO = "ParamInfo";
+   
+    /*  XMLHTTP请求地址汇总 */
+	URL_INIT          = NO_AUTH_PATH + "param/list";
+    URL_PARAM_DETAIL  = NO_AUTH_PATH + "param/detail";
+	URL_SAVE_PARAM    = NO_AUTH_PATH + "param";
+    URL_PARAM_DELETE  = NO_AUTH_PATH + "param/";
+    URL_PARAM_DISABLE = NO_AUTH_PATH + "param/disable/";
+    URL_SORT_PARAM    = NO_AUTH_PATH + "param/sort/";
+    URL_COPY_PARAM    = NO_AUTH_PATH + "param/copy/";
+    URL_MOVE_PARAM_TO = NO_AUTH_PATH + "param/move/";
+    URL_POPUP_TREE    = NO_AUTH_PATH + "param/list/";
+	
+	if(IS_TEST) {
+		URL_INIT = "data/param_init.xml?";
+		URL_PARAM_DETAIL = "data/param1.xml?";
+		URL_PARAM_DELETE = "data/_success.xml?";
+		URL_PARAM_DISABLE = "data/_success.xml?";
+		URL_SAVE_PARAM = "data/_success.xml?";
+		URL_SORT_PARAM = "data/_success.xml?";
+		URL_COPY_PARAM = "data/_success.xml?";
+		URL_MOVE_PARAM_TO = "data/_success.xml?";
+        URL_POPUP_TREE = "data/param_init.xml?";
+	}
+
+    function init() {
+        initPaletteResize();
+        initMenus();
+        initWorkSpace();
+        initEvents();
+
+        loadInitData();
+    }
+ 
+    function initMenus() {
+        var item1 = {
+            label:"新建参数",
+            visible:function() {return "0" == getTreeNodeType();}
+        }
+        var item2 = {
+            label:"删除",
+            callback:delParam,
+            icon:ICON + "del.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item3 = {
+            label:"编辑",
+            callback:function() {
+                editParamInfo(true);
+            },
+            icon:ICON + "edit.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item4 = {
+            label:"启用",
+            callback:enableParam,
+            icon:ICON + "start.gif",
+            visible:function() {return !isTreeRoot() && isTreeNodeDisabled();}
+        }
+        var item5 = {
+            label:"停用",
+            callback:disableParam,
+            icon:ICON + "stop.gif",
+            visible:function() {return !isTreeRoot() && !isTreeNodeDisabled();}
+        }
+        var item7 = {
+            label:"新建参数组",
+            callback:function() {
+                addNewParam("0");
+            },
+            visible:function() {return ("0" == getTreeNodeType() || isTreeRoot());}
+        }
+        var item9 = {
+            label:"复制",
+            callback:copyParam,
+            icon:ICON + "copy.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item11 = {
+            label:"复制到...",
+            callback:copyParamTo,
+            icon:ICON + "copy_to.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item12 = {
+            label:"移动到...",
+            callback:moveParamTo,
+            icon:ICON + "move.gif",
+            visible:function() {return "1" == getTreeNodeType();}
+        }
+        var item13 = {
+            label:"查看",
+            callback:function() {
+                editParamInfo(false);
+            },
+            icon:ICON + "view.gif",
+            visible:function() {return !isTreeRoot();}
+        }
+        var item14 = {
+            label:"新建参数项",
+            callback:function() {
+                addNewParam("2");
+            },
+            visible:function() {return (("1"==getTreeNodeMode() && "1"==getTreeNodeType()) || "2"==getTreeNodeMode());}
+        }
+
+        //新建参数子菜单
+        var subitem1_1 = {
+            label:"简单型",
+            callback:function() {
+                addNewParam("1", "0");
+            }
+        }
+        var subitem1_2 = {
+            label:"下拉型",
+            callback:function() {
+                addNewParam("1", "1");
+            }
+        }
+        var subitem1_3 = {
+            label:"树型",
+            callback:function() {
+                addNewParam("1", "2");
+            }
+        }
+        var submenu1 = new $.Menu();
+        submenu1.addItem(subitem1_1);
+        submenu1.addItem(subitem1_2);
+        submenu1.addItem(subitem1_3);
+        item1.submenu = submenu1;        
+
+        var menu1 = new $.Menu();
+        menu1.addItem(item4);
+        menu1.addItem(item5);
+        menu1.addSeparator();
+        menu1.addItem(item13);
+        menu1.addItem(item3);
+        menu1.addItem(item2);
+        menu1.addItem(item9);
+        menu1.addItem(item11);
+        menu1.addItem(item12);
+        menu1.addSeparator();
+        menu1.addItem(item7);
+        menu1.addItem(item1);
+        menu1.addItem(item14);
+
+        $1("tree").contextmenu = menu1;
+    }
+
+	function loadInitData() {
+		$.ajax({
+			url : URL_INIT,
+			onresult : function() { 
+				var tree = $.T("tree", this.getNodeValue(XML_MAIN_TREE)); 
+
+				tree.onTreeNodeDoubleClick = function(ev) {
+					if( !isTreeRoot() ) { editParamInfo(false); }
+				}
+				tree.onTreeNodeMoved = function(ev) {
+					sortTreeNode(URL_SORT_PARAM, ev);
+				}
+				tree.onTreeNodeRightClick = function(ev) {
+					tree.el.contextmenu.show(ev.clientX, ev.clientY); 
+				}	 
+			}
+		});
+    }
+
+    /* 编辑参数信息 */
+    function editParamInfo(editable) {
+        var tree = $.T("tree");
+        var treeNode = tree.getActiveTreeNode();
+        if( treeNode ) {
+            var treeID   = treeNode.id;
+            var treeName = treeNode.name;
+            var type = getTreeNodeType();
+			var mode = getTreeNodeMode();
+
+            var callback = {};
+            callback.onTabChange = function() {
+                setTimeout(function() {
+                    loadTreeDetailData(treeID, editable, treeID, type, mode);
+                }, TIMEOUT_TAB_CHANGE);
+            };
+
+            var inf = {};
+            if(editable) {
+				inf.label = OPERATION_EDIT.replace(/\$label/i, treeName);
+            } else {
+                inf.label = OPERATION_VIEW.replace(/\$label/i, treeName);
+            }
+			inf.SID = treeID;
+            inf.defaultPage = "page1";
+            inf.callback = callback;
+            ws.open(inf);
+        }
+    }
+
+	/*
+     *	新建参数
+     *	参数：  string:type         节点类型(0参数组/1参数/2参数项)
+                string:mode         参数项类型(0简单型/1下拉型/2树型)
+     */
+    function addNewParam(type, mode) {
+        switch(type) {
+            case "0":
+                var treeName = "参数组";
+                break;
+            case "1":
+                var treeName = "参数";
+                break;
+            case "2":
+                var treeName = "参数项";
+                break;
+        }
+
+        var tree = $.T("tree");
+        var treeNode = tree.getActiveTreeNode();
+        if(treeNode) {
+            var parentID = treeNode.id;
+
+            var callback = {};
+            callback.onTabChange = function() {
+                setTimeout(function() {
+                    loadTreeDetailData(null, true, parentID, type, mode);
+                }, TIMEOUT_TAB_CHANGE);
+            };
+
+            var inf = {};
+            inf.defaultPage = "page1";
+            inf.label = OPERATION_ADD.replace(/\$label/i,treeName);
+            inf.phases = null;
+            inf.callback = callback;
+            inf.SID = $.now();
+            var tab = ws.open(inf);
+        }
+    }
+
+    /*
+     *	树节点数据详细信息加载数据
+     *	参数：	string:treeID               树节点id
+                boolean:editable            是否可编辑(默认true)
+                string:parentID             父节点id
+                boolean:type                节点类型(0参数组/1参数/2参数项)
+     */
+    function loadTreeDetailData(treeID, editable, parentID, type, mode) {
+		var params = {};
+		params["type"] = type;
+		params["mode"] = mode || 0;
+		if(treeID) {
+		    params["paramId"] = treeID;			
+		} else {
+			params["parentId"] = parentID;
+		}
+
+		$.ajax({
+			url : URL_PARAM_DETAIL,
+			method : "POST",
+			params : params,
+			onresult : function() { 
+				var paramInfoNode = this.getNodeValue(XML_PARAM_INFO);
+				$.cache.XmlDatas[treeID] = paramInfoNode;
+				
+				var form = $.F("page1Form", paramInfoNode);
+				form.setEditable(editable ? "true" : "false");
+
+				attachReminder(treeID, form); // 离开提醒
+	 
+				$("#page1BtSave").click( function() {
+					saveParam(treeID, parentID, type);
+				} );
+			}
+		});
+    }
+
+    /*
+     *	保存参数
+     *	参数：	string:cacheID          缓存数据id
+                string:parentID         父节点id
+                boolean:type            节点类型(0参数组/1参数/2参数项)
+     */
+    function saveParam(cacheID, parentID, type) {
+        var xform = $.F("page1Form");	
+        if( !xform.checkForm() ) {
+            return;
+        }
+ 
+        var request = new $.HttpRequest();
+        request.url = URL_SAVE_PARAM;
+
+        var paramInfoNode = $.cache.XmlDatas[cacheID];
+        var dataNode = paramInfoNode.querySelector("data");
+        request.setFormContent(dataNode);
+        request.addParam("type", type);
+       
+        syncButton([$1("page1BtSave")], request); // 同步按钮状态
+		detachReminder(cacheID); // 解除提醒
+
+        request.onresult = function() {                  
+			var treeNode = this.getNodeValue(XML_MAIN_TREE).querySelector("treeNode");
+			appendTreeNode(parentID, treeNode);
+			ws.closeActiveTab();
+        }
+
+        request.onsuccess = function() { // 更新树节点名称
+			if("1" == type) {
+				var name = xform.getData("name");
+				if( $.isNullOrEmpty(name) ) {
+					name = xform.getData("code");
+				}
+				modifyTreeNode(cacheID, "name", name);
+			} 
+			if("2" == type ) {
+				var text = xform.getData("text");
+				if( $.isNullOrEmpty(text) ) {
+					text = xform.getData("value");
+				}
+				modifyTreeNode(cacheID, "name", text);
+			}
+
+			ws.closeActiveTab();
+        }
+        request.send();
+    }
+ 
+    function delParam() {
+		 delTreeNode(URL_PARAM_DELETE);
+    }
+ 
+    function getTreeNodeType() {
+        return getTreeAttribute("type");
+    }
+ 
+    function getTreeNodeMode() {
+        return getTreeAttribute("mode");
+    }
+
+	function enableParam() {
+		stopOrStartTreeNode("0", URL_PARAM_DISABLE);
+	}
+    function disableParam() {
+        stopOrStartTreeNode("1", URL_PARAM_DISABLE);
+    }
+ 
+    function copyParam() {
+        var tree = $.T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		var parent = treeNode.parent;
+
+		$.ajax({
+			url : URL_COPY_PARAM + treeNode.id + "/" + parent.id,
+			onresult : function() { 
+				var newNode = this.getNodeValue(XML_MAIN_TREE).querySelector("treeNode");
+                tree.addTreeNode(newNode, parent);
+			}
+		});
+    }
+ 
+    function copyParamTo() {
+        var tree = $.T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		var id  = treeNode.id;
+		var pId = treeNode.parent.id;
+
+        var params = {id:id, parentID: pId};
+        popupTree(URL_POPUP_TREE, "ParamTree", params, function(target) {
+            $.ajax({
+                url : URL_COPY_PARAM + id + "/" + target.id,
+                onresult : function() { 
+                    var newNode = this.getNodeValue(XML_MAIN_TREE).querySelector("treeNode");
+                    tree.addTreeNode(newNode, target)
+                }
+            });
+        });
+    }
+ 
+    function moveParamTo() {
+		var tree = $.T("tree");
+        var treeNode = tree.getActiveTreeNode();
+		var id  = treeNode.id;
+        var pId = treeNode.parent.id;
+
+        var params = {id:id, parentID: pId};
+        popupTree(URL_POPUP_TREE, "ParamTree", params, function(target) {
+            moveTreeNode(tree, id, target.id, URL_MOVE_PARAM_TO);
+        });
+    }
+
+    window.onload = init;
+
+//-->
+</SCRIPT>
+
+</head>
+
+<body>
+
+<table class="panel" >
+    <tr class="header"> <td/><td/><td/><td/> </tr>
+    <tr class="body"> 
+        <td/>
+        <td id="palette">
+            <div>
+                <div class="bar">
+                    <span class="icon"></span>参数列表
+                    <span class="refreshTreeBT"></span>
+                </div>
+                <Tree:Box id="tree" moveable="true"><div class="loading"></div></Tree:Box>
+            </div> 
+        </td>
+        <td class="groove"> 
+        	<WorkSpace:Box id="ws">
+        	  <WorkSpace:Page id="page1">
+        		  <Form:Box id="page1Form"><div class="loading"></div></Form:Box>
+        		  <WorkSpace:PageStep>
+        			<input type="button" class="btStrong" value="完成" id="page1BtSave"/>
+        		  </WorkSpace:PageStep>
+        	  </WorkSpace:Page>
+        	</WorkSpace:Box>
+        </td>
+        <td/>
+    </tr>
+    <tr class="footer"> <td/><td/><td/><td/> </tr>
+</table>
+
+</body>
+</html>

@@ -1,45 +1,31 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html>
 <HTML>
-<HEAD>
-</HEAD>
+<HEAD></HEAD>
 
 <BODY>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-	var Params = function(str) {
-		var _params = new Object();
-
-		init(str);
-
-		function init(str) {
-			if(str != null && str.length > 0) {
-				var keyValues = str.split("&");
-				for(var i = 0; i < keyValues.length; i++) {
-					var curName  = keyValues[i].split("=")[0].replace(/^ /gi,"");
-					var curValue = keyValues[i].replace(keyValues[i].split("=")[0] + "=", "");
-					_params[curName] = unescape(curValue);
-				}
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+		var queryString = location.search.substring(1);
+		var _params = {};
+		if(queryString && queryString.length > 0) {
+			var keyValues = queryString.split("&");
+			for(var i = 0; i < keyValues.length; i++) {
+				var curName  = keyValues[i].split("=")[0].replace(/^ /gi,"");
+				var curValue = keyValues[i].replace(keyValues[i].split("=")[0] + "=", "");
+				_params[curName] = unescape(curValue);
 			}
 		}
 
-		this.getValue = function (name) {
-			return _params[name];
+		var token = _params["token"];
+		if(token && token != "null") {
+			document.cookie = "token=" + token;
 		}
-	}
 
-	var queryString = location.search.substring(1);
-	var params = new Params(queryString);
-
-	var token = params.getValue("token");
-	if(token && token != "null") {
-		window.document.cookie = "token=" + token;
-	}
-
-	var url   = params.getValue("url");
-	if(url){
-		document.location = url;
-	}
-//-->
-</SCRIPT>
+		var url = _params["url"];
+		if(url) {
+			document.location = url;
+		}
+	//-->
+	</SCRIPT>
 </BODY>
 </HTML>

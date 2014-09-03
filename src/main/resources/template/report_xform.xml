@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xform>
-	<declare prefix="report">	
+	<declare>	
 		<column name="id"     caption="报表ID"  mode="number" editable="false"/>
 		<column name="name"   caption="报表名称" mode="string" maxLength="30" empty="true"/>
 		<column name="script" caption="报表脚本" mode="string" maxLength="4000"/>
@@ -12,31 +12,31 @@
 	<layout>
 		<TR>
 			<TD width="80"><label binding="id"/></TD>
-			<TD><input binding="id" type="text" style="width:50px;"/></TD>
+			<TD><input binding="id" style="width:50px;"/></TD>
 		</TR>
 		<TR>
-			<TD width="80"><label binding="name"/></TD>
-			<TD><input binding="name" type="text" style="width:50%;"/></TD>
+			<TD><label binding="name"/></TD>
+			<TD><input binding="name" style="width:50%;"/></TD>
 		</TR>
 		<TR>
-			<TD width="80"><label binding="displayUri"/></TD>
-			<TD><input binding="displayUri" type="text" style="width:80%;"/></TD>
+			<TD><label binding="displayUri"/></TD>
+			<TD><input binding="displayUri" style="width:80%;"/></TD>
 		</TR>
 		<TR>
-			<TD width="80" valign="top"><label binding="script"/></TD>
-			<TD><textarea binding="script" style="width:95%;height:250"/></TD>
+			<TD valign="top"><label binding="script"/></TD>
+			<TD><textarea binding="script" style="width:95%;height:250px"/></TD>
 		</TR>
 		<TR>
-			<TD width="80" valign="top"><label binding="param"/></TD>
-			<TD><textarea binding="param" style="width:95%;height:100"/></TD>
+			<TD valign="top"><label binding="param"/></TD>
+			<TD><textarea binding="param" style="width:95%;height:100px"/></TD>
 		</TR>
 		<TR>
-			<TD width="80"><label binding="datasource"/></TD>
-			<TD><input binding="datasource" type="text" style="width:50%;"/></TD>
+			<TD><label binding="datasource"/></TD>
+			<TD><input binding="datasource" style="width:50%;"/></TD>
 		</TR>
 		<TR>
-			<TD width="80" valign="top"><label binding="remark"/></TD>
-			<TD><textarea binding="remark" style="width:95%;height:30"/></TD>
+			<TD valign="top"><label binding="remark"/></TD>
+			<TD><textarea binding="remark" style="width:95%;height:30px"/></TD>
 		</TR>
 	</layout>
 	<data/>

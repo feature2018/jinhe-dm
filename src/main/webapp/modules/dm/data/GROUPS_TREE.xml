@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<SourceTree>
+		<actionSet>
+			<treeNode icon="images/reportGroup.gif" type="0" id="9"  parentId="0" name="业务报表" disabled="0"></treeNode>
+			<treeNode icon="images/reportGroup.gif" type="0" id="10" parentId="0" name="临时报表" disabled="0"></treeNode>
+			<treeNode icon="images/reportGroup.gif" type="0" id="11" parentId="0" name="测试分组1" disabled="0">
+				<treeNode icon="images/reportGroup.gif" type="0" id="15" parentId="11" name="子组一" disabled="0"></treeNode>
+			</treeNode>
+			<treeNode icon="images/reportGroup.gif" type="0" id="12" parentId="0" name="测试分组2" disabled="0"></treeNode>
+		</actionSet>
+	</SourceTree>
+</Response>

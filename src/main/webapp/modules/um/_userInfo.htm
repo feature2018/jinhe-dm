@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:Form> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>用户信息</title>
+
+<link href="../../tools/tssJS/css/tss.all.css" rel="stylesheet">
+<link href="../../css/css.css" rel="stylesheet">
+
+<script src="../../tools/tssJS/tssJS.all.js"></script>
+<script src="../../tools/tssUtils.js"></script>
+
+<style>
+
+	body { margin: 3px; font-size: 12px; background-color:#E7E7E7; overflow:hidden; }
+	.dialog { width:550px; height:270px; position:relative; overflow:hidden; }
+
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+ 
+    XML_REGISTER_INFO = "UserInfo";
+
+    /* XMLHTTP请求地址汇总 */
+    URL_INIT        = AUTH_PATH + "user/self/detail";
+    URL_MODIFY_USER = AUTH_PATH + "user/self";
+
+	if( IS_TEST ) {
+		URL_INIT        = "data/_register_init.xml";
+		URL_MODIFY_USER = "data/_success.xml";
+	}
+
+    function init() {
+		$.ajax({
+			url : URL_INIT,
+			headers: {"appCode": FROMEWORK_CODE},
+			onresult : function() { 
+				var registerXML = this.getNodeValue(XML_REGISTER_INFO); 
+				$.cache.XmlDatas[XML_REGISTER_INFO] = registerXML;
+				$.F("registerForm", registerXML);
+			}
+		});
+    }
+
+    function modifyUserInfo() {
+		$.ajax({
+			url : URL_MODIFY_USER,
+			method : "PUT",
+			formNode : $.cache.XmlDatas[XML_REGISTER_INFO].querySelector("data"),
+			onsuccess : function() { 
+				window.close();
+			}
+		});
+    }
+
+    window.onload = init;
+
+//-->
+</SCRIPT>
+</head>
+
+<body>
+	<div class="dialog">
+		<Form:Box id="registerForm"></Form:Box>
+		<div class="bts">
+			<input type="button" class="btStrong" value="保存" onclick="modifyUserInfo()"/> 
+			<input type="button" class="btWeak"   value="关闭" onclick="window.close()"/>
+		</div>
+	</div>
+</body>
+</html>

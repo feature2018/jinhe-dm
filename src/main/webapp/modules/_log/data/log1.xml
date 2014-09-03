@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<LogInfo>
+        <xform>
+            <declare prefix="ps">
+                <column name="id" caption="ID号" mode="number"/>
+				<column caption="用户" name="userName" mode="string" />
+				<column caption="操作对象" name="target" mode="string" />
+				<column caption="类型" name="type" mode="string" />
+				<column caption="操作日期" name="date" mode="string"/>
+				<column caption="详细内容" name="content" mode="string"/>
+            </declare>
+            <layout>
+                <TR>
+                    <TD width="50"><label binding="id"/></TD>
+                    <TD><input binding="id"/></TD>
+                </TR>
+                <TR>
+                    <TD><label binding="userName"/></TD>
+                    <TD><input binding="userName"/></TD>
+                </TR>
+                <TR>
+                    <TD><label binding="date"/></TD>
+                    <TD><input binding="date"/></TD>
+                </TR>
+				<TR>
+                    <TD><label binding="content"/></TD>
+                    <TD><textarea binding="content" style="width:80%;height:70px" readOnly="true"/></TD>
+                </TR>
+            </layout>
+            <data>
+                <row><userName><![CDATA[Jon.King]]></userName><type><![CDATA[删除]]></type><date><![CDATA[2013-05-22]]></date></row>
+            </data>
+        </xform>
+	</LogInfo>
+</Response>

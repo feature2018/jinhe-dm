@@ -19,21 +19,17 @@
 	</context:component-scan> 
 	
     <!-- 配置静态资源，直接映射到对应的文件夹，不被DispatcherServlet处理 -->  
-    <mvc:resources mapping="/images/**" location="/images/"/>  
     <mvc:resources mapping="/css/**"    location="/css/"/>  
-	<mvc:resources mapping="/framework/**" location="/framework/"/>  
-	<mvc:resources mapping="/tools/**" location="/tools/"/>  
+    <mvc:resources mapping="/images/**" location="/images/"/>  
+	<mvc:resources mapping="/modules/**" location="/modules/"/>  
+	<mvc:resources mapping="/tools/**" location="/tools/"/> 
 	
 	<mvc:resources mapping="/*.html" location="/"/>  
 	<mvc:resources mapping="/*.htm" location="/"/>  
 	<mvc:resources mapping="/*.xml" location="/"/>  
 	<mvc:resources mapping="/*.css" location="/"/>  
 	<mvc:resources mapping="/*.js" location="/"/>  
+	<mvc:resources mapping="/*.json" location="/"/>  
 	<mvc:resources mapping="/*.swf" location="/"/>  
 	
-	<mvc:resources mapping="/data/**" location="/data/"/> 
-	<mvc:resources mapping="/dm/**" location="/dm/"/> 
-	<mvc:resources mapping="/wms/**" location="/wms/"/> 
-	<mvc:resources mapping="/btr/**" location="/btr/"/> 
- 
 </beans>

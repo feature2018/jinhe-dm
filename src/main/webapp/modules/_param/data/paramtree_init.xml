@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<ParamTree>
+        <actionSet>
+            <treeNode id="_root" name="全部">
+                <treeNode parentId="0" type="1" icon="images/param_group_0.gif" name="测试组" id="107" _open="true">
+                    <treeNode parentId="107" type="1" icon="images/param_group_0.gif" name="测试1" id="121" _open="true"/>
+                </treeNode>
+                <treeNode parentId="0" type="1" icon="images/param_group_0.gif" name="系统参数组_2" id="106"/>
+                <treeNode parentId="0" type="1" icon="images/param_group_0.gif" name="系统参数组_1" id="7"/>
+            </treeNode>
+        </actionSet>
+	</ParamTree>
+</Response>

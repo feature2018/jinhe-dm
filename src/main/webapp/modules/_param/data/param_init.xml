@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <ParamTree>
+        <actionSet>
+            <treeNode name="全部" id="_root" _open="true">
+                <treeNode type="0" parentId="0" isGroup="1" icon="images/param_group_0.gif" name="application" id="-1" _open="true">
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="decodeSectSize" id="-3"/>
+                    <treeNode type="1" mode="1" parentId="-1" icon="images/param_0.gif" name="debug" id="1"/>
+                    <treeNode type="1" mode="2" parentId="-1" icon="images/param_0.gif" name="initPermission" id="2"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="class.name.OnlineManager" id="3"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="application.code" id="4"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="class.name.LoginCostomizer" id="5"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="class.name.IdentityTranslatorsssssssssssssssssssssssssss" id="6"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="class.name.ExceptionConvertor" id="7"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="class.name.UserIdentifier" id="8"/>
+                    <treeNode type="1" mode="0" parentId="-1" icon="images/param_0.gif" name="error" id="9"/>
+                </treeNode>
+                <treeNode type="0" parentId="0" isGroup="1" icon="images/param_group_0.gif" name="appServers" id="-2" _open="true">
+                    <treeNode type="1" mode="0" parentId="-2" icon="images/param_0.gif" name="CMS" id="15"/>
+                    <treeNode type="1" mode="0" parentId="-2" icon="images/param_0.gif" name="PMS" id="21"/>
+                    <treeNode type="1" mode="0" parentId="-2" icon="images/param_0.gif" name="UMS" id="27"/>
+                </treeNode>
+            </treeNode>
+        </actionSet>
+    </ParamTree>
+</Response>

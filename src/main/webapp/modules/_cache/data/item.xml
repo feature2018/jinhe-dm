@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <CacheItemList>
+        <row key="cn/com/gsoft/core/cachepool/strategy/CacheStrategyXForm.xml" hit="99" hitRate="99.71429%"></row>
+    </CacheItemList>
+	<!-- <Success>
+		<msg><![CDATA[ 保存成功^ ^ ]]></msg>
+		<description><![CDATA[ 您填写的数据已经保存入数据库，以下省略N字... ]]></description>
+		<type>1</type>
+	</Success> -->
+</Response>

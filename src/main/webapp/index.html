@@ -1,190 +1,75 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html> 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>DMS</title>
-<link rel="shortcut icon" href="framework/images/tss.ico">
-<link rel="Bookmark" href="framework/images/tss.ico">
+<link rel="shortcut icon" href="images/tss.ico">
+<link rel="Bookmark" href="images/tss.ico">
 
-<script language="javascript" src="framework/core.js"></script>
-<script language="javascript" src="framework/ajax.js"></script>
+<link href="tools/tssJS/css/tss.common.css" rel="stylesheet">
+<link href="css/css.css" rel="stylesheet">
+
+<script src="tools/tssJS/tssJS.all.js"></script>
 
 <style>
 
-html {
-    height:100%;
-}
-body {
-    color: #000000;
-    height:100%;
-    margin: 0 0 0 0;
-}
-span {
-    display:inline-block;
-}
-table {
-    border: 0;
-    margin: 0;
-    border-collapse:collapse;
-}
-td {
-    color: #000000;
-    font-size: 12px; 
-    padding:0;
-}
+/* 顶部 */
+.top { height: 41px; background-image: url(images/panel/blue_top.gif); }
+.top .logo { width: 571px; height: 41px; background-image: url(images/panel/title.jpg); }
 
-table.full {
-    width: 100%;
-    height: 100%;
-}
-
-  /* 顶部 */
-.top {
-    height: 41px;
-    background-image: url(framework/images/top_bg.jpg);
-}
-.top .logo {
-    width: 781px;
-    height: 41px;
-    background-image: url(framework/images/top_logo.jpg);
-}
-
-.menu { 
-    margin:1px 0; 
-    position:absolute;
-    top:10px;
-    right:3px;
-} 
-.menu ul { 
-    padding:0; 
-    margin:0; 
-    list-style-type: none; 
-} 
-.menu ul li { 
-    float:left; 
-    position:relative; 
-} 
-.menu ul li a, .menu ul li a:visited { 
-    display:block; 
-    text-align:center; 
-    text-decoration:none; 
-    width:88px; 
-    height:25px; 
-    color:#000; 
-    border:1px solid #fff; 
-    border-width:0 0 0 0; 
-    background:#00BFFF; 
-    line-height:25px; 
-    font-size:11px; 
-} 
-.menu ul li ul { 
-    display: none; 
-} 
-.menu ul li:hover a { 
-    color:#fff; 
-    background:#AFEEEE; 
-} 
-.menu ul li:hover ul { 
-    display:block; 
-    position:absolute; 
-    top:25px; 
-    left:0; 
-    width:88px; 
-} 
-.menu ul li:hover ul li a { 
-    display:block; 
-    background:#00BFFF; 
-    color:#000; 
-    font-size:bold;
-} 
-.menu ul li:hover ul li a:hover { 
-    background:#AFEEEE; 
-    color:#000; 
-    font-size:bold;
-} 
-
-
-/* relogin相关 */
-.popupBox {
-    background-color:white;
-    border:1px solid #98989C;
-    margin-left: auto;
-    margin-right: auto;
-    position: absolute;
-    top:1;
-    left: -100;
-    right: -100;
-    z-Index: 10001;
-}  
-#relogin_box {
-    width:260px;
-}
- 
-#relogin_box form {
-  padding:10px;
-  font-family:"宋体";
-}
-#relogin_box h1 {
-  line-height:30px;
-  font-size:15px;
-  margin:0px;
-  padding:0px 5px;
-  border-bottom:1px solid #009999;
-}
-#relogin_box span {
-  display:block;
-  margin:10px 0px;
-  padding:0px 5px;
-}
-#relogin_box span.bottonBox {
-  text-align: center;
-}
-#relogin_box span input {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-}
+.menu { margin:1px 0px; position:absolute; top:10px; right:3px; font-size:11px; } 
+.menu ul { list-style-type: none; } 
+.menu ul li { float:left; position:relative; width:88px; text-align:center; } 
+.menu ul li a, .menu ul li a:visited { display:block; height:25px; line-height:25px; 
+    color:#000; background:#00BFFF; border:1px solid #fff; border-width:0px 0px 1px 0px; } 
+.menu ul li ul { display: none; } 
+.menu ul li:hover a { color:#fff; background:#AFEEEE; } 
+.menu ul li:hover ul { display:block; position:absolute; top:25px; left:0; width:88px; } 
+.menu ul li:hover ul li a { display:block; background:#00BFFF; color:#000; } 
+.menu ul li:hover ul li a:hover { background:#AFEEEE; color:#FFF; } 
 
 </style>
 
 <script LANGUAGE="JavaScript">
 <!--
-
-    FROMEWORK_CODE = "TSS";
     
-    APP_CODE    = "DM";
+    FROMEWORK_CODE = "TSS";
+    APP_CODE    = "TSS";
     APPLICATION = APP_CODE.toLowerCase();
     CONTEXTPATH = APPLICATION + "/";
-
+    
     /* 用户信息初始化  */
     window.onload = function() {
-        Ajax({
+        $.ajax({
             url : "auth/user/operatorInfo",
             method : "POST",
-            headers : {"appCode": FROMEWORK_CODE},
-            contents : {"anonymous": "true"}, 
+            headers: {"appCode": APP_CODE},
+            params : {"anonymous": "true"}, 
             onresult : function() {
                 var userName = this.getNodeValue("name");
-                $$("userInfo").innerText = userName;
+                $1("userInfo").innerText = userName;
                 
-                $$("iframeSrc").style.height = document.body.offsetHeight - 41;
-                turn2IFrame("dm/report.html");
+                resizeIFrame();
+                turn2IFrame("modules/dm/report.html");
             }
         });
     }
 
-    window.onresize = function() {
-        $$("iframeSrc").style.height = document.body.offsetHeight - 41;
+    var resizeIFrame = function resizeIFrame() {
+        $("iframeSrc").css("height", (document.body.offsetHeight - 41) + "px");
     }
+
+    window.onresize = resizeIFrame;
     
     function logout() {
-        Ajax({
+        $.ajax({
             url : "logout.in",
             method : "GET",
             onsuccess : function() { 
-                Cookie.del("token", "");
-                Cookie.del("token", "/");
-                Cookie.del("token", "/" + APPLICATION);
-                Cookie.del("token", "/" + CONTEXTPATH);
+                $.Cookie.del("token", "");
+                $.Cookie.del("token", "/");
+                $.Cookie.del("token", "/" + APPLICATION);
+                $.Cookie.del("token", "/" + CONTEXTPATH);
                 location.href = "login.html";
             }
         });
@@ -192,7 +77,7 @@ table.full {
 
     function turn2IFrame(ahref) {
         if (ahref != "#") {
-            $$("iframeSrc").setAttribute("src", ahref);
+            $1("iframeSrc").setAttribute("src", ahref);
         }
     }
 //-->
@@ -201,18 +86,17 @@ table.full {
 
 <body>
 
-
 <div class="top">
     <div class="logo"></div>
     <div class="menu"> 
         <ul> 
-            <li><a href="#" onclick="window.open('userInfo.htm','','width=700,height=220');">【<span id="userInfo">个人信息</span>】</a></li>
-            <li><a href="#" onclick="window.open('password.htm','','width=400,height=200');">修改密码</a></li>
+            <li><a href="#" onclick="window.open('modules/um/_userInfo.htm','','width=700,height=220');">【<span id="userInfo">个人信息</span>】</a></li>
+            <li><a href="#" onclick="window.open('modules/um/_password.htm','','width=400,height=200');">修改密码</a></li>
             <li><a href="#">系统辅助</a>    
                 <ul> 
-                    <li><a href="#" onclick="turn2IFrame('framework/module/log/log.htm')">日志查询</a> </li> 
-                    <li><a href="#" onclick="turn2IFrame('framework/module/param/param.htm')">系统参数</a> </li> 
-                    <li><a href="#" onclick="turn2IFrame('framework/module/cache/cache.htm')">缓存管理</a> </li> 
+                    <li><a href="#" onclick="turn2IFrame('modules/_log/log.htm')">日志查询</a> </li> 
+                    <li><a href="#" onclick="turn2IFrame('modules/_param/param.htm')">系统参数</a> </li> 
+                    <li><a href="#" onclick="turn2IFrame('modules/_cache/cache.htm')">缓存管理</a> </li> 
                 </ul> 
             </li> 
             <li><a href="#" onclick="turn2IFrame('dm/report.html')">数据报表</a></li> 
@@ -222,9 +106,8 @@ table.full {
 </div>
 
 <div>
-  <iframe src="" id="iframeSrc" width="100%" height="100%" frameborder="0"/>
+    <iframe id="iframeSrc" width="100%" height="100%" frameborder="0"/>
 </div>
-
 
 </body>
 </html>

@@ -62,7 +62,7 @@ public class ReportAction extends BaseActionSupport {
             Map<String, Object> map = new HashMap<String, Object>();
             
             String parentIdValue = request.getParameter("parentId"); 
-            if("_rootId".equals(parentIdValue)) {
+            if("_root".equals(parentIdValue)) {
             	parentIdValue = null;
             }
             

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<Success>
+		<msg><![CDATA[ 操作成功^ ^ ]]></msg>
+		<description><![CDATA[ 您填写的数据已经保存入数据库，以下省略N字... ]]></description>
+		<type>1</type>
+	</Success>
+</Response>

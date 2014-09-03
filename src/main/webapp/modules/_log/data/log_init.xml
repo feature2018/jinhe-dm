@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Operation>p1,p2</Operation>
+	<ObjectTree>
+		<actionSet>
+            <treeNode name="全部" id="_root" _open="true">
+                <treeNode id="1" name="对象1" icon="images/folder.gif"/>
+                <treeNode id="2" name="对象2" icon="images/folder.gif"/>
+                <treeNode id="3" name="对象3" icon="images/folder.gif"/>
+                <treeNode id="4" name="对象4" icon="images/folder.gif"/>
+                <treeNode id="5" name="对象5" icon="images/folder.gif"/>
+                <treeNode id="6" name="对象6" icon="images/folder.gif"/>
+            </treeNode>
+		</actionSet>
+	</ObjectTree>
+</Response>

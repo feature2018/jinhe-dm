@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<HTML xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:Form>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>DMS--数据挖掘</title>
+
+<link href="../../tools/tssJS/css/tss.all.css" rel="stylesheet">
+<link href="../../css/css.css" rel="stylesheet">
+
+<script src="../../tools/tssJS/tssJS.all.js"></script>
+<script src="../../tools/tssJS/tssJS.json2Form.js"></script>
+<script src="../../tools/tssUtils.js"></script>
+
+<script language="javascript" src="report.js"></script>
+<script language="javascript" src="customize.js"></script>
+
+<style>
+
+  .Formbox { display:none; background-color:#BEC6EE; border:1px solid #416371; border-radius: 5px; }
+
+  #searchFormDiv { width:500px; height:500px; font-size: 12px; padding: 10px; overflow: auto; }
+  #searchFormDiv.buttonBox { margin: 20px 10px 10px 55px;  }
+  
+  #reportFormDiv { width: 78%; height: 500; padding: 10px; }
+
+</style>
+
+</head>
+
+<body>
+
+<table class="panel" >
+  <tr class="header"> <td/><td/><td/><td/> </tr>
+  <tr class="body"> 
+	<td/>
+	<!-- 左栏 开始 -->
+	<td id="palette">
+	  <div>
+	  	<div class="bar">
+			<span class="icon"></span>报表树
+			<span class="refreshTreeBT"></span>
+			<span class="paletteSwitch" id="paletteClose"></span>
+		</div>
+		<Tree:Box id="tree" moveable="true"><div class="loading"></div></Tree:Box>
+	  </div> 
+	</td>
+	<td class="groove">
+	  	<table>
+		  <tr>
+			<td id="gridTitle">
+			  <span class="paletteSwitch" id="paletteOpen"></span>
+			  <span class="icon"></span><span class="buttonBox" id="gridToolBar"></span>
+			</td>
+		  </tr>
+		  <tr>
+			<td>
+			   <Grid:Box id="grid"></Grid:Box>
+			   <iframe id="chatFrame" style="display:none;width:100%;height:100%;" frameborder="0"></iframe>
+			</td>
+		  </tr>
+		</table>				
+	</td>
+	<td/>
+  </tr>
+  <tr class="footer"> <td/><td/><td/><td/> </tr>
+</table>
+
+<div id="reportFormDiv" class="dialog Formbox">
+	<Form:Box id="reportForm"></Form:Box>
+	<div class="bts">
+		<input type="button" class="btStrong" value="保存" id="sourceSave"/>
+		<input type="button" class="btStrong" value="关闭" id="closeReportForm"/>
+	</div>
+</div>
+
+<div id="searchFormDiv" class="Formbox">
+	<h3 id="reportName"></h3>
+	<Form:Box id="searchForm"></Form:Box>
+</div>
+
+<iframe name="downloadFrame" style="display:none"></iframe>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+
+body { overflow: hidden; background-color: #E7E7E7; }
+
+table { border: 0px; width:100%; height:100%;}
+table.border { border: 1px solid #96969E; }
+td { color:#000000; font-size:12px;}
+a:active, a:visited { color: #96969F; }
+a:hover { text-decoration: none; }
+
+div.groove { border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; padding: 3px;}
+
+.panel { border-collapse: separate; }
+.panel>tbody>tr>td:nth-child(1), .panel>tbody>tr>td:nth-child(4) {width:7px;}
+.panel .header, .panel .footer { height:8px; }
+
+.panel .header>td:nth-child(1) { background: url(../images/panel/rec_lt.gif) no-repeat left bottom; }
+.panel .header>td:nth-child(2), 
+.panel .header>td:nth-child(3) { background: url(../images/panel/rec_t.gif) repeat-x bottom; }
+.panel .header>td:nth-child(4) { background: url(../images/panel/rec_rt.gif) no-repeat right bottom;}
+
+.panel .body>td:nth-child(1) { background: url(../images/panel/rec_l.gif) repeat-y left;}
+.panel .body>td:nth-child(2), 
+.panel .body>td:nth-child(3) { background-color: #E7E7E7; }
+.panel .body>td:nth-child(4) { background: url(../images/panel/rec_r.gif) repeat-y right;}
+
+.panel .footer>td:nth-child(1) { background: url(../images/panel/rec_lb.gif) no-repeat left top;}
+.panel .footer>td:nth-child(2), 
+.panel .footer>td:nth-child(3) { background: url(../images/panel/rec_b.gif) repeat-x top; }
+.panel .footer>td:nth-child(4) { background: url(../images/panel/rec_rb.gif) no-repeat right top;}
+
+.panel .body td.groove  { border: 1px solid #9B9B9B; }
+
+/* 左栏 */
+#palette { width:300px; padding-right:5px; }
+#palette>div { width:295px; height:100%; border: 1px solid #96969E; position:relative; }
+#palette>div .bar {color: #555555; font-weight: bold; padding: 1px 0px 0px 4px; height: 21px; background: url(../images/panel/title_bg.gif) repeat-x; }
+#palette>div .bar .icon { width:8px; height:8px; margin-right:5px; display:inline-block; background: url(../images/panel/title_icon.gif) no-repeat center;}
+#palette>div .bar .refreshTreeBT { width:16px; height:15px; position:absolute; top:3px; right:20px; cursor:hand; background:url(../images/panel/refresh.gif) no-repeat center; }
+#palette>div .bar .paletteSwitch, #gridTitle .paletteSwitch { position: absolute; top: 1px; width: 18px; height: 18px; cursor: hand;}
+#paletteClose { background: url(../images/panel/palette_opened.gif) no-repeat; right: 0px;}
+#paletteOpen  { background: url(../images/panel/palette_closed.gif) no-repeat; left: 0px;}
+#palette #tree { background-color: #fff; height:auto; min-height:90%;}
+
+.btWeak    { color: #403756; width: 50px; height: 18px; border: 0; background-image: url(../images/button/weak.gif); }
+.btWeakS   { color: #403756; width: 18px; height: 18px; border: 0; background-image: url(../images/button/weak_short.gif); }
+.btWeakL   { color: #403756; width: 90px; height: 18px; border: 0; background-image: url(../images/button/weak_long.gif); }
+.btStrong  { color: #2F2469; width: 50px; height: 18px; border: 0; background-image: url(../images/button/strong.gif); }
+.btStrongS { color: #2F2469; width: 18px; height: 18px; border: 0; background-image: url(../images/button/strong_short.gif); }
+.btStrongL { color: #2F2469; width: 90px; height: 18px; border: 0; background-image: url(../images/button/strong_long.gif); }
+
+.loading { width:53px; height:20px;	background-image:url(../images/loading.gif); background-repeat:no-repeat; background-position:3px 3px; }
+.separator { height:6px; background-image:url(../images/sep_line.gif);background-repeat:repeat-x;background-position: center;overflow: hidden;}
+
+.l { border-left:  1px solid #98989C; }
+.t { border-top:   1px solid #98989C; }
+.b { border-bottom:1px solid #98989C; }
+.r { border-right: 1px solid #98989C; }
+
+WorkSpace\:Page Form\:Box .tssForm td { padding:5px; }
+WorkSpace\:Page .Tree a, WorkSpace\:Page .Tree a.hover { border: 1px solid #F7F8FD; }
+
+/* message相关 */
+.popupBox { background-color: white; border:1px solid #98989C; margin-left: auto; margin-right: auto; position: absolute; top:1px; left: -100px; right: -100px; z-Index: 10001;}
+
+#X-messageBox { width: 320px; height: 100px; padding-left:1px;}
+#X-messageBox * { word-break:break-all; }
+#infoBox   { color:#666666; width:280px; padding-top:10px; font-size:14px; font-weight:bold; overflow:hidden; display:inline-block;}
+#detailBox { color:#666666; width:98%; height:108px; line-height:18px; margin-top:5px; padding-top:5px; display:none; }
+#bt_showDetail { display:none; position:absolute; right:3px; bottom:0px; height:20px; }
+#alertIcon { display:inline-block; width:32px; height:32px; background-image:url(../images/icon_alert.gif); background-repeat:no-repeat;}
+
+/* relogin相关 */
+#relogin_box { width:260px;  padding:10px; }
+#relogin_box h1 { line-height:30px; font-size:15px; padding:0px 5px; border-bottom:1px solid #009999; }
+#relogin_box span { display:block; margin:10px 0px; padding:0px 5px; }
+#relogin_box span.bottonBox { text-align: center; }
+#relogin_box span input { background-color: #f0f0f0; border: 1px solid #ccc;}
+
+.dialog { border:1px solid #98989C; background-color:#fff; margin: 0 auto 0 auto; overflow:auto; padding:5px; position: absolute; top:100px;}
+.dialog Form\:Box { padding-top: 10px;}
+.dialog Tree\:Box { height: 80%; }
+.dialog .bts { padding-left: 10px; padding-top: 10px;}
+.dialog .bts input { margin-right:10px; }
+.dialog h2 { width:100%; height:25px; line-height:25px; font-size:14px; background:#CC9900; color:#FFFFFF; text-indent:15px;}
+
+#importDiv {border:1px solid #98989C; background-color: #E7E7E7;}
+#importDiv input[type='button'] { padding: 0 10px 0 10px; margin-left: 30px;}

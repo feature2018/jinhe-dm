@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+	<LogList>
+        <grid applicationId="CMS">
+            <declare>
+                <column name="id" caption="ID号" mode="string" editable="false"/>
+                <column name="operatorName" caption="操作人" mode="string" editable="false"/>
+                <column name="operatorIP" caption="操作人IP" mode="string"/>
+                <column name="operationCode" caption="操作类型" mode="string" editable="false"/>
+                <column name="operateTable" caption="操作的表" mode="string" editable="false"/>
+                <column name="operateTime" caption="操作时间" mode="string" editable="false"/>
+                <column name="level" caption="日志级别" mode="string" editable="false"/>
+            </declare>
+            <data>
+                <row id="7298" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Delete" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="0" _oldClass="" class="">
+                </row>
+                <row id="7297" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="1" _oldClass="" class="">
+                </row>
+                <row id="7296" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="2" _oldClass="" class="highlightRow" >
+                </row>
+                <row id="7295" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Delete" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="3">
+                </row>
+                <row id="7294" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="4">
+                </row>
+                <row id="7293" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-09" level="1" _depth="1" _index="5">
+                </row>
+                <row id="7292" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="6">
+                </row>
+                <row id="7291" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="7">
+                </row>
+                <row id="7290" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="8">
+                </row>
+                <row id="7289" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="9">
+                </row>
+                <row id="7288" operatorName="Admin" operatorIP="192.168.0.195" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="10">
+                </row>
+                <row id="7287" operatorName="Admin" operatorIP="192.168.0.195" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="11">
+                </row>
+                <row id="7286" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="12">
+                </row>
+                <row id="7285" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="13">
+                </row>
+                <row id="7284" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="14">
+                </row>
+                <row id="7283" operatorName="Admin" operatorIP="192.168.0.195" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="15">
+                </row>
+                <row id="7282" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="16">
+                </row>
+                <row id="7281" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-09" level="1" _depth="1" _index="17">
+                </row>
+                <row id="7280" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.SiteChannel" operateTime="2006-08-09" level="1" _depth="1" _index="18">
+                </row>
+                <row id="7279" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Channel" operateTime="2006-08-09" level="1" _depth="1" _index="19">
+                </row>
+                <row id="7278" operatorName="Admin" operatorIP="192.168.0.129" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="20">
+                </row>
+                <row id="7277" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="21">
+                </row>
+                <row id="7276" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="22">
+                </row>
+                <row id="7275" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="23">
+                </row>
+                <row id="7274" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Article" operateTime="2006-08-08" level="1" _depth="1" _index="24">
+                </row>
+                <row id="7273" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="25">
+                </row>
+                <row id="7271" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="26">
+                </row>
+                <row id="7272" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="27">
+                </row>
+                <row id="7269" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="28">
+                </row>
+                <row id="7270" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="29">
+                </row>
+                <row id="7268" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="30">
+                </row>
+                <row id="7266" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Article" operateTime="2006-08-08" level="1" _depth="1" _index="31">
+                </row>
+                <row id="7267" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="32">
+                </row>
+                <row id="7264" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="33">
+                </row>
+                <row id="7265" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Article" operateTime="2006-08-08" level="1" _depth="1" _index="34">
+                </row>
+                <row id="7262" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ChannelArticle" operateTime="2006-08-08" level="1" _depth="1" _index="35">
+                </row>
+                <row id="7263" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Article" operateTime="2006-08-08" level="1" _depth="1" _index="36">
+                </row>
+                <row id="7261" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="37">
+                </row>
+                <row id="7260" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="38">
+                </row>
+                <row id="7259" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="39">
+                </row>
+                <row id="7257" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Channel" operateTime="2006-08-08" level="1" _depth="1" _index="40">
+                </row>
+                <row id="7258" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.SiteChannel" operateTime="2006-08-08" level="1" _depth="1" _index="41">
+                </row>
+                <row id="7256" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="42">
+                </row>
+                <row id="7255" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.Site" operateTime="2006-08-08" level="1" _depth="1" _index="43">
+                </row>
+                <row id="7254" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Insert" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="44">
+                </row>
+                <row id="7253" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="45">
+                </row>
+                <row id="7252" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="46">
+                </row>
+                <row id="7251" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="47">
+                </row>
+                <row id="7250" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="48">
+                </row>
+                <row id="7249" operatorName="Admin" operatorIP="192.168.0.166" operationCode="Update" operateTable="com.jinhe.tss.cms.entity.ArticleType" operateTime="2006-08-08" level="1" _depth="1" _index="49">
+                </row>
+            </data>
+        </grid>
+	</LogList>
+	<PageInfo>
+        <pagelist totalpages="10" totalrecords="999" currentpage="3" pagesize="100"/>
+	</PageInfo>
+</Response>

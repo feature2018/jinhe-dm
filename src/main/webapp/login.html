@@ -1,116 +1,57 @@
 <!DOCTYPE html>
 <html> 
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>DMS--登陆</title>
-        <link rel="shortcut icon" href="framework/images/tss.ico">
-		<link rel="Bookmark" href="framework/images/tss.ico">
-        
-        <link href="framework/css/css.css" rel="stylesheet" type="text/css">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>系统登陆</title>
+<link rel="shortcut icon" href="images/tss.ico">
+<link rel="Bookmark" href="images/tss.ico">
 
-        <script language="javascript" src="framework/core.js"></script>
-        <script language="javascript" src="framework/ajax.js"></script>
-        <script language="javascript" src="framework/framework.js"></script>
+<link href="tools/tssJS/css/tss.common.css" rel="stylesheet">
 
-        <style type="text/css">
-html {
-    height:100%;
-}
+<script src="tools/tssJS/tssJS.all.js"></script>
+<script src="tools/tssUtils.js"></script>
 
-body {
-    width:100%;
-    height:100%;
-    margin: 0 0 0 0;
-    overflow: hidden;
-    background-image:url(framework/images/login_bg.png);
-}
- 
-#login_box {
-    position:relative;
-    top:220px;
-    width:352px;
-    margin:0px auto;
-    font-family:"微软雅黑";
-}
- 
-#login_box form {
-    padding:10px;
-}
-#login_box h1 {
-    line-height:30px;
-    font-size:15px;
-    margin:0px;
-    padding:0px 5px;
-    color: #FFFFFF;
-    border-bottom:1px solid #009999;
-}
-#login_box span {
-    display:block;
-    margin:20px 0px;
-    padding:0px 5px;
-}
+<style type="text/css">
+    body { background-image:url(images/login_bg.png); }
+    #login_box { position:relative; top:220px; width:352px; margin:0px auto; font-family:"微软雅黑"; padding:10px; }
+    #login_box h1 { line-height:30px;  font-size:15px; padding:0px 5px; color: #FFFFFF; border-bottom:1px solid #009999; }
+    #login_box span { display:block; margin:20px 0px; padding:0px 5px; font-size: 16px;}
+    #loginName, #password { width:320px; height:25px; background-color:#f0f0f0; border:1px solid #ccc; line-height:15px; border-radius:3px; }
+    #login_box span.bottonBox { margin:10px 0px; }        
+    #bt_login { width:320px; height:30px; background: #0C6F73; color: #FFFFFF; cursor: pointer;
+        box-shadow: #3a3c42 0 1px 0 inset; border-radius: 3px; border: 1px solid #88D0E7; }
+    #bt_login:hover { font-weight: bold; }
 
-#loginName, #password{
-    width: 320px;
-    height: 25px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    line-height: 15px;
-    border-radius: 3px;
-    font-size: 16px;
-}
-
-#login_box span.bottonBox {
-    margin:10px 0px;
-}
- 
-#bt_login {
-    width: 320px;
-    height: 30px;
-    border: 1px solid #88D0E7;
-    background: #0C6F73;
-    box-shadow: #3a3c42 0 1px 0 inset;
-    border-radius: 3px;
-    
-    font-size: 16px;
-    color: #FFFFFF;
-    cursor: pointer;
-}
-
-#bt_login:hover {
-    font-weight: bold;
-}
-
-    </style>
+</style>
 
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-
     URL_GET_USER_NAME = "getLoginInfo.in";
     URL_LOGIN = AUTH_PATH + "login.do";
 
     window.alert = _alert;
     
     window.onload = function() {
-        var loginNameObj = $$("loginName");
-        var passwordObj  = $$("password");
-    
+    	$1("sys_title").innerText = SYSTEM_TITLE || "它山石应用支撑平台";
+		var loginNameObj = $1("loginName");
+		var passwordObj  = $1("password");
+	
         loginNameObj.onfocus = passwordObj.onfocus = function() {
              this.style.backgroundColor = "white";
         }
 
         loginNameObj.focus();
 
-        var loginButton = $$("bt_login");
+        var loginButton = $1("bt_login");
 
         loginButton.onclick = function() {
-            doLogin(loginNameObj, passwordObj);
+        	doLogin(loginNameObj, passwordObj);
         };
  
-        Event.attachEvent(document, "keydown", function(eventObj) {
+        $.Event.addEvent(document, "keydown", function(eventObj) {
             if(13 == eventObj.keyCode) { // enter
-                event.returnValue = false;
-                $$("bt_login").focus();
+                $.Event.cancel();
+                $1("bt_login").focus();
 
                 setTimeout(function() {
                     doLogin(loginNameObj, passwordObj);
@@ -128,13 +69,13 @@ body {
             var value = this.value;
             if(value == null || value == "") return;
  
-            if(loginNameObj.identifier) {
-                delete loginNameObj.identifier;
-            }
-            Ajax({
+ 			if(loginNameObj.identifier) {
+				delete loginNameObj.identifier;
+			}
+            $.ajax({
                 url: URL_GET_USER_NAME,
                 headers: {"appCode": FROMEWORK_CODE},
-                contents: {"loginName": value},
+                params:  {"loginName": value},
                 onexcption: function() {
                     loginNameObj.focus();
                 },
@@ -152,66 +93,62 @@ body {
         var identifier = loginNameObj.identifier;
         
         if( "" == loginName ) {
-            popupMessage("请输入账号");
+            alert("请输入账号");
             loginNameObj.focus();
             return;
         } 
         else if( "" == password ) {
-            popupMessage("请输入密码");
+            alert("请输入密码");
             passwordObj.focus();
             return;
         }
         else if( identifier == null ) {
-            popupMessage("无法登录，用户配置可能有误，请联系管理员。");
+            alert("无法登录，用户配置可能有误，请联系管理员。");
             return;
         } 
 
-        Ajax({
+        $.ajax({
             url: URL_LOGIN,
-            headers : { "loginName": loginName, "password": password, "identifier": identifier },
+            headers : {
+                "appCode": FROMEWORK_CODE, 
+                "loginName": loginName, 
+                "password": password, 
+                "identifier": identifier
+            },
             onexception: function(errorMsg) {
                 passwordObj.focus();
             },
             onsuccess: function() {
-                location.href = "index.html";
+                location.href = "admin.portal"; // "index.html";
             }
         });
     }
 
     /* 找回密码  */
     function forget() {
-        window.open("forget.html", "", "width=400, height=250");
+        window.open("modules/um/forget.html", "", "width=400, height=250");
     }
 
     /* 注册 */
     function register() {
-        window.open("register.htm", "", "width=400, height=250");
+        window.open("modules/um/register.htm", "", "width=400, height=250");
     }
 
 //-->
 </SCRIPT>
- 
-    </head>
-    
-    <body>
- 
-        <div id="login_box">
-            <form>
-                <h1>
-                    数据挖掘（DMS）
-                </h1>
-                <span>
-                    <input type="text" id="loginName" placeholder="请输入您的账号" />
-                </span>
-                <span>
-                    <input type="password" id="password" placeholder="请输入您的密码"/>
-                </span>
-                <span class='bottonBox'>
-                    <input type='button' class='btLogin' id='bt_login' value='登 陆 系 统'/>
-                </span>
-            </form>
-        </div>
- 
-    </body>
-
+</head>
+<body>
+    <div id="login_box">
+        <h1 id="sys_title"></h1>
+        <span>
+            <input type="text" id="loginName" placeholder="请输入您的账号" />
+        </span>
+        <span>
+            <input type="password" id="password" placeholder="请输入您的密码"/>
+        </span>
+        <span class='bottonBox'>
+            <input type='button' class='btLogin' id='bt_login' value='登 陆 系 统'/>
+        </span>
+    </div>
+</body>
 </html>

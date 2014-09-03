@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?><Response><ParamInfo>
+<xform>
+	<declare prefix="param">	
+		<column caption="id" name="id" mode="string" display="none"/>
+		<column name="name" caption="参数名称" mode="string" maxLength="100" empty="true"/>
+		<column name="code" caption="参数Code" mode="string" maxLength="100" empty="true"/>
+		<column name="value" caption="参数值" mode="string" maxLength="2000" empty="true"/>
+		<column name="description" caption="描述" mode="string" maxLength="500"/>
+	</declare>
+	<layout>
+		<TR>
+			<TD width="100"><label binding="name"/></TD>
+			<TD><input binding="name" type="text" style="width:50%;"/></TD>
+		</TR>
+		<TR>
+			<TD width="100"><label binding="code"/></TD>
+			<TD><input binding="code" type="text" style="width:50%;"/></TD>
+		</TR>
+		<TR>
+			<TD width="100"><label binding="value"/></TD>
+			<TD><textarea binding="value" style="width:100%;height:60px"/></TD>
+		</TR>
+		<TR>
+			<TD width="100" valign="top"><label binding="description"/></TD>
+			<TD><textarea binding="description" style="width:100%;height:100px"/></TD>
+		</TR>
+	</layout>
+	<data><row><createTime><![CDATA[2014-01-22 18:03:59.0]]></createTime><updateTime><![CDATA[2014-01-22 18:22:51.0]]></updateTime><seqNo><![CDATA[1]]></seqNo><creatorId><![CDATA[-1]]></creatorId><updatorName><![CDATA[Admin]]></updatorName><code><![CDATA[default_conn_pool]]></code><type><![CDATA[1]]></type><levelNo><![CDATA[2]]></levelNo><updatorId><![CDATA[-1]]></updatorId><lockVersion><![CDATA[1]]></lockVersion><id><![CDATA[17]]></id><parentId><![CDATA[21]]></parentId><creatorName><![CDATA[Admin]]></creatorName><decode><![CDATA[0000200001]]></decode><hidden><![CDATA[0]]></hidden><name><![CDATA[默认数据源]]></name><value><![CDATA[connectionpool-1]]></value><modality><![CDATA[0]]></modality><disabled><![CDATA[0]]></disabled></row></data>
+</xform></ParamInfo></Response>

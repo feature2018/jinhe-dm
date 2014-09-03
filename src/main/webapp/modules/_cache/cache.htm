@@ -1,0 +1,302 @@
+<!DOCTYPE HTML>
+<HTML xmlns:WorkSpace xmlns:Tree xmlns:Grid xmlns:Form>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>缓存管理</title>
+
+<link href="../../tools/tssJS/css/tss.all.css" rel="stylesheet">
+<link href="../../css/css.css" rel="stylesheet">
+
+<script src="../../tools/tssJS/tssJS.all.js"></script>
+<script src="../../tools/tssUtils.js"></script>
+
+<style>
+#cacheStrategyDiv {
+    display:none;
+    background-color: #BEC6EE;
+    border:1px solid #416371;
+    width: 600px;    
+    height: 320px;  
+    margin-left: 200px;
+    margin-top: 200px;
+    padding: 10px;
+}
+
+#cacheStrategyDiv h2 { 
+	width:100%; 
+	height:25px; 
+	line-height:25px; 
+	font-size:14px;
+	background:#CC9900; 
+	color:#FFFFFF; 
+	text-indent:15px; 
+	cursor:move; 
+}
+
+#poolHitRate { left:60px; top:4px; font-weight:bold; }
+#poolHitRate:hover { cursor: pointer; }
+  
+</style>
+
+<SCRIPT type="text/javascript">
+<!--
+	/* 后台响应数据节点名称  */
+	XML_MAIN_TREE = "CacheTree";
+	XML_MAIN_GRID = "PoolGrid";
+	XML_HIT_RATE  = "HitRate";
+	XML_CACHE_ITEMS = "CacheItemList";
+	XML_CACHE_STRATEGY  = "CacheStrategy";
+
+	/* XMLHTTP请求地址汇总  */
+	URL_INIT_TREE    = NO_AUTH_PATH + "cache/list";
+	URL_INIT_GRID    = NO_AUTH_PATH + "cache/grid";
+	URL_CACHE_DETAIL = NO_AUTH_PATH + "cache/list/";
+	URL_VIEW_ITEM    = NO_AUTH_PATH + "cache/item";
+	URL_CACHE_CLEAR  = NO_AUTH_PATH + "cache/release";
+	URL_CACHE_INIT   = NO_AUTH_PATH + "cache/init";	
+	
+	if(IS_TEST) {
+		URL_INIT_TREE    = "data/cache_tree.xml?";
+		URL_INIT_GRID    = "data/cache_grid.xml?";
+		URL_CACHE_DETAIL = "data/cache1.xml?";
+		URL_CACHE_CLEAR  = "data/_success.xml?";
+		URL_CACHE_INIT   = "data/_success.xml?";
+		URL_VIEW_ITEM    = "data/item.xml?";
+	}	
+	 
+	/*页面初始化 */
+	function init() {
+		initPaletteResize();
+		initMenus();
+		initEvents();
+		$(".refreshTreeBT").click(function() { 
+			loadInitData();
+			loadInitGrid();
+			$("#poolHitRate").html("");
+		});
+
+		var el = $1("cacheStrategyDiv");
+		Element.moveable(el);
+		Element.attachResize(el);
+
+		loadInitData();
+		loadInitGrid();
+	}
+ 
+	/* 页面初始化加载数据(包括工具条、菜单树) */
+	function loadInitData() {
+		$.ajax({
+			url : URL_INIT_TREE, 
+			onresult : function() {					
+				var tree = $.T("tree", this.getNodeValue(XML_MAIN_TREE)); 
+				tree.onTreeNodeDoubleClick = function(ev) {
+					showCachePools();
+				}
+				tree.onTreeNodeRightClick = function(ev) {
+					onTreeNodeRightClick(ev);
+	            }
+			}
+		});
+	}
+
+	// 初始化右边Grid
+	function loadInitGrid() {
+		$.ajax({
+			url : URL_INIT_GRID, 
+			onresult : function() {
+				$.G("poolsGrid", this.getNodeValue(XML_MAIN_GRID)); 	
+			}
+		});
+	}
+
+	function initMenus() {
+		var item1 = {
+			label:"维护",
+			callback:showCachePools,
+			icon:"images/edit.gif"
+		}
+		var item2 = {
+			label:"初始化",
+			callback:initCache,
+			icon:"images/init.gif",
+			visible:function() {return getTreeAttribute("released") == "1";}
+		}
+		var item3 = {
+			label:"清空",
+			callback:clearCache,
+			icon:"images/clear.gif"
+		}
+
+		var menu = new $.Menu();
+		menu.addItem(item1);
+		menu.addSeparator();
+		menu.addItem(item2);
+		menu.addItem(item3);
+
+		$1("tree").contextmenu = menu;
+	}
+ 
+	/* 初始化缓存池  */
+	function initCache() {
+		var treeNode = getActiveTreeNode();
+		if ( treeNode ) {
+			$.ajax({
+				url : URL_CACHE_INIT + "/" + treeNode.id,
+				onsuccess : function() {
+					treeNode.setAttribute("released", "0");
+					showCachePools();
+				}
+			});
+		}
+	}
+
+	/* 清空缓存池  */
+	function clearCache() {
+		var treeNode = getActiveTreeNode();
+		if ( treeNode ) {
+			$.ajax({
+				url : URL_CACHE_CLEAR + "/" + treeNode.id,
+				onsuccess : function() {
+					treeNode.setAttribute("released", "1");   
+					showCachePools();
+				}
+			});
+		}
+	}
+
+	/*
+	 *	缓存池详细信息 
+	 *	参数：	string:page                 页码
+				boolean:showStrategy        false的话只刷新grid列表
+	 */
+	function showCachePools(page, justRefreshGrid) {
+		var tree = $.T("tree");
+		var treeNode = tree.getActiveTreeNode();
+		$.ajax({ 
+			url: URL_CACHE_DETAIL + treeNode.id, 
+			onresult: function() {
+				var strategyXML = this.getNodeValue(XML_CACHE_STRATEGY);
+				if( strategyXML && !justRefreshGrid) {
+					$.F("cacheStrategy", strategyXML);
+				}
+
+				$.initGridToolBar($1("gridToolBar"), this.getNodeValue(XML_PAGE_INFO), function(page) {
+						showCachePools(page, true);
+					}
+				);
+
+				$.G("poolsGrid", this.getNodeValue(XML_CACHE_ITEMS));    
+				initGridMenuAndEvents();
+				
+				//设置点击率
+				var hitRateData = this.getNodeValue(XML_HIT_RATE);
+				$("#poolHitRate").html("『 " + treeNode.name + "-命中率：" + hitRateData + " 』")
+					.click( function() {
+						var formObj = $1("cacheStrategyDiv");
+				        Element.show(formObj);
+
+				        $("#cacheStrategyClose").click( function() {
+				            $(formObj).hide();
+				        });
+					});
+			}
+		});
+	}
+ 
+	/* Grid菜单初始化 */
+	function initGridMenuAndEvents() {
+		var item1 = {
+			label:"查看缓存项信息",
+			callback:showItemInfo,
+			icon:"images/view.gif"
+		}
+		var item2 = {
+			label:"清除缓存项",
+			callback:removeCacheItem,
+			icon:"images/clear.gif"
+		}
+
+		var menu = new $.Menu();
+		menu.addItem(item1);
+		menu.addItem(item2);
+
+		var gridEl = $1("poolsGrid");
+		gridEl.contextmenu = menu;
+
+		gridEl.onRightClickRow = function() {
+			gridEl.contextmenu.show(event.clientX, event.clientY);
+		}
+	}
+
+	/* 查看缓存项信息  */
+	function showItemInfo() { 
+		var itemKey = $.G("poolsGrid").getColumnValue("key");
+		var poolCode = getTreeNodeId();
+
+		var url = URL_VIEW_ITEM + "/" + poolCode + "?key=" + itemKey;
+		window.open(url, "查看缓存项信息", "");
+	}
+
+	function removeCacheItem() {
+		var itemKey = $.G("poolsGrid").getColumnValue("key");
+		var poolCode = getTreeNodeId();
+		$.ajax({
+			url : URL_VIEW_ITEM + "/" + poolCode + "?key=" + itemKey,
+			method : "DELETE",
+			onsuccess : function() {
+				 $.G("poolsGrid").deleteSelectedRow();
+			}
+		});
+	}
+
+	window.onload = init;
+
+//-->
+</SCRIPT>
+
+</head>
+
+<body>
+
+	<!-- 版面 开始 -->
+	<table class="panel">
+	  <tr class="header"> <td/><td/><td/><td/> </tr>
+	  <tr class="body"> 
+		<td/>
+		<td id="palette">
+		  <div>
+		  	<div class="bar">
+				<span class="icon"></span>缓存池
+				<span class="refreshTreeBT"></span>
+			</div>
+			<Tree:Box id="tree"><div class="loading"></div></Tree:Box>
+		  </div> 
+		</td>
+		<td class="groove">
+			<table>
+				<tr> 
+					<td id="gridTitle">
+						※缓存池明细<span id="poolHitRate"></span><span class="buttonBox" id="gridToolBar"></span>
+					</td> 
+				</tr>
+				<tr> <td> <Grid:Box id="poolsGrid"></Grid:Box> </td> </tr>
+			</table>                            
+		</td>
+		<td/>
+	  </tr>
+	  <tr class="footer"> <td/><td/><td/><td/> </tr>
+	</table>
+	<!-- 版面 结束 -->
+ 
+  <div id="cacheStrategyDiv">
+  	<h2>
+		缓存策略
+	</h2><br/>
+    <Form:Box id="cacheStrategy" editable="true"></Form:Box>    
+    <div class="bt">
+    	<input type="button" class="btStrong" value="隐藏" id="cacheStrategyClose"/>
+     </div>
+  </div>
+
+</body>
+</html>
