@@ -2,11 +2,11 @@
 
 	var 
 
-		// item的类型允许为[id, code, name] or {id:'xx', code:'yy', name:'zz'}
+		// item的类型允许为[id, code, name] or [pk, id, text] or {id:'xx', code:'yy', name:'zz'}
 		createOption = function(item) {
 			var option = new Option();
-			option.value = item.id   || item[0];
-			option.text  = item.name || item[2];
+			option.value = item.pk   || item.id   || item[0];
+			option.text  = item.text || item.name || item[2];
 			return option;
 		},
 

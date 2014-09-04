@@ -4,7 +4,7 @@
 	IS_TEST = true,
 
 	FROMEWORK_CODE = "TSS",    /* 当前框架名 */
-	APP_CODE       = "TSS",    /* 当前应用名 */
+	APP_CODE       = "DM",    /* 当前应用名 */
 	SYSTEM_TITLE   = "百世快运BI"; 
 
 /*********************** 系统配置 END **********************************/

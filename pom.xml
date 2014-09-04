@@ -3,12 +3,12 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>DM</groupId>
-	<artifactId>dm</artifactId>
+	<groupId>DMS</groupId>
+	<artifactId>dms</artifactId>
 	<packaging>war</packaging>
 	<version>2.0</version>
 	<name>DataMining</name>
-	<url>http://dm.llrs.com</url>
+	<url>http://dms.llrs.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -282,7 +282,7 @@
 				<version>8.1.12.v20130726</version>
 				<configuration>
 					<webAppConfig>
-						<contextPath>/dm</contextPath>
+						<contextPath>/dms</contextPath>
 					</webAppConfig>
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -290,7 +290,7 @@
 						</connector>
 					</connectors>
 					<stopPort>9966</stopPort>
-					<stopKey>dm</stopKey>
+					<stopKey>dms</stopKey>
 				</configuration>
 			</plugin>
 
@@ -419,6 +419,31 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
+			<!-- 
+			mvn install:install-file -DgroupId=com.jinhe.dm -DartifactId=dm -Dversion=2.0 -Dpackaging=jar -Dfile=D:/project/TSS/jinhe-dm/target/dm-2.0.jar
+			-->
+			<!-- mvn clean compile assembly:single -->
+			<plugin>
+				<artifactId> maven-assembly-plugin </artifactId>
+				<version>2.4</version>
+				<configuration >
+					<finalName>dm-${version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assembly/package.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> 
 
 		</plugins>
 	</build>
@@ -490,7 +515,7 @@
 
 	<distributionManagement>
 		<site>
-			<id>dm.llrs.com</id>
+			<id>dms.llrs.com</id>
 			<url>file://</url>
 		</site>
 	</distributionManagement>

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jinhe.dm.Constants;
 import com.jinhe.dm.data.sqlquery.SQLExcutor;
 import com.jinhe.dm.data.util.DataExport;
-import com.jinhe.tss.framework.component.log.IBusinessLogger;
-import com.jinhe.tss.framework.component.log.Log;
+import com.jinhe.dm.log.AccessLog;
+import com.jinhe.dm.log.AccessLogRecorder;
 import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.exception.BusinessException;
 import com.jinhe.tss.framework.persistence.pagequery.PageInfo;
@@ -51,6 +51,10 @@ public class Display extends BaseActionSupport {
     	
     	return requestMap;
     }
+    
+    private Object getLoginUserId() {
+        return Environment.getOperatorId();
+    }
  
     @RequestMapping("/{reportId}/{page}/{pagesize}")
     public void showAsGrid(HttpServletRequest request, HttpServletResponse response, 
@@ -60,7 +64,7 @@ public class Display extends BaseActionSupport {
     	
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, Environment.getOperatorId());
+		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, getLoginUserId());
     	
     	outputAccessLog(reportId, "showAsGrid", requestMap, start);
         
@@ -88,7 +92,7 @@ public class Display extends BaseActionSupport {
         
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, Environment.getOperatorId());
+		SQLExcutor excutor = reportService.queryReport(reportId, requestMap, page, pagesize, getLoginUserId());
         
         String fileName = reportId + "-" + System.currentTimeMillis() + ".csv";
         String exportPath = ParamManager.getValue(Constants.TEMP_EXPORT_PATH).replace("\n", "") + "/" + fileName;
@@ -117,16 +121,13 @@ public class Display extends BaseActionSupport {
     	
     	long start = System.currentTimeMillis();
     	Map<String, String> requestMap = getRequestMap(request);
-        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, 0, 0, Environment.getOperatorId());
+        SQLExcutor excutor = reportService.queryReport(reportId, requestMap, 0, 0, getLoginUserId());
         
         outputAccessLog(reportId, "showAsJson", requestMap, start);
         
         return excutor.result;
     }
     
-	/** 业务日志处理对象 */
-    @Autowired private IBusinessLogger businessLogger;
-	
 	/**
 	 * 记录下报表的访问信息。
 	 */
@@ -146,12 +147,16 @@ public class Display extends BaseActionSupport {
 		
 		// 方法的访问日志记录成败不影响方法的正常访问，所以对记录日志过程中各种可能异常进行try catch
         try {
-            Log log = new Log("Display." + methodName, "Display." + methodName + "( " + params + ")");
-            log.setOperateTable(methodCnName);
-            log.setOperateTime(new Date(start));
-            log.setMethodExcuteTime((int) runningTime);
-            
-            businessLogger.output(log);
+            AccessLog log = new AccessLog();
+            log.setClassName(Display.class.getSimpleName());
+    		log.setMethodName(methodName);
+    		log.setMethodCnName(methodCnName);
+            log.setAccessTime(new Date(start));
+            log.setRunningTime(runningTime);
+            log.setParams(params);
+            log.setUserId(Environment.getOperatorId());
+
+            AccessLogRecorder.getInstanse().output(log);
         } 
         catch(Exception e) {
         	log.error("记录方法【" + methodCnName + "." + methodName + "】的访问日志时出错了。错误信息：" + e.getMessage());

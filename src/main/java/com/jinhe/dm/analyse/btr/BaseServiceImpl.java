@@ -28,7 +28,7 @@ public class BaseServiceImpl implements BaseService {
 		paramsMap.put(1, loginName);
 		paramsMap.put(2, InfoEncoder.string2MD5(password).toLowerCase());
 
-		SQLExcutor excutor = new SQLExcutor();
+		SQLExcutor excutor = new SQLExcutor(false);
 		excutor.excuteQuery(script, paramsMap);
 
 		if (excutor.result.isEmpty()) {
@@ -46,7 +46,7 @@ public class BaseServiceImpl implements BaseService {
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>>  getOrgList() {
 		String script = "select t.name as id, t.id as pk, t.code as code, t.name as name from gtv_org_golden t where t.parent_id=5555";
-		SQLExcutor excutor = new SQLExcutor();
+		SQLExcutor excutor = new SQLExcutor(false);
 		excutor.excuteQuery(script);
  
         HttpSession session = Context.getRequestContext().getSession();
@@ -72,7 +72,7 @@ public class BaseServiceImpl implements BaseService {
 		String script = "select t.name as id, t.id as pk, t.code as code, t.name as name" +
 				" from gt_site t " +
 				" where type_code = '01' and status = 'ENABLE'  and org_name = '" + org + "' ";
-		SQLExcutor excutor = new SQLExcutor();
+		SQLExcutor excutor = new SQLExcutor(false);
 		excutor.excuteQuery(script);
 		
 		HttpSession session = Context.getRequestContext().getSession();

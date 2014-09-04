@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report id="test1" name="test1">
+		<sql index="1"><![CDATA[
+		 select SKU, 货品描述, 生产日期, 失效日期, 存储位, 存储位可用库存, 拣货位, 拣货位可用库存  from (
+			select 
+			     t1.skucode SKU,
+			     t1.descrcn 货品描述,
+			     substr (t1.FIXCREATEDTIMEFORDISP, 1, 10) 生产日期,
+			     substr (t1.FIXEXPIREDTIMEFORDISP, 1, 10) 失效日期,
+			     t1.locationcode 存储位,
+			     t1.存储位可用库存,
+			     t2.locationcode 拣货位,
+			     t2.拣货位可用库存
+			     from 
+			        (select a.warehouse_id,a.customer_id, sku_id, c.skucode, c.descrcn, a.location_id, b.locationcode, 
+			                  FIXCREATEDTIMEFORDISP, FIXEXPIREDTIMEFORDISP, qtyuseuom as 存储位可用库存
+				        from gv_inv_lotlocationuom a, gv_bas_location b, gv_bas_sku c
+				        where b.id = a.location_id and a.sku_id = c.id and qtyuseuom>0 and b.LOCATIONUSAGE_ID=139 
+				           and a.warehouse_id in (100544) and a.customer_id in (516824) ) t1,
+			        (select a.warehouse_id,a.customer_id, sku_id, c.skucode, c.descrcn, a.location_id, b.locationcode, qtyuseuom as 拣货位可用库存
+			           from gv_inv_lotlocationuom a, gv_bas_location b, gv_bas_sku c
+			           where b.id = a.location_id and a.sku_id = c.id and b.LOCATIONUSAGE_ID=2588 
+			             and a.warehouse_id in (100544) and a.customer_id in (516824 ) 
+			           order by sku_id ) t2
+			where  t1.warehouse_id=t2.warehouse_id and t1.customer_id=t2.customer_id and t1.sku_id=t2.sku_id
+			) t
+			-- order by SKU desc
+		]]></sql>
+	</report>
+	
+</reports>

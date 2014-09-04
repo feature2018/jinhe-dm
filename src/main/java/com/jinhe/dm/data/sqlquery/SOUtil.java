@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.jinhe.tss.util.BeanUtil;
+import com.jinhe.tss.util.EasyUtils;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -30,17 +31,18 @@ public class SOUtil {
 		Map<String, Object> properties = BeanUtil.getProperties(so, ignoreNames);
 		Map<String, Object> noNullProperties = new HashMap<String, Object>();
 		for(String key : properties.keySet()) {
-			Object value = properties.get(key);
-			if(value != null) {
-				if(key.endsWith("Codes")){
-					value = insertSingleQuotes(value.toString());
-				}
-				noNullProperties.put(key, value);
-			}
-			//转化为大写
-			if(value instanceof String){
-				value = ((String) value).toUpperCase();
-			}
+            Object value = properties.get(key);
+            if (value == null) {
+                continue;
+            }
+            if (key.endsWith("Codes") && EasyUtils.isNullOrEmpty(value.toString())) {
+                continue;
+            }
+
+            if (key.endsWith("Codes")) {
+                value = insertSingleQuotes(value.toString());
+            }
+            noNullProperties.put(key, value);
 		}
 				
 		return noNullProperties;

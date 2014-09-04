@@ -155,10 +155,10 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
        
         String icon_path;
         if (TYPE0 == type) {
-            icon_path = "../images/reportGroup.gif";
+            icon_path = "images/reportGroup.gif";
         } 
         else {
-            icon_path = "../images/report_" + disabled + ".gif";
+            icon_path = "images/report_" + disabled + ".gif";
         } 
         map.put("icon", icon_path);
         map.put("parentId", parentId);

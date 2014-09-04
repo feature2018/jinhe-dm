@@ -18,8 +18,10 @@ public class SOUtilTest {
 	}
 	
 	public class CustomerSO extends AbstractSO {
-	    
-	    private String id;  
+ 
+		private static final long serialVersionUID = 1L;
+		
+		private String id;  
 	    private String name;  
 	    private String xxCodes;  
 	    private Date birthday;  
