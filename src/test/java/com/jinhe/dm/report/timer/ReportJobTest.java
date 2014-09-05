@@ -16,7 +16,7 @@ public class ReportJobTest extends TxTestSupport {
         Report report1 = new Report();
         report1.setType(Report.TYPE1);
         report1.setParentId(Report.DEFAULT_PARENT_ID);
-        report1.setName("report-1");
+        report1.setName("report-job-test");
         report1.setScript(" select id, name from dm_report " +
         		" where id > ? <#if param2??> and type <> ? <#else> and type = 1 </#if>" +
         		"	and createTime > ?");
@@ -31,8 +31,8 @@ public class ReportJobTest extends TxTestSupport {
         
         ReportJob job = new ReportJob();
         
-        String jobConfig = "1:报表一:pjjin@800best.com,BL00618:param1=0,param2=0,param3=today-0\n" + 
-			               "1:报表一:BL00618,pjjin@800best.com:param1=0,param3=today-1";
+        String jobConfig = report1.getId() + ":报表一:pjjin@800best.com,BL00618:param1=0,param2=0,param3=today-0\n" + 
+        		           report1.getId() + ":报表一:BL00618,pjjin@800best.com:param1=0,param3=today-1";
 		job.excuteJob(jobConfig);
 	}
 	

@@ -14,9 +14,9 @@
 			 <outputDirectory>/</outputDirectory>
 			 <includes>
 				<include>META-INF/dm-orm.xml</include>
-				<include>META-INF/right-config.xml</include>
-				<include>META-INF/spring-mvc.xml</include>
+				<include>META-INF/persistence.xml</include>
 				<include>META-INF/spring.xml</include>
+				<include>tss/right-config.xml</include>
 				<include>template/*.xml</include>
 				<include>com/jinhe/dm/**/**.class</include>
 			 </includes>

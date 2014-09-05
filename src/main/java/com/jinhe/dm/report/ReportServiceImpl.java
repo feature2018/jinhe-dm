@@ -182,9 +182,13 @@ public class ReportServiceImpl implements ReportService {
   	        }
       	}
       	
-        // 结合 requestMap 进行 freemarker解析 sql
-      	// TODO 需要允许指定sql预处理类。
-      	reportScript = SOUtil.freemarkerParse(reportScript, fmDataMap);
+        // 结合 requestMap 进行 freemarker解析 sql，允许指定sql预处理类。
+      	ScriptPreCheator scriptPreCheator = ScriptPreCheatorFactory.getPreCheator();
+      	if(scriptPreCheator == null) {
+      		reportScript = SOUtil.freemarkerParse(reportScript, fmDataMap);
+      	} else {
+      		reportScript = scriptPreCheator.preCheat(reportScript, fmDataMap);
+      	}
           
 		SQLExcutor excutor = new SQLExcutor(false);
 		String datasource = report.getDatasource();

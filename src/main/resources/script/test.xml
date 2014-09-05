@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report id="test1" name="test1">
+		<sql index="1"><![CDATA[
+			 select id, 方法名称  from (
+				select id, methodName as 方法名称 from dm_access_log
+			 ) t
+			 order by id desc
+		]]></sql>
+	</report>
+	
+</reports>

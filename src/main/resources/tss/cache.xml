@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<strategies> 
+  <strategy code="connectionpool" name="DB连接池-MySQL"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>28000000</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>5</initNum>  
+    <disabled>0</disabled>
+	<visible>1</visible>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+  </strategy>
+  <strategy code="connpool-vf-oracle" name="DB连接池-VF只读库"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>0</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>oracle-vf.properties</paramFile>
+  </strategy>
+  <strategy code="connpool-wfb-oracle" name="DB连接池-狼堡库"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>0</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>oracle-wfb.properties</paramFile>
+  </strategy>
+  <strategy code="connpool-btr-mysql" name="DB连接池-BTR-MySQL"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>28000000</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>0</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>mysql-btr.properties</paramFile>
+  </strategy>
+  <strategy code="connpool-fin-mysql" name="DB连接池-FIN-MySQL"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolSize>10</poolSize>  
+    <cyclelife>28000000</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+    <initNum>0</initNum>  
+    <customizerClass>com.jinhe.tss.framework.persistence.connpool.ConnPoolCustomizer</customizerClass>  
+	<paramFile>mysql-fin.properties</paramFile>
+  </strategy>
+    
+  <strategy code="threadpool" name="线程池"> 
+    <poolClass>com.jinhe.tss.cache.extension.threadpool.ThreadPool</poolClass>  
+	<poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>1000</interruptTime>  
+	<poolSize>10</poolSize>  
+    <initNum>5</initNum>  
+    <disabled>0</disabled>  
+    <customizerClass>com.jinhe.tss.cache.extension.threadpool.ThreadPoolCustomizer</customizerClass>  
+  </strategy>  
+  <strategy code="taskpool" name="日志输出任务池"> 
+    <poolClass>com.jinhe.tss.cache.extension.ReusablePool</poolClass>  
+    <poolContainerClass>com.jinhe.tss.cache.extension.MapContainer</poolContainerClass>    
+    <poolSize>100</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <interruptTime>100</interruptTime>  
+    <initNum>10</initNum>  
+    <disabled>0</disabled>  
+    <customizerClass>com.jinhe.tss.framework.component.log.LogOutputTaskPoolCustomizer</customizerClass>  
+    <accessMethod>3</accessMethod>  
+  </strategy> 
+  
+  <strategy code="SHORTER" name="数据缓存（3分钟）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>1000</poolSize>  
+    <cyclelife>180000</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>  
+  <strategy code="SHORT" name="数据缓存（短期）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>1000</poolSize>  
+    <cyclelife>180000</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>
+  <strategy code="LONG" name="数据缓存（长期）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>300</poolSize>  
+    <cyclelife>43200000</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>  
+  <strategy code="NODEAD" name="数据缓存（不死）"> 
+    <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
+    <poolSize>1000</poolSize>  
+    <cyclelife>0</cyclelife>  
+    <accessMethod>5</accessMethod>  
+  </strategy>      
+</strategies>
