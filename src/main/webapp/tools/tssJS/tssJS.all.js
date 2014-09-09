@@ -425,8 +425,12 @@
 
     window.tssJS = window.$ = _tssJS;
 
-    window.$1 = window.$$ = function(id) {
+    window.$1 = function(id) {
         return $("#" + id.replace(/\./gi, "\\."))[0];
+    }
+
+    window.$$ = function(id) {
+        return document.getElementById(id);
     }
 
 })(window);
@@ -889,17 +893,18 @@
             },
 
             /* 取消事件 */
-            cancel: function(event) { 
-                if (event.preventDefault) {
-                    event.preventDefault();
+            cancel: function(ev) { 
+                ev = ev || event;
+                if (ev.preventDefault) {
+                    ev.preventDefault();
                 } else {
-                    event.returnValue = false;
+                    ev.returnValue = false;
                 }
             },
 
             // 获得事件触发对象
-            getSrcElement: function(eventObj) {
-                return eventObj.target || eventObj.srcElement;
+            getSrcElement: function(ev) {
+                return ev.target || ev.srcElement;
             },
 
             /* 使事件始终捕捉对象。设置事件捕获范围。 */
@@ -923,12 +928,12 @@
             },
 
             /* 阻止事件向上冒泡 */
-            cancelBubble: function(eventObj) {
-                if( eventObj.stopPropagation ) {
-                    eventObj.stopPropagation();
+            cancelBubble: function(ev) {
+                if( ev.stopPropagation ) {
+                    ev.stopPropagation();
                 }
                 else {
-                    eventObj.cancelBubble = true;
+                    ev.cancelBubble = true;
                 }
             },
 
@@ -1002,7 +1007,7 @@
             },
 
             getText: function(node) {
-                return node.text || node.textContent || ""; // chrome 用 textContent
+                return node ? (node.text || node.textContent || "").trim() : ""; // chrome 用 textContent
             },
 
             setText: function(node, textValue) {
@@ -1025,8 +1030,9 @@
             },
 
             createCDATA: function(data) {
+                data = String(data).convertCDATA();
                 if(window.DOMParser) {
-                    return $.XML.toNode("<root><![CDATA[" + data + "]]></root>").firstChild;
+                    return $.parseXML("<root><![CDATA[" + data + "]]></root>").documentElement.firstChild;
                 }
                 else {
                     return $.XML.EMPTY_XML_DOM.createCDATASection(data);
@@ -1041,10 +1047,10 @@
             },
 
             getCDATA: function(pnode, name) {
-                var node = pnode.getElementsByTagName(name)[0];
-                node = node || pnode;
+                var nodes = pnode.getElementsByTagName(name);
+                if(nodes.length == 0) return null;
 
-                var cdataValue = $.XML.getText(node);
+                var cdataValue = $.XML.getText(nodes[0]);
                 return cdataValue.revertCDATA();
             },
 
@@ -1087,6 +1093,137 @@
     });
 
 })(tssJS);
+
+
+
+
+;(function($){
+    /*
+     *  大数据显示进度
+     *  参数： string:url                    同步进度请求地址
+            xmlNode:data                    
+            string:cancelUrl                取消进度请求地址
+     */
+    var Progress = function(url, data, cancelUrl) {
+        this.progressUrl = url;
+        this.cancelUrl = cancelUrl;
+        this.refreshData(data);
+    };
+
+    Progress.prototype = {
+        /* 更新数据 */
+        refreshData: function(data) {
+            this.percent      = $.XML.getText(data.querySelector("percent"));
+            this.delay        = $.XML.getText(data.querySelector("delay"));
+            this.estimateTime = $.XML.getText(data.querySelector("estimateTime"));
+            this.code         = $.XML.getText(data.querySelector("code"));
+
+            var feedback = data.querySelector("feedback");
+            if( feedback ) {
+                alert($.XML.getText(feedback));
+            }
+        },
+
+        /* 开始执行  */
+        start: function() {
+            this.show();
+            this.next();
+        },
+
+        /* 停止执行  */
+        stop: function() {
+            var pThis = this;
+            $.ajax({
+                url: this.cancelUrl + pThis.code,
+                method: "DELETE",
+                onsuccess: function() {
+                    pThis.hide();
+                    clearTimeout(pThis.timeout);
+                }
+            });
+        },
+
+        /* 显示进度  */
+        show: function() {
+            var pThis = this;
+
+            var graph = $1("progressBar");
+            if(graph == null) {
+                graph = $.createElement("div", "progressBar");
+                $(graph).center(500, 50).css("width", "500px").css("color", "#fff").css("fontSize", "16px");
+
+                var bar = $.createElement("div", "bar");
+                $(bar).css("display", "block").css("backgroundColor", "green").css("border", "1px solid #F8B3D0")
+                    .css("height", "25px").css("textAlign", "center").css("padding", "3px 0 0 0");     
+
+                var info = $.createElement("span", "info");
+                $(info).html("剩余时间:<span'>1</span>秒").css("padding", "0 0 0 100px");
+
+                var cancel = $.createElement("span");
+                $(cancel).html("<a href='#'>取 消</a>").css("width", "50px").css("padding", "0 0 0 100px")
+                    .click(function() { pThis.stop(); });
+
+                graph.appendChild(bar);
+                graph.appendChild(info);
+                graph.appendChild(cancel);
+                document.body.appendChild(graph);
+            }
+
+            $(".bar", graph).css("width", this.percent + "%").html(this.percent + "%"); 
+            $(".info span", graph).html(this.estimateTime); 
+        },
+
+        /* 隐藏进度 */
+        hide: function() {
+            $(".progressBar").each(function(i, el) {
+                $.removeNode(el);
+            })
+        },
+
+        /* 同步进度  */
+        sync: function() {
+            var pThis = this;
+            $.ajax({
+                url: this.progressUrl + this.code,
+                method: "GET",
+                async: false,
+                onresult: function() {
+                    var data = this.getNodeValue("ProgressInfo");
+                    pThis.refreshData(data);
+                    pThis.show();
+                    pThis.next();
+                },
+                onexception: function() {
+                    pThis.hide();
+                }
+            });
+        },
+
+        /* 延时进行下一次同步  */
+        next: function() {
+            var pThis = this;
+
+            var percent = parseInt(this.percent);
+            var delay   = parseInt(this.delay) * 1000;
+            if(100 > percent) {
+                this.timeout = setTimeout(function() {
+                    pThis.sync();
+                }, delay);
+            }
+            else if( this.oncomplete ) {
+                setTimeout(function() {
+                    pThis.hide();
+                    pThis.oncomplete();
+                }, 200);
+            }
+        }
+    }
+
+    $.Progress = Progress;
+
+})(tssJS);
+
+
 
 
 /*
@@ -1178,7 +1315,7 @@
         this.type   = "xml"; // "xml or json"
         this.async  = true;
         this.params = {};
-        this.header = {};
+        this.headers = {};
         this.waiting = false;
 
         this.responseText;
@@ -1196,7 +1333,7 @@
 
         /* 设置请求头信息  */
         setHeader: function(name, value) {
-            this.header[name] = value;
+            this.headers[name] = value;
         },
 
         addParam: function(name, value) {
@@ -1372,9 +1509,10 @@
             this.xmlhttp.setRequestHeader("CONTENT-TYPE", "application/octet-stream");
 
             // 设置header里存放的参数到requestHeader中
-            $.each(this.header, function(item, itemValue) {
+            var oThis = this;
+            $.each(this.headers, function(item, itemValue) {
                 try {
-                    this.xmlhttp.setRequestHeader( item, String(itemValue) );
+                    oThis.xmlhttp.setRequestHeader( item, String(itemValue) );
                 } catch (e) { // chrome往header里设置中文会报错
                 }
             });
@@ -1577,10 +1715,10 @@
         if(info.relogin == "1") {
             /* 重新登录前，先清除token cookie，防止在门户iframe登录平台应用（如DMS），而'/tss'目录下的token依旧是过期的，
              * 这样再次点击菜单（需redirect.html跳转的菜单）时还是会要求重新登录。 */
-            Cookie.del("token", "");
-            Cookie.del("token", "/");
-            Cookie.del("token", "/" + FROMEWORK_CODE.toLowerCase());
-            Cookie.del("token", "/" + CONTEXTPATH);
+            $.Cookie.del("token", "");
+            $.Cookie.del("token", "/");
+            $.Cookie.del("token", "/" + FROMEWORK_CODE.toLowerCase());
+            $.Cookie.del("token", "/" + CONTEXTPATH);
             
             popupMessage(info.msg);
             relogin(request);
@@ -1600,11 +1738,11 @@
             if(reloginBox == null) {
                 var boxHtml = [];
                 boxHtml[boxHtml.length] = "<h1>重新登录</h1>";
-                boxHtml[boxHtml.length] = "<span> 用户名：<input type='text' id='loginName' placeholder='请输入您的账号'/> </span>";
+                boxHtml[boxHtml.length] = "<span> 账&nbsp; 号：<input type='text' id='loginName' placeholder='请输入您的账号'/> </span>";
                 boxHtml[boxHtml.length] = "<span> 密&nbsp; 码：<input type='password' id='password' placeholder='请输入您的密码' /> </span>";
                 boxHtml[boxHtml.length] = "<span class='bottonBox'>";
-                boxHtml[boxHtml.length] = "  <input type='button' class='btLogin' id='bt_login' value='确 定'/>&nbsp;&nbsp;";
-                boxHtml[boxHtml.length] = "  <input type='button' id='bt_cancel' value='取 消'/>";
+                boxHtml[boxHtml.length] = "  <input type='button' id='bt_login'  class='btStrong' value='确 定'/>&nbsp;&nbsp;";
+                boxHtml[boxHtml.length] = "  <input type='button' id='bt_cancel' class='btWeak' value='取 消'/>";
                 boxHtml[boxHtml.length] = "</span>";
 
                 reloginBox = $.createElement("div", "popupBox");    
@@ -1612,10 +1750,14 @@
                 reloginBox.innerHTML = boxHtml.join("");
 
                 document.body.appendChild(reloginBox);
+
+                $("#bt_cancel").click(function() {
+                    reloginBox.style.display = "none";
+                });
             }
 
-            // 显示登录框
-            reloginBox.style.display = "block";
+            $(reloginBox).show(); // 显示登录框
+
             var loginNameObj = $("#loginName")[0];
             var passwordObj  = $("#password")[0];
             loginNameObj.focus();
@@ -1629,10 +1771,10 @@
                     delete loginNameObj.identifier;
                 }
                 
-                Ajax({
+                $.ajax({
                     url: "/" + CONTEXTPATH + "getLoginInfo.in",
-                    headers:  {"appCode": FROMEWORK_CODE || 'TSS'},
-                    contents: {"loginName": value},
+                    headers:{"appCode": FROMEWORK_CODE || 'TSS'},
+                    params: {"loginName": value},
                     onexcption: function() {
                         loginNameObj.focus();
                     },
@@ -1643,25 +1785,21 @@
                 });
             }
 
-            $("#bt_cancel").click(function() {
-                reloginBox.style.display = "none";
-            });
-
-            $("#bt_login").click(doLogin);
-
-            $.Event.addEvent(document, "keydown", function(eventObj) {
-                if(13 == eventObj.keyCode) { // enter
+            $.Event.addEvent(document, "keydown", function(ev) {
+                if(13 == ev.keyCode) { // enter
                     $.Event.cancel(event);
                     $("#bt_login").focus();
 
                     setTimeout(doLogin, 10);
                 }
             });
+
+            $("#bt_login").click( function() { doLogin(); } );
             
             var doLogin = function() {
-                var loginName = loginNameObj.value;
-                var password  = passwordObj.value;
                 var identifier = loginNameObj.identifier;
+                var loginName  = loginNameObj.value;
+                var password   = passwordObj.value;
                 
                 if( "" == loginName ) {
                     popupMessage("请输入账号");
@@ -1682,8 +1820,7 @@
                 request.setHeader("password",  password);
                 request.setHeader("identifier", identifier);
                 request.send();
-
-                reloginBox.style.display = "none";
+                $(reloginBox).hide();
             }
         }
     }   
@@ -1726,14 +1863,14 @@
  
         /* 生成气球型提示界面 */
         Balloon = function (content) {
-            this.object = $.createElement("div", _STYLE_BALLOON);
+            this.el = $.createElement("div", _STYLE_BALLOON);
 
             var html = "<table>";
             html += "   <tr><td></td></tr>";
             html += "   <tr><td class='content'><div>" + content + "</div></td></tr>";        
             html += "   <tr><td></td></tr>";
             html += "</table>";
-            this.object.innerHTML = html;
+            this.el.innerHTML = html;
 
             // 绑定事件，鼠标按下后气球消失
             $.Event.addEvent(document, "mousedown", dispose);
@@ -1766,13 +1903,13 @@
                     y -= _SIZE_BALLOON_CONTENT_HEIGHT + _SIZE_BALLOON_ARROW_HEIGHT;            
                 }
 
-                $(this.object).css("zIndex", NEXT_ZINDEX++).css("left", x + "px").css("top", y + "px");
+                $(this.el).css("zIndex", NEXT_ZINDEX++).css("left", x + "px").css("top", y + "px");
 
                 /* 添加气球箭头  */
                 var arrow = $.createElement("div", "arrow_" + type);
                 $(arrow).css("width", "30px").css("height", "15px") ;
 
-                var td = $("tr", this.object)[ (type <= 2) ? 2 : 0].childNodes[0];
+                var td = $("tr", this.el)[ (type <= 2) ? 2 : 0].childNodes[0];
                 td.appendChild(arrow);
                 if(type == 1 || type == 3) {
                     td.insertBefore(arrow, td.firstChild);
@@ -1784,7 +1921,7 @@
                 clearTimeout(timeout);
                 timeout = setTimeout( dispose, delay || 3000);
 
-                document.body.appendChild(this.object);
+                document.body.appendChild(this.el);
             }
         };
     
@@ -1849,14 +1986,14 @@
         this.parentMenuItem; //submenu所属的菜单项
 
         this.id = $.getUniqueID(_UNIQUE_ID_MENU_PREFIX);
-        this.object = $.createElement("div", CSS_CLASS_MENU);
-        this.object.id = this.id;
+        this.el = $.createElement("div", CSS_CLASS_MENU);
+        this.el.id = this.id;
 
         this.isActive = false;
         this.setVisible(false);
         
         // 绑定事件
-        this.object.onselectstart = _Menu_onSelectStart;
+        this.el.onselectstart = _Menu_onSelectStart;
         $.Event.addEvent(document, "mousedown", _Menu_Document_onMouseDown);
         $.Event.addEvent(window, "resize", _Menu_Window_onResize);
         
@@ -1873,13 +2010,13 @@
         attachTo: function(srcElement, eventName) {
             this.srcElement = srcElement;
             
-            var thisObj = this;
-            $.Event.addEvent(srcElement, eventName, function(eventObj) {
-                $.Event.cancel(eventObj);
+            var oThis = this;
+            $.Event.addEvent(srcElement, eventName, function(ev) {
+                $.Event.cancel(ev);
 
-                var x = eventObj.clientX + document.body.scrollLeft;
-                var y = eventObj.clientY + document.body.scrollTop;
-                thisObj.show(x, y);
+                var x = ev.clientX + document.body.scrollLeft;
+                var y = ev.clientY + document.body.scrollTop;
+                oThis.show(x, y);
             });
         },
 
@@ -1899,10 +2036,14 @@
             this.active();
 
             if( $("#" + this.id).length == 0 ) {
-                document.body.appendChild(this.object);
+                document.body.appendChild(this.el);
             }
 
-            this.object.style.zIndex = Menus.menuZIndex++;
+            this.el.style.zIndex = Menus.menuZIndex++;
+
+            if(y + this.el.offsetHeight > document.body.offsetHeight) {
+                y = document.body.offsetHeight - this.el.offsetHeight;
+            }
 
             this.moveTo(x, y);
             this.setVisible(true);
@@ -1915,8 +2056,8 @@
         },
 
         moveTo: function(x, y) {
-            this.object.style.left = x + "px";
-            this.object.style.top  = y + "px";
+            this.el.style.left = x + "px";
+            this.el.style.top  = y + "px";
         },
 
         /* 激活当前菜单 */
@@ -1956,7 +2097,7 @@
          *  参数：  boolean:visible     菜单是否可见
          */
         setVisible: function(visible) {
-            this.object.style.visibility = visible ? "visible" : "hidden";
+            this.el.style.visibility = visible ? "visible" : "hidden";
         },
 
         /*
@@ -1966,7 +2107,7 @@
          */
         addItem: function(menuItem) {
             var menuItem = new MenuItem(menuItem);
-            menuItem.dockTo(this.object);
+            menuItem.dockTo(this.el);
 
             this.items[menuItem.id] = menuItem;
             return menuItem.id;
@@ -1986,7 +2127,7 @@
             var separator = document.createElement("div");
             separator.className = CSS_CLASS_MENU_SEPARATOR;
 
-            this.object.appendChild(separator);
+            this.el.appendChild(separator);
         },
 
         /* 释放实例 */
@@ -1994,7 +2135,7 @@
             for(var item in this.items) {
                 this.delItem(item);
             }
-            $.removeNode(this.object);
+            $.removeNode(this.el);
 
             for(var item in this) {
                 delete this[item];
@@ -2012,49 +2153,49 @@
 
         this.id = $.getUniqueID(_UNIQUE_ID_ITEM_PREFIX);
 
-        this.object = document.createElement("div");
-        this.object.id = this.id;
-        this.object.noWrap = true;
-        this.object.title = this.label;
-        this.object.innerHTML = this.bold ? ("<b>" + this.label + "</b>") : this.label;
+        this.el = document.createElement("div");
+        this.el.id = this.id;
+        this.el.noWrap = true;
+        this.el.title = this.label;
+        this.el.innerHTML = this.bold ? ("<b>" + this.label + "</b>") : this.label;
 
         if(this.icon && "" != this.icon) {
             var img = $.createElement("img");
             img.src = this.icon;
-            this.object.appendChild(img);
+            this.el.appendChild(img);
         }
         if(this.submenu) {
             var img = $.createElement("div", "hasChild");
-            this.object.appendChild(img);
+            this.el.appendChild(img);
             
             this.submenu.parentMenuItem = this;
         }
         
-        this.object.onmouseover   = _Menu_Item_onMouseOver;
-        this.object.onmouseout    = _Menu_Item_onMouseOut;
-        this.object.onmousedown   = _Menu_Item_onMouseDown;
-        this.object.onclick       = _Menu_Item_onClick;
-        this.object.oncontextmenu = _Menu_Item_onContextMenu;
+        this.el.onmouseover   = _Menu_Item_onMouseOver;
+        this.el.onmouseout    = _Menu_Item_onMouseOut;
+        this.el.onmousedown   = _Menu_Item_onMouseDown;
+        this.el.onclick       = _Menu_Item_onClick;
+        this.el.oncontextmenu = _Menu_Item_onContextMenu;
     };
 
     MenuItem.prototype = {
 
         /* 将菜单项插入指定容器  */
         dockTo: function(container) {
-            container.appendChild(this.object);
+            container.appendChild(this.el);
         },
 
         /* 高亮菜单项 */
         active: function() {
             if( !!this.isEnable ) {
-                this.object.className = CSS_CLASS_MENU_ITEM_ACITVE;
+                this.el.className = CSS_CLASS_MENU_ITEM_ACITVE;
             }
         },
 
         /* 低亮菜单项 */
         inactive: function() {
             if( !!this.isEnable ) {
-                this.object.className = "";
+                this.el.className = "";
             }
             if( this.submenu ) {
                 this.submenu.inactiveAllItems();
@@ -2064,13 +2205,13 @@
 
         setVisible: function(visible) {
             this.isVisible = !!visible;
-            this.object.style.display = this.isVisible ? "block" : "none";
+            this.el.style.display = this.isVisible ? "block" : "none";
         },
 
         /* 设置菜单项是否可用 */
         setEnable: function(enable) {
             this.isEnable = !!enable;
-            this.object.className = this.isEnable ? "" : "disable";
+            this.el.className = this.isEnable ? "" : "disable";
         },
 
         /* 刷新菜单项状态 */
@@ -2099,15 +2240,15 @@
         /* 显示子菜单 */
         showSubMenu: function() {
             if( this.submenu ) {
-                var position = $.absPosition(this.object);
-                var x = position.left + this.object.offsetWidth;
+                var position = $.absPosition(this.el);
+                var x = position.left + this.el.offsetWidth;
                 var y = position.top;
                 this.submenu.show(x, y);
             }
         },
 
         dispose: function() {
-            $.removeNode(this.object);
+            $.removeNode(this.el);
 
             for(var propertyName in this) {
                 delete this[propertyName];
@@ -2115,22 +2256,22 @@
         }
     };
 
-    var _Menu_Document_onMouseDown = function(eventObj) {
+    var _Menu_Document_onMouseDown = function(ev) {
         Menus.hideAllMenus();
     }, 
 
-    _Menu_Window_onResize = function(eventObj) {
+    _Menu_Window_onResize = function(ev) {
         Menus.hideAllMenus();
     },
 
-    _Menu_Item_onMouseDown = function(eventObj) {
-        eventObj = eventObj || window.event;
-        $.Event.cancelBubble(eventObj);
+    _Menu_Item_onMouseDown = function(ev) {
+        ev = ev || window.event;
+        $.Event.cancelBubble(ev);
     },
 
     // 高亮菜单项
-    _Menu_Item_onMouseOver = function(eventObj) {
-        eventObj = eventObj || window.event;
+    _Menu_Item_onMouseOver = function(ev) {
+        ev = ev || window.event;
 
         var id = this.id;
         var menu = Menus.getMenuByItemID(id);
@@ -2143,7 +2284,7 @@
     },
 
     // 低亮菜单项
-    _Menu_Item_onMouseOut = function(eventObj) {
+    _Menu_Item_onMouseOut = function(ev) {
         var id = this.id;
         var menu = Menus.getMenuByItemID(id);
         if(menu) {
@@ -2155,8 +2296,8 @@
     },
 
     // 执行菜单项回调方法
-    _Menu_Item_onClick = function(eventObj) {
-        eventObj = eventObj || window.event;
+    _Menu_Item_onClick = function(ev) {
+        ev = ev || window.event;
 
         var id = this.id;
         var menu = Menus.getMenuByItemID(id);
@@ -2166,7 +2307,7 @@
                 if(menuItem.callback) {
                     Menus.hideAllMenus();
                 }
-                menuItem.execCallBack(eventObj);
+                menuItem.execCallBack(ev);
 
                 if(null == menuItem.submenu) {
                     Menus.inactiveAllMenus();
@@ -2177,15 +2318,15 @@
     },
 
     /* 鼠标右键点击 */
-    _Menu_Item_onContextMenu = function(eventObj) {
-        eventObj = eventObj || window.event;
-        $.Event.cancel(eventObj);
+    _Menu_Item_onContextMenu = function(ev) {
+        ev = ev || window.event;
+        $.Event.cancel(ev);
     },
 
     /* 鼠标拖动选择文本 */
-    _Menu_onSelectStart = function(eventObj) {
-        eventObj = eventObj || window.event;
-        $.Event.cancel(eventObj);
+    _Menu_onSelectStart = function(ev) {
+        ev = ev || window.event;
+        $.Event.cancel(ev);
     };
 
     return Menu;
@@ -3249,9 +3390,9 @@
             }
 
             var eventOndatachange = new $.EventFirer(this, "ondatachange");
-            var eventObj = $.Event.createEventObject();
-            eventObj.id = this.id + "_" + name;
-            eventOndatachange.fire(eventObj);  // 触发事件
+            var ev = $.Event.createEventObject();
+            ev.id = this.id + "_" + name;
+            eventOndatachange.fire(ev);  // 触发事件
         },
 
         // 将界面数据更新到Form模板的data/row/里
@@ -3444,8 +3585,8 @@
         var selectedValues = this.value2List(this.el._value);
         var selectedIndex = [];
 
-        var valueList = this.el.getAttribute("editorvalue").split('|');
-        var textList  = this.el.getAttribute("editortext").split('|');
+        var valueList = (this.el.getAttribute("editorvalue") || "").split('|');
+        var textList  = (this.el.getAttribute("editortext")  || "").split('|');
         for(var i=0; i < valueList.length; i++) {
             var value = valueList[i];
             this.el.options[i] = new Option(textList[i], value);
@@ -3605,7 +3746,7 @@
         }
     },
 
-    bindAdjustTHHandler = function(table) {
+    bindAdjustTHHandler = function(table) { 
 
         $("thead tr td", table).each(function(i, th) {
             // 双击隐藏列
@@ -3644,7 +3785,7 @@
         });
     },
 
-    bindSortHandler = function(table) {
+    bindSortHandler = function(table) { 
         var rows = [];
         var tbody = $("tbody", table)[0];
         $("tr", tbody).each( function(i, row) {
@@ -3757,7 +3898,8 @@
                 var columnsMap = oThis.columnsMap;
                 for(var name in columnsMap) {
                     var value  = row.getAttribute(name) || "";
-                    tbody.push('<td name="' + name + '" value="' + value + '">' + value + '</td>');
+                    var _class = columnsMap[name].getAttribute("display")  == "none" ? ' class="hidden"' : '';
+                    tbody.push('<td name="' + name + '" value="' + value + '" ' + _class + '>' + value + '</td>');
                 }
 
                 tbody.push("</tr>");
@@ -3792,7 +3934,7 @@
         
         this.windowHeight = pointHeight;
         this.pageSize = Math.floor(this.windowHeight / cellHeight);
-        
+  
         this.load(data);    
 
         // 添加Grid事件处理
@@ -3810,7 +3952,7 @@
 
             this.template = new XMLTempalte(data);  
             var gridTableHtml = this.template.toHTML(startNum); // 解析成Html
-            
+          
             if(append) {
                 var tempParent = $.createElement("div");
                 $(tempParent).html(gridTableHtml);
@@ -3824,13 +3966,13 @@
                 $(this.gridBox).html(gridTableHtml);
                 this.tbody = $("tbody", this.gridBox)[0];
             }
-            
+          
             var table  = $("table", this.gridBox)[0];
             this.totalRowsNum = this.tbody.rows.length;
             for(var i = startNum; i < this.totalRowsNum; i++) {
                 this.processDataRow(this.tbody.rows[i]); // 表格行TR
             }
-            
+           
             bindAdjustTHHandler(table);
             bindSortHandler(table);
         }, 
@@ -3873,15 +4015,12 @@
                 return;
             } 
 
-            if(column.getAttribute("display") == "none") {
-                $(cell).addClass("hidden");
-            } 
-            else if(column.getAttribute("highlight") == "true") {
+            if(column.getAttribute("highlight") == "true") {
                 $(cell).addClass("highlightCol");
             }
             $(cell).css("text-align", getAlign(column));
 
-            var value = cell.getAttribute("value") || cell.innerText;
+            var value = cell.getAttribute("value") ;
             var mode  = column.getAttribute("mode") || "string";
             switch( mode ) {
                 case "string":
@@ -4215,6 +4354,7 @@
         var request = new $.HttpRequest();
         request.url = serviceUrl + "/" + page;
         request.params = requestParam || [];
+        request.waiting = true;
 
         request.onresult = function() {
             var gridBox = $1(gridName);
@@ -4236,7 +4376,7 @@
             var pageInfoNode = this.getNodeValue("PageInfo");            
             $.initGridToolBar(pageBar, pageInfoNode, gotoPage);
             
-            gridBox.onDblClickRow = function(eventObj) {
+            gridBox.onDblClickRow = function(ev) {
                 editRowFuction();
             }
             gridBox.onRightClickRow = function() {
@@ -4288,6 +4428,8 @@
 
     $.T = function(id, data) {
         var tree = TreeCache[id];
+        if( tree == null && data == null ) return tree;
+
         if( tree == null || data ) {
             tree = new $.Tree($1(id), data);
             TreeCache[id] = tree;   
@@ -4305,8 +4447,8 @@
         _TREE_TYPE_SINGLE = "single",
         _TREE_TYPE_MULTI  = "multi",
 
-        _TREE_NODE_MOVEABLE = "moveable",    // 是否可以移动树节点，默认false
-        _TREE_NODE_CHECK_SELF = "justSelf",  // 选中节点时只改变自己的选择状态，与父、子节点无关
+        _TREE_NODE_MOVEABLE = "moveable",      // 是否可以移动树节点，默认false
+        _TREE_NODE_CHECK_SELF = "selectSelf",  // 选中节点时只改变自己的选择状态，与父、子节点无关
 
     Tree = function(el, data) {
         /*  自定义事件 */
@@ -4345,7 +4487,7 @@
 
         // 定义Tree私有方法
         var tThis = this;
-        var loadXML = function(node, parent) {
+        var loadXML = function(node) {
             var xmlNodes = node.querySelectorAll("treeNode");
             var parents = {};
             $.each(xmlNodes, function(i, xmlNode) {
@@ -4488,6 +4630,7 @@
                 this.parent.children.push(this);
             } else {
                 this.level = 1;
+                this.opened = true; // 默认打开第一层
             }               
 
             this.toHTMLTree = function() {
@@ -4766,11 +4909,12 @@
          *          to      目标节点TreeNode对象
          */
         moveTreeNode: function(from, to) {
-            var temp = to;
-            while(temp == to.parent) {
-                if(temp == from) {
+            var parent = to;
+            while(parent) {
+                if(parent == from) {
                     return alert("不能向自己的内部节点移动。"); // 不能移动到子节点里
                 }
+                parent = to.parent;
             }
 
             this.removeTreeNode(from); // 将from从其原parent.children里剔除
@@ -4936,7 +5080,7 @@
  
     /*******  Page: 管理单个子页面的显示、隐藏等控制 *********/
     Page = function (obj) { 
-        this.object = obj;
+        this.el = obj;
         this.id = obj.id;       
         this.hide(); 
     };
@@ -4944,15 +5088,15 @@
     Page.prototype = {
         /* Page隐藏  */
         hide: function() {
-            this.object.style.display = "none"; 
+            this.el.style.display = "none"; 
             this.isActive = false;
         },
 
         /* Page显示 */
         show: function() {
-            this.object.style.display = "block";
-            this.object.scrollTop  = 0;
-            this.object.scrollLeft = 0;
+            this.el.style.display = "block";
+            this.el.scrollTop  = 0;
+            this.el.scrollLeft = 0;
             this.isActive = true;
         }
     };
@@ -4968,24 +5112,24 @@
         this.phases = {};
         this.phasesParams = phasesParams;  
         
-        this.object = $.createNSElement(WS_TAG_TAB, WS_NAMESPACE);
-        this.id = this.object.uniqueID;
+        this.el = $.createNSElement(WS_TAG_TAB, WS_NAMESPACE);
+        this.id = this.el.uniqueID;
          
         var closeIcon = $.createNSElement(WS_TAG_ICON, WS_NAMESPACE);
         closeIcon.title = "关闭";     
-        this.object.appendChild(closeIcon);
+        this.el.appendChild(closeIcon);
         
         var div = $.createElement("div");
         div.title = div.innerText = label;
         div.noWrap = true; // 不换行
-        this.object.appendChild(div);
+        this.el.appendChild(div);
         
         var oThis = this;
-        closeIcon.onclick = this.object.ondblclick = function() {
+        closeIcon.onclick = this.el.ondblclick = function() {
             oThis.close();
         };  
-        this.object.onclick = function() {
-            if (!oThis.isActive && oThis.object) {
+        this.el.onclick = function() {
+            if (!oThis.isActive && oThis.el) {
                 oThis.click();
             }       
         };  
@@ -5006,9 +5150,9 @@
 
             delete this.ws.tabs[this.id];
 
-            $.removeNode(this.object);
+            $.removeNode(this.el);
 
-            this.object = this.id = this.link = null;
+            this.el = this.id = this.link = null;
             this.phases = {};
             this.phasesParams = null;
 
@@ -5049,13 +5193,13 @@
 
         /* 高亮标签 */
         active: function() {
-            $(this.object).addClass(CSS_CLASS_TAB_ACTIVE);
+            $(this.el).addClass(CSS_CLASS_TAB_ACTIVE);
             this.isActive = true;
         },
 
         /* 低亮标签  */
         inactive: function() {
-            $(this.object).removeClass(CSS_CLASS_TAB_ACTIVE);
+            $(this.el).removeClass(CSS_CLASS_TAB_ACTIVE);
             this.isActive = false;
         },
 
@@ -5066,7 +5210,7 @@
 
         /* 将标签插入指定容器 */
         dockTo: function(container) {
-            container.appendChild(this.object);
+            container.appendChild(this.el);
         },
  
         /* 切换到指定Tab页 */
@@ -5181,17 +5325,17 @@
         this.link;
         this.isActive = false;
         
-        this.object = $.createNSElement(WS_TAG_PHASE, WS_NAMESPACE);
-        this.id = this.object.uniqueID;
+        this.el = $.createNSElement(WS_TAG_PHASE, WS_NAMESPACE);
+        this.id = this.el.uniqueID;
         
         var div = $.createElement("div");
         div.title = div.innerText = label;
         div.noWrap = true;
         
-        this.object.appendChild(div);       
+        this.el.appendChild(div);       
         
         var oThis = this;
-        this.object.onclick = function() {
+        this.el.onclick = function() {
             if (!oThis.isActive) {
                 oThis.click();
             }       
@@ -5206,15 +5350,15 @@
 
         /* 将标签插入指定容器 */
         dockTo: function(container) {
-            container.appendChild(this.object);
+            container.appendChild(this.el);
         },
 
         /* 释放纵向标签实例 */
         dispose: function() {
             var curActiveTab = this.ws.getActiveTab();
             delete curActiveTab.phases[this.id];
-            $.removeNode(this.object);
-            this.object = this.id = this.link = null;
+            $.removeNode(this.el);
+            this.el = this.id = this.link = null;
         },
 
         /* 点击标签  */
@@ -5241,8 +5385,8 @@
 
         /* 将控制标签显示在可见区域内 */
         scrollToView: function() {
-            var tempTop = this.object.offsetTop;
-            var tempBottom = this.object.offsetTop + this.object.offsetHeight;
+            var tempTop = this.el.offsetTop;
+            var tempBottom = this.el.offsetTop + this.el.offsetHeight;
             var areaTop = this.ws.phaseBox.scrollTop;
             var areaBottom = areaTop + this.ws.phaseBox.offsetHeight;
             if(tempTop < areaTop) {
@@ -5255,13 +5399,13 @@
 
         /* 高亮纵向标签 */
         active: function() {
-            $(this.object).addClass(CSS_CLASS_PHASE_ACTIVE);
+            $(this.el).addClass(CSS_CLASS_PHASE_ACTIVE);
             this.isActive = true;
         },
 
         /* 低亮纵向标签 */
         inactive: function() {
-            $(this.object).removeClass(CSS_CLASS_PHASE_ACTIVE);
+            $(this.el).removeClass(CSS_CLASS_PHASE_ACTIVE);
             this.isActive = false;
         }
     }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports>
+	<report id="saveAccessLog" name="保存访问日志">
+		<sql index="1"><![CDATA[
+			insert into dm_access_log
+			  (className, methodName, methodCnName, accessTime, runningTime, params, userId, ip)
+			values (?, ?, ?, ?, ?, ?, ?, ?);
+		]]></sql>
+	</report>
+</reports>

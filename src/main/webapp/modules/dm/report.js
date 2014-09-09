@@ -215,7 +215,7 @@ function loadReportDetail(isCreate, readonly, type) {
 
 	$.ajax({
 		url : URL_SOURCE_DETAIL + "/" + type,
-		contents : params,
+		params : params,
 		onresult : function() { 
 			var sourceInfoNode = this.getNodeValue(XML_SOURCE_INFO);
 			$.cache.XmlDatas[treeID] = sourceInfoNode;
@@ -328,8 +328,8 @@ function showReport() {
 	if( displayUri.length > 0 ) {
 		// 如果还配置了参数，则由report页面统一生成查询Form，查询后再打开展示页面里。
 		if(paramConfig.length > 0) {
-			createQueryForm(treeID, paramConfig, function(searchFormXML) {
-				sendAjax(searchFormXML);
+			createQueryForm(treeID, paramConfig, function(dataNode) {
+				sendAjax(dataNode);
 			});
 		}
 		else {
@@ -346,12 +346,12 @@ function showReport() {
 		createQueryForm(treeID, paramConfig); // 生成查询Form
 	}	
 
-	function sendAjax(searchFormXML) {
+	function sendAjax(searchFormDataNode) {
 		var url = getServiceUrl(treeID, displayUri); // 根据服务地址取出数据放在全局变量里
 		$.ajax({
 			url : url,
 			method : "POST",
-			formNode : searchFormXML,
+			formNode : searchFormDataNode,
 			type : "json",
 			waiting : true,
 			ondata : function() { 
@@ -449,11 +449,11 @@ function testRestfulReportService() {
 		sendAjax();
 	}
 
-	function sendAjax(searchFormXML) {
+	function sendAjax(searchFormDataNode) {
 		$.ajax({
 			url : url,
 			method : "POST",
-			formNode : searchFormXML,
+			formNode : searchFormDataNode,
 			type : "json",
 			waiting : true,
 			ondata : function() { 
@@ -495,8 +495,8 @@ function createQueryForm(treeID, paramConfig, callback) {
 			if( searchForm.checkForm() ) {
 				$("#searchFormDiv").hide();
 				var searchFormXML = $.cache.XmlDatas["searchFormXML"];
-
-				callback(searchFormXML); // 在回调函数里读取数据并展示
+				var dataNode = searchFormXML.querySelector("data");
+				callback(dataNode); // 在回调函数里读取数据并展示
 			}
 		} 
 		else {

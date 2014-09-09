@@ -400,7 +400,7 @@
 									process appServers.xml: set tomcat.url to ${tomcat.url};
 								</echo>
 								<replaceregexp
-									file="${basedir}/target/classes/appServers.xml" match="localhost:8088"
+									file="${basedir}/target/classes/tss/appServers.xml" match="localhost:8088"
 									replace="${tomcat.url}" byline="true" />
 							</tasks>
 						</configuration>

@@ -169,7 +169,6 @@ public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDeco
             map.put("displayUri", displayUri);
         }
  
-        super.putOperateInfo2Map(map);
         return map;
     }
 

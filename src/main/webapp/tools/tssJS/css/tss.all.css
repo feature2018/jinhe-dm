@@ -28,7 +28,7 @@ table{border-collapse:collapse;border-spacing:0;}
 	background:url(../images/icon_has_child.gif) no-repeat left top; }
 .menu div.active { background-color:#B6BDD2; cursor: pointer;}
 .menu div.active img { left:1px; top:1px; }
-.menu div.active .hasChild { left:auto; top:0px; right:0px;}
+.menu div.active .hasChild { left:auto; top:3px; right:0px;}
 .menu div.disable { color:#A6A6A6;}
 .menu div.disable img { filter:gray(); opacity:0.4; }
 
@@ -91,7 +91,7 @@ Grid\:Box td { font-size:12px; text-align:center; border-style:solid; border-col
 Grid\:Box thead td { background-color:#E4E6F5; height:25px; width:50px;}
 Grid\:Box tbody td { overflow:hidden; text-overflow:ellipsis; white-space: nowrap; word-break:keep-all; }
 Grid\:Box tbody { background-color:#F7F8FD;	}
-Grid\:Box tbody tr { height:22px; }
+Grid\:Box tbody tr { height:25px; }
 Grid\:Box .highlightCol { background-color:#FFFFCC; }
 Grid\:Box .highlightRow td { background-color:#FEF7A9; }
 Grid\:Box .rolloverRow { background-color:#FEF7A9; }

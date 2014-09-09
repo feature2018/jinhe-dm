@@ -1,17 +1,5 @@
 
-IS_TEST = true;
-
 REQUEST_METHOD = IS_TEST ? "GET" : "POST";
-
-Array.prototype.contains = function(obj) {  
-    var i = this.length;  
-    while (i--) {  
-        if (this[i] === obj) {  
-            return true;  
-        }  
-    }  
-    return false;  
-}  
 
 var COLORS = ["#FFD700", "#90EE90", "#9370DB", "#9ACD32", "#AFEEEE", "#FF6347", "#00BFFF", "#228B22", "gray", "green", "red", "blue", "yellow", "silver", "orange", "olive"];
 
@@ -205,20 +193,8 @@ function $exportCSV(dataUrl, queryParams) {
 			var fileName = this.getResponseText();
 			if (fileName) {
 				var frameName = createExportFrame();
-				window.frames[frameName].location.href = URL_DOWNLOAD + fileName;
+    			$1(frameName).setAttribute("src", URL_DOWNLOAD + fileName);
 			}
 		}
 	});
-}
-
-/* 创建导出用iframe */
-function createExportFrame() {
-	var frameName = "exportFrame";
-	var frameObj = $$(frameName);
-	if( frameObj == null ) {
-		var exportDiv = document.createElement("div"); 
-		exportDiv.innerHTML = "<div><iframe name='" + frameName + "' id='" + frameName + "' src='about:blank' style='display:none'></iframe></div>";
-		document.body.appendChild(exportDiv);
-	}
-	return frameName;
 }
