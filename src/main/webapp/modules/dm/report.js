@@ -271,7 +271,7 @@ function enableReport()  { stopOrStartTreeNode("0", URL_DISABLE_SOURCE); }
  
 function copyReportTo() {
 	var treeNode = getActiveTreeNode();
-	var id = treeNode.id;
+	var id  = treeNode.id;
 	var pId = treeNode.parent.id;
 
     var params = {id:id, parentID: pId};
@@ -279,8 +279,8 @@ function copyReportTo() {
         $.ajax({
             url : URL_COPY_SOURCE + id + "/" + target.id,
             onresult : function() { 
-                var newNode = this.getNodeValue(XML_MAIN_TREE).querySelector("treeNode");
-                tree.addTreeNode(newNode, target)
+                var xmlNode = this.getNodeValue(XML_SOURCE_TREE).querySelector("treeNode");
+                appendTreeNode(target.id, xmlNode);
             }
         });
     });
