@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>dm</display-name>
+	<display-name>dms</display-name>
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -62,5 +62,4 @@
 	<welcome-file-list>
 		<welcome-file>login.html</welcome-file>
 	</welcome-file-list>
-
 </web-app>

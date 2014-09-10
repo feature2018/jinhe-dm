@@ -54,7 +54,7 @@
 	window.onload = function() {
 		if(window.parent.$1("searchFormDiv") && window.parent.$1("btCloseSearchForm")) {
 			$1("researh").onclick = function() {
-				Element.show(window.parent.$1("searchFormDiv"));
+				window.parent.$("#searchFormDiv").css("display", "block").center(500, 500);
 			}
 		}
 		else {

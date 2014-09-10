@@ -1,3 +1,4 @@
+IS_TEST = false;
 
 REQUEST_METHOD = IS_TEST ? "GET" : "POST";
 

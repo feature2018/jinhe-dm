@@ -522,7 +522,7 @@ function getNextLevelOption(nextIndex, serviceID, currParam, currParamValue) {
 	var paramName = dreg.test(currParam) ? "param" + currParam : currParam;
 	
 	// serviceID maybe is ID of report, maybe a serviceUrl
-	var url = dreg.test(serviceID) ? '../display/json/' + serviceID : serviceID;
+	var url = dreg.test(serviceID) ? '../../display/json/' + serviceID : serviceID;
 
 	$.getNextLevelOption($.F("searchForm"), paramName, currParamValue, url, paramElementId);
 }

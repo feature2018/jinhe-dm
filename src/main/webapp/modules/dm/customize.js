@@ -3,7 +3,7 @@ function getSites(companys) {
 	if(companys == null || companys == "") return;
 
 	$.ajax({
-		url : '../display/json/SiteList?param1=' + companys,
+		url : '../../display/json/SiteList?param1=' + companys,
 		method: "GET",
 		type : "json",
 		ondata : function() { 

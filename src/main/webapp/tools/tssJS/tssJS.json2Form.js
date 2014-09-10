@@ -144,11 +144,14 @@
 	// ---------------------------- 多级下拉选择联动 ------------------------------------------------
 	$.getNextLevelOption = function(form, currLevel, currLevelValue, service, nextLevel) {
 		if(currLevel == null || currLevelValue == null || service == null || nextLevel == "") return;
+		
+		var params = {};
+		params[currLevel] = currLevelValue;
  
 		$.ajax({
 			url : service,
 			method: "POST",
-			params : {currLevel: currLevelValue},
+			params : params,
 			type : "json",
 			ondata : function() { 
 				var result = this.getResponseJSON();
