@@ -185,4 +185,6 @@
 		return func1.toString().replace(fn,'$1') === func2.toString().replace(fn,'$1'); 
 	}
 
+	$.createOption = createOption;
+
 }) (tssJS);

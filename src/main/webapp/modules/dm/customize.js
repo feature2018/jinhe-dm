@@ -12,11 +12,11 @@ function getSites(companys) {
 				var sEl = $1("param2");
 				sEl.options.length = 0; // 先清空
 				for(var i = 0; i < result.length; i++) {
-					sEl.options[i] = createOption(result[i]);
+					sEl.options[i] = $.createOption(result[i]);
 				}
 
 				// 设置为默认选中第一个
-				form.updateDataExternal("param2", sEl.options[0].value);
+				$.F("searchForm").updateDataExternal("param2", sEl.options[0].value);
 			}					
 		}
 	});

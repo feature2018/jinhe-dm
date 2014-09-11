@@ -185,7 +185,7 @@ URL_DOWNLOAD = 'download/';
  * 参数2  queryParams 数据服务参数
  */
 function $exportCSV(dataUrl, queryParams) {
-	Ajax({
+	tss.ajax({
 		url: dataUrl,
 		method: 'POST',
 		params: queryParams, 
@@ -198,4 +198,16 @@ function $exportCSV(dataUrl, queryParams) {
 			}
 		}
 	});
+}
+
+/* 创建导出用iframe */
+function createExportFrame() {
+	var frameName = "exportFrame";
+	var frameObj = $$(frameName);
+	if( frameObj == null ) {
+		var exportDiv = document.createElement("div"); 
+		exportDiv.innerHTML = "<div><iframe id='" + frameName + "' src='about:blank' style='display:none'></iframe></div>";
+		document.body.appendChild(exportDiv);
+	}
+	return frameName;
 }

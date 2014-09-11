@@ -127,7 +127,7 @@ function drawColumn2D(canvasName, data, title, width, height) {
 	}).draw();
 }
 
-function drawBar2D(canvasName, data, title, width, height) {
+function drawBar2D(canvasName, data, title, width, height, onclickfn) {
 	new iChart.Bar2D({
 		render : canvasName,
 		data: data,
@@ -135,8 +135,8 @@ function drawBar2D(canvasName, data, title, width, height) {
 		width : width,
 		height : height,
 		coordinate:{
-			width : autoSize[0] * 0.8,
-			height : autoSize[1] * 0.8,
+			width : width * 0.6,
+			height : height * 0.8,
 			axis:{
 				width:[0,0,1,1]
 			},
@@ -159,7 +159,8 @@ function drawBar2D(canvasName, data, title, width, height) {
 			listeners:{
 				parseText:function(r,t){
 					return t;
-				}
+				},
+				click : onclickfn || function(){}
 			}
 		} 
 	}).draw();
@@ -205,6 +206,7 @@ function drawLine2D(canvasName, _data, labels, max, min, title, width, height) {
 				},
 				coordinate:{
 					height:'95%',
+                                        width:'100%',
 					axis:{
 						color:'#9f9f9f',
 						width:[0,0,2,2]
@@ -245,7 +247,7 @@ function drawPie2D(canvasName, data, title, width, height) {
 	}).draw();
 }
 
-function drawPie3D(canvasName, data, title, width, height) {  
+function drawPie3D(canvasName, data, title, width, height, onclick) {  
 	var chart = new iChart.Pie3D({
 		render : canvasName,
 		title:{
@@ -279,7 +281,7 @@ function drawPie3D(canvasName, data, title, width, height) {
 		gradient:true,
 		color_factor:0.28,
 		gradient_mode:'RadialGradientOutIn',
-		showpercent:true,
+		showpercent:false,
 		decimalsnum:2,
 		legend:{
 			enable:true,
@@ -309,6 +311,9 @@ function drawPie3D(canvasName, data, title, width, height) {
 				fontsize:11,
 				fontweight:600,
 				color : '#444444'
+			},
+			listeners : {
+				click : onclick
 			}
 		},
 		border:{

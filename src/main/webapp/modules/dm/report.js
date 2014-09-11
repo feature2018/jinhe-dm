@@ -375,7 +375,7 @@ function searchReport(treeID, download) {
 	if(download) {
 		var queryString = "?";
 		if( searchFormXML ) {
-			var nodes = searchFormXML.querySelectorAll("data row");
+			var nodes = searchFormXML.querySelectorAll("data row *");
 			$.each(nodes, function(i, node) {
 				queryString +=  node.nodeName + "=" + $.XML.getText(node);
 				if( queryString.length > 1 ) {
@@ -383,7 +383,7 @@ function searchReport(treeID, download) {
 				}
 			});
 		}
-		$("#downloadFrame").setAttribute("src", URL_REPORT_EXPORT + treeID + "/1/0" + queryString);
+		$1("downloadFrame").setAttribute("src", URL_REPORT_EXPORT + treeID + "/1/0" + queryString);
 		return;
 	}
  

@@ -9,5 +9,7 @@ UPDATE dm_report t SET t.param = REPLACE( t.param, '../display/json/', '../../di
 UPDATE dm_report t SET t.param = REPLACE( t.param, '../service/', '../../service/');
 -- SELECT t.`param` FROM dm_report t WHERE t.param  LIKE '%jsonUrl%';
 
+UPDATE dm_report t SET t.displayUri = REPLACE( t.`displayUri`, '../common/ichart.html', 'ichart.html');
+
 
 UPDATE um_user t SET t.`authMethod` = 'com.jinhe.tss.um.sso.UMPasswordIdentifier';

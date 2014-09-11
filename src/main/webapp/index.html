@@ -34,7 +34,7 @@
 <!--
     
     FROMEWORK_CODE = "TSS";
-    APP_CODE    = "TSS";
+    APP_CODE    = "DMS";
     APPLICATION = APP_CODE.toLowerCase();
     CONTEXTPATH = APPLICATION + "/";
     
@@ -43,7 +43,7 @@
         $.ajax({
             url : "auth/user/operatorInfo",
             method : "POST",
-            headers: {"appCode": APP_CODE},
+            headers: {"appCode": FROMEWORK_CODE},
             params : {"anonymous": "true"}, 
             onresult : function() {
                 var userName = this.getNodeValue("name");
