@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <servers>
-	<server code="TSS" userDepositoryCode="tss" name="TSS" sessionIdName="JSESSIONID" baseURL="http://localhost:8088/tss"/>
-	<server code="DMS" userDepositoryCode="tss" name="DMS" sessionIdName="JSESSIONID" baseURL="http://localhost:8088/dms"/>
+	<server code="TSS" framework="tss" name="TSS" sessionIdName="JSESSIONID" baseURL="http://localhost:8088/tss"/>
+	<server code="DMS" framework="tss" name="DMS" sessionIdName="JSESSIONID" baseURL="http://localhost:8088/dms"/>
 </servers>

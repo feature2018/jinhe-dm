@@ -14,8 +14,8 @@
 <style>
 
 /* 顶部 */
-.top { height: 41px; background-image: url(images/panel/blue_top.gif); }
-.top .logo { width: 571px; height: 41px; background-image: url(images/panel/title.jpg); }
+.top { height: 41px; background-image: url(images/panel/blue_top.jpg); }
+.top .logo { width: 571px; height: 41px; background-image: url(images/panel/logo.jpg); }
 
 .menu { margin:1px 0px; position:absolute; top:10px; right:3px; font-size:11px; } 
 .menu ul { list-style-type: none; } 
@@ -80,6 +80,12 @@
             $1("iframeSrc").setAttribute("src", ahref);
         }
     }
+
+    function sso2otherApp(ahref) {
+        var token = $.Cookie.getValue("token");
+        var url = "http://localhost:8088/tss/redirect.html?url=" + ahref + "&token=" + token;
+        $1("iframeSrc").setAttribute("src", url);
+    }
 //-->
 </script>
 </head>
@@ -90,8 +96,14 @@
     <div class="logo"></div>
     <div class="menu"> 
         <ul> 
-            <li><a href="#" onclick="window.open('modules/um/_userInfo.htm','','width=700,height=220');">【<span id="userInfo">个人信息</span>】</a></li>
-            <li><a href="#" onclick="window.open('modules/um/_password.htm','','width=400,height=200');">修改密码</a></li>
+            <li><a href="#">回到首页</a></li> 
+            <li><a href="#" onclick="turn2IFrame('modules/dm/report.html')">数据报表</a></li> 
+            <li><a href="#">用户权限</a>    
+                <ul> 
+                    <li><a href="#" onclick="sso2otherApp('modules/um/group.html')">用户组织</a> </li> 
+                    <li><a href="#" onclick="sso2otherApp('modules/um/role.html')">角色权限</a> </li> 
+                </ul> 
+            </li> 
             <li><a href="#">系统辅助</a>    
                 <ul> 
                     <li><a href="#" onclick="turn2IFrame('modules/_log/log.htm')">日志查询</a> </li> 
@@ -99,7 +111,8 @@
                     <li><a href="#" onclick="turn2IFrame('modules/_cache/cache.htm')">缓存管理</a> </li> 
                 </ul> 
             </li> 
-            <li><a href="#" onclick="turn2IFrame('modules/dm/report.html')">数据报表</a></li> 
+            <li><a href="#" onclick="turn2IFrame('modules/um/_password.htm');">修改密码</a></li>
+            <li><a href="#" onclick="turn2IFrame('modules/um/_userInfo.htm');">【<span id="userInfo">个人信息</span>】</a></li>
             <li><a href="#" onclick="logout()"> 注销 </a></li> 
         </ul>  
     </div> 

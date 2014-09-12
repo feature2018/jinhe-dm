@@ -313,7 +313,7 @@ function drawPie3D(canvasName, data, title, width, height, onclick) {
 				color : '#444444'
 			},
 			listeners : {
-				click : onclick
+				click : onclick || function(){}
 			}
 		},
 		border:{
