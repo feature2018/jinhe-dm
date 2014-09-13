@@ -515,6 +515,13 @@
             return this;
         },
 
+        title: function(str) {
+            for (var i = 0; i < this.length; i++) {
+                this[i].title = str;
+            }
+            return this;
+        },
+
         // 设置鼠标移入移出方法
         hover: function(over, out) {
             for (var i = 0; i < this.length; i++) {
@@ -538,9 +545,16 @@
         },
 
         //设置显示
-        show: function() {
+        show: function(block) {
             for (var i = 0; i < this.length; i++) {
-                this[i].style.display = '';
+                this[i].style.display = block ? 'block' : '';
+            }
+            return this;
+        },
+
+        focus: function() {
+            if ( this.length > 0 ) {
+                this[0].focus();
             }
             return this;
         },
@@ -555,12 +569,16 @@
 
         // 设置物体居中
         center: function(width, height) {
-            var top  = ($.getInner().height - (height || 100) ) / 2;
             var left = ($.getInner().width - (width || 100) ) / 2;
+            var top  = ($.getInner().height - (height || 100) ) / 2;
+            return this.position(left, top);
+        },
+
+        position: function(left, top) {
             for (var i = 0; i < this.length; i++) {
                 this[i].style.position = "absolute";
-                this[i].style.top  = top + 'px';
                 this[i].style.left = left + 'px';
+                this[i].style.top  = top + 'px';
             }
             return this;
         },
@@ -671,38 +689,6 @@
             }
         },
 
-        /*
-         * where：插入位置。包括afterBegin,afterEnd。
-         * el：用于参照插入位置的html元素对象
-         * html：要插入的html代码
-         */
-        insertHtml: function(where, el, html) {
-            where = where.toLowerCase();
-            if(el.insertAdjacentHTML) {
-                el.insertAdjacentHTML(where, html);
-                return;
-            }
-
-            var range = el.ownerDocument.createRange();
-            var frag;
-            switch(where){
-                 case "afterbegin":
-                    if(el.firstChild){
-                        range.setStartBefore(el.firstChild);
-                        frag = range.createContextualFragment(html);
-                        el.insertBefore(frag, el.firstChild); 
-                     } else {
-                        el.innerHTML = html;
-                     }
-                    break;
-                case "afterend":
-                    range.setStartAfter(el);
-                    frag = range.createContextualFragment(html);
-                    el.parentNode.insertBefore(frag, el.nextSibling);
-                    break;
-            }
-        },
-
         /* 动态创建脚本 */
         createScript: function(script) {
             var head = document.head || document.getElementsByTagName('head')[0];
@@ -719,14 +705,8 @@
                 opacity = 100;
             }
 
-            if(window.DOMParser) {
-                if(obj.style) {
-                    obj.style.opacity = opacity / 100;
-                }
-            }
-            else {
-                obj.style.filter = "alpha(opacity=" + opacity + ")";
-            }
+            obj.style.opacity = opacity / 100;
+            obj.style.filter = "alpha(opacity=" + opacity + ")";
         },
 
         waitingLayerCount: 0,
@@ -894,7 +874,7 @@
 
             /* 取消事件 */
             cancel: function(ev) { 
-                ev = ev || event;
+                ev = ev || window.event;
                 if (ev.preventDefault) {
                     ev.preventDefault();
                 } else {
@@ -945,16 +925,16 @@
     $.extend({
 
         EventFirer: function(obj, eventName) {
-            this.fire = function (event) {
+            this.fire = function (ev) {
                 var func = obj[eventName];
                 if( func ) {
                     var funcType = typeof(func);
                     if("string" == funcType) {
-                        return eval(func);
+                        return eval(func + "(ev)");
                     }
                     else if ("function" == funcType) {
-                        if(event) event._source = obj;
-                        return func(event);
+                        if(ev) ev._source = obj;
+                        return func(ev);
                     }
                 }
             }
@@ -3319,7 +3299,7 @@
 
                 if(field.getAttribute('empty') == "false") {
                     var notnullTag = $.createElement("span", "notnull");
-                    notnullTag.innerText = "*";
+                    $(notnullTag).html("*");
                     fieldEl.parentNode.appendChild(notnullTag);
                 }
             }
@@ -3398,7 +3378,7 @@
         // 将界面数据更新到Form模板的data/row/里
         updateData: function(el) {
             var newValue;
-            if(event.propertyName == "checked") {
+            if(window.event && window.event.propertyName == "checked") {
                 newValue = el.checked == true ? 1 : 0;
             }
             else if(el.tagName.toLowerCase() == "select") {
@@ -3758,9 +3738,9 @@
             };
 
             th.onmousedown = function() {
-                if(event.offsetX > this.offsetWidth - 5) {
+                if(window.event.offsetX > this.offsetWidth - 5) {
                     this.mouseDown = true;
-                    this.oldX = event.x;
+                    this.oldX = window.event.x;
                     this.oldWidth = this.offsetWidth;
                 }
             };
@@ -3772,13 +3752,14 @@
             };
 
             th.onmousemove = function(ev) {
+                ev = ev || window.event;
                 var colseToEdge = ev.offsetX > this.offsetWidth - 7;
                 $(this).css("cursor", colseToEdge ? "col-resize" : "default");
                 
                 if( !!this.mouseDown ) {
                     $(this).css("cursor", "col-resize");
 
-                    var distance = (event.x - this.oldX);
+                    var distance = (ev.x - this.oldX);
                     $(this).css("width", (this.oldWidth + distance) + "px");
                 }
             }
@@ -3809,8 +3790,8 @@
 
                     var columnIndex = this._colIndex;
                     rows.sort(function(row1, row2) {
-                        var x = row1.cells[columnIndex].innerText;
-                        var y = row2.cells[columnIndex].innerText;
+                        var x = row1.cells[columnIndex].innerText || row1.cells[columnIndex].textContent;
+                        var y = row2.cells[columnIndex].innerText || row2.cells[columnIndex].textContent;
                         var compareValue;
                         if( isNaN(x) ) {
                             compareValue = x.localeCompare(y);
@@ -3927,10 +3908,10 @@
         this.gridBox.style.width = element.getAttribute("width")  || "100%";
 
         var pointHeight = element.getAttribute("height");
-        if( pointHeight == null ) {
-            pointHeight = element.clientHeight; // hack 固定住grid高度，以免在IE部分版本及FF里被撑开
+        if( pointHeight == null || pointHeight == '0' ) {
+            pointHeight = element.clientHeight || element.parentNode.clientHeight; 
         }
-        // $(this.gridBox).css("height", pointHeight + "px");
+        $(this.gridBox).css("height", pointHeight + "px"); // hack 固定住grid高度，以免在IE部分版本及FF里被撑开
         
         this.windowHeight = pointHeight;
         this.pageSize = Math.floor(this.windowHeight / cellHeight);
@@ -4000,7 +3981,7 @@
                 } 
                 else if(this.template.needSequence && ((!hasHeader && j == 0) || (hasHeader && j == 1)) ) {
                     cell.setAttribute("name", "sequence");
-                    cell.innerText = curRow.getAttribute("_index");
+                    $(cell).html(curRow.getAttribute("_index"));
                     continue;
                 }
 
@@ -4037,7 +4018,7 @@
                         });
                     }
                     
-                    cell.innerText = cell.title = value;                            
+                    $(cell).html(value).title(value);                          
                     break;
                 case "number":  
                 case "date":
@@ -4112,7 +4093,7 @@
                 cell.setAttribute( "name", colName );
 
                 if(map[colName]) {
-                    cell.innerText = map[colName];
+                    $(cell).html(map[colName]);
                 }
             });
  
@@ -4181,7 +4162,7 @@
             };
             
             this.gridBox.onkeydown = function() {
-                switch (event.keyCode) {
+                switch (window.event.keyCode) {
                     case 33:    //PageUp
                         oThis.gridBox.scrollTop -= oThis.pageSize * cellHeight;
                         return false;
@@ -4209,24 +4190,24 @@
                 }
             };
          
-            this.gridBox.onclick = function() { // 单击行
-                fireClickRowEvent(this, event, "onClickRow");
+            this.gridBox.onclick = function(ev) { // 单击行
+                fireClickRowEvent(this, ev, "onClickRow");
             };
 
-            this.gridBox.ondblclick = function() { // 双击行
-                fireClickRowEvent(this, event, "onDblClickRow");
+            this.gridBox.ondblclick = function(ev) { // 双击行
+                fireClickRowEvent(this, ev, "onDblClickRow");
             };
 
-            this.gridBox.oncontextmenu = function() {
-                fireClickRowEvent(this, event, "onRightClickRow"); // 触发右键事件
+            this.gridBox.oncontextmenu = function(ev) {
+                fireClickRowEvent(this, ev, "onRightClickRow"); // 触发右键事件
             };
 
             // 触发自定义事件
-            function fireClickRowEvent(gridBox, event, firerName) {
-                var _srcElement = event.srcElement;
-                if( notOnGridHead(_srcElement) ) { // 确保点击处不在表头
+            function fireClickRowEvent(gridBox, ev, firerName) {
+                var _srcElement = $.Event.getSrcElement(ev);
+                if( _srcElement && notOnGridHead(_srcElement) ) { // 确保点击处不在表头
                     var trObj = _srcElement;
-                    while( trObj.tagName.toLowerCase() != "tr" ) {
+                    while( trObj && trObj.tagName.toLowerCase() != "tr" ) {
                         trObj = trObj.parentElement;
                     }
 
@@ -4234,7 +4215,8 @@
                         var rowIndex = parseInt( trObj.getAttribute("_index") );
                         var oEvent = $.Event.createEventObject();
                         oEvent.result = {
-                            rowIndex: rowIndex
+                            rowIndex: rowIndex,
+                            ev: ev
                         };
 
                         gridBox.selectRowIndex = rowIndex;
@@ -4376,11 +4358,12 @@
             var pageInfoNode = this.getNodeValue("PageInfo");            
             $.initGridToolBar(pageBar, pageInfoNode, gotoPage);
             
-            gridBox.onDblClickRow = function(ev) {
+            gridBox.onDblClickRow = function(evObj) {
                 editRowFuction();
             }
-            gridBox.onRightClickRow = function() {
-                gridBox.contextmenu.show(event.clientX, event.clientY);
+            gridBox.onRightClickRow = function(evObj) {
+                var ev = evObj.result.ev || window.event;
+                gridBox.contextmenu.show(ev.clientX, ev.clientY);
             }   
             gridBox.onScrollToBottom = function () {           
                 var currentPage = pageBar.getCurrentPage();
@@ -4689,7 +4672,7 @@
 
                 // 节点名称
                 li.a = $.createElement("a");
-                li.a.innerText = li.a.title = this.name;
+                $(li.a).html(this.name).title(this.name);
                 li.appendChild(li.a);
                 if( !this.isEnable() ) {
                     this.disable();
@@ -5120,7 +5103,7 @@
         this.el.appendChild(closeIcon);
         
         var div = $.createElement("div");
-        div.title = div.innerText = label;
+        $(div).html(label).title(label);
         div.noWrap = true; // 不换行
         this.el.appendChild(div);
         
@@ -5329,7 +5312,7 @@
         this.id = this.el.uniqueID;
         
         var div = $.createElement("div");
-        div.title = div.innerText = label;
+        $(div).html(label).title(label);
         div.noWrap = true;
         
         this.el.appendChild(div);       

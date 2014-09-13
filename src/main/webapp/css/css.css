@@ -28,7 +28,9 @@ div.groove { border-left: 1px solid #D1D1D1; border-top: 1px solid #D1D1D1; padd
 .panel .footer>td:nth-child(3) { background: url(../images/panel/rec_b.gif) repeat-x top; }
 .panel .footer>td:nth-child(4) { background: url(../images/panel/rec_rb.gif) no-repeat right top;}
 
-.panel .body td.groove  { border: 1px solid #9B9B9B; }
+.panel .body td.groove { border: 1px solid #9B9B9B; height: 100%; }
+.panel .body td.groove .hasframe { height: 100%; }
+.panel .body td.groove #ws .hastree { vertical-align: top; }
 
 /* 左栏 */
 #palette { width:300px; padding-right:5px; }

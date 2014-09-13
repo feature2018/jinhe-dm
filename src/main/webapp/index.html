@@ -17,7 +17,7 @@
 .top { height: 41px; background-image: url(images/panel/blue_top.jpg); }
 .top .logo { width: 571px; height: 41px; background-image: url(images/panel/logo.jpg); }
 
-.menu { margin:1px 0px; position:absolute; top:10px; right:3px; font-size:11px; } 
+.menu { margin:1px 0px; position:absolute; top:10px; right:3px; font-size:12px; } 
 .menu ul { list-style-type: none; } 
 .menu ul li { float:left; position:relative; width:88px; text-align:center; } 
 .menu ul li a, .menu ul li a:visited { display:block; height:25px; line-height:25px; 
@@ -47,7 +47,7 @@
             params : {"anonymous": "true"}, 
             onresult : function() {
                 var userName = this.getNodeValue("name");
-                $1("userInfo").innerText = userName;
+                $("#userInfo").html(userName);
                 
                 resizeIFrame();
                 turn2IFrame("modules/dm/report.html");

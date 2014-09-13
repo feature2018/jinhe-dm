@@ -43,7 +43,7 @@ if(IS_TEST) {
 /* 页面初始化 */
 function init() {
 	if( !$.isChrome ) {
-		_alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
+		//_alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
 	}	
 
 	initMenus();
@@ -484,7 +484,7 @@ function createQueryForm(treeID, paramConfig, callback) {
 	var searchForm = $.json2Form("searchForm", paramConfig, buttonBox.join(""));
 
 	Element.show($1("searchFormDiv"));
-	$1("reportName").innerText = "查询报表【" + getTreeNodeName() + "】";
+	$("#reportName").html("查询报表【" + getTreeNodeName() + "】");
 
 	$.cache.XmlDatas["searchFormXML"] = searchForm.template.sourceXML;
 	$.cache.Variables["treeID_SF"] = treeID;

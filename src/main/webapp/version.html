@@ -30,7 +30,7 @@
 			ondata : function() {
 				var result = eval(this.getResponseText()); 
 				if( result ) {	 
-					$1("version").innerText = "打包时间：" + result[0] + ",  环境：" + result[1]; 
+					$("#version").html( "打包时间：" + result[0] + ",  环境：" + result[1] ); 
 				}				
 			}
 		});

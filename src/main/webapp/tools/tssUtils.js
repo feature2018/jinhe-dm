@@ -49,12 +49,12 @@ function initWorkSpace() {
 	 
 	var tr = ws.element.parentNode.parentNode;
 	$1("ws").onTabCloseAll = function(event) { /* 隐藏tab页工作区 */
-		tr.style.display = "none";
-		tr.previousSibling.style.display = "none";    
+		$(tr).hide();
+		$(tr.previousSibling).hide();  
 	}
 	$1("ws").onTabChange = function(event) { /* 显示tab页工作区 */
-		tr.style.display = "";
-		tr.previousSibling.style.display = "";
+		$(tr).show();
+		$(tr.previousSibling).show();  
 	}
 }
 
@@ -72,53 +72,56 @@ function closePalette() {
 
 window.onresize = function() {
 	$("#palette #tree").css("height", (document.body.offsetHeight - 45) + "px");
+	$(".panel .groove #ws Tree\\:Box").css("height", (document.body.offsetHeight - 112) + "px");	
 }
  
 /* 事件绑定初始化 */
 function initEvents() {
 	/* 点击树刷新按钮 */
-	var refreshTreeBT = $(".refreshTreeBT")[0];
-	refreshTreeBT.title = "刷新";
-	$.Event.addEvent(refreshTreeBT, "click", function() { loadInitData(); });
+	var refreshTreeBT = $(".refreshTreeBT");
+	refreshTreeBT.title("刷新");
+	$.Event.addEvent(refreshTreeBT[0], "click", function() { loadInitData(); });
 
-	$("#palette #tree").css("height", (document.body.offsetHeight - 45) + "px");
+	window.onresize();
 
 	/* 点击左栏控制按钮 */
-	if($1("paletteOpen")) {
-		$("#paletteOpen").hide();
+	var paletteOpen = $("#paletteOpen");
+	if(paletteOpen.length > 0) {
+		paletteOpen.hide();
 		$("#paletteClose").click(closePalette);	
-		$("#paletteOpen").click(function() { 
+		paletteOpen.click(function() { 
 			$("#palette").show();
-			$("#paletteOpen").hide();
+			paletteOpen.hide();
 			$(".panel .header>td:nth-child(2)").show();
 			$(".panel .footer>td:nth-child(2)").show();
 		});
 	}
 
 	// 关闭页面自动注销
-	$.Event.addEvent(window, "unload", function() {
-		if(event.clientX > document.body.clientWidth && event.clientY < 0 || event.altKey) {
+	$.Event.addEvent(window, "unload", function(ev) {
+		ev = ev || window.event;
+		if(ev.clientX > document.body.clientWidth && ev.clientY < 0 || ev.altKey) {
 			logout();
 		}
 	});
 }
  
-function onTreeNodeActived(eventObj) { }
+function onTreeNodeActived(ev) { }
 
-function onTreeNodeRightClick(eventObj, carePermission, treeName) {
+function onTreeNodeRightClick(ev, carePermission, treeName) {
 	var menu = $1(treeName || "tree").contextmenu;
 	if(menu == null) {
 		return;
 	}
 
 	if( carePermission ) {
-        var treeNode = eventObj.treeNode;
+        var treeNode = ev.treeNode;
         getTreeOperation(treeNode, function(_operation) {
-			menu.show(eventObj.clientX, eventObj.clientY);
+			menu.show(ev.clientX, ev.clientY);
         });
 	}
 	else {
-		menu.show(eventObj.clientX, eventObj.clientY);
+		menu.show(ev.clientX, ev.clientY);
 	}
 }
 
@@ -218,13 +221,13 @@ function createImportDiv(remark, checkFileWrong, importUrl) {
 		
 		importDiv.innerHTML = str.join("\r\n");
 
-		$1("closeBt").onclick = function () {
+		$("#closeBt").click( function () {
 			$(importDiv).hide();
-		}
+		});
 	}
 
 	// 每次 importUrl 可能不一样，比如导入门户组件时。不能缓存
-	$1("importBt").onclick = function() {
+	$("#importBt").click( function() {
 		var fileValue = $1("sourceFile").value;
 		if( fileValue == null) {
 			 return alert("请选择导入文件!");				 
@@ -241,7 +244,7 @@ function createImportDiv(remark, checkFileWrong, importUrl) {
 		form.submit();
 
 		$(importDiv).hide();
-	}
+	} );
 
 	return importDiv;
 }
@@ -251,10 +254,8 @@ function createExportFrame() {
 	var frameName = "exportFrame";
 	if( $1(frameName) == null ) {
 		var exportDiv = $.createElement("div"); 
-		exportDiv.style.display = "none";
+		$(exportDiv).hide().html("<iframe id='" + frameName + "' style='display:none'></iframe>");
 		document.body.appendChild(exportDiv);
-
-		exportDiv.innerHTML = "<iframe id='" + frameName + "' src='about:blank' style='display:none'></iframe>";
 	}
 	return frameName;
 }
@@ -283,44 +284,35 @@ function myAlert(info, detail) {
 		boxHtml[boxHtml.length] = "    </tr>";
 		boxHtml[boxHtml.length] = "    <tr>";
 		boxHtml[boxHtml.length] = "      <td align='center' height='30'>";
-		boxHtml[boxHtml.length] = "    		<input type='button' id='bt_ok' value='确 定' class='btStrong' onclick='closeMessage()'>";
+		boxHtml[boxHtml.length] = "    		<input type='button' value='确 定' class='btStrong'>";
 		boxHtml[boxHtml.length] = "      </td>";
 		boxHtml[boxHtml.length] = "    </tr>";
 		boxHtml[boxHtml.length] = "  </table>";
 
-		messageBox = document.createElement("div");    
+		messageBox = $.createElement("div", "popupBox");    
 		messageBox.id = "X-messageBox";    
-		messageBox.className = "popupBox";
- 		messageBox.innerHTML = boxHtml.join("");
+ 		$(messageBox).html(boxHtml.join("\n"));
 		document.body.appendChild(messageBox);
 	}
-	messageBox.style.display = "block";
+	$(messageBox).show(true);
    
-	var infoBox       = $1("infoBox");
-	var detailBox     = $1("detailBox");
-	var bt_ok         = $1("bt_ok");
+    $("#infoBox", messageBox).html( info.replace(/[\r\n]/g,"") );
 
-	bt_ok.focus(); 
-	detailBox.style.display = "none";
-	infoBox.innerText = info.replace(/[\r\n]/g,"");
-
-	if(detail && detail != "") {
-		detailBox.value = detail.toString ? detail.toString() : "[object]";
-		detailBox.style.display = "block";
-		messageBox.style.height = "200px";
+	var detailBox = $("#detailBox", messageBox);
+	detailBox.hide();
+	if( !$.isNullOrEmpty(detail) ) {
+		detailBox[0].value = detail.toString ? detail.toString() : "[object]";
+		detailBox.show(true);
+		$(messageBox).css("height", "200px");
 	}
 
-	bt_ok.onclick = closeMessage;
+	$(".btStrong", messageBox).click(function() { $(messageBox).hide(); }).focus();
 
-	$.Event.addEvent(document, "keydown", function(eventObj) {
-        if(27 == eventObj.keyCode) { // ESC 退出
-           closeMessage();
+	$.Event.addEvent(document, "keydown", function(ev) {
+        if(27 == ev.keyCode) { // ESC 退出
+           $(messageBox).hide();
         }
     });
-
-    function closeMessage() {
-	    messageBox.style.display = "none";
-	}
 }
  
 (function() {
@@ -329,12 +321,12 @@ function myAlert(info, detail) {
 	}
 
 	/* 禁止鼠标右键 */
-	document.oncontextmenu = function(eventObj) {
-		eventObj = eventObj || window.event;
-		var srcElement = $.Event.getSrcElement(eventObj);
+	document.oncontextmenu = function(ev) {
+		ev = ev || window.event;
+		var srcElement = $.Event.getSrcElement(ev);
 		var tagName = srcElement.tagName.toLowerCase();
 		if("input" != tagName && "textarea" != tagName) {
-			$.Event.cancel(event);            
+			$.Event.cancel(ev);            
 		}
 	}
 
@@ -389,8 +381,8 @@ var reminder = new Reminder();
 /* 给xform等添加离开提醒 */
 function attachReminder(id, form) {
 	if( form ) {
-		form.ondatachange = function(eventObj) {
-			reminder.add(eventObj.id); // 数据有变化时才添加离开提醒
+		form.ondatachange = function(ev) {
+			reminder.add(ev.id); // 数据有变化时才添加离开提醒
 		}
 	}
 	else {
@@ -454,7 +446,8 @@ function modifyTreeNode(id, attrName, attrValue, treeName) {
 	if( treeNode ) {
 		treeNode.attrs[attrName] = attrValue;
 		if(attrName == "name") {
-			treeNode.li.a.innerText = treeNode.li.a.title = attrValue;
+			treeNode.li.a.title = attrValue;
+			$(treeNode.li.a).html(attrValue);
 		}
 	}
 }
