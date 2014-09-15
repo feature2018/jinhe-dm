@@ -1,5 +1,9 @@
 (function(window, undefined) {
 
+    if( window.attachEvent ) {
+        alert("您当前的IE浏览器版本过低，为能有更好的展示效果，建议升级到IE11，或换最新版Chrome、FireFox。");
+    } 
+
     var _tssJS = (function() {
 
         // 构建tssJS对象
@@ -4335,7 +4339,7 @@
 
         var request = new $.HttpRequest();
         request.url = serviceUrl + "/" + page;
-        request.params = requestParam || [];
+        request.params = requestParam || {};
         request.waiting = true;
 
         request.onresult = function() {

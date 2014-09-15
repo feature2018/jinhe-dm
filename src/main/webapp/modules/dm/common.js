@@ -189,6 +189,7 @@ function $exportCSV(dataUrl, queryParams) {
 		url: dataUrl,
 		method: 'POST',
 		params: queryParams, 
+		type: 'json',
 		ondata : function() {
 			// 根据返回的导出文件名（压缩后的），生成下载链接。
 			var fileName = this.getResponseText();
