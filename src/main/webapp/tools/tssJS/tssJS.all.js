@@ -3,7 +3,7 @@
     if( window.attachEvent ) {
         alert("您当前的IE浏览器版本过低，为能有更好的展示效果，建议升级到IE11，或换最新版Chrome、FireFox。");
     } 
-
+    
     var _tssJS = (function() {
 
         // 构建tssJS对象
@@ -4006,6 +4006,8 @@
             $(cell).css("text-align", getAlign(column));
 
             var value = cell.getAttribute("value") ;
+            if(value == null) return;
+
             var mode  = column.getAttribute("mode") || "string";
             switch( mode ) {
                 case "string":
@@ -4098,6 +4100,11 @@
 
                 if(map[colName]) {
                     $(cell).html(map[colName]);
+                    cell.setAttribute( "value", map[colName] );
+                }
+
+                if($(th).hasClass("hidden")) {
+                    $(cell).addClass("hidden");
                 }
             });
  
@@ -4405,6 +4412,7 @@
     }
 
 })(tssJS);
+
 
 
 ;(function($, factory) {

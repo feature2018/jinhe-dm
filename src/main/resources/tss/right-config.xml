@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<rightConfig url_404="/404.htm">
+<rightConfig url_404="/dms/404.html">
 
 	<servlet name="/modules/_param/param.htm" right="-1,Admin"/>
 	<servlet name="/modules/_log/log.htm" right="-1,Admin"/>
