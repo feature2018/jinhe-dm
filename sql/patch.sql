@@ -16,8 +16,3 @@ UPDATE dm_report t SET t.displayUri = REPLACE( t.displayUri, '../common/ichart.h
 UPDATE dm_report t SET t.displayUri = REPLACE( t.displayUri, '../wms/kanban', '../../wms/kanban');
 
 
-打包注意：
-1、更改portal/model下Logo图标（BTR 、WMS）
-2、tssUtil.js里 SYSTEM_TITLE 更改
-3、#class.name.IdentityGetter = com.jinhe.tss.um.sso.UMIdentityGetter
-    class.name.IdentityGetter = com.jinhe.tss.um.sso.othersystem.WmsIdentifyGetter
