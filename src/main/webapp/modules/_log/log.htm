@@ -103,7 +103,7 @@
         var treeNode = $.T("tree").getActiveTreeNode();
         popupForm("SearchForm.xml", "SearchLog", {operateTable: treeNode.id}, function(condition) {
         	loadGridData(condition, "1"); 
-        });
+        }, "日志查询");
     }
 
     /* 显示日志详细信息 */
