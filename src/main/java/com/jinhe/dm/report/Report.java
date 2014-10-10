@@ -17,7 +17,6 @@ import com.jinhe.tss.framework.component.param.ParamConstants;
 import com.jinhe.tss.framework.component.param.ParamManager;
 import com.jinhe.tss.framework.persistence.entityaop.IDecodable;
 import com.jinhe.tss.framework.persistence.entityaop.OperateInfo;
-import com.jinhe.tss.framework.web.dispaly.tree.ILevelTreeNode;
 import com.jinhe.tss.framework.web.dispaly.tree.TreeAttributesMap;
 import com.jinhe.tss.framework.web.dispaly.xform.IXForm;
 import com.jinhe.tss.um.permission.IResource;
@@ -26,7 +25,7 @@ import com.jinhe.tss.util.BeanUtil;
 @Entity
 @Table(name = "dm_report")
 @SequenceGenerator(name = "report_sequence", sequenceName = "report_sequence", initialValue = 1, allocationSize = 10)
-public class Report extends OperateInfo implements ILevelTreeNode, IXForm, IDecodable, IResource {
+public class Report extends OperateInfo implements IXForm, IDecodable, IResource {
     
 	public static final int TYPE0 = 0;  // 报表分组
 	public static final int TYPE1 = 1;  // 业务报表
