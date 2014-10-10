@@ -194,10 +194,10 @@ public class SQLExcutor {
         ResultSet rs = null;
         result = new ArrayList<Map<String, Object>>();
         
+        String dbUrl = null, driveName;
         try {
-            String dbUrl = conn.getMetaData().getURL();
-            String driveName = conn.getMetaData().getDriverName();
-
+        	dbUrl = conn.getMetaData().getURL();
+            driveName = conn.getMetaData().getDriverName();
             log.debug(" database url: 【" + dbUrl + "】。");
             log.debug(" database diverName: 【 " + driveName + "】。");
             
@@ -266,8 +266,9 @@ public class SQLExcutor {
             log.debug("本次SQL查询耗时：" + (System.currentTimeMillis() - startTime) + "ms");
 
         } catch (SQLException e) {
-            String errorMsg = "执行SQL时出错了。";
-            log.error(errorMsg, e);
+            String errorMsg = "执行SQL时出错了:" + e.getMessage() + "\n   数据源：" + dbUrl + ", 参数：" + paramsMap + 
+					",\n    脚本：" + sql;
+            log.error(errorMsg);
             throw new BusinessException(errorMsg, e);
         } finally {
             try {
@@ -299,6 +300,8 @@ public class SQLExcutor {
  
         try {
         	excute(sql, conn);
+        } catch (Exception e) {
+        	throw new BusinessException("执行SQL时出错了。sql : " + sql, e);
         } finally {
             connpool.checkIn(connItem);
         }
@@ -350,6 +353,8 @@ public class SQLExcutor {
         
         try {
         	excuteBatch(sql, paramsList, conn);
+        } catch (Exception e) {
+        	throw new BusinessException("执行SQL时出错了。sql : " + sql, e);
         } finally {
             connpool.checkIn(connItem);
         }

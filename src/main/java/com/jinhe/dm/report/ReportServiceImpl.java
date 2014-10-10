@@ -192,7 +192,11 @@ public class ReportServiceImpl implements ReportService {
           
 		SQLExcutor excutor = new SQLExcutor(false);
 		String datasource = report.getDatasource();
-		excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
+		try {
+			excutor.excuteQuery(reportScript, paramsMap, page, pagesize, datasource);
+		} catch (Exception e) {
+			throw new BusinessException(e.getMessage(), false);
+		}
 
 		return excutor;
   	}
