@@ -266,9 +266,8 @@ public class SQLExcutor {
             log.debug("本次SQL查询耗时：" + (System.currentTimeMillis() - startTime) + "ms");
 
         } catch (SQLException e) {
-            String errorMsg = "执行SQL时出错了:" + e.getMessage() + "\n   数据源：" + dbUrl + ", 参数：" + paramsMap + 
-					",\n    脚本：" + sql;
-            log.error(errorMsg);
+            String errorMsg = "执行SQL时出错了:" + e.getMessage();
+            log.error(errorMsg + "\n   数据源：" + dbUrl + ",\n   参数：" + paramsMap + ",\n   脚本：" + sql);
             throw new BusinessException(errorMsg, e);
         } finally {
             try {

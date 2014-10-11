@@ -485,7 +485,7 @@
 				<job.enable>true</job.enable>
 				<db.url>127.0.0.1:3306/btr_dms</db.url>
 				<environment>uat</environment>
-				<tomcat.url>bl00618-l:8088</tomcat.url>
+				<tomcat.url>bl00618-l</tomcat.url>
 			</properties>
 		</profile>
 		<profile>
