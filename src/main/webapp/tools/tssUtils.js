@@ -4,7 +4,7 @@
 	IS_TEST = false,
 
 	FROMEWORK_CODE = "TSS",    /* 当前框架名 */
-	APP_CODE       = "DMS",    /* 当前应用名 */
+	APP_CODE       = "DMS";    /* 当前应用名 */
 
 /*********************** 系统配置 END **********************************/
  var
