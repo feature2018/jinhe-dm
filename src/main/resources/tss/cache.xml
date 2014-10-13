@@ -80,13 +80,13 @@
     <cyclelife>180000</cyclelife>  
     <accessMethod>5</accessMethod>  
   </strategy>  
-  <strategy code="SHORT" name="数据缓存（短期）"> 
+  <strategy code="SHORT" name="数据缓存（10分钟）"> 
     <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
     <poolSize>1000</poolSize>  
-    <cyclelife>180000</cyclelife>  
+    <cyclelife>600000</cyclelife>  
     <accessMethod>5</accessMethod>  
   </strategy>
-  <strategy code="LONG" name="数据缓存（长期）"> 
+  <strategy code="LONG" name="数据缓存（一天）"> 
     <poolClass>com.jinhe.tss.cache.ObjectPool</poolClass>  
     <poolSize>300</poolSize>  
     <cyclelife>43200000</cyclelife>  
