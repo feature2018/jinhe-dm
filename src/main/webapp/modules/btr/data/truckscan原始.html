@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>车货关联</title>
+
+	<link rel="stylesheet" type="text/css" href="../../tools/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../tools/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+
+	<script src="../../tools/easyui/jquery.min.js"></script>
+	<script src="../../tools/easyui/jquery.easyui.min.js"></script>
+
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script src="../../dm/common.js"></script>
+
+
+	<script type="text/javascript">
+
+	var serviceUrl = "../../../display/json/478";
+	var originData1;
+	var originData2;
+	var globalValiable;
+
+	window.onload = function() {
+		globalValiable = window.parent.globalValiable;
+		originData2=globalValiable.data;
+
+        Ajax({
+            url : serviceUrl,
+            method : "GET",           
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                originData1 = eval(this.getResponseText());
+                if ( globalValiable && originData1 && originData2){
+                	show();
+            	}
+            }
+        }); 
+        
+        if(globalValiable && originData2 && originData1) {
+            //queryParams = globalValiable.queryParams;
+            //title = queryParams.param1 +日 问题件破损短少类型各省份占比';
+            show();
+            return;
+        }
+    } 
+    
+
+	function show() { 
+
+        var dataMap1 = {};      
+        for(var i = 0; i < originData1.length; i++) {
+            var m = originData1[i]["m"];
+            var card_code = originData1[i]["card_code"];
+
+            if(dataMap1[card_code] == null) {
+                 dataMap1[card_code] = [];                 
+            }           
+           
+            dataMap1[card_code]= m ;           
+        }
+
+        var dataMap2 = {};
+        for(var i = 0; i < originData2.length; i++) {            
+            var shuttle = originData2[i]["shuttle"];
+            var dd = originData2[i]["dd"];
+
+            if(dataMap2[shuttle] == null) {
+                 dataMap2[shuttle] = [];                 
+            }           
+           
+            dataMap2[shuttle].push(dd);             
+        }
+
+
+        for (var card_code in dataMap1) {
+        	for (var shuttle in  dataMap2) {
+        		if (card_code == shuttle) {
+        			dataMap2[shuttle].push(dataMap1[card_code]);
+        			return;
+        		};
+        	};        	
+        };
+        
+	    
+	    var data = {};
+		data.rows = [];
+		data.footer = [];
+		
+		for(var card_code in dataMap) {
+		     var row = [];
+		     var k = 0;
+		     row.name = card_code;
+		     row.rank = dataMap[card_code].type;		     
+		     for(var i = 0; i < dayList.length; i++) {
+		     	row[dayList[i]] = dataMap[card_code][dayList[i]] || 0;
+		         
+		         if(i == dayList.length-1){
+		         	row[dayList[i]] = k;
+		         }
+		         else{
+		         	k = k + (dataMap[card_code][dayList[i]] || 0);
+		         }
+		     }
+
+		     //data.rows.push(row);
+		     if (card_code !='全网') {data.rows.push(row);} else{data.footer.push(row);};
+		     
+		}
+
+        var rows = data.rows;
+        var rank1 = [];
+        var rank2 = [];
+        for(var i = 0; i < rows.length; i++) {
+        	var row = rows[i];
+	        row.id = i + 1;
+
+        	if(row.rank === "公司") {
+        		rank1.push(row);
+        		row.state = "closed";
+        	}
+        	else if(row.rank === "分拨") {
+        		row._parentId = rank1[rank1.length - 1].id;
+        		rank2.push(row);
+        		//row.state = "closed";
+        	}
+      	
+        }
+
+        $('#detailTable').treegrid({
+		    idField:'id',
+		    treeField:'name',
+		    rownumbers: true,
+		    showFooter: true,
+		    animate: true,
+		    data: data
+		});
+    }
+       
+
+	        // var globalValiable = window.parent.globalValiable;
+	        // if(globalValiable && globalValiable.data) {
+	        //     queryParams = globalValiable.queryParams;
+	        //     show(globalValiable.data);
+	        //     return;
+	        // }
+	     
+
+	    function styler(value,row,index){
+			returncolor:red;font-weight:bold;
+		}
+
+	    function formatter(value, row, index){
+			return formatMoney(value, 1);
+		}
+
+		function formatMoney(s, n) {   
+		   n = n > 0 && n <= 20 ? n : 2;   
+		   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";   
+		   var l = s.split(".")[0].split("").reverse(),   
+		   r = s.split(".")[1];   
+		   t = "";   
+		   for(i = 0; i < l.length; i ++ ) {   
+		      t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");   
+		   }   
+		   return t.split("").reverse().join("") + "." + r;   
+		} 
+	
+	</script>
+</head>
+
+<body>
+ 
+	<div class="easyui-accordion" data-options="fit:true">
+		<div title="明细">
+			<table id="detailTable" >
+		        <thead frozen="true">
+		            <tr>
+		                <th field="name" width="200">名称</th>
+		            </tr>
+		        </thead>
+		        <thead>
+		            <tr>
+						<th field="日期" width="90" align="right" formatter="formatter" styler="styler">日期</th>
+						<th field="类型" width="90" align="right" formatter="formatter" styler="styler">类型</th>
+						<th field="起始分拨" width="90" align="right" formatter="formatter" styler="styler">起始分拨</th>
+						<th field="目的分拨" width="90" align="right" formatter="formatter" styler="styler">目的分拨</th>
+						<th field="体积" width="90" align="right" formatter="formatter" styler="styler">体积</th>
+				        <th field="重量" width="90" align="right" formatter="formatter" styler="styler">重量</th>
+				        <th field="车牌" width="90" align="right" formatter="formatter" styler="styler">车牌</th>
+				        <th field="额重" width="90" align="right" formatter="formatter" styler="styler">额重</th>
+				        <th field="车型" width="90" align="right" formatter="formatter" styler="styler">车型</th>
+		            </tr>
+		        </thead>
+		    </table>
+		</div>
+
+		<div title="图表" style="padding: 10px">
+			<div id='canvasDiv'></div>
+		</div>
+
+	</div>
+
+</body>
+</html>

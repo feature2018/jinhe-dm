@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>车货关联</title>
+
+	<link rel="stylesheet" type="text/css" href="../../tools/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../tools/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../dm/common.css">
+
+	<script src="../../tools/easyui/jquery.min.js"></script>
+	<script src="../../tools/easyui/jquery.easyui.min.js"></script>
+
+	<script src="../../framework/core.js"></script>
+	<script src="../../framework/ajax.js"></script>
+	<script src="../../dm/common.js"></script>
+
+
+	<script type="text/javascript">
+
+	var serviceUrl = "../../../display/json/478";
+	var originData1;
+	var originData2;
+	var globalValiable;
+
+	window.onload = function() {
+		globalValiable = window.parent.globalValiable;
+		originData2=globalValiable.data;
+
+        Ajax({
+            url : serviceUrl,
+            method : "GET",           
+            type : "json",
+            waiting : true,
+            ondata : function() {
+                originData1 = eval(this.getResponseText());
+                if ( globalValiable && originData1 && originData2){
+                	show();
+            	}
+            }
+        }); 
+
+        
+        if(globalValiable && originData2 && originData1) {
+            //queryParams = globalValiable.queryParams;
+            //title = queryParams.param1 + '日 问题件破损短少类型各省份占比';
+            show();
+            return;
+        }
+    } 
+    
+
+	function show() { 
+
+        var dataMap1 = {};      
+        for(var i = 0; i < originData1.length; i++) {
+            var m = originData1[i]["m"];
+            var card_code = originData1[i]["card_code"];
+
+            if(dataMap1[card_code] == null) {
+                 dataMap1[card_code] = [];                 
+            }           
+           
+            dataMap1[card_code]= m;           
+        }
+
+        var dataMap2 = {};
+        for(var i = 0; i < originData2.length; i++) {            
+            var shuttle = originData2[i]["shuttle"];
+            var dd = originData2[i]["dd"];
+
+            if(dataMap2[shuttle] == null) {
+                 dataMap2[shuttle] = [];                 
+            }           
+           
+            dataMap2[shuttle].push(dd);             
+        }
+
+
+        for (var card_code in dataMap1) {
+        	for (var shuttle in  dataMap2) {
+        		if (card_code == shuttle) {
+        			dataMap2[shuttle].push(dataMap1[card_code]);        			
+        		};
+        	};        	
+        };
+
+        var cHtml = []; 
+        var labelList = []; 
+        labelList[0] = '日期';
+        labelList[1] = '方式';
+        labelList[2] = '车牌号';        
+        labelList[3] = '车型';
+        labelList[4] = '体积';
+        labelList[5] = '重量';
+        labelList[6] = '额重';
+        labelList[7] = '装载率';
+     
+             
+        for(var i=0; i < labelList.length; i++) {        	
+        	cHtml.push('<th field="' + labelList[i] + '" width="90" align="right" styler="styler">' + labelList[i] + '</th>');
+        }
+		
+		$$("cityColumn").innerHTML = cHtml.join("\n");
+
+	    
+	    var data = {};
+		data.rows = [];	
+		
+		for(var shuttle in dataMap2) {
+			var row;
+			for (var i = 0; i < dataMap2[shuttle].length; i++) {
+				row = {};
+				var m = dataMap2[shuttle].length - 1;
+				if (m > 0 ) {
+
+					if (dataMap2[shuttle][m].length < 23) {
+						var array = dataMap2[shuttle][m].split("+");
+					};													
+					
+					if (i !=m ) {
+						var arr = dataMap2[shuttle][i].split("+");						
+						row.name = arr[2] + '-' + arr[3] ;						
+						row[labelList[0]] = arr[0] ;
+						row[labelList[1]] = arr[1] ;
+						row[labelList[2]] = array[0] || '';						
+						row[labelList[3]] = array[2] || '';							
+						row[labelList[4]] = arr[4] ;
+						row[labelList[5]] = arr[5] ;
+						row[labelList[6]] = array[1] || 0;
+						row[labelList[7]] = (Math.round(arr[5] / array[1]* 100)  +  "%" )|| ' ';
+						data.rows.push(row);						
+					}					
+				}		
+			};
+	     
+		}
+
+        var rows = data.rows;        
+        for(var i = 0; i < rows.length; i++) {
+        	rows[i].id = i + 1;       	
+        } 
+
+        $('#detailTable').treegrid({
+		    idField:'id',
+		    treeField:'name',
+		    rownumbers: true,
+		    showFooter: true,
+		    animate: true,
+		    data: data
+		});
+    }
+       
+
+	        // var globalValiable = window.parent.globalValiable;
+	        // if(globalValiable && globalValiable.data) {
+	        //     queryParams = globalValiable.queryParams;
+	        //     show(globalValiable.data);
+	        //     return;
+	        // }
+	     
+
+	    function styler(value,row,index){
+			return 'color:red;font-weight:bold;';
+		}
+
+	   /* function formatter(value, row, index){
+			return formatMoney(value, 1);
+		}
+
+		function formatMoney(s, n) {   
+		   n = n > 0 && n <= 20 ? n : 2;   
+		   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";   
+		   var l = s.split(".")[0].split("").reverse(),   
+		   r = s.split(".")[1];   
+		   t = "";   
+		   for(i = 0; i < l.length; i ++ ) {   
+		      t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");   
+		   }   
+		   return t.split("").reverse().join("") + "." + r;   
+		} */
+	
+	</script>
+</head>
+
+<body>
+ 
+	<div class="easyui-accordion" data-options="fit:true">
+		<div title="明细">
+			<table id="detailTable" >
+		        <thead frozen="true">
+		            <tr>
+		                <th field="name" width="200">名称</th>
+		            </tr>
+		        </thead>
+		        <thead>
+		            <tr id="cityColumn"></tr>
+		        </thead>
+		    </table>
+		</div>
+
+		<div title="图表" style="padding: 10px">
+			<div id='canvasDiv'></div>
+		</div>
+
+	</div>
+
+</body>
+</html>

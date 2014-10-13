@@ -19,94 +19,107 @@
 	<script type="text/javascript">
 	    window.onload = function() {
 
-	    Ajax({
-            url : 'cities.json',
-            method : 'GET',
-            type : "json",
-            waiting : true,
-            ondata : function() { 
-                var list = eval(this.getResponseText());
-                var cHtml = [];
+		var cHtml = []; 
+        var labelList = []; 
+        labelList[0] = '一月';
+        labelList[1] = '二月';
+        labelList[2] = '三月';        
+        labelList[3] = '四月';
+        labelList[4] = '五月';
+        labelList[5] = '六月';
+        labelList[6] = '七月';
+        labelList[7] = '八月';
+        labelList[8] = '九月';
+        labelList[9] = '十月';
+        labelList[10] = '十一月';
+        labelList[11] = '十二月';
+        labelList[12] = '汇总';
 
-                var sql = "SELECT rank, NAME"
-                for(var i=0; i < list.length; i++) {
-                	var province = list[i].province + "汇总";
-                	cHtml.push('<th field="' + province + '" width="90" align="right" formatter="formatter" styler="styler">' + province + '</th>');
-                	sql += "," + province;
-
-                	var city = list[i].cities.split(",");
-                	for(var j=0; j < city.length; j++) {
-                		cHtml.push('<th field="' + city[j] + '" width="70" align="right" formatter="formatter">' + city[j] + '</th>');
-                		sql += "," + city[j];
-                	}
-                }
-                cHtml.push('<th field="' + '汇总' + '" width="80" align="right" formatter="formatter">' + '汇总' + '</th>');
-
-                sql += " from bisc";
-                console.log(sql);
- 				
- 				$$("cityColumn").innerHTML = cHtml.join("\n");
-
- 				show();
-            }
-        });
-
-	        // var globalValiable = window.parent.globalValiable;
-	        // if(globalValiable && globalValiable.data) {
-	        //     queryParams = globalValiable.queryParams;
-	        //     show(globalValiable.data);
-	        //     return;
-	        // }
+        for(var i=0; i < labelList.length; i++) {        	
+        	cHtml.push('<th field="' + labelList[i] + '" width="90" align="right" styler="rowStyler" formatter="formatter">' + labelList[i] + '</th>');
+        }
+		
+		$$("cityColumn").innerHTML = cHtml.join("\n");
+		show();
 	    } 
 
 	    function show() {
 	    	Ajax({
-	            url : 'fin2.json',
+	            url : '../../../display/json/486',
 	            method : 'GET',
 	            type : "json",
 	            waiting : true,
 	            ondata : function() { 
-	                var data = window.JSON.parse(this.getResponseText());
-
+	                var rows = window.JSON.parse(this.getResponseText());
+	                var data = {};
+	                data.rows = rows;
+	                
 	                var rows = data.rows;
 	                var rank1 = [];
 	                var rank2 = [];
+	                var rank3 = [];
+	                var rank4 = [];
 	                for(var i = 0; i < rows.length; i++) {
 	                	var row = rows[i];
 	                	row.id = i + 1;
 
-	                	if(row.rank === "一级") {
-	                		rank1.push(row);
-	                		row.state = "closed";
+	                	if(row.rank === "一级" ) {
+	                		rank1.push(row);	                		
 	                	}
 	                	else if(row.rank === "二级") {
 	                		row._parentId = rank1[rank1.length - 1].id;
-	                		rank2.push(row);
-	                		row.state = "closed";
+	                		rank2.push(row);	                		
 	                	}
 	                	else if(row.rank === "三级") {
 	                		row._parentId = rank2[rank2.length - 1].id;
+	                		rank3.push(row);	                		
 	                	}
+	                	else if(row.rank === "四级") {
+	                		row._parentId = rank3[rank3.length - 1].id;
+	                		rank4.push(row);	                		
+	                	}
+	                	else if(row.rank === "五级") {
+	                		row._parentId = rank4[rank4.length - 1].id;
+	                	}	                	
 	                }
+
+	                for (var i = 0; i < rows.length; i++) {
+	                	for (var j = i; j < rows.length; j++) {
+	                		if (rows[i].id == rows[j]._parentId) {rows[i].state = "closed";}; 
+	                	};	                	
+	                };
+
 
 	                $('#detailTable').treegrid({
 					    idField:'id',
 					    treeField:'name',
 					    rownumbers: true,
 					    showFooter: true,
-					    animate: true,
+					    animate: true,					    
 					    data: data
 					});
 	            }
 	        });
 	    }
 
-	    function styler(value,row,index){
-			return 'color:red;font-weight:bold;';
-		}
+	    function cellStyler(value,row,index){
+            if (value < 30){
+                return 'background-color:#ffee00;color:red;';
+            }
+        }
+
+        function rowStyler(index,row){
+            if (row.name.indexOf('利') >= 0){
+                return 'background-color:#6293BB;color:#fff;font-weight:bold;';
+            }
+            else{
+            	return 'color:black;font-weight:bold;';
+            }
+        }
 
 	    function formatter(value, row, index){
-			return formatMoney(value, 1);
+	    	if (row.name.indexOf('率') == -1) {return formatMoney(value, 1);}
+	    	else{return Math.round(value*1000)/10 + '%'};			
 		}
 
 		function formatMoney(s, n) {   
@@ -141,7 +154,7 @@
 		</div>
 
 		<div title="图表" style="padding: 10px">
-			<div id='canvasDiv'></div>
+			<div id='container'></div>
 		</div>
 
 	</div>
