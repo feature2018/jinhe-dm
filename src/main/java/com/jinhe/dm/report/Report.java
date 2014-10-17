@@ -45,6 +45,7 @@ public class Report extends OperateInfo implements IXForm, IDecodable, IResource
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "report_sequence")
     private Long    id;         // 主键
     
+    @Column(length = 100, nullable = false)
     private String  name;       // 展示名称
     
     @Column(length = 2000)  
@@ -56,6 +57,7 @@ public class Report extends OperateInfo implements IXForm, IDecodable, IResource
     private String  datasource; // 单独为报表指定数据源
     private String  displayUri; // 用来展示当前报表的模板页面的路径
     
+    @Column(nullable = false)
     private Integer type;  // 种类  0：报表分组 1: 业务报表
     private String  remark; 
     
