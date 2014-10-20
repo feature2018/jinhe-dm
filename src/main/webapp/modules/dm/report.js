@@ -42,10 +42,6 @@ if(IS_TEST) {
 
 /* 页面初始化 */
 function init() {
-	if( !$.isChrome ) {
-		//_alert("您当前的浏览器不是Chrome浏览器，为能有更好的展示效果，建议换成Chrome访问。");
-	}	
-
 	initMenus();
 	initEvents();
 
@@ -402,14 +398,16 @@ function searchReport(treeID, download) {
 		var grid = $.G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 		var gridToolBar = $1("gridToolBar");
 
-		var pageListNode = this.getNodeValue(XML_PAGE_INFO);			
-		$.initGridToolBar(gridToolBar, pageListNode, function(page) {
+		var pageListNode = this.getNodeValue(XML_PAGE_INFO);		
+		var callback = function(page) {
 			request.url = URL_REPORT_DATA + treeID + "/" + page + "/" + PAGESIZE;
 			request.onresult = function() {
 				$.G("grid", this.getNodeValue(XML_REPORT_DATA)); 
 			}				
 			request.send();
-		} );
+		};
+
+		$.initGridToolBar(gridToolBar, pageListNode, callback);
 		
 		grid.el.onScrollToBottom = function () {			
 			var currentPage = gridToolBar.getCurrentPage();
@@ -418,7 +416,7 @@ function searchReport(treeID, download) {
 				request.url = URL_REPORT_DATA + treeID + "/" + nextPage + "/" + PAGESIZE;
 				request.onresult = function() {
 					$.G("grid").load(this.getNodeValue(XML_REPORT_DATA), true);
-					$.initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO));
+					$.initGridToolBar(gridToolBar, this.getNodeValue(XML_PAGE_INFO), callback);
 				}				
 				request.send();
 			}

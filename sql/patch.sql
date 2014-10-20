@@ -16,3 +16,8 @@ UPDATE dm_report t SET t.displayUri = REPLACE( t.displayUri, '../common/ichart.h
 UPDATE dm_report t SET t.displayUri = REPLACE( t.displayUri, '../wms/kanban', '../../wms/kanban');
 
 
+
+update dm_report t SET t.decode=CONCAT('00001', t.decode);
+
+
+

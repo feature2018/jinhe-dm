@@ -4269,6 +4269,7 @@
     $.initGridToolBar = function(pageBar, pageInfo, callback) {
         pageBar.init = function() {
             this.innerHTML = ""; // 清空内容
+			this.callback = callback;
 
             var totalpages = pageBar.getTotalPages();
             var curPage = pageBar.getCurrentPage();
@@ -4333,7 +4334,11 @@
         }
         
         pageBar.gotoPage = function(page) {
-            callback(page); // 转到指定页
+			if( this.callback ) {
+				this.callback(page); // 转到指定页
+				$1("GridPageList").value = page;
+				pageInfo.setAttribute("currentpage", page);
+			}
         }
         
         pageBar.init();

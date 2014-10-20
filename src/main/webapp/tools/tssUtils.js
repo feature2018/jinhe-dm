@@ -675,13 +675,15 @@ function checkPasswordSecurityLevel(formObj, url, password, loginName) {
 
 /*********************** 临时 公用函数 **********************************/
 Element.show = function(element) {
-	element.style.display = "block"; 
-	element.style.position = "absolute";  
-	element.style.left = "18%";   
-	element.style.top  = "70px";    
-	element.style.zIndex = "999"; 
-
-	$.setOpacity(element, 95);
+	if(element) {
+		element.style.display = "block"; 
+		element.style.position = "absolute";  
+		element.style.left = "18%";   
+		element.style.top  = "70px";    
+		element.style.zIndex = "999"; 
+	
+		$.setOpacity(element, 95);
+	}
 }, 
 
 Element.attachResize = function(element, type) {

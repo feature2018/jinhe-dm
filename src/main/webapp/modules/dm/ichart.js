@@ -281,7 +281,7 @@ function drawPie3D(canvasName, data, title, width, height, onclick) {
 		gradient:true,
 		color_factor:0.28,
 		gradient_mode:'RadialGradientOutIn',
-		showpercent:false,
+		showpercent:true,
 		decimalsnum:2,
 		legend:{
 			enable:true,
