@@ -1277,8 +1277,8 @@
     _HTTP_RESPONSE_STATUS_LOCAL_OK  = 0,    // 本地OK
     _HTTP_RESPONSE_STATUS_REMOTE_OK = 200,  // 远程OK
 
-    /* HTTP超时(1分钟) */
-    _HTTP_TIMEOUT = 1*60*1000,
+    /* HTTP超时(3分钟) */
+    _HTTP_TIMEOUT = 3*60*1000,
 
  
     /*

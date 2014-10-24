@@ -459,7 +459,7 @@
 				<job.enable>false</job.enable>
 				<db.url>127.0.0.1:3306/dms_btr</db.url>
 				<environment>prod</environment>
-				<tomcat.url>172.20.121.19:8082</tomcat.url>
+				<tomcat.url>10.8.72.80:8888</tomcat.url>
 			</properties>
 		</profile>
 		<profile>
@@ -472,7 +472,7 @@
 				<job.enable>true</job.enable>
 				<db.url>127.0.0.1:3306/dms_btr</db.url>
 				<environment>prod-job</environment>
-				<tomcat.url>172.20.121.19:8082</tomcat.url>
+				<tomcat.url>10.8.72.80:8888</tomcat.url>
 			</properties>
 		</profile>
 		<profile>
