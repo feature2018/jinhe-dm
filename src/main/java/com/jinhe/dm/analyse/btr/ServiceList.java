@@ -33,4 +33,16 @@ public class ServiceList {
 	public List<?> getCenterList(String org) {
 		return baseService.getCenterList(org);
 	}
+	
+	@RequestMapping("/self/centers")
+	@ResponseBody
+	public List<?> getSelfCenterList() {
+		List<String> fatherGroups = _BTRHelper.getFatherGroups();
+		if(fatherGroups != null && fatherGroups.size() >= 2) { // 分公司或分拨员工，只能看到其所在（分公司）的分拨
+			String org = fatherGroups.get(1);
+			return baseService.getCenterList(org);
+		}
+		
+		return baseService.getAllCenterList();
+	}
 }

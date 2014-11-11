@@ -17,4 +17,5 @@ public interface BaseService {
 	 */
 	List<Map<String, Object>> getCenterList(String org);
 
+	List<Map<String, Object>> getAllCenterList();
 }

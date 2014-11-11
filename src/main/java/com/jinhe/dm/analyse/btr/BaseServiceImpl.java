@@ -49,15 +49,14 @@ public class BaseServiceImpl implements BaseService {
 		SQLExcutor excutor = new SQLExcutor(false);
 		excutor.excuteQuery(script);
  
-        HttpSession session = Context.getRequestContext().getSession();
-        List<String> fatherGroupNames = (List<String>) session.getAttribute(BTRAfterLoginCustomizer.USER_GROUPS_NAME);
-        if(fatherGroupNames != null) {
-            if(fatherGroupNames.size() == 1) { // 总部员工
+		List<String> fatherGroups = _BTRHelper.getFatherGroups();
+        if(fatherGroups != null) {
+            if(fatherGroups.size() == 1) { // 总部员工
             	return excutor.result;
             } 
-            else if(fatherGroupNames.size() >= 2) { // 分公司员工 & 分拨员工，只能看到其所在的分公司
+            else if(fatherGroups.size() >= 2) { // 分公司员工 & 分拨员工，只能看到其所在的分公司
             	for(Map<String, Object> temp : excutor.result) {
-            		if(temp.get("name").equals(fatherGroupNames.get(1))) {
+            		if(temp.get("name").equals(fatherGroups.get(1))) {
             			return Arrays.asList(temp);
             		}
             	}
@@ -75,16 +74,25 @@ public class BaseServiceImpl implements BaseService {
 		SQLExcutor excutor = new SQLExcutor(false);
 		excutor.excuteQuery(script);
 		
-		HttpSession session = Context.getRequestContext().getSession();
-		List<String> fatherGroupNames = (List<String>) session.getAttribute(BTRAfterLoginCustomizer.USER_GROUPS_NAME);
-		if(fatherGroupNames != null && fatherGroupNames.size() >= 3) { // 分拨员工，只能看到其所在的分拨
+		List<String> fatherGroups = _BTRHelper.getFatherGroups();
+		if(fatherGroups != null && fatherGroups.size() >= 3) { // 分拨员工，只能看到其所在的分拨
         	for(Map<String, Object> temp : excutor.result) {
-        		if(temp.get("name").equals(fatherGroupNames.get(2))) {
+        		if(temp.get("name").equals(fatherGroups.get(2))) {
         			return Arrays.asList(temp);
         		}
         	}
         }
 		
+		return excutor.result;
+	}
+	
+	public List<Map<String, Object>> getAllCenterList() {
+		String script = "select t.name as id, t.id as pk, t.code as code, t.name as name" +
+				" from gt_site t " +
+				" where type_code = '01' and status = 'ENABLE' ";
+		SQLExcutor excutor = new SQLExcutor(false);
+		excutor.excuteQuery(script);
+ 
 		return excutor.result;
 	}
 }
