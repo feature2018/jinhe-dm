@@ -262,7 +262,7 @@ function drawPie3D(canvasName, data, title, width, height, onclick) {
 		},
 		padding:'2 10',
 		footnote:{
-			text:'wmsdata.800best.com',
+			text:'TSS数据分析系统',
 			color:'#e0e5e8',
 			height:30,
 			border:{
@@ -331,7 +331,7 @@ function drawDonut2D(canvasName, data, title, width, height) {
 		render : canvasName,
 		data: data,
 		footnote : {
-			text : 'wmsdata.800best.com',
+			text : 'TSS数据分析系统',
 			color : '#486c8f',
 			fontsize : 12,
 			padding : '0 38'
