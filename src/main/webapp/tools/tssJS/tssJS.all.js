@@ -519,6 +519,13 @@
             return this;
         },
 
+        appendChild: function(el) {
+            if ( this.length > 0 ) {
+                this[0].appendChild(el);
+            }
+            return this;
+        },
+
         title: function(str) {
             for (var i = 0; i < this.length; i++) {
                 this[i].title = str;
@@ -1277,7 +1284,7 @@
     _HTTP_RESPONSE_STATUS_LOCAL_OK  = 0,    // 本地OK
     _HTTP_RESPONSE_STATUS_REMOTE_OK = 200,  // 远程OK
 
-    /* HTTP超时(3分钟) */
+    /* HTTP超时(1分钟) */
     _HTTP_TIMEOUT = 3*60*1000,
 
  
@@ -4507,8 +4514,28 @@
             });
         };
 
+        // 借助于stack. [{id:1, name:node1, children:[ {id:3, name:node3, children:[......]} ], xx:xx}, {id:2......}]
         var loadJson = function(data) {
+            var stack = [];
+            var parents = {};
 
+            data.each(function(i, nodeAttrs) {
+                stack.push(nodeAttrs);
+            });
+
+            while(stack.length > 0) {
+                current = stack.pop();
+
+                var treeNode = new TreeNode(current, current.parent); 
+                if(current.parent == null) {
+                    tThis.rootList.push(treeNode);
+                }
+
+                current.children.each(function(i, child) {
+                    child.parent = treeNode;
+                    stack.push(child);
+                });
+            }
         };
 
         // 树控件上禁用默认右键和选中文本（默认双击会选中节点文本）

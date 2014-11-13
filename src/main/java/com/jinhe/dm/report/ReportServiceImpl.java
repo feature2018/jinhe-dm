@@ -169,7 +169,9 @@ public class ReportServiceImpl implements ReportService {
 					paramValue = DateUtil.format(_DateUtil.subDays(today, deltaDays));
 				} 
 
-				if (reportScript.indexOf("in (${" + paramKy + "})") > 0) {
+				if (reportScript.indexOf("in (${" + paramKy + "})") > 0 ||
+						reportScript.indexOf("IN (${" + paramKy + "})") > 0) {
+					
 					// 处理in查询的条件值，为每个项加上单引号
 					paramValue = SOUtil.insertSingleQuotes(paramValue);
 				}

@@ -17,6 +17,7 @@ UPDATE dm_report t SET t.displayUri = REPLACE( t.displayUri, '../wms/kanban', '.
 
 
 
+补丁1：报表授权，root全勾，授权后发现子节点没勾上
 update dm_report t SET t.decode=CONCAT('00001', t.decode);
 
 
