@@ -47,6 +47,7 @@
     function modifyUserInfo() {
 		$.ajax({
 			url : URL_MODIFY_USER,
+			headers: {"appCode": FROMEWORK_CODE},
 			method : "PUT",
 			formNode : $.cache.XmlDatas[XML_REGISTER_INFO].querySelector("data"),
 			onsuccess : function() { 

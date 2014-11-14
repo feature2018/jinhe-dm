@@ -158,21 +158,13 @@ function loadInitData() {
 	var onresult = function() {
 		var tree = $.T("tree", this.getNodeValue(XML_SOURCE_TREE));
 
-		// tree.onTreeNodeActived = function(ev) {
-		// 	var treeNode = ev.treeNode;
-		// 	getTreeOperation(treeNode, function(_operation) {            
-		// 		if( isReport() ) {
-		// 			showReport();
-		// 		}
-		// 	});
-		// }
 		tree.onTreeNodeDoubleClick = function(ev) {
 			var treeNode = getActiveTreeNode();
 			getTreeOperation(treeNode, function(_operation) {            
 				if( isReport() ) {
 					showReport();
 				}
-				if( isReportGroup() ) {
+				if( isReportGroup() && getOperation("2") ) {
 					loadReportDetail(false, false);
 				}
 			});

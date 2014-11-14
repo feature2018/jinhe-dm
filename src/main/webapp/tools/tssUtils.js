@@ -658,15 +658,15 @@ function checkPasswordSecurityLevel(formObj, url, password, loginName) {
 	$.ajax({
 		url : url,
 		method : "POST",
-		headers: {"appCode": APP_CODE},
+		headers: {"appCode": FROMEWORK_CODE},
 		params : {"password": password, "loginName": loginName}, 
 		onresult : function() {
 			var securityLevel = this.getNodeValue(XML_SECURITY_LEVEL);
 			var errorInfo = {
-				0: "您输入的密码安全等级为不可用，不安全",
-				1: "您输入的密码安全等级为低，只能保障基本安全",
-				2: "您输入的密码安全等级为中，较安全",
-				3: "您输入的密码安全等级为高，很安全"
+				0: "您输入的密码安全等级为不可用，不安全，请重新输入！",
+				1: "您输入的密码安全等级为低，只能保障基本安全！",
+				2: "您输入的密码安全等级为中，较安全。",
+				3: "您输入的密码安全等级为高，很安全。"
 			};
 			formObj.showCustomErrorInfo("password", errorInfo[securityLevel]);
 		}
